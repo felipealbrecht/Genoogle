@@ -1,0 +1,17 @@
+package bio.pih.util;
+
+import org.biojava.bio.symbol.SymbolList;
+
+public class OverlappedSymbolListWindowIterator extends AbstractSymbolListWindowIterator {
+
+	public OverlappedSymbolListWindowIterator(SymbolList sequence, int windowSize) throws IndexOutOfBoundsException{
+		super(sequence, windowSize);
+	}
+
+	public SymbolList next() {
+		SymbolList subList = sequence.subList(actualPos+1, actualPos + windowSize);
+		actualPos++;
+		return subList;
+	}
+
+}
