@@ -16,7 +16,7 @@ import bio.pih.scheduler.communicator.message.WelcomeMessage;
  * @author albrecht
  *
  */
-public class Client implements Communicator {
+public class WorkerCommunicator implements Communicator {
 
 	int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
 
@@ -35,7 +35,7 @@ public class Client implements Communicator {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public Client(InetAddress serverAddress, int port) throws IOException, ClassNotFoundException {
+	public WorkerCommunicator(InetAddress serverAddress, int port) throws IOException, ClassNotFoundException {
 		this.serverAddress = serverAddress;
 		this.port = port;
 	}
@@ -96,7 +96,7 @@ public class Client implements Communicator {
 	}
 
 	private boolean processMessage(Message m) {
-		m.process();
+		System.out.println("processing " + m);
 		return false;
 	}
 

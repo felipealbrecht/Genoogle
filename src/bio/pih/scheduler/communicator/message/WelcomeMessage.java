@@ -35,9 +35,4 @@ public class WelcomeMessage extends Message {
 	public MessageKind getKind() {
 		return MessageKind.WELCOME;
 	}
-	
-	@Override
-	public boolean process() {
-		return false;
-	};
 }

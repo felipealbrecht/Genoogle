@@ -20,14 +20,21 @@ public abstract class Message implements Serializable {
 		 * A request login message, sending my a client
 		 */
 		LOGIN,
+		
 		/**
 		 * A welcome message sending by the server to the client informing that he is connected.
 		 */
 		WELCOME,
+		
 		/**
 		 * A search request seding by the server requesting a search to the clients.
 		 */
-		REQUEST;
+		REQUEST,
+		
+		/**
+		 * Message send from the server to the workers for them do system shutdown.
+		 */
+		SHUTDOWN;
 	}
 
 	/**
@@ -44,11 +51,4 @@ public abstract class Message implements Serializable {
 	 * @return <code>MessageKind</code> of the message.
 	 */
 	public abstract MessageKind getKind();
-
-	/**
-	 * Process the message at the reciver side.
-	 * 
-	 * @return <code>true</code> if is necessary to send a response, otherwise returns <code>false</code>.
-	 */
-	public abstract boolean process();
 }

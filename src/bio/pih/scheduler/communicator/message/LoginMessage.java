@@ -35,9 +35,4 @@ public class LoginMessage extends Message {
 	public MessageKind getKind() {
 		return MessageKind.LOGIN;
 	}
-
-	@Override
-	public boolean process() {
-		return true;
-	}
 }

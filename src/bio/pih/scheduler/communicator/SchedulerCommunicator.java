@@ -8,9 +8,10 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
-import bio.pih.scheduler.WorkerInfo;
 import bio.pih.scheduler.communicator.message.LoginMessage;
+import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
+import bio.pih.scheduler.communicator.message.ShutdownMessage;
 import bio.pih.scheduler.communicator.message.WelcomeMessage;
 
 /**
@@ -18,7 +19,7 @@ import bio.pih.scheduler.communicator.message.WelcomeMessage;
  * @author albrecht
  *
  */
-public class Server {
+public class SchedulerCommunicator implements Communicator {
 	private volatile boolean isRunning;
 	private ServerSocket ss;
 	private int port = 5555;
@@ -28,7 +29,7 @@ public class Server {
 	 * Constructor of the server.
 	 * @throws IOException
 	 */
-	public Server() throws IOException {
+	public SchedulerCommunicator() throws IOException {
 		workers = new LinkedList<WorkerInfo>();
 	}
 
@@ -101,8 +102,11 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		isRunning = false;
+		for (WorkerInfo worker: getWorkers()) {
+			worker.sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);
+		}
 		ss.close();
+		isRunning = false;
 	}
 
 	/**
@@ -124,5 +128,18 @@ public class Server {
 			// at each one, create a simple threat to send message
 			worker.request(requestMessage);
 		}
+	}
+
+	@Override
+	public Message reciveMessage() throws IOException, ClassNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void sendMessage(Message message) throws IOException {
+		for (WorkerInfo worker : getWorkers()) {
+			worker.sendMessage(message);
+		}		
 	}
 }

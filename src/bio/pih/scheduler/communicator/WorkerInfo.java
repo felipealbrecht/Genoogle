@@ -1,4 +1,4 @@
-package bio.pih.scheduler;
+package bio.pih.scheduler.communicator;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,9 +9,13 @@ import java.util.List;
 
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
-import bio.pih.scheduler.communicator.message.WelcomeMessage;
 
-public class WorkerInfo {
+/**
+ * Worker informations at the server side
+ * @author albrecht
+ *
+ */
+public class WorkerInfo implements Communicator {
 	volatile boolean running;
 	int identifier;
 	ObjectInputStream input;
@@ -23,6 +27,13 @@ public class WorkerInfo {
 	List<RequestMessage> waitingList;
 	List<Message> messages;
 
+	/**
+	 * @param identifier
+	 * @param availableProcessors
+	 * @param input
+	 * @param output
+	 * @param socket
+	 */
 	public WorkerInfo(int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
 		this.identifier = identifier;
 		this.input = input;
@@ -34,11 +45,18 @@ public class WorkerInfo {
 		this.messages = new LinkedList<Message>();
 	}
 
+	/**
+	 * @throws IOException
+	 */
 	public void disconect() throws IOException {
+		// TODO send a disconect message to the worker.
 		socket.close();
 		running = false;
 	}
 
+	/**
+	 *  Start the thread
+	 */
 	public void startThread() {
 		thread = new Runnable() {
 			public void run() {
@@ -63,28 +81,41 @@ public class WorkerInfo {
 			}
 		};
 	}
-
+	
+	@Override
+	public Message reciveMessage() throws IOException, ClassNotFoundException {
+		Message m = (Message) this.input.readObject();
+		return m;
+	}
 	private boolean incomingFromWorker() throws IOException, ClassNotFoundException {
 		Message m;
 		boolean data = false;
-		while (((m = (Message) this.input.readObject()) != null)) {
+		while ((m = reciveMessage()) != null) {
 			data |= processMessage(m);
 		}
 		return data;
 	}
 
 	private boolean processMessage(Message m) {
-		return m.process();
+		System.out.println("Processando " + m);
+		return true;
 	}
 
 	private boolean putputToWorker() {
 		return false;
 	}
 
+	/**
+	 * @return
+	 */
 	public List<RequestMessage> getWaitingList() {
 		return waitingList;
 	}
 
+	/**
+	 * @param request
+	 * @throws IOException
+	 */
 	public void request(RequestMessage request) throws IOException {
 		if (waitingList.size() == 0) {
 			sendMessage(request);
@@ -93,6 +124,10 @@ public class WorkerInfo {
 		}
 	}
 
+	/**
+	 * @param m
+	 * @throws IOException
+	 */
 	public void sendMessage(Message m) throws IOException {
 		try {
 		this.output.writeObject(m);
@@ -113,4 +148,5 @@ public class WorkerInfo {
 
 		return sb.toString();
 	}
+
 }

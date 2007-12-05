@@ -19,21 +19,21 @@ public class SimpleSupidTest {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		Server s = new Server();
+		SchedulerCommunicator s = new SchedulerCommunicator();
 		s.start();
 
 		while (!s.isReady()) {
 			Thread.yield();
 		}
 		
-		List<Client> clients = new LinkedList<Client>();
-		Client c;
+		List<WorkerCommunicator> clients = new LinkedList<WorkerCommunicator>();
+		WorkerCommunicator c;
 
-		c = new Client(InetAddress.getLocalHost(), 5555);
+		c = new WorkerCommunicator(InetAddress.getLocalHost(), 5555);
 		c.start();
 		clients.add(c);
 
-		c = new Client(InetAddress.getLocalHost(), 5555);
+		c = new WorkerCommunicator(InetAddress.getLocalHost(), 5555);
 		c.start();
 		clients.add(c);
 
@@ -52,10 +52,7 @@ public class SimpleSupidTest {
 		// Servidor exibe 2o relatorio
 		// Finaliza.
 		// }
-		Thread.sleep(10000);
-		for (Client client: clients) {
-			client.stop();		
-		}
+		
 		s.stop();
 	}
 

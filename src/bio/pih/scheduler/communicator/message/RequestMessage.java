@@ -58,9 +58,4 @@ public class RequestMessage extends Message {
 	public String getDatabase() {
 		return database;
 	}
-
-	@Override
-	public boolean process() {	
-		return true;
-	}	
 }
