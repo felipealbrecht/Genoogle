@@ -27,4 +27,23 @@ public interface Communicator {
 	 * @throws ClassNotFoundException 
 	 */
 	public Message reciveMessage() throws IOException, ClassNotFoundException;
+	
+	/**
+	 * Start the communicator
+	 * @throws IOException 
+	 */
+	public void start() throws IOException;
+	
+	/**
+	 * Stop the communicator
+	 * @throws IOException 
+	 */
+	public void stop() throws IOException;
+	
+	/**
+	 * Inform if this communicator is ready
+	 * @return <code>true</code> if the communicator is ready
+	 */
+	public boolean isReady();
+	
 }

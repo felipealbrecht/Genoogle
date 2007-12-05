@@ -45,19 +45,8 @@ public class WorkerInfo implements Communicator {
 		this.messages = new LinkedList<Message>();
 	}
 
-	/**
-	 * @throws IOException
-	 */
-	public void disconect() throws IOException {
-		// TODO send a disconect message to the worker.
-		socket.close();
-		running = false;
-	}
-
-	/**
-	 *  Start the thread
-	 */
-	public void startThread() {
+	@Override
+	public void start() {
 		thread = new Runnable() {
 			public void run() {
 				try {
@@ -117,11 +106,12 @@ public class WorkerInfo implements Communicator {
 	 * @throws IOException
 	 */
 	public void request(RequestMessage request) throws IOException {
-		if (waitingList.size() == 0) {
+		//if (waitingList.size() == 0) {
 			sendMessage(request);
-		} else {
-			waitingList.add(request);
-		}
+		//} else {
+//			System.out.println("waiting...");
+	//		waitingList.add(request);
+		//}
 	}
 
 	/**
@@ -130,7 +120,8 @@ public class WorkerInfo implements Communicator {
 	 */
 	public void sendMessage(Message m) throws IOException {
 		try {
-		this.output.writeObject(m);
+			System.out.println("vai enviar " + m);
+			this.output.writeObject(m);
 		} catch (IOException e) {
 		e.printStackTrace();	
 		}
@@ -147,6 +138,17 @@ public class WorkerInfo implements Communicator {
 		sb.append(" threads.");
 
 		return sb.toString();
+	}
+
+	@Override
+	public void stop() throws IOException {
+		socket.close();
+		this.running = false;				
+	}
+
+	@Override
+	public boolean isReady() {
+		return running && socket.isConnected();
 	}
 
 }

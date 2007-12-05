@@ -1,9 +1,9 @@
 package bio.pih.scheduler.communicator;
 
-import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import bio.pih.scheduler.Worker;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 
 /**
@@ -19,23 +19,26 @@ public class SimpleSupidTest {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		SchedulerCommunicator s = new SchedulerCommunicator();
-		s.start();
-
-		while (!s.isReady()) {
-			Thread.yield();
-		}
+		Worker c;
+				
+		c = new Worker(5000);
+		c.start();
 		
-		List<WorkerCommunicator> clients = new LinkedList<WorkerCommunicator>();
-		WorkerCommunicator c;
-
-		c = new WorkerCommunicator(InetAddress.getLocalHost(), 5555);
+		c = new Worker(5001);
 		c.start();
-		clients.add(c);
-
-		c = new WorkerCommunicator(InetAddress.getLocalHost(), 5555);
-		c.start();
-		clients.add(c);
+								
+		List<String> wList = new LinkedList<String>();
+		wList.add("localhost:5000");
+		wList.add("localhost:5001");				
+		SchedulerCommunicator s = new SchedulerCommunicator(wList);
+		
+		s.start();
+		
+		while (!s.isReady()) {
+			System.out.println(".");
+			Thread.sleep(10);			
+		}
+	
 
 		// for (int c = 0; c < 100; c++) {
 		// int pos = Math.round( (float) Math.random() % clients.size());
@@ -52,6 +55,8 @@ public class SimpleSupidTest {
 		// Servidor exibe 2o relatorio
 		// Finaliza.
 		// }
+		
+//		Thread.sleep(10000);
 		
 		s.stop();
 	}

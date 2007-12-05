@@ -3,7 +3,6 @@ package bio.pih.scheduler.communicator;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,17 +19,19 @@ import bio.pih.scheduler.communicator.message.WelcomeMessage;
  *
  */
 public class SchedulerCommunicator implements Communicator {
-	private volatile boolean isRunning;
-	private ServerSocket ss;
-	private int port = 5555;
 	private List<WorkerInfo> workers;
+	private List<String> wList;
+	volatile boolean isReady;
 
 	/**
 	 * Constructor of the server.
+	 * @param wList workers must be a string: "address:port" 
 	 * @throws IOException
 	 */
-	public SchedulerCommunicator() throws IOException {
-		workers = new LinkedList<WorkerInfo>();
+	public SchedulerCommunicator(List<String>  wList) throws IOException {
+		this.workers = new LinkedList<WorkerInfo>();
+		this.wList = wList;
+		this.isReady = false;
 	}
 
 	/**
@@ -39,61 +40,40 @@ public class SchedulerCommunicator implements Communicator {
 	 * @throws IOException
 	 */
 	public synchronized void start() throws IOException {
-		if (isRunning || isRunning) {
-			throw new IOException("Sockets already started!");
-		}
-
-		/**
-		 * TODO: ter como avisar quantos trabalhadores se conectarão, para não precisar ficar esperando ad eternum por novas conexões.
-		 */
 		Runnable r = new Runnable() {
 			public void run() {
 				ObjectInputStream input = null;
 				ObjectOutputStream output = null;
 				WorkerInfo workerInfo = null;
 				LoginMessage message;
-				Socket accept = null;
+				Socket socket = null;
 				try {
-					ss = new ServerSocket(port);
-					isRunning = true;
-					while (isRunning) {
-						accept = ss.accept();
-
-						output = new ObjectOutputStream(accept.getOutputStream());
+					for (String s: wList) {
+						String[] split = s.split(":");
+						System.out.println("Conectando-se ao trabalhador: " + split[0] + " " + split[1]);
+						socket = new Socket(split[0], Integer.parseInt(split[1]));
+																	
+						output = new ObjectOutputStream(socket.getOutputStream());
 						output.flush();
-						input = new ObjectInputStream(accept.getInputStream());
+						input = new ObjectInputStream(socket.getInputStream());
 
 						output.writeObject(new WelcomeMessage(workers.size() + 1));
 						message = (LoginMessage) input.readObject();
-						System.out.println(message + " " + accept.getRemoteSocketAddress());
+						System.out.println(message + " " + socket.getRemoteSocketAddress());
 
-						workerInfo = new WorkerInfo(workers.size() + 1, message.getAvailableProcessors(), input, output, accept);
-						workerInfo.startThread();
+						workerInfo = new WorkerInfo(workers.size() + 1, message.getAvailableProcessors(), input, output, socket);
+						workerInfo.start();
 						workers.add(workerInfo);
 					}
-					ss.close();
+					isReady = true;
 				} catch (IOException e) {
 					e.printStackTrace();
-					isRunning = false;
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-					isRunning = false;
 				}
 			}
 		};
 		new Thread(r).start();
-	}
-
-	/**
-	 * Return if the server is up and running!
-	 * @return <code>true</code> if the server is up and running 
-	 */
-	public boolean isReady() {
-		if (isRunning) {
-			return !ss.isClosed() && ss.isBound();
-		} else {
-			return false;
-		}
 	}
 
 	/**
@@ -102,11 +82,8 @@ public class SchedulerCommunicator implements Communicator {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		for (WorkerInfo worker: getWorkers()) {
-			worker.sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);
-		}
-		ss.close();
-		isRunning = false;
+		sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);		
+		isReady = false;
 	}
 
 	/**
@@ -125,14 +102,14 @@ public class SchedulerCommunicator implements Communicator {
 	 */
 	public synchronized void sendRequest(RequestMessage requestMessage) throws IOException {
 		for (WorkerInfo worker : getWorkers()) {
-			// at each one, create a simple threat to send message
+			// at each one, create a simple thread to send message
 			worker.request(requestMessage);
 		}
 	}
 
 	@Override
 	public Message reciveMessage() throws IOException, ClassNotFoundException {
-		// TODO Auto-generated method stub
+		// TODO Read the messages addressed to its
 		return null;
 	}
 
@@ -141,5 +118,10 @@ public class SchedulerCommunicator implements Communicator {
 		for (WorkerInfo worker : getWorkers()) {
 			worker.sendMessage(message);
 		}		
+	}
+	
+	@Override
+	public boolean isReady() {
+		return isReady;
 	}
 }

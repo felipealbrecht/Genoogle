@@ -5,8 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
+import bio.pih.scheduler.Worker;
 import bio.pih.scheduler.communicator.message.LoginMessage;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.WelcomeMessage;
@@ -22,21 +24,22 @@ public class WorkerCommunicator implements Communicator {
 
 	ObjectInputStream ois;
 	ObjectOutputStream oos;
+	Worker worker;
+	Socket socket;
 
-	InetAddress serverAddress;
 	int port;
 
 	volatile boolean running;
 	Thread t = null;
 
 	/**
-	 * @param serverAddress
-	 * @param port
+	 * @param worker the linked {@link Worker} 
+	 * @param port that will be running
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public WorkerCommunicator(InetAddress serverAddress, int port) throws IOException, ClassNotFoundException {
-		this.serverAddress = serverAddress;
+	public WorkerCommunicator(Worker worker, int port) throws IOException, ClassNotFoundException {
+		this.worker = worker;
 		this.port = port;
 	}
 
@@ -65,10 +68,12 @@ public class WorkerCommunicator implements Communicator {
 	public void start() {
 		Runnable r = new Runnable() {
 			public void run() {
-				running = true;
 				Message m;				
 				try {
-					Socket socket = new Socket(serverAddress, port);
+					ServerSocket ss = new ServerSocket(port);
+					running = true;
+					socket = ss.accept();
+
 					oos = new ObjectOutputStream(socket.getOutputStream());
 					ois = new ObjectInputStream(socket.getInputStream());
 
@@ -97,6 +102,15 @@ public class WorkerCommunicator implements Communicator {
 
 	private boolean processMessage(Message m) {
 		System.out.println("processing " + m);
+		switch (m.getKind()) {
+		case SHUTDOWN:
+			this.stop();
+			break;
+			
+		default:
+			worker.processMessage(m);
+			break;
+		}
 		return false;
 	}
 
@@ -107,5 +121,37 @@ public class WorkerCommunicator implements Communicator {
 		running = false;
 		t = null;
 	}
+	
+	@Override
+	public boolean isReady() {
+		return running;
+	}
 
+	/**
+	 * @return the {@link Worker} associate with this communicator 
+	 */
+	public Worker getWorker() {
+		return worker;
+	}
+	
+	/**
+	 * @return the port that this {@link Communicator} is running
+	 */
+	public int getPort() {
+		if (socket == null) {
+			return -1;
+		}
+		return socket.getLocalPort();
+	}
+	
+	/**
+	 * @return InetAddress of this {@link Communicator}
+	 */
+	public InetAddress getInetAddress() {
+		if (socket == null) {
+			return null;
+		}
+		return socket.getInetAddress();
+	}
+	
 }
