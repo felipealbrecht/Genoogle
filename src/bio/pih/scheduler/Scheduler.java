@@ -13,7 +13,7 @@ public interface Scheduler {
 	/**
 	 * @return the <code>list</code> of the workers
 	 */
-	List<Worker> getWorkers();
+	List<AbstractWorker> getWorkers();
 	
 	/**
 	 * Execute a search

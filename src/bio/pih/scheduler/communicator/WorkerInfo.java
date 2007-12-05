@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
 
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 
 /**
  * Worker informations at the server side
+ * 
  * @author albrecht
- *
+ * 
  */
 public class WorkerInfo implements Communicator {
 	volatile boolean running;
@@ -23,9 +22,6 @@ public class WorkerInfo implements Communicator {
 	Socket socket;
 	int searchesRunning;
 	int availableProcessors;
-	Runnable thread;
-	List<RequestMessage> waitingList;
-	List<Message> messages;
 
 	/**
 	 * @param identifier
@@ -41,13 +37,11 @@ public class WorkerInfo implements Communicator {
 		this.socket = socket;
 		this.availableProcessors = availableProcessors;
 		this.searchesRunning = 0;
-		this.waitingList = new LinkedList<RequestMessage>();
-		this.messages = new LinkedList<Message>();
 	}
 
 	@Override
 	public void start() {
-		thread = new Runnable() {
+		Runnable thread = new Runnable() {
 			public void run() {
 				try {
 					while (running) {
@@ -69,24 +63,26 @@ public class WorkerInfo implements Communicator {
 
 			}
 		};
+		new Thread(thread).run();
 	}
-	
+
 	@Override
 	public Message reciveMessage() throws IOException, ClassNotFoundException {
 		Message m = (Message) this.input.readObject();
 		return m;
 	}
+
 	private boolean incomingFromWorker() throws IOException, ClassNotFoundException {
 		Message m;
 		boolean data = false;
 		while ((m = reciveMessage()) != null) {
-			data |= processMessage(m);
+			data |= processIncomingMessage(m);
 		}
 		return data;
 	}
 
-	private boolean processMessage(Message m) {
-		System.out.println("Processando " + m);
+	private boolean processIncomingMessage(Message m) {
+		System.out.println("Processando incoming from worker: " + m);
 		return true;
 	}
 
@@ -95,23 +91,11 @@ public class WorkerInfo implements Communicator {
 	}
 
 	/**
-	 * @return
-	 */
-	public List<RequestMessage> getWaitingList() {
-		return waitingList;
-	}
-
-	/**
 	 * @param request
 	 * @throws IOException
 	 */
 	public void request(RequestMessage request) throws IOException {
-		//if (waitingList.size() == 0) {
-			sendMessage(request);
-		//} else {
-//			System.out.println("waiting...");
-	//		waitingList.add(request);
-		//}
+		sendMessage(request);
 	}
 
 	/**
@@ -120,10 +104,10 @@ public class WorkerInfo implements Communicator {
 	 */
 	public void sendMessage(Message m) throws IOException {
 		try {
-			System.out.println("vai enviar " + m);
+			//System.out.println("vai enviar " + m);
 			this.output.writeObject(m);
 		} catch (IOException e) {
-		e.printStackTrace();	
+			e.printStackTrace();
 		}
 	}
 
@@ -143,7 +127,7 @@ public class WorkerInfo implements Communicator {
 	@Override
 	public void stop() throws IOException {
 		socket.close();
-		this.running = false;				
+		this.running = false;
 	}
 
 	@Override

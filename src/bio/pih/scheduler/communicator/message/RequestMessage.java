@@ -58,4 +58,8 @@ public class RequestMessage extends Message {
 	public String getDatabase() {
 		return database;
 	}
+	
+	public String toString() {
+		return "Searching " + query + " at " + database;
+	}
 }

@@ -3,13 +3,14 @@ package bio.pih.scheduler.communicator;
 import java.util.LinkedList;
 import java.util.List;
 
-import bio.pih.scheduler.Worker;
+import bio.pih.scheduler.AbstractWorker;
 import bio.pih.scheduler.communicator.message.RequestMessage;
+import bio.pih.tests.scheduler.MockWorker;
 
 /**
  * Simple stupid test
  * @author albrecht
- *
+ * TODO: do it in a junit test!
  */
 public class SimpleSupidTest {
 
@@ -19,44 +20,56 @@ public class SimpleSupidTest {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		Worker c;
+		AbstractWorker c;
 				
-		c = new Worker(5000);
+		c = new MockWorker(5000);
 		c.start();
 		
-		c = new Worker(5001);
+		c = new MockWorker(5001);
+		c.start();
+		
+		c = new MockWorker(5002);
+		c.start();
+		
+		c = new MockWorker(5003);
+		c.start();
+		
+		c = new MockWorker(5004);
 		c.start();
 								
 		List<String> wList = new LinkedList<String>();
 		wList.add("localhost:5000");
-		wList.add("localhost:5001");				
+		wList.add("localhost:5001");
+		wList.add("localhost:5002");
+		wList.add("localhost:5003");
+		wList.add("localhost:5004");
 		SchedulerCommunicator s = new SchedulerCommunicator(wList);
 		
 		s.start();
 		
 		while (!s.isReady()) {
-			System.out.println(".");
 			Thread.sleep(10);			
 		}
-	
 
-		// for (int c = 0; c < 100; c++) {
-		// int pos = Math.round( (float) Math.random() % clients.size());
-		// Client client = clients.get(pos);
-		// System.out.println(client);
-		s.sendRequest(new RequestMessage("dummy", "actg"));
-
-		// Servidor envia uma solicitação para todos os trabalhadores
-		// Trabalhadores "processam" por um tempo rand(X)
-		// Servidor envia segunda solicitação para todos os trabalhadores
-		// Trabalhadores retornam 1a solicitação
-		// Servidor exibe 1o relatorio
-		// Trabalhadores retornam 2a solicitação
-		// Servidor exibe 2o relatorio
-		// Finaliza.
-		// }
-		
-//		Thread.sleep(10000);
+		s.sendRequest(new RequestMessage("dummy", "actg_1"));
+		s.sendRequest(new RequestMessage("hey", "actg_2"));
+		s.sendRequest(new RequestMessage("ho", "actg_3"));
+		s.sendRequest(new RequestMessage("lets", "actg_4"));
+		s.sendRequest(new RequestMessage("go", "actg_5"));
+		s.sendRequest(new RequestMessage("pet", "actg_6"));		
+		Thread.sleep(1000);
+		s.sendRequest(new RequestMessage("sematary", "actg_7"));
+		s.sendRequest(new RequestMessage("goblins", "actg_8"));
+		s.sendRequest(new RequestMessage("R.A.M.O.N.E.S", "actg_9"));
+		s.sendRequest(new RequestMessage("N.Y.C", "actg_10"));
+		Thread.sleep(1000);
+		s.sendRequest(new RequestMessage("Misfit", "actg_11"));
+		s.sendRequest(new RequestMessage("radio", "actg_12"));
+		s.sendRequest(new RequestMessage("fingolfin", "actg_13"));
+		s.sendRequest(new RequestMessage("sono", "actg_14"));
+		Thread.sleep(1000);
+		s.sendRequest(new RequestMessage("ultimo", "actg_15"));
+		s.sendRequest(new RequestMessage("banho", "actg_16"));
 		
 		s.stop();
 	}

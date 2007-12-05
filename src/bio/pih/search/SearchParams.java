@@ -4,15 +4,32 @@ package bio.pih.search;
  * @author albrecht
  *
  */
-public interface SearchParams {
+public class SearchParams {
 
+	String database;
+	String query;
+	
+	
+	/**
+	 * @param database
+	 * @param query
+	 */
+	public SearchParams(String database, String query) {
+		this.database = database;
+		this.query = query;
+	}
+	
 	/**
 	 * @return the database where the search will be performed
 	 */
-	String getDatabase();
+	public String getDatabase() {
+		return database;
+	}
 	/**
 	 * @return the query of the search
 	 */
-	String getQuery();
+	public String getQuery() {
+		return query;
+	}
 	
 }

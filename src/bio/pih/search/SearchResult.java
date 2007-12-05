@@ -6,13 +6,15 @@ import org.biojava.bio.seq.Sequence;
 
 /**
  * @author albrecht
- * <b>DUMMY AND INCOMPLETE INTERFACE!</b>
+ * <p><b>DUMMY AND INCOMPLETE INTERFACE!</b>
  */
-public interface SearchResult {
+public class SearchResult {
 	
 	/**
 	 * @return a list with the similar sequences.
 	 */
-	List<Sequence> getSequences();
+	List<Sequence> getSequences() {
+		return null;
+	}
 
 }

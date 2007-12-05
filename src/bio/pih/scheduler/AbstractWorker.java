@@ -1,0 +1,196 @@
+package bio.pih.scheduler;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import bio.pih.scheduler.communicator.Communicator;
+import bio.pih.scheduler.communicator.WorkerCommunicator;
+import bio.pih.scheduler.communicator.message.Message;
+import bio.pih.scheduler.communicator.message.RequestMessage;
+import bio.pih.search.SearchInformation;
+import bio.pih.search.SearchParams;
+import bio.pih.search.SearchResult;
+
+/**
+ * A interface that define a worker, or who will do the hard job
+ * 
+ * @author albrecht
+ * 
+ */
+public abstract class AbstractWorker {
+
+	int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
+	private List<SearchInformation> waitingList; // search queue
+	private List<SearchInformation> runningSearch;
+	private List<SearchResult> resultSearch;
+	private Communicator communicator;
+	private int identifier;
+	volatile private int maxSimultaneousSearch;
+
+	/**
+	 * @param port
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public AbstractWorker(int port) throws IOException, ClassNotFoundException {
+		this.communicator = new WorkerCommunicator(this, port);
+		this.runningSearch = (List<SearchInformation>) Collections.synchronizedList(new LinkedList<SearchInformation>());
+		this.waitingList = (List<SearchInformation>) Collections.synchronizedList(new LinkedList<SearchInformation>());
+		this.resultSearch = (List<SearchResult>) Collections.synchronizedList(new LinkedList<SearchResult>());
+		this.maxSimultaneousSearch = availableProcessors;
+	}
+
+	/**
+	 * Start the worker.
+	 * 
+	 * @throws IOException
+	 */
+	public void start() throws IOException {
+		this.communicator.start();
+	}
+
+	/**
+	 * @return the integer that identifier the worker.
+	 */
+	public int getIdentifier() {
+		return this.identifier;
+	}
+
+	/**
+	 * @param identifier
+	 */
+	public void setIdentifier(int identifier) {
+		this.identifier = identifier;
+	}
+
+	/**
+	 * @return the communicator
+	 */
+	public Communicator getCommunicator() {
+		return communicator;
+	}
+
+	/**
+	 * Return how many processors are available. Note: HyperThreading(HT) processor counts as 2
+	 * 
+	 * @return available processors
+	 */
+	public int getAvailableprocessors() {
+		return availableProcessors;
+	}
+
+	/**
+	 * Get the actual running searches
+	 * 
+	 * @return a <code>list</code> containing the running searches
+	 */
+	public List<SearchInformation> getRunningSearch() {
+		return runningSearch;
+	}
+
+	/**
+	 * Request a search.
+	 * <p>
+	 * This is a asynchronous call. When the search finish, the result will be sent to the scheduler.
+	 * 
+	 * @param params
+	 */
+	public void requestSearch(SearchParams params) {
+		SearchInformation si = new SearchInformation(params.getDatabase(), params.getQuery());
+		if (canSearchOrQueue(si) != null) {
+			doSearch(si);
+		} else {
+			getWaitingList().add(si);
+		}
+	}
+
+	/**
+	 * @param searchInformation
+	 */
+	protected abstract void doSearch(SearchInformation searchInformation);
+
+	/**
+	 * @param m
+	 */
+	public void processMessage(Message m) {
+		System.out.println("QUERY: " + m + " " + getIdentifier());
+		switch (m.getKind()) {
+		case REQUEST:
+			SearchParams sp = createSearchParams((RequestMessage) m);
+			requestSearch(sp);
+			break;
+
+		default:
+			return;
+		}
+	}
+
+	private SearchParams createSearchParams(RequestMessage m) {
+		return new SearchParams(m.getDatabase(), m.getQuery());
+	}
+
+	/**
+	 * @return <code> if the worker is ready (Database, index and others stuffs loaded)
+	 */
+	public boolean isReady() {
+		return communicator.isReady();
+	}
+
+	/**
+	 * @return
+	 */
+	public List<SearchInformation> getWaitingList() {
+		return waitingList;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getMaxSimultaneousSearch() {
+		return maxSimultaneousSearch;
+	}
+
+	/**
+	 * @param maxSimultaneousSearch
+	 */
+	public void setMaxSimultaneousSearchs(int maxSimultaneousSearch) {
+		this.maxSimultaneousSearch = maxSimultaneousSearch;
+	}
+
+	/**
+	 * @return {@link SearchResult} of the search
+	 */
+	public List<SearchResult> getSearchResult() {
+		return resultSearch;
+	}
+
+	/**
+	 * Check if a search can be performed or the information must be put in the queue
+	 * @param searchInformation
+	 * @return {@link SearchInformation} if can search him or <code>null</code>.
+	 */
+	protected synchronized SearchInformation canSearchOrQueue(SearchInformation searchInformation) {
+		if (getRunningSearch().size() < getMaxSimultaneousSearch()) {			
+			getRunningSearch().add(searchInformation);
+			return searchInformation;
+		}
+		return null;		
+	}
+	
+	/**
+	 * Get the next search to be performed
+	 * @return the next {@link SearchInformation} in the queue
+	 */
+	protected synchronized SearchInformation getNextSearchInformation() {
+		if (getWaitingList().size() > 0) {
+			SearchInformation searchInformation = getWaitingList().remove(0);
+			getRunningSearch().add(searchInformation);
+			return searchInformation;
+		}
+		return null;
+	}
+
+}
