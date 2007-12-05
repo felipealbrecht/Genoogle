@@ -8,144 +8,121 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
+import bio.pih.scheduler.WorkerInfo;
 import bio.pih.scheduler.communicator.message.LoginMessage;
-import bio.pih.scheduler.communicator.message.Message;
+import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.WelcomeMessage;
 
+/**
+ * A server class where the workers will connect. 
+ * @author albrecht
+ *
+ */
 public class Server {
-	private volatile boolean running;
+	private volatile boolean isRunning;
 	private ServerSocket ss;
 	private int port = 5555;
 	private List<WorkerInfo> workers;
 
+	/**
+	 * Constructor of the server.
+	 * @throws IOException
+	 */
 	public Server() throws IOException {
 		workers = new LinkedList<WorkerInfo>();
-		ss = new ServerSocket(port);
 	}
 
-	public void start() {
+	/**
+	 * Start the server.
+	 * 
+	 * @throws IOException
+	 */
+	public synchronized void start() throws IOException {
+		if (isRunning || isRunning) {
+			throw new IOException("Sockets already started!");
+		}
+
+		/**
+		 * TODO: ter como avisar quantos trabalhadores se conectarão, para não precisar ficar esperando ad eternum por novas conexões.
+		 */
 		Runnable r = new Runnable() {
 			public void run() {
 				ObjectInputStream input = null;
 				ObjectOutputStream output = null;
 				WorkerInfo workerInfo = null;
 				LoginMessage message;
+				Socket accept = null;
 				try {
-					while (running) {
-						Socket accept = ss.accept();
+					ss = new ServerSocket(port);
+					isRunning = true;
+					while (isRunning) {
+						accept = ss.accept();
 
-						input = new ObjectInputStream(accept.getInputStream());
 						output = new ObjectOutputStream(accept.getOutputStream());
+						output.flush();
+						input = new ObjectInputStream(accept.getInputStream());
 
 						output.writeObject(new WelcomeMessage(workers.size() + 1));
-						output.flush();
 						message = (LoginMessage) input.readObject();
 						System.out.println(message + " " + accept.getRemoteSocketAddress());
+
 						workerInfo = new WorkerInfo(workers.size() + 1, message.getAvailableProcessors(), input, output, accept);
 						workerInfo.startThread();
 						workers.add(workerInfo);
-						System.out.println(workerInfo);
 					}
+					ss.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-					running = false;
+					isRunning = false;
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-					running = false;
+					isRunning = false;
 				}
 			}
 		};
-		running = true;
 		new Thread(r).start();
 	}
 
-	public void stop() {
-		running = false;
-	}
-
-	class WorkerInfo {
-		volatile boolean running;
-		int identifier;
-		ObjectInputStream input;
-		ObjectOutputStream output;
-		Socket socket;
-		int searchesRunning;
-		int availableProcessors;
-		Runnable thread;
-		List<Search> waitingList;
-
-		public WorkerInfo(int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
-			this.identifier = identifier;
-			this.input = input;
-			this.output = output;
-			this.socket = socket;
-			this.availableProcessors = availableProcessors;
-			this.searchesRunning = 0;
-		}
-
-		public void disconect() throws IOException {
-			socket.close();
-		}
-
-		public void startThread() {
-			thread = new Runnable() {
-				public void run() {
-					try {
-						while (running) {
-							if (incomingFromWorker()) {
-								putputToWorker();
-							}
-						}
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						running = false;
-					} catch (IOException e) {
-						e.printStackTrace();
-						running = false;
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-						running = false;
-					}
-
-				}
-			};
-		}
-
-		private boolean incomingFromWorker() throws IOException, ClassNotFoundException {
-			Message m;
-			boolean data = false;
-			while (((m = (Message) input.readObject()) != null)) {
-				data |= processMessage(m);
-			}
-			return data;
-		}
-
-		private boolean processMessage(Message m) {
-			return m.process();
-		}
-
-		private boolean putputToWorker() {
+	/**
+	 * Return if the server is up and running!
+	 * @return <code>true</code> if the server is up and running 
+	 */
+	public boolean isReady() {
+		if (isRunning) {
+			return !ss.isClosed() && ss.isBound();
+		} else {
 			return false;
 		}
-
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			sb.append("Client ");
-			sb.append(identifier);
-			sb.append(" with ");
-			sb.append(availableProcessors);
-			sb.append(" processors running ");
-			sb.append(searchesRunning);
-			sb.append(" threads.");
-
-			return sb.toString();
-		}
 	}
-	
-	public class Search {
-		public Search() {
-			
+
+	/**
+	 * Stop the sockets.
+	 * 
+	 * @throws IOException
+	 */
+	public void stop() throws IOException {
+		isRunning = false;
+		ss.close();
+	}
+
+	/**
+	 * Return a <code>List</code> of workers connected
+	 * @return <code>List</code> of workers connected
+	 */
+	public List<WorkerInfo> getWorkers() {
+		return workers;
+	}
+
+	/**
+	 * Send a request to the workers nodes.
+	 * 
+	 * @param requestMessage
+	 * @throws IOException
+	 */
+	public synchronized void sendRequest(RequestMessage requestMessage) throws IOException {
+		for (WorkerInfo worker : getWorkers()) {
+			// at each one, create a simple threat to send message
+			worker.request(requestMessage);
 		}
 	}
 }

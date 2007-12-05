@@ -1,5 +1,7 @@
 package bio.pih.scheduler.communicator;
 
+import java.io.IOException;
+
 import bio.pih.scheduler.communicator.message.Message;
 
 /**
@@ -14,12 +16,15 @@ public interface Communicator {
 	/**
 	 * Send a message for the other side.
 	 * @param message
+	 * @throws IOException
 	 */
-	public void sendMessage(Message message);
+	public void sendMessage(Message message) throws IOException;
 	
 	/**
 	 * Receive the first message at the messages received pool and remove its from the pool.
 	 * @return <code>Message</code> or <code>null</code> if is not messages.
+	 * @throws IOException, ClassNotFoundException
+	 * @throws ClassNotFoundException 
 	 */
-	public Message reciveMessage();
+	public Message reciveMessage() throws IOException, ClassNotFoundException;
 }
