@@ -13,11 +13,7 @@ import org.biojava.bio.seq.FeatureHolder;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SimpleFeatureHolder;
 import org.biojava.bio.seq.io.ParseException;
-import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.Alphabet;
-import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalAlphabetException;
-import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 import org.biojava.ontology.InvalidTermException;
 import org.biojava.utils.ChangeVetoException;
@@ -42,13 +38,10 @@ import org.biojavax.bio.seq.io.RichSequenceBuilder;
 import org.biojavax.bio.taxa.NCBITaxon;
 import org.biojavax.ontology.ComparableTerm;
 
-import bio.pih.seq.LightweightSymbolList;
-
 /**
- * Constructs BioEntry objects by listening to events.
+ * Constructs a Lightweight sequence builder.
  * 
- * @author Richard Holland
- * @author George Waldon
+ * @author Felipe Albrecht
  * @since 1.5
  */
 public class LightweightSequenceBuilder extends RichSeqIOAdapter implements RichSequenceBuilder {
@@ -90,9 +83,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setVersion(int version) throws ParseException {
 		if (this.versionSeen)
 			throw new ParseException("Current BioEntry already has a version");
@@ -109,16 +100,12 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 	private int version;
 	private boolean versionSeen;
 
-	/**
-	 * {@inheritDoc} NOT IMPLEMENTED
-	 */
+	@Override
 	public void setURI(String uri) throws ParseException {
 		throw new ParseException("We don't understand URIs");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setSeqVersion(String seqVersion) throws ParseException {
 		if (this.seqVersionSeen)
 			throw new ParseException("Current BioEntry already has a sequence version");
@@ -137,9 +124,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 	private double seqVersion = 0.0;
 	private boolean seqVersionSeen;
 
-	/**
-	 * {@inheritDoc} The last accession passed to this routine will always be the one used.
-	 */
+	@Override
 	public void setAccession(String accession) throws ParseException {
 		if (accession == null)
 			throw new ParseException("Accession cannot be null");
@@ -148,9 +133,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private String accession;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setDescription(String description) throws ParseException {
 		if (this.description != null)
 			throw new ParseException("Current BioEntry already has a description");
@@ -159,9 +142,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private String description;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setDivision(String division) throws ParseException {
 		if (division == null)
 			throw new ParseException("Division cannot be null");
@@ -172,9 +153,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private String division;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setIdentifier(String identifier) throws ParseException {
 		if (identifier == null)
 			throw new ParseException("Identifier cannot be null");
@@ -185,9 +164,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private String identifier;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setName(String name) throws ParseException {
 		if (name == null)
 			throw new ParseException("Name cannot be null");
@@ -198,9 +175,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private String name;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setRankedCrossRef(RankedCrossRef ref) throws ParseException {
 		if (ref == null)
 			throw new ParseException("Reference cannot be null");
@@ -208,33 +183,30 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 		this.crossRefs.add(ref);
 	}
 
-	private Set crossRefs = new TreeSet();
+	private Set<RankedCrossRef> crossRefs = new TreeSet<RankedCrossRef>();
 	private int crossRefsRank = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	SymbolList symbolList;
 
+	/**
+	 * @param symbolList
+	 * @throws IllegalAlphabetException
+	 */
 	public void addSymbols(SymbolList symbolList) throws IllegalAlphabetException {
-		this.symbolList = symbolList;		
+		this.symbolList = symbolList;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setComment(String comment) throws ParseException {
 		if (comment == null)
 			throw new ParseException("Comment cannot be null");
 		this.comments.add(new SimpleComment(comment, commentRank++));
 	}
 
-	private Set comments = new TreeSet();
+	private Set<Comment> comments = new TreeSet<Comment>();
 	private int commentRank = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setNamespace(Namespace namespace) throws ParseException {
 		if (namespace == null)
 			throw new ParseException("Namespace cannot be null");
@@ -245,9 +217,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private Namespace namespace;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void startFeature(Feature.Template templ) throws ParseException {
 		try {
 			RichFeature f = new SimpleRichFeature(featureHolder, templ);
@@ -269,14 +239,12 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 	}
 
 	private FeatureHolder featureHolder = new SimpleFeatureHolder();
-	private Set rootFeatures = new TreeSet();
-	private List allFeatures = new ArrayList();
-	private List featureStack = new ArrayList();
+	private Set<RichFeature> rootFeatures = new TreeSet<RichFeature>();
+	private List<RichFeature> allFeatures = new ArrayList<RichFeature>();
+	private List<RichFeature> featureStack = new ArrayList<RichFeature>();
 	private int featureRank = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public RichFeature getCurrentFeature() throws ParseException {
 		if (this.featureStack.size() == 0)
 			throw new ParseException("Not currently within a feature");
@@ -284,9 +252,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 			return (RichFeature) this.featureStack.get(this.featureStack.size() - 1);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setTaxon(NCBITaxon taxon) throws ParseException {
 		if (taxon == null)
 			throw new ParseException("Taxon cannot be null");
@@ -300,20 +266,16 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	private NCBITaxon taxon;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setRelationship(BioEntryRelationship relationship) throws ParseException {
 		if (relationship == null)
 			throw new ParseException("Relationship cannot be null");
 		this.relations.add(relationship);
 	}
 
-	private Set relations = new TreeSet();
+	private Set<BioEntryRelationship> relations = new TreeSet<BioEntryRelationship>();
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setRankedDocRef(RankedDocRef ref) throws ParseException {
 		if (ref == null)
 			throw new ParseException("Reference cannot be null");
@@ -321,19 +283,15 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 		this.references.add(ref);
 	}
 
-	private Set references = new TreeSet();
+	private Set<RankedDocRef> references = new TreeSet<RankedDocRef>();
 	private int referenceCount = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void startSequence() throws ParseException {
 		this.reset();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void addFeatureProperty(Object key, Object value) throws ParseException {
 		if (this.featureStack.size() == 0)
 			throw new ParseException("Assertion failed: Not within a feature");
@@ -352,9 +310,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	int featPropCount = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void addSequenceProperty(Object key, Object value) throws ParseException {
 		if (!(key instanceof ComparableTerm))
 			key = RichObjectFactory.getDefaultOntology().getOrCreateTerm(key.toString());
@@ -374,18 +330,14 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	int seqPropCount = 1;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void endFeature() throws ParseException {
 		if (this.featureStack.size() == 0)
 			throw new ParseException("Assertion failed: Not within a feature");
 		this.featureStack.remove(this.featureStack.size() - 1);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void endSequence() throws ParseException {
 		if (this.symbolList == null)
 			throw new ParseException("Sequence String hasnot been supplied");
@@ -397,26 +349,22 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 			throw new ParseException("No accessions have been supplied");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
 	public void setCircular(boolean circular) throws ParseException {
 		this.circular = circular;
 	}
 
 	private boolean circular = false;
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	public Sequence makeSequence() throws BioException {
 		this.endSequence();
-			
+
 		RichSequence rs = new SimpleRichSequence(this.namespace, this.name, this.accession, this.version, symbolList, new Double(this.seqVersion));
 		try {
 			// set features
-			for (Iterator i = this.allFeatures.iterator(); i.hasNext();) {
-				RichFeature f = (RichFeature) i.next();
+			for (Iterator<RichFeature> i = this.allFeatures.iterator(); i.hasNext();) {
+				RichFeature f = i.next();
 				f.setParent(rs);
 				if (f.getName() == null || f.getName().length() == 0)
 					// dummy feature name for se in GBrowse
@@ -428,14 +376,14 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 			rs.setTaxon(this.taxon);
 			rs.setCircular(this.circular);
 			rs.setFeatureSet(this.rootFeatures);
-			for (Iterator i = this.crossRefs.iterator(); i.hasNext();)
-				rs.addRankedCrossRef((RankedCrossRef) i.next());
-			for (Iterator i = this.relations.iterator(); i.hasNext();)
-				rs.addRelationship((BioEntryRelationship) i.next());
-			for (Iterator i = this.references.iterator(); i.hasNext();)
-				rs.addRankedDocRef((RankedDocRef) i.next());
-			for (Iterator i = this.comments.iterator(); i.hasNext();)
-				rs.addComment((Comment) i.next());
+			for (Iterator<RankedCrossRef> i = this.crossRefs.iterator(); i.hasNext();)
+				rs.addRankedCrossRef(i.next());
+			for (Iterator<BioEntryRelationship> i = this.relations.iterator(); i.hasNext();)
+				rs.addRelationship(i.next());
+			for (Iterator<RankedDocRef> i = this.references.iterator(); i.hasNext();)
+				rs.addRankedDocRef(i.next());
+			for (Iterator<Comment> i = this.comments.iterator(); i.hasNext();)
+				rs.addComment(i.next());
 			// set annotations
 			rs.setNoteSet(this.notes.getNoteSet());
 		} catch (Exception e) {
@@ -445,9 +393,6 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 		return rs;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public RichSequence makeRichSequence() throws BioException {
 		return (RichSequence) this.makeSequence();
 	}

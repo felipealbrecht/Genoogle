@@ -11,8 +11,15 @@ import bio.pih.util.NotOverlappedSymbolListWindowIterator;
 import bio.pih.util.OverlappedSymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIterator;
 
+/**
+ * @author albrecht
+ *
+ */
 public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 
+	/**
+	 * @throws IllegalSymbolException
+	 */
 	@Test
 	public void testOverlapedSymbolListWindowIterator() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGAC");
@@ -26,6 +33,9 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 	
+	/**
+	 * @throws IllegalSymbolException
+	 */
 	@Test
 	public void testWrongWindowsOverlapedSymbolListWindowIterator() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGAC");
@@ -39,6 +49,9 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 
+	/**
+	 * @throws IllegalSymbolException
+	 */
 	@Test
 	public void testSameSizeWindow() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGA");
@@ -48,6 +61,9 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 
+	/**
+	 * @throws IllegalSymbolException
+	 */
 	@Test
 	public void testLongerSizeWindow() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGG");
@@ -55,6 +71,9 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 
+	/**
+	 * @throws IllegalSymbolException
+	 */
 	@Test(expected = java.lang.IndexOutOfBoundsException.class)
 	public void testWindowNegativeSize() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGG");

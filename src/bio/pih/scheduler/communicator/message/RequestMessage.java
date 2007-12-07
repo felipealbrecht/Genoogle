@@ -76,7 +76,7 @@ public class RequestMessage extends Message {
 		return code;
 	}
 	
-	
+	@Override
 	public String toString() {
 		return "Searching " + query + " at " + database;
 	}

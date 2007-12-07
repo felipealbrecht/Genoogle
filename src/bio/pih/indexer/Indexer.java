@@ -16,7 +16,14 @@ import bio.pih.seq.op.LightweightStreamReader;
 import bio.pih.util.NotOverlappedSymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIterator;
 
+/**
+ * @author albrecht
+ */
 public class Indexer {
+	/**
+	 * Test the index generation
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		

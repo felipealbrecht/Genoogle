@@ -26,7 +26,6 @@ public class SchedulerCommunicator implements Communicator {
 	 * Constructor of the server.
 	 * 
 	 * @param scheduler
-	 * @throws IOException
 	 */
 	public SchedulerCommunicator(Scheduler scheduler) {
 		this.isReady = false;

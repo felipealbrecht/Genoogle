@@ -87,6 +87,7 @@ public class ResultMessage extends Message {
 	}
 	
 	
+	@Override
 	public String toString() {
 		return "ResultMessage (code: "+code+") from " + query + " agains " + db;
 	}

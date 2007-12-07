@@ -16,6 +16,10 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
+/**
+ * @author albrecht
+ *
+ */
 public class LightweightSymbolList extends AbstractSymbolList {
 	private static final long serialVersionUID = -3125317520644706924L;
 
@@ -34,6 +38,14 @@ public class LightweightSymbolList extends AbstractSymbolList {
 
 	// profile propose
 	private static int cacheCount = 0;
+	
+	/**
+	 * @param alphabet
+	 * @param parser
+	 * @param seqString
+	 * @return
+	 * @throws IllegalSymbolException
+	 */
 	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString) throws IllegalSymbolException {
 		LightweightSymbolList lwsl = getFromCache(alphabet, seqString);
 		if (lwsl != null) {
@@ -71,10 +83,14 @@ public class LightweightSymbolList extends AbstractSymbolList {
 		return lwsl;
 	}
 	
+	/**
+	 * @return
+	 */
 	static public int getCacheCount() {
 		return cacheCount;
 	}
 
+	@Override
 	public SymbolList subList(int start, int end) throws IndexOutOfBoundsException {
 		String substring = this.getString().substring(start - 1, end);
 		try {
@@ -85,14 +101,19 @@ public class LightweightSymbolList extends AbstractSymbolList {
 		}
 	}
 
+	@Override
 	public Alphabet getAlphabet() {
 		return alphabet;
 	}
 
+	@Override	
 	public int length() {
 		return length;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getString() {
 		return seqString;
 	}
@@ -134,6 +155,7 @@ public class LightweightSymbolList extends AbstractSymbolList {
 		return true;
 	}
 
+	@Override
 	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
 		try {
 			return symbols[pos - 1];
@@ -142,6 +164,9 @@ public class LightweightSymbolList extends AbstractSymbolList {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public Symbol[] getSymbols() {
 		return symbols;
 	}
@@ -173,6 +198,11 @@ public class LightweightSymbolList extends AbstractSymbolList {
 		return c.get(seqString);
 	}
 
+	/**
+	 * @param dna
+	 * @return
+	 * @throws IllegalSymbolException
+	 */
 	public static SymbolList createDNA(String dna) throws IllegalSymbolException {
 		SymbolTokenization p = null;
 		Alphabet alphabet = AlphabetManager.alphabetForName("DNA");
@@ -188,15 +218,19 @@ public class LightweightSymbolList extends AbstractSymbolList {
 	// TODO: To create static methods for Protein and RNA sequencess
 
 	/**
-	 * Simple inner class for channelling sequence notifications from a StreamParser.
+	 * Simple inner class for channeling sequence notifications from a StreamParser.
 	 */
 	private static class SSLIOListener extends SeqIOAdapter {
 		LightweightSymbolList lwsl = null;
 
+		/**
+		 * @param lwsl
+		 */
 		public SSLIOListener(LightweightSymbolList lwsl) {
 			this.lwsl = lwsl;
 		}
 
+		@Override
 		public void addSymbols(Alphabet alpha, Symbol[] syms, int start, int length) {
 			if (this.lwsl.symbols.length < this.lwsl.length + length) {
 				Symbol[] dest;

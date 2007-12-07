@@ -111,6 +111,7 @@ public class SearchInformation {
 		this.actualStep = step;		
 	}
 	
+	@Override
 	public String toString() {
 		return "Query '"+ query + "' against " + db + " ("+actualStep+")";
 	}

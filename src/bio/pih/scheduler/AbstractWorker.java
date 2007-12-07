@@ -16,8 +16,6 @@ import bio.pih.search.SearchInformation;
 import bio.pih.search.SearchParams;
 import bio.pih.search.SearchResult;
 
-import com.sun.org.apache.xml.internal.serializer.utils.Messages;
-
 /**
  * A interface that define a worker, or who will do the hard job
  * 
@@ -118,7 +116,7 @@ public abstract class AbstractWorker {
 
 	/**
 	 * @param m
-	 * TODO: Não usar {@link RequestMessage} e outros {@link Messages}!
+	 * TODO: Não usar {@link RequestMessage} e outros {@link Message}
 	 */
 	public void processMessage(Message m) {
 		switch (m.getKind()) {

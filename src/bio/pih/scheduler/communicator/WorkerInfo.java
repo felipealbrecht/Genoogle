@@ -115,6 +115,7 @@ public class WorkerInfo implements Communicator {
 		}
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Client ");

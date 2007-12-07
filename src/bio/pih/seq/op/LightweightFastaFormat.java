@@ -24,8 +24,9 @@ import bio.pih.seq.LightweightSymbolList;
 public class LightweightFastaFormat extends FastaFormat {
 
 	/**
-	 * {@inheritDoc} If namespace is null, then the namespace of the sequence in the fasta is used. If the namespace is null and so is the namespace of the sequence in the fasta, then the default namespace is used.
+	 * If namespace is null, then the namespace of the sequence in the fasta is used. If the namespace is null and so is the namespace of the sequence in the fasta, then the default namespace is used.
 	 */
+	@Override
 	public boolean readRichSequence(BufferedReader reader, SymbolTokenization symParser, RichSeqIOListener rsiol, Namespace ns) throws IllegalSymbolException, IOException, ParseException {
 
 		String line = reader.readLine();

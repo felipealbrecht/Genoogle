@@ -2,12 +2,21 @@ package bio.pih.util;
 
 import org.biojava.bio.symbol.SymbolList;
 
+/**
+ * @author albrecht
+ *
+ */
 public abstract class AbstractSymbolListWindowIterator implements SymbolListWindowIterator {
 
 	protected int windowSize;
 	protected int actualPos;
 	protected SymbolList sequence;
 
+	/**
+	 * @param sequence
+	 * @param windowSize
+	 * @throws IndexOutOfBoundsException
+	 */
 	public AbstractSymbolListWindowIterator(SymbolList sequence, int windowSize) throws IndexOutOfBoundsException {
 		if (windowSize < 1) {
 			throw new IndexOutOfBoundsException("The windowSize must has the size at least one");
