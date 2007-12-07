@@ -1,8 +1,16 @@
 package bio.pih.tests.scheduler;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.biojava.bio.dist.Distribution;
+import org.biojava.bio.dist.DistributionTools;
+import org.biojava.bio.dist.UniformDistribution;
+import org.biojava.bio.seq.DNATools;
 
 import bio.pih.scheduler.AbstractWorker;
+import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchInformation;
 import bio.pih.search.SearchResult;
 import bio.pih.search.SearchInformation.Step;
@@ -27,7 +35,7 @@ public class MockWorker extends AbstractWorker {
 
 	@Override
 	protected void doSearch(SearchInformation searchInformation) {
-		new Thread(new Searcher(searchInformation)).start();
+		new Thread(new Searcher(searchInformation), "Searcher at " + this.getIdentifier() ).start();
 	}
 
 	private class Searcher implements Runnable {
@@ -75,8 +83,20 @@ public class MockWorker extends AbstractWorker {
 				getRunningSearch().remove(searchInformation);
 				getSearchResult().add(searchResult);
 				System.out.println("Finished " + searchInformation + " in " + getIdentifier() );
-				// TODO spam a new thread to alert for send the results
+				
+				
+				List<AlignmentResult> results = new LinkedList<AlignmentResult>();
+				
+				Distribution dist = new UniformDistribution(DNATools.getDNA());
+				long seqs = Math.round(Math.random() * 10)+1; // 1 to 11
+				while (seqs-- > 0) {
+					results.add( new AlignmentResult(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs*2) );
+				}
 
+				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(),  results.toArray(new AlignmentResult[results.size()]));
+											
+				new Thread(resultSender).start();
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

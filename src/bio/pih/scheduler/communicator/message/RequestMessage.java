@@ -10,16 +10,19 @@ public class RequestMessage extends Message {
 
 	private String query;
 	private String database;
+	private int code;
 	
 	/**
-	 * A message represeting 
+	 * A message representing a request 
 	 * @param database - the database where the search will be performed
 	 * @param query - the query
+	 * @param code 
 	 * TODO: parameters like blodsum matrix or seed size.
 	 */
-	public RequestMessage(String database, String query) {
+	public RequestMessage(String database, String query, int code) {
 		this.database = database;
 		this.query = query;
+		this.code = code;
 	}
 	
 	@Override
@@ -58,6 +61,21 @@ public class RequestMessage extends Message {
 	public String getDatabase() {
 		return database;
 	}
+	
+	/**
+	 * @param code
+	 */
+	public void setCode(int code) {
+		this.code = code;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getCode() {
+		return code;
+	}
+	
 	
 	public String toString() {
 		return "Searching " + query + " at " + database;

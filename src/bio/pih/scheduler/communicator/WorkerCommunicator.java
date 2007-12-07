@@ -10,6 +10,7 @@ import java.net.Socket;
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.scheduler.communicator.message.LoginMessage;
 import bio.pih.scheduler.communicator.message.Message;
+import bio.pih.scheduler.communicator.message.ShutdownMessage;
 import bio.pih.scheduler.communicator.message.WelcomeMessage;
 
 /**
@@ -44,7 +45,7 @@ public class WorkerCommunicator implements Communicator {
 	}
 
 	@Override
-	public Message reciveMessage() throws IOException, ClassNotFoundException {
+	public Message receiveMessage() throws IOException, ClassNotFoundException {
 		return (Message) ois.readObject();
 	}
 
@@ -87,12 +88,15 @@ public class WorkerCommunicator implements Communicator {
 				}
 			}
 		};
-		new Thread(r).start();
+		new Thread(r, "Worker Communicator - " + port).start();
 	}
 
-	private boolean processMessage(Message m) {
+	private boolean processMessage(Message m) throws IOException {
 		switch (m.getKind()) {
 		case SHUTDOWN:
+			// reply shutdown "ack"
+			this.sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);
+			// save the internal status and shutdown.
 			this.stop();
 			break;
 

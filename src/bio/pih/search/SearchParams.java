@@ -8,15 +8,18 @@ public class SearchParams {
 
 	String database;
 	String query;
+	int code;
 	
 	
 	/**
 	 * @param database
 	 * @param query
+	 * @param code 
 	 */
-	public SearchParams(String database, String query) {
+	public SearchParams(String database, String query, int code) {
 		this.database = database;
 		this.query = query;
+		this.code = code;
 	}
 	
 	/**
@@ -30,6 +33,13 @@ public class SearchParams {
 	 */
 	public String getQuery() {
 		return query;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getCode() {
+		return code;
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 
@@ -16,24 +17,27 @@ import bio.pih.scheduler.communicator.message.RequestMessage;
  */
 public class WorkerInfo implements Communicator {
 	volatile boolean running;
+	Scheduler scheduler;
 	int identifier;
-	ObjectInputStream input;
-	ObjectOutputStream output;
+	ObjectInputStream ois;
+	ObjectOutputStream oos;
 	Socket socket;
 	int searchesRunning;
 	int availableProcessors;
 
 	/**
+	 * @param scheduler
 	 * @param identifier
 	 * @param availableProcessors
 	 * @param input
 	 * @param output
 	 * @param socket
 	 */
-	public WorkerInfo(int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
+	public WorkerInfo(Scheduler scheduler, int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
+		this.scheduler = scheduler;
 		this.identifier = identifier;
-		this.input = input;
-		this.output = output;
+		this.ois = input;
+		this.oos = output;
 		this.socket = socket;
 		this.availableProcessors = availableProcessors;
 		this.searchesRunning = 0;
@@ -44,10 +48,9 @@ public class WorkerInfo implements Communicator {
 		Runnable thread = new Runnable() {
 			public void run() {
 				try {
+					running = true;
 					while (running) {
-						if (incomingFromWorker()) {
-							putputToWorker();
-						}
+						receiveMessage();
 					}
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
@@ -63,31 +66,33 @@ public class WorkerInfo implements Communicator {
 
 			}
 		};
-		new Thread(thread).run();
+		new Thread(thread, "WorkerInfo - " + socket.getPort()).start();
 	}
 
 	@Override
-	public Message reciveMessage() throws IOException, ClassNotFoundException {
-		Message m = (Message) this.input.readObject();
+	public Message receiveMessage() throws IOException, ClassNotFoundException {
+		Message m = (Message) this.ois.readObject();
+		switch (m.getKind()) {
+		case SHUTDOWN:
+			// Received a "shutdown ack" message, so shutdown.
+			this.stop();
+			break;
+
+		default:
+			processIncomingMessage(m);
+			break;
+		}
 		return m;
 	}
 
-	private boolean incomingFromWorker() throws IOException, ClassNotFoundException {
-		Message m;
-		boolean data = false;
-		while ((m = reciveMessage()) != null) {
-			data |= processIncomingMessage(m);
-		}
-		return data;
-	}
-
-	private boolean processIncomingMessage(Message m) {
-		System.out.println("Processando incoming from worker: " + m);
-		return true;
-	}
-
-	private boolean putputToWorker() {
-		return false;
+	private void processIncomingMessage(final Message m) {
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				scheduler.processMessage(identifier, m);
+			}
+		};
+		new Thread(r, "Processing messaga " + m).start();
 	}
 
 	/**
@@ -104,8 +109,7 @@ public class WorkerInfo implements Communicator {
 	 */
 	public void sendMessage(Message m) throws IOException {
 		try {
-			//System.out.println("vai enviar " + m);
-			this.output.writeObject(m);
+			this.oos.writeObject(m);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

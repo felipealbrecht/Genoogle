@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
 
+import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.communicator.message.LoginMessage;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
@@ -14,24 +13,24 @@ import bio.pih.scheduler.communicator.message.ShutdownMessage;
 import bio.pih.scheduler.communicator.message.WelcomeMessage;
 
 /**
- * A server class where the workers will connect. 
+ * A server class where the workers will connect.
+ * 
  * @author albrecht
- *
+ * 
  */
 public class SchedulerCommunicator implements Communicator {
-	private List<WorkerInfo> workers;
-	private List<String> wList;
+	private Scheduler scheduler;
 	volatile boolean isReady;
 
 	/**
 	 * Constructor of the server.
-	 * @param wList workers must be a string: "address:port" 
+	 * 
+	 * @param scheduler
 	 * @throws IOException
 	 */
-	public SchedulerCommunicator(List<String>  wList) throws IOException {
-		this.workers = new LinkedList<WorkerInfo>();
-		this.wList = wList;
+	public SchedulerCommunicator(Scheduler scheduler) {
 		this.isReady = false;
+		this.scheduler = scheduler;
 	}
 
 	/**
@@ -42,28 +41,24 @@ public class SchedulerCommunicator implements Communicator {
 	public synchronized void start() throws IOException {
 		Runnable r = new Runnable() {
 			public void run() {
-				ObjectInputStream input = null;
-				ObjectOutputStream output = null;
-				WorkerInfo workerInfo = null;
-				LoginMessage message;
-				Socket socket = null;
+
 				try {
-					for (String s: wList) {
+					for (String s : getScheduler().getWorkerAddress()) {
 						String[] split = s.split(":");
 						System.out.println("Conectando-se ao trabalhador: " + split[0] + " " + split[1]);
-						socket = new Socket(split[0], Integer.parseInt(split[1]));
-																	
-						output = new ObjectOutputStream(socket.getOutputStream());
-						output.flush();
-						input = new ObjectInputStream(socket.getInputStream());
+						Socket socket = new Socket(split[0], Integer.parseInt(split[1]));
 
-						output.writeObject(new WelcomeMessage(workers.size() + 1));
-						message = (LoginMessage) input.readObject();
+						ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+						output.flush();
+						ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+
+						output.writeObject(new WelcomeMessage(getScheduler().getWorkers().size() + 1));
+						LoginMessage message = (LoginMessage) input.readObject();
 						System.out.println(message + " " + socket.getRemoteSocketAddress());
 
-						workerInfo = new WorkerInfo(workers.size() + 1, message.getAvailableProcessors(), input, output, socket);
+						WorkerInfo workerInfo = new WorkerInfo(getScheduler(), getScheduler().getWorkers().size() + 1, message.getAvailableProcessors(), input, output, socket);
 						workerInfo.start();
-						workers.add(workerInfo);
+						getScheduler().getWorkers().add(workerInfo);
 					}
 					isReady = true;
 				} catch (IOException e) {
@@ -82,16 +77,8 @@ public class SchedulerCommunicator implements Communicator {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);		
+		sendMessage(ShutdownMessage.SHUTDOWN_MESSAGE);
 		isReady = false;
-	}
-
-	/**
-	 * Return a <code>List</code> of workers connected
-	 * @return <code>List</code> of workers connected
-	 */
-	public List<WorkerInfo> getWorkers() {
-		return workers;
 	}
 
 	/**
@@ -101,25 +88,35 @@ public class SchedulerCommunicator implements Communicator {
 	 * @throws IOException
 	 */
 	public synchronized void sendRequest(RequestMessage requestMessage) throws IOException {
-		for (WorkerInfo worker : getWorkers()) {
+		for (WorkerInfo worker : getScheduler().getWorkers()) {
 			// at each one, create a simple thread to send message
 			worker.request(requestMessage);
 		}
 	}
 
-	@Override
-	public Message reciveMessage() throws IOException, ClassNotFoundException {
-		// TODO Read the messages addressed to its
+	/**
+	 * @return the {@link Scheduler} that this communicator is related
+	 */
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
+
+	/**
+	 * It is not usable, because the {@link SchedulerCommunicator} communicate with the {@link WorkerCommunicator} by a point to point connection between each one.
+	 * 
+	 * @return <b>always</b> <code>null</code>
+	 */
+	public Message receiveMessage() throws IOException, ClassNotFoundException {
 		return null;
 	}
 
 	@Override
 	public void sendMessage(Message message) throws IOException {
-		for (WorkerInfo worker : getWorkers()) {
+		for (WorkerInfo worker : getScheduler().getWorkers()) {
 			worker.sendMessage(message);
-		}		
+		}
 	}
-	
+
 	@Override
 	public boolean isReady() {
 		return isReady;

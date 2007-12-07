@@ -27,9 +27,14 @@ public abstract class Message implements Serializable {
 		WELCOME,
 		
 		/**
-		 * A search request seding by the server requesting a search to the clients.
+		 * A search request sending by the server requesting a search to the clients.
 		 */
 		REQUEST,
+		
+		/**
+		 * A message containing the search result of a worker
+		 */
+		RESULT,
 		
 		/**
 		 * Message send from the server to the workers for them do system shutdown.

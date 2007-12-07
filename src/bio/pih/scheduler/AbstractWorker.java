@@ -10,9 +10,13 @@ import bio.pih.scheduler.communicator.Communicator;
 import bio.pih.scheduler.communicator.WorkerCommunicator;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
+import bio.pih.scheduler.communicator.message.ResultMessage;
+import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchInformation;
 import bio.pih.search.SearchParams;
 import bio.pih.search.SearchResult;
+
+import com.sun.org.apache.xml.internal.serializer.utils.Messages;
 
 /**
  * A interface that define a worker, or who will do the hard job
@@ -37,9 +41,9 @@ public abstract class AbstractWorker {
 	 */
 	public AbstractWorker(int port) throws IOException, ClassNotFoundException {
 		this.communicator = new WorkerCommunicator(this, port);
-		this.runningSearch = (List<SearchInformation>) Collections.synchronizedList(new LinkedList<SearchInformation>());
-		this.waitingList = (List<SearchInformation>) Collections.synchronizedList(new LinkedList<SearchInformation>());
-		this.resultSearch = (List<SearchResult>) Collections.synchronizedList(new LinkedList<SearchResult>());
+		this.runningSearch = Collections.synchronizedList(new LinkedList<SearchInformation>());
+		this.waitingList = Collections.synchronizedList(new LinkedList<SearchInformation>());
+		this.resultSearch = Collections.synchronizedList(new LinkedList<SearchResult>());
 		this.maxSimultaneousSearch = availableProcessors;
 	}
 
@@ -99,7 +103,7 @@ public abstract class AbstractWorker {
 	 * @param params
 	 */
 	public void requestSearch(SearchParams params) {
-		SearchInformation si = new SearchInformation(params.getDatabase(), params.getQuery());
+		SearchInformation si = new SearchInformation(params.getDatabase(), params.getQuery(), params.getCode());
 		if (canSearchOrQueue(si) != null) {
 			doSearch(si);
 		} else {
@@ -114,6 +118,7 @@ public abstract class AbstractWorker {
 
 	/**
 	 * @param m
+	 * TODO: Não usar {@link RequestMessage} e outros {@link Messages}!
 	 */
 	public void processMessage(Message m) {
 		System.out.println("QUERY: " + m + " " + getIdentifier());
@@ -129,7 +134,7 @@ public abstract class AbstractWorker {
 	}
 
 	private SearchParams createSearchParams(RequestMessage m) {
-		return new SearchParams(m.getDatabase(), m.getQuery());
+		return new SearchParams(m.getDatabase(), m.getQuery(), m.getCode());
 	}
 
 	/**
@@ -191,6 +196,34 @@ public abstract class AbstractWorker {
 			return searchInformation;
 		}
 		return null;
+	}
+	
+	protected class ResultSender implements Runnable {
+		private String db;
+		private String query;
+		private int code;
+		private AlignmentResult[] alignmentResult;
+		
+		/**
+		 * @param db 
+		 * @param query 
+		 * @param code 
+		 * @param alignemtnResult a
+		 */
+		public ResultSender(String db, String query, int code, AlignmentResult[] alignemtnResult) {
+			this.db = db;
+			this.query = query;
+			this.code = code;
+			this.alignmentResult = alignemtnResult;
+		}
+		
+		public void run() {
+			try {
+				communicator.sendMessage(new ResultMessage(db, query, code, alignmentResult));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}				
 	}
 
 }

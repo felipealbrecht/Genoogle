@@ -9,6 +9,7 @@ public class SearchInformation {
 	String db;
 	String query;
 	Step actualStep;
+	int code;
 	
 	/**
 	 * The step where the search is. 
@@ -44,10 +45,12 @@ public class SearchInformation {
 	/**
 	 * @param db
 	 * @param query
+	 * @param code 
 	 */
-	public SearchInformation(String db, String query) {
+	public SearchInformation(String db, String query, int code) {
 		this.db = db;
 		this.query = query;
+		this.code = code;
 		this.actualStep = Step.NOT_INITIALIZED;
 	}
 	
@@ -78,6 +81,20 @@ public class SearchInformation {
 	 */
 	public String getQuery() {
 		return query;
+	}
+	
+	/**
+	 * @param code
+	 */
+	public void setCode(int code) {
+		this.code = code;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getCode() {
+		return code;
 	}
 	
 	/**
