@@ -51,7 +51,6 @@ public class MockWorker extends AbstractWorker {
 		@Override
 		public void run() {
 			threadsCount++;
-			System.out.println("Sao " + threadsCount + " threads");
 			doSearch();
 			while ((this.searchInformation = getNextSearchInformation()) != null) {				
 				doSearch();
@@ -64,6 +63,7 @@ public class MockWorker extends AbstractWorker {
 		 */
 		public void doSearch() {
 			try {		
+				System.out.println("Sao " + threadsCount + " threads");
 				System.out.println("doing search: " + this.searchInformation);
 				this.searchInformation.setActualStep(Step.SEEDS);
 				long sleepTime = Math.round(Math.random() * 1000);
