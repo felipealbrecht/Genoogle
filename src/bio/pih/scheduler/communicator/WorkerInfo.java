@@ -107,7 +107,7 @@ public class WorkerInfo implements Communicator {
 	 * @param m
 	 * @throws IOException
 	 */
-	public void sendMessage(Message m) throws IOException {
+	public synchronized void sendMessage(Message m) throws IOException {
 		try {
 			this.oos.writeObject(m);
 		} catch (IOException e) {

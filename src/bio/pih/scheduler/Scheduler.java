@@ -178,7 +178,7 @@ public class Scheduler {
 		ResultMessage[] partialResults;
 		String database;
 		String query;
-		long time;
+		long startTime;
 		int code;
 		int totalAlignments;
 
@@ -191,7 +191,7 @@ public class Scheduler {
 		public Searching(int code, String database, String query, int qtdWorker) {
 			this.database = database;
 			this.query = query;
-			this.time = System.currentTimeMillis();
+			this.startTime = System.currentTimeMillis();
 			this.partialResults = new ResultMessage[qtdWorker];
 			this.remainsResult = qtdWorker;
 			this.code = code;

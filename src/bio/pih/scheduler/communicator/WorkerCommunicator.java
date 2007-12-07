@@ -50,7 +50,7 @@ public class WorkerCommunicator implements Communicator {
 	}
 
 	@Override
-	public void sendMessage(Message message) throws IOException {
+	public synchronized void sendMessage(Message message) throws IOException {
 		oos.writeObject(message);
 	}
 

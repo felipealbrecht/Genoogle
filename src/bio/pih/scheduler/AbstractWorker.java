@@ -121,7 +121,6 @@ public abstract class AbstractWorker {
 	 * TODO: Não usar {@link RequestMessage} e outros {@link Messages}!
 	 */
 	public void processMessage(Message m) {
-		System.out.println("QUERY: " + m + " " + getIdentifier());
 		switch (m.getKind()) {
 		case REQUEST:
 			SearchParams sp = createSearchParams((RequestMessage) m);
