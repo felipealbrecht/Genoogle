@@ -41,6 +41,7 @@ public class Scheduler {
 		waitingList = Collections.synchronizedList(new LinkedList<Searching>());
 		searches = Collections.synchronizedMap(new HashMap<Integer, Searching>());
 
+		
 	}
 
 	/**
@@ -66,7 +67,9 @@ public class Scheduler {
 	 * @return <code>true</code> if the worker was removed
 	 */
 	public boolean removeWorker(WorkerInfo worker) {
-		return this.getWorkers().remove(worker);
+		synchronized (this.getWorkers()) {
+			return this.getWorkers().remove(worker);			
+		}
 	}
 
 	/**
@@ -74,6 +77,13 @@ public class Scheduler {
 	 */
 	public String[] getWorkerAddress() {
 		return workerAddress;
+	}
+	
+	/**
+	 * @return all the {@link Searching} that are being processed or still save
+	 */
+	public Map<Integer, Searching> getSearches() {
+		return searches;
 	}
 
 	/**
@@ -125,7 +135,7 @@ public class Scheduler {
 	public Searching doSearch(String database, String query) throws IOException {
 		totalSearchs++;
 		Searching searching = new Searching(totalSearchs, database, query, getWorkers().size());
-		searches.put(totalSearchs, searching);
+		getSearches().put(totalSearchs, searching);
 		waitingList.add(searching);
 
 		communicator.sendMessage(new RequestMessage(database, query, totalSearchs));
@@ -138,7 +148,7 @@ public class Scheduler {
 	 * @param message
 	 */
 	public synchronized void processResultMessage(int workerIdentifier, ResultMessage message) {
-		Searching searching = searches.get(message.getCode());
+		Searching searching = getSearches().get(message.getCode());
 		searching.addPartialResult(workerIdentifier, message);
 
 		if (searching.isDone()) {
@@ -156,8 +166,7 @@ public class Scheduler {
 				};
 			});
 
-			// TODO: Report the alignments!
-
+			searching.setAlignments(alignments);
 			getWaitingList().remove(searching);
 		}
 	}
@@ -192,6 +201,7 @@ public class Scheduler {
 	 */
 	public class Searching {
 		volatile int remainsResult;
+		AlignmentResult[] alignments;
 		ResultMessage[] partialResults;
 		String database;
 		String query;
@@ -243,17 +253,33 @@ public class Scheduler {
 		}
 
 		/**
-		 * @return
+		 * @return the {@link ResultMessage} received from the {@link AbstractWorker} for this search 
 		 */
 		public ResultMessage[] getPartialResults() {
 			return partialResults;
 		}
 
 		/**
-		 * @return
+		 * @return the total of alignments found for this search
 		 */
 		public int getTotalAlignments() {
 			return totalAlignments;
+		}
+		
+		/**
+		 * Set the alignments merged and sorted 
+		 * @param alignments
+		 */
+		public void setAlignments(AlignmentResult[] alignments) {
+			this.alignments = alignments;
+		}
+		
+		/**
+		 *  Get the alignments from this search
+		 * @return The alignments merged and sorted
+		 */
+		public AlignmentResult[] getAlignments() {
+			return alignments;
 		}
 	}
 

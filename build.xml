@@ -88,7 +88,7 @@
 	</target>
 
 	<target name="start-scheduler" depends="package">
-		<java classname="bio.pih.Genoogle">
+		<java classname="bio.pih.Genoogle" fork="true">
 			<arg value="-s" />
 			<arg value="files/workers" />
 			<classpath>
@@ -99,7 +99,7 @@
 	</target>
 
 	<target name="start-worker" depends="package">
-		<java classname="bio.pih.Genoogle">
+		<java classname="bio.pih.Genoogle" fork="true" spawn="true">
 			<arg value="-w" />
 			<arg value="5000" />
 			<classpath>
@@ -107,7 +107,17 @@
 				<pathelement path="${classpath}" />
 			</classpath>
 		</java>
+		
+		<java classname="bio.pih.Genoogle" fork="true" spawn="true">
+			<arg value="-w" />
+			<arg value="5001" />
+			<classpath>
+				<pathelement location="${jar.genoogle}" />
+				<pathelement path="${classpath}" />
+			</classpath>
+		</java>
 	</target>
+
 
 	<!-- Runs tests if the Ant optional JUnit support is available -->
 	<target name="run-tests" depends="compile">

@@ -9,6 +9,7 @@ import java.util.List;
 
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.scheduler.Scheduler;
+import bio.pih.scheduler.interfaces.CommandLine;
 import bio.pih.tests.scheduler.MockWorker;
 
 /**
@@ -44,6 +45,8 @@ public class Genoogle {
 			}
 			Scheduler s = new Scheduler(workers.toArray(new String[workers.size()]));
 			s.start();
+			CommandLine commandLine = new CommandLine(s, System.in);
+			new Thread(commandLine, "Command Line").start();
 			
 		} else if (args[0].equals("-w")) {
 			int port = 5000;			
