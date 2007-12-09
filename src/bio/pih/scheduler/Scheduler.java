@@ -36,8 +36,8 @@ public class Scheduler {
 	 */
 	public Scheduler(String[] workerAddress) {
 		this.workerAddress = workerAddress;
-		this.workers = new LinkedList<WorkerInfo>();
 		communicator = new SchedulerCommunicator(this);
+		this.workers = Collections.synchronizedList(new LinkedList<WorkerInfo>());
 		waitingList = Collections.synchronizedList(new LinkedList<Searching>());
 		searches = Collections.synchronizedMap(new HashMap<Integer, Searching>());
 
@@ -60,6 +60,16 @@ public class Scheduler {
 	}
 
 	/**
+	 * Remove a worker from this scheduler.
+	 * 
+	 * @param worker
+	 * @return <code>true</code> if the worker was removed
+	 */
+	public boolean removeWorker(WorkerInfo worker) {
+		return this.getWorkers().remove(worker);
+	}
+
+	/**
 	 * @return a <code>Array</code> containing the workers addresses.
 	 */
 	public String[] getWorkerAddress() {
@@ -73,6 +83,13 @@ public class Scheduler {
 	 */
 	public boolean isReady() {
 		return communicator.isReady();
+	}
+
+	/**
+	 * @return if the this scheduler has some worker.
+	 */
+	public boolean hasWorker() {
+		return getWorkers().size() > 0;
 	}
 
 	/**
@@ -138,7 +155,7 @@ public class Scheduler {
 					return o2.getPontuation() - o1.getPontuation();
 				};
 			});
-			
+
 			// TODO: Report the alignments!
 
 			getWaitingList().remove(searching);
@@ -171,7 +188,7 @@ public class Scheduler {
 	}
 
 	/**
-	 * @author albrecht TODO: verify if it have concurrently access, for synchronize it
+	 * @author albrecht 
 	 */
 	public class Searching {
 		volatile int remainsResult;

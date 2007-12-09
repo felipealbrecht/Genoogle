@@ -53,7 +53,6 @@ public class Indexer {
 			// no fasta sequences in the file
 			ex.printStackTrace();
 		} catch (BioException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException ex) {
 			// problem reading file

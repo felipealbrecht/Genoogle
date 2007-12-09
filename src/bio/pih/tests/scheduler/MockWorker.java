@@ -12,7 +12,6 @@ import org.biojava.bio.seq.DNATools;
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchInformation;
-import bio.pih.search.SearchResult;
 import bio.pih.search.SearchInformation.Step;
 
 /**
@@ -22,8 +21,8 @@ import bio.pih.search.SearchInformation.Step;
  */
 public class MockWorker extends AbstractWorker {
 
-	
 	volatile int threadsCount = 0;
+
 	/**
 	 * @param port
 	 * @throws IOException
@@ -35,7 +34,7 @@ public class MockWorker extends AbstractWorker {
 
 	@Override
 	protected void doSearch(SearchInformation searchInformation) {
-		new Thread(new Searcher(searchInformation), "Searcher at " + this.getIdentifier() ).start();
+		new Thread(new Searcher(searchInformation), "Searcher at " + this.getIdentifier()).start();
 	}
 
 	private class Searcher implements Runnable {
@@ -51,10 +50,11 @@ public class MockWorker extends AbstractWorker {
 		@Override
 		public void run() {
 			threadsCount++;
-			doSearch();
-			while ((this.searchInformation = getNextSearchInformation()) != null) {				
+			
+			do {
 				doSearch();
-			}
+			} while ((this.searchInformation = getNextSearchInformation(this.searchInformation)) != null);
+			
 			threadsCount--;
 		}
 
@@ -62,7 +62,7 @@ public class MockWorker extends AbstractWorker {
 		 * @param searchInformation
 		 */
 		public void doSearch() {
-			try {		
+			try {
 				System.out.println("Sao " + threadsCount + " threads");
 				System.out.println("doing search: " + this.searchInformation);
 				this.searchInformation.setActualStep(Step.SEEDS);
@@ -78,25 +78,20 @@ public class MockWorker extends AbstractWorker {
 				Thread.sleep(sleepTime);
 
 				this.searchInformation.setActualStep(Step.FINISHED);
-				SearchResult searchResult = new SearchResult();
 
-				getRunningSearch().remove(searchInformation);
-				getSearchResult().add(searchResult);
-				System.out.println("Finished " + searchInformation + " in " + getIdentifier() );
-				
-				
 				List<AlignmentResult> results = new LinkedList<AlignmentResult>();
-				
+
 				Distribution dist = new UniformDistribution(DNATools.getDNA());
-				long seqs = Math.round(Math.random() * 10)+1; // 1 to 11
+				long seqs = Math.round(Math.random() * 10) + 1; // 1 to 11
 				while (seqs-- > 0) {
-					results.add( new AlignmentResult(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs*2) );
+					results.add(new AlignmentResult(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs * 2));
 				}
 
-				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(),  results.toArray(new AlignmentResult[results.size()]));
-											
+				System.out.println("Finished " + searchInformation + " in " + getIdentifier());
+				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(), results.toArray(new AlignmentResult[results.size()]));
+
 				new Thread(resultSender).start();
-				
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

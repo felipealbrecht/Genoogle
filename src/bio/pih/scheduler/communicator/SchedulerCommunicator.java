@@ -110,7 +110,7 @@ public class SchedulerCommunicator implements Communicator {
 	}
 
 	@Override
-	public void sendMessage(Message message) throws IOException {
+	public void sendMessage(Message message) throws IOException {	
 		for (WorkerInfo worker : getScheduler().getWorkers()) {
 			worker.sendMessage(message);
 		}

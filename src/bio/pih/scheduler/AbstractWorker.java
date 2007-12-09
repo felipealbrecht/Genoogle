@@ -14,7 +14,6 @@ import bio.pih.scheduler.communicator.message.ResultMessage;
 import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchInformation;
 import bio.pih.search.SearchParams;
-import bio.pih.search.SearchResult;
 
 /**
  * A interface that define a worker, or who will do the hard job
@@ -27,8 +26,7 @@ public abstract class AbstractWorker {
 	int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
 	private List<SearchInformation> waitingList; // search queue
 	private List<SearchInformation> runningSearch;
-	private List<SearchResult> resultSearch;
-	private Communicator communicator;
+	private WorkerCommunicator communicator;
 	private int identifier;
 	volatile private int maxSimultaneousSearch;
 
@@ -41,7 +39,6 @@ public abstract class AbstractWorker {
 		this.communicator = new WorkerCommunicator(this, port);
 		this.runningSearch = Collections.synchronizedList(new LinkedList<SearchInformation>());
 		this.waitingList = Collections.synchronizedList(new LinkedList<SearchInformation>());
-		this.resultSearch = Collections.synchronizedList(new LinkedList<SearchResult>());
 		this.maxSimultaneousSearch = availableProcessors;
 	}
 
@@ -52,6 +49,21 @@ public abstract class AbstractWorker {
 	 */
 	public void start() throws IOException {
 		this.communicator.start();
+	}
+
+	/**
+	 * Stop the worker.
+	 * 
+	 * <p>
+	 * All searching will continue and no information will be lost but they will not send or receive data.
+	 * <p>
+	 * TODO: a allStop(), that will stop all search too.
+	 * 
+	 * @throws IOException
+	 */
+	public void stop() throws IOException {
+		System.out.println("Stoping worker " + getIdentifier());
+		this.communicator.stop();
 	}
 
 	/**
@@ -116,7 +128,7 @@ public abstract class AbstractWorker {
 
 	/**
 	 * @param m
-	 * TODO: Não usar {@link RequestMessage} e outros {@link Message}
+	 *            TODO: Não usar {@link RequestMessage} e outros {@link Message}
 	 */
 	public void processMessage(Message m) {
 		switch (m.getKind()) {
@@ -135,21 +147,28 @@ public abstract class AbstractWorker {
 	}
 
 	/**
-	 * @return <code> if the worker is ready (Database, index and others stuffs loaded)
+	 * @return <code>true</code> if the worker is ready (Database, index and others stuffs loaded)
 	 */
 	public boolean isReady() {
 		return communicator.isReady();
 	}
 
 	/**
-	 * @return
+	 * @return <code>true</code> if this worker is connected with the scheduler 
+	 */
+	public boolean isConnected() {
+		return communicator.isConnected();
+	}
+	
+	/**
+	 * @return a {@link List} containing {@link SearchInformation} of all search that are waiting to be processed.
 	 */
 	public List<SearchInformation> getWaitingList() {
 		return waitingList;
 	}
 
 	/**
-	 * @return
+	 * @return the amount of search that can be done concurrently
 	 */
 	public int getMaxSimultaneousSearch() {
 		return maxSimultaneousSearch;
@@ -163,30 +182,29 @@ public abstract class AbstractWorker {
 	}
 
 	/**
-	 * @return {@link SearchResult} of the search
-	 */
-	public List<SearchResult> getSearchResult() {
-		return resultSearch;
-	}
-
-	/**
 	 * Check if a search can be performed or the information must be put in the queue
+	 * 
 	 * @param searchInformation
 	 * @return {@link SearchInformation} if can search him or <code>null</code>.
 	 */
 	protected synchronized SearchInformation canSearchOrQueue(SearchInformation searchInformation) {
-		if (getRunningSearch().size() < getMaxSimultaneousSearch()) {			
+		if (getRunningSearch().size() < getMaxSimultaneousSearch()) {
 			getRunningSearch().add(searchInformation);
 			return searchInformation;
 		}
-		return null;		
+		return null;
 	}
-	
+
 	/**
-	 * Get the next search to be performed
+	 * Get the next search to be performed and remove the last search did in atomic form.
+	 * 
+	 * @param lastSearch -
+	 *            the least search did by this thread.
 	 * @return the next {@link SearchInformation} in the queue
 	 */
-	protected synchronized SearchInformation getNextSearchInformation() {
+	protected synchronized SearchInformation getNextSearchInformation(SearchInformation lastSearch) {
+		assert (getRunningSearch().remove(lastSearch) == true);
+
 		if (getWaitingList().size() > 0) {
 			SearchInformation searchInformation = getWaitingList().remove(0);
 			getRunningSearch().add(searchInformation);
@@ -194,18 +212,22 @@ public abstract class AbstractWorker {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Send the search result to the scheduler.
+	 */
 	protected class ResultSender implements Runnable {
 		private String db;
 		private String query;
 		private int code;
 		private AlignmentResult[] alignmentResult;
-		
+
 		/**
-		 * @param db 
-		 * @param query 
-		 * @param code 
-		 * @param alignemtnResult a
+		 * @param db
+		 * @param query
+		 * @param code
+		 * @param alignemtnResult
+		 *            a
 		 */
 		public ResultSender(String db, String query, int code, AlignmentResult[] alignemtnResult) {
 			this.db = db;
@@ -213,14 +235,14 @@ public abstract class AbstractWorker {
 			this.code = code;
 			this.alignmentResult = alignemtnResult;
 		}
-		
+
 		public void run() {
 			try {
 				communicator.sendMessage(new ResultMessage(db, query, code, alignmentResult));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}				
+		}
 	}
 
 }

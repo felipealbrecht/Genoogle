@@ -76,6 +76,7 @@ public class WorkerInfo implements Communicator {
 		case SHUTDOWN:
 			// Received a "shutdown ack" message, so shutdown.
 			this.stop();
+			this.scheduler.removeWorker(this);
 			break;
 
 		default:
