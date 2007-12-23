@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.naming.LimitExceededException;
+
 import bio.pih.scheduler.communicator.Communicator;
 import bio.pih.scheduler.communicator.WorkerCommunicator;
 import bio.pih.scheduler.communicator.message.Message;
@@ -176,8 +178,12 @@ public abstract class AbstractWorker {
 
 	/**
 	 * @param maxSimultaneousSearch
+	 * @throws LimitExceededException when the value is lower than one
 	 */
-	public void setMaxSimultaneousSearchs(int maxSimultaneousSearch) {
+	public void setMaxSimultaneousSearchs(int maxSimultaneousSearch) throws LimitExceededException {
+		if (maxSimultaneousSearch < 1) {
+			throw new LimitExceededException("The maxSimultaneousSearch must be one or more");
+		}
 		this.maxSimultaneousSearch = maxSimultaneousSearch;
 	}
 

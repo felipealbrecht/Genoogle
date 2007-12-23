@@ -51,4 +51,9 @@ public class AlignmentResult implements Serializable {
 	public void setSequence(Sequence sequence) {
 		this.sequence = sequence;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getPontuation() + "\t" + this.getSequence();
+	}
 }
