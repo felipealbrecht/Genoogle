@@ -1,4 +1,4 @@
-package bio.pih.indexer;
+package bio.pih.index;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

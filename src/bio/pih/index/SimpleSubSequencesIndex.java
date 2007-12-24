@@ -1,4 +1,4 @@
-package bio.pih.indexer;
+package bio.pih.index;
 
 import java.io.Serializable;
 import java.util.Hashtable;
@@ -12,7 +12,7 @@ import org.biojava.bio.symbol.SymbolList;
  * @author albrecht
  *
  */
-public class SimpleSubSequencesIndex implements SubSequecesIndex, Serializable {
+public class SimpleSubSequencesIndex implements Serializable {
 	
 	private static final long serialVersionUID = 7353450597201554133L;
 	
@@ -34,7 +34,6 @@ public class SimpleSubSequencesIndex implements SubSequecesIndex, Serializable {
 		this.index = new Hashtable<SymbolList, List<SubSequenceInfo>>();
 	}
 	
-	@Override
 	public void addSubSequence(SymbolList subSymbolList, SubSequenceInfo info) {
 		List<SubSequenceInfo> infos = index.get(subSymbolList);
 		if (infos == null) {
@@ -46,7 +45,6 @@ public class SimpleSubSequencesIndex implements SubSequecesIndex, Serializable {
 		infos.add(info);
 	}
 
-	@Override
 	public List<SubSequenceInfo> retrievePosition(SymbolList subSymbolList) {
 		return index.get(subSymbolList);
 	}
