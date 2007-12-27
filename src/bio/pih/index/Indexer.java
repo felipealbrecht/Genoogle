@@ -13,8 +13,8 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
-import bio.pih.util.NotOverlappedSymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIterator;
+import bio.pih.util.SymbolListWindowIteratorFactory;
 
 /**
  * @author albrecht
@@ -38,7 +38,7 @@ public class Indexer {
 			while (readFastaDNA.hasNext()) {				
 				Sequence s = readFastaDNA.nextSequence();
 				System.out.println("Loading " + s.getName());
-				SymbolListWindowIterator iterator = new NotOverlappedSymbolListWindowIterator(s, subSequenceLenght);				                                           
+				SymbolListWindowIterator iterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(s, subSequenceLenght);				                                           
 				while (iterator.hasNext()) {
 					SymbolList subSymbolList= iterator.next();
 					SubSequenceInfo info = new SubSequenceInfo(s, subSymbolList, iterator.getActualPos(), iterator.getWindowSize());

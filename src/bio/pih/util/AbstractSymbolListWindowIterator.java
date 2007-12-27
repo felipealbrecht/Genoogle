@@ -12,17 +12,18 @@ public abstract class AbstractSymbolListWindowIterator implements SymbolListWind
 	protected int actualPos;
 	protected SymbolList sequence;
 
+	
 	/**
 	 * @param sequence
-	 * @param windowSize
+	 * @param windowLength
 	 * @throws IndexOutOfBoundsException
 	 */
-	public AbstractSymbolListWindowIterator(SymbolList sequence, int windowSize) throws IndexOutOfBoundsException {
-		if (windowSize < 1) {
+	public AbstractSymbolListWindowIterator(SymbolList sequence, int windowLength) throws IndexOutOfBoundsException {
+		if (windowLength < 1) {
 			throw new IndexOutOfBoundsException("The windowSize must has the size at least one");
 		}
 		this.sequence = sequence;
-		this.windowSize = windowSize;
+		this.windowSize = windowLength;
 		this.actualPos = 0;
 	}
 

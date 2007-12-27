@@ -10,10 +10,10 @@ public class NotOverlappedSymbolListWindowIterator extends AbstractSymbolListWin
 
 	/**
 	 * @param sequence
-	 * @param windowSize
+	 * @param windowLength
 	 */
-	public NotOverlappedSymbolListWindowIterator(SymbolList sequence, int windowSize) {
-		super(sequence, windowSize);
+	NotOverlappedSymbolListWindowIterator(SymbolList sequence, int windowLength) {
+		super(sequence, windowLength);
 	}
 
 	public SymbolList next() {
@@ -21,5 +21,4 @@ public class NotOverlappedSymbolListWindowIterator extends AbstractSymbolListWin
 		actualPos+= windowSize;
 		return subList;
 	}
-
 }

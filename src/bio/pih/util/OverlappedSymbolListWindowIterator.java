@@ -13,7 +13,7 @@ public class OverlappedSymbolListWindowIterator extends AbstractSymbolListWindow
 	 * @param windowSize
 	 * @throws IndexOutOfBoundsException
 	 */
-	public OverlappedSymbolListWindowIterator(SymbolList sequence, int windowSize) throws IndexOutOfBoundsException{
+	OverlappedSymbolListWindowIterator(SymbolList sequence, int windowSize) throws IndexOutOfBoundsException{
 		super(sequence, windowSize);
 	}
 
@@ -22,5 +22,4 @@ public class OverlappedSymbolListWindowIterator extends AbstractSymbolListWindow
 		actualPos++;
 		return subList;
 	}
-
 }
