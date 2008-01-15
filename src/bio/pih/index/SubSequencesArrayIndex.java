@@ -104,7 +104,7 @@ public class SubSequencesArrayIndex {
 		}
 	}
 
-	public int[] encodeSymbolListToIntArray(SymbolList sequence) {
+	public short[] encodeSymbolListToShortArray(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
 		int size = sequence.length() / subSequenceLength;
 		int extra = sequence.length() % subSequenceLength;
@@ -112,30 +112,30 @@ public class SubSequencesArrayIndex {
 			size++;
 		}
 		size++; // extra space for the length information.
-		int sequenceEncoded[] = new int[size];
-		sequenceEncoded[POSITION_LENGTH] = sequence.length();
+		short sequenceEncoded[] = new short[size];
+		sequenceEncoded[POSITION_LENGTH] = (short) sequence.length();
 
 		if (sequence.length() < subSequenceLength) {
-			sequenceEncoded[POSITION_BEGIN_BITS_VECTOR] = encodeSubsequenceToInt(sequence.subList(1, sequence.length()));
+			sequenceEncoded[POSITION_BEGIN_BITS_VECTOR] = encodeSubsequenceToShort(sequence.subList(1, sequence.length()));
 		} else {
 			int pos = POSITION_BEGIN_BITS_VECTOR;
 			SymbolListWindowIterator symbolListWindowIterator = symbolListWindowIteratorFactory.newSymbolListWindowIterator(sequence, this.subSequenceLength);
 			while (symbolListWindowIterator.hasNext()) {
 				SymbolList next = symbolListWindowIterator.next();
-				sequenceEncoded[pos] = encodeSubsequenceToInt(next);
+				sequenceEncoded[pos] = encodeSubsequenceToShort(next);
 				pos++;
 			}
 			if (pos < size) {
 				int from = sequence.length() - extra +1;
-				sequenceEncoded[pos] = encodeSubsequenceToInt(sequence.subList(from, sequence.length()));
+				sequenceEncoded[pos] = encodeSubsequenceToShort(sequence.subList(from, sequence.length()));
 			}
 		}
 
 		return sequenceEncoded;
 	}
 	
-	public SymbolList decodeIntArrayToSymbolList(int [] encodedSequence) throws IllegalSymbolException, BioException {
-		String sequenceString = decodeIntArrayToString(encodedSequence);
+	public SymbolList decodeShortArrayToSymbolList(short [] encodedSequence) throws IllegalSymbolException, BioException {
+		String sequenceString = decodeShortArrayToString(encodedSequence);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);		
 	}
 	
@@ -143,8 +143,8 @@ public class SubSequencesArrayIndex {
 	 * @param encodedSequence
 	 * @return
 	 */
-	public String decodeIntArrayToString(int[] encodedSequence) {
-		StringBuilder sequence = new StringBuilder(encodedSequence[encodedSequence.length-1]);
+	public String decodeShortArrayToString(short[] encodedSequence) {
+		StringBuilder sequence = new StringBuilder(encodedSequence[POSITION_LENGTH]);
 		int extra = encodedSequence[POSITION_LENGTH] % subSequenceLength;
 		
 		if (extra == 0) {					
@@ -234,9 +234,9 @@ public class SubSequencesArrayIndex {
 	 * @param symbolList
 	 * @return an int containing the representation of the subsequence
 	 */
-	public int encodeSubsequenceToInt(SymbolList symbolList) {
+	public short encodeSubsequenceToShort(SymbolList symbolList) {
 		assert (symbolList.length() <= subSequenceLength);
-		int encoded = 0;
+		short encoded = 0;
 		for (int i = 1; i <= symbolList.length(); i++) {
 			encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
 		}
@@ -258,7 +258,7 @@ public class SubSequencesArrayIndex {
 	}
 
 	
-	public String decodeSubsequenceToString(int encoded) {
+	public String decodeSubsequenceToString(short encoded) {
 		return decodeSubsequenceToString(encoded, subSequenceLength);
 	}
 	
@@ -268,7 +268,7 @@ public class SubSequencesArrayIndex {
 	 * @return a array with the symbols that are represented in that encoded
 	 *         value
 	 */
-	private String decodeSubsequenceToString(int encoded, int length) {
+	private String decodeSubsequenceToString(short encoded, int length) {
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = subSequenceLength - 1; i >= subSequenceLength - length; i--) {
 			int shift = i * bitsByAlphabetSize;
@@ -287,7 +287,7 @@ public class SubSequencesArrayIndex {
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */
-	public SymbolList decodeSubsequenceToSymbolList(int encoded) throws IllegalSymbolException, BioException {
+	public SymbolList decodeSubsequenceToSymbolList(short encoded) throws IllegalSymbolException, BioException {
 		String sequenceString = decodeSubsequenceToString(encoded);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);
 	}
