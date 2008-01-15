@@ -1,14 +1,15 @@
 package bio.pih.tests.index;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 import junit.framework.TestCase;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 import org.junit.Test;
 
@@ -105,31 +106,31 @@ public class SubSequencesArrayIndexTest extends TestCase {
 
 		String stringSequence = "TCGGACTG"; // 1101101000011110
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("1101101000011110", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("1101101000011110", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "AACAACAA"; // 0000010000010000
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("0000010000010000", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("0000010000010000", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "CCCCCCCC"; // 0101010101010101
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("0101010101010101", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("0101010101010101", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "TTTTTTTT"; // 1111111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("1111111111111111", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("1111111111111111", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "ACTGGTCA"; // 0001111010110100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("0001111010110100", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("0001111010110100", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "ATTTTTTT"; // 001111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("0011111111111111", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("0011111111111111", 2), index.encodeSubsequenceToInt(symbolList));
 
 		stringSequence = "TCTAGCCA"; // 1101110010010100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		assertEquals(Integer.parseInt("1101110010010100", 2), index.encodeToInt(symbolList));
+		assertEquals(Integer.parseInt("1101110010010100", 2), index.encodeSubsequenceToInt(symbolList));
 	}
 
 	@Test
@@ -138,31 +139,31 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		SubSequencesArrayIndex index = new SubSequencesArrayIndex(8, DNATools.getDNA(), symbolListWindowIteratorFactory);
 
 		// String stringSequence = "TCGGACTG"; // 1101101000011110
-		String stringSequence = index.decodeToString(Integer.parseInt("1101101000011110", 2));
+		String stringSequence = index.decodeSubsequenceToString(Integer.parseInt("1101101000011110", 2));
 		assertEquals("TCGGACTG", stringSequence);
 
 		// String stringSequence = "AACAACAA"; // 0000010000010000
-		stringSequence = index.decodeToString(Integer.parseInt("0000010000010000", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("0000010000010000", 2));
 		assertEquals("AACAACAA", stringSequence);
 
 		// stringSequence = "CCCCCCCC"; // 0101010101010101
-		stringSequence = index.decodeToString(Integer.parseInt("0101010101010101", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("0101010101010101", 2));
 		assertEquals("CCCCCCCC", stringSequence);
 
 		// stringSequence = "TTTTTTTT"; // 1111111111111111
-		stringSequence = index.decodeToString(Integer.parseInt("1111111111111111", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("1111111111111111", 2));
 		assertEquals("TTTTTTTT", stringSequence);
 
 		// stringSequence = "ACTGGTCA"; // 0001111010110100
-		stringSequence = index.decodeToString(Integer.parseInt("0001111010110100", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("0001111010110100", 2));
 		assertEquals("ACTGGTCA", stringSequence);
 
 		// stringSequence = "ATTTTTTT"; // 0011111111111111
-		stringSequence = index.decodeToString(Integer.parseInt("0011111111111111", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("0011111111111111", 2));
 		assertEquals("ATTTTTTT", stringSequence);
 
 		// stringSequence = "TCTAGCCA"; // 1101110010010100
-		stringSequence = index.decodeToString(Integer.parseInt("1101110010010100", 2));
+		stringSequence = index.decodeSubsequenceToString(Integer.parseInt("1101110010010100", 2));
 		assertEquals("TCTAGCCA", stringSequence);
 
 		// LightweightSymbolList.createLightSymbolList(DNATools.getDNA(),
@@ -170,43 +171,92 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	}
 
 	@Test
-	public void testDecodeToSequenceSubSequence() throws ValueOutOfBoundsException, InstantiationException, IllegalAccessException, BioException {
+	public void testDecodeToIntegerSubSequence() throws ValueOutOfBoundsException, InstantiationException, IllegalAccessException, BioException {
 		SymbolListWindowIteratorFactory symbolListWindowIteratorFactory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
 		SubSequencesArrayIndex index = new SubSequencesArrayIndex(8, DNATools.getDNA(), symbolListWindowIteratorFactory);
 
 		String stringSequence = "TCGGACTG"; // 1101101000011110
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
-		int encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		int encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
 		stringSequence = "AACAACAA"; // 0000010000010000
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
 		stringSequence = "CCCCCCCC"; // 0101010101010101
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
 		stringSequence = "TTTTTTTT"; // 1111111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
 		stringSequence = "ACTGGTCA"; // 0001111010110100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
-		stringSequence = "ATTTTTTT"; // 001111111111111
+		stringSequence = "ATTTTTTT"; // 0011111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 
 		stringSequence = "TCTAGCCA"; // 1101110010010100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		encoded = index.encodeToInt(symbolList);
-		assertEquals(symbolList, index.decodeToSymbolList(encoded));
+		encoded = index.encodeSubsequenceToInt(symbolList);
+		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
 	}
+
+	@Test
+	public void testDecodeToIntegerSequence() throws ValueOutOfBoundsException, InstantiationException, IllegalAccessException, BioException {
+		SymbolListWindowIteratorFactory symbolListWindowIteratorFactory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
+		SubSequencesArrayIndex index = new SubSequencesArrayIndex(8, DNATools.getDNA(), symbolListWindowIteratorFactory);
+
+		SymbolList createDNA = LightweightSymbolList.createDNA("TCTAGCCAATTTTTTTACTGGTCATTTTTTTTCCCCCCCCAACAACAATCGGACTG");		                                                        
+		int[] encodeSequenceToInt = index.encodeSymbolListToIntArray(createDNA);
+		assertEquals(Integer.parseInt("1101110010010100", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR]);
+		assertEquals(Integer.parseInt("0011111111111111", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+1]);
+		assertEquals(Integer.parseInt("0001111010110100", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+2]);
+		assertEquals(Integer.parseInt("1111111111111111", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+3]);
+		assertEquals(Integer.parseInt("0101010101010101", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+4]);
+		assertEquals(Integer.parseInt("0000010000010000", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+5]);
+		assertEquals(Integer.parseInt("1101101000011110", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+6]);
+		assertEquals(createDNA.length(), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_LENGTH]);
+		assertEquals(createDNA, index.decodeIntArrayToSymbolList(encodeSequenceToInt));
+		
+
+		createDNA = LightweightSymbolList.createDNA("TCTAGC");
+		encodeSequenceToInt = index.encodeSymbolListToIntArray(createDNA);
+		assertEquals(Integer.parseInt("1101110010010000", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR]);
+		assertEquals(createDNA.length(), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_LENGTH]);
+		assertEquals(createDNA, index.decodeIntArrayToSymbolList(encodeSequenceToInt));
+
+		createDNA = LightweightSymbolList.createDNA("TTTTACTGGTC");
+		encodeSequenceToInt = index.encodeSymbolListToIntArray(createDNA);
+		assertEquals(Integer.parseInt("1111111100011110", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR]);
+		assertEquals(Integer.parseInt("1011010000000000", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+1]);
+		assertEquals(createDNA.length(), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_LENGTH]);
+		assertEquals(createDNA, index.decodeIntArrayToSymbolList(encodeSequenceToInt));
+
+		createDNA = LightweightSymbolList.createDNA("AAACACTA" + // 0000000100011100
+				"GCTACGTC" + // 1001110001101101
+				"GAATAGCA" + // 1000001100100100
+				"ACTGAGAT" + // 0001111000100011
+				"GCATGAGC" + // 1001001110001001
+				"ACAACTG"); //  0001000001111000
+		encodeSequenceToInt = index.encodeSymbolListToIntArray(createDNA);
+		assertEquals(Integer.parseInt("0000000100011100", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR]);
+		assertEquals(Integer.parseInt("1001110001101101", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+1]);
+		assertEquals(Integer.parseInt("1000001100100100", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+2]);
+		assertEquals(Integer.parseInt("0001111000100011", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+3]);
+		assertEquals(Integer.parseInt("1001001110001001", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+4]);
+		assertEquals(Integer.parseInt("0001000001111000", 2), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_BEGIN_BITS_VECTOR+5]);
+		assertEquals(createDNA.length(), encodeSequenceToInt[SubSequencesArrayIndex.POSITION_LENGTH]);
+		assertEquals(createDNA, index.decodeIntArrayToSymbolList(encodeSequenceToInt));
+	}
+
 }

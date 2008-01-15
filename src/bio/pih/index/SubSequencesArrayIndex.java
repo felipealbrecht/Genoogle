@@ -21,6 +21,9 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
  * 
  */
 public class SubSequencesArrayIndex {
+	
+	public static int POSITION_LENGTH = 0;
+	public static int POSITION_BEGIN_BITS_VECTOR = 1;
 
 	private static int maximumAlphabetBitsSize = 8;
 	private IndexBucket index[];
@@ -28,8 +31,17 @@ public class SubSequencesArrayIndex {
 	private final int bitsByAlphabetSize;
 	private final FiniteAlphabet alphabet;
 	private final SymbolListWindowIteratorFactory symbolListWindowIteratorFactory;
-//	private Class integerType;
+	
 
+
+	// private Class integerType;
+
+	/**
+	 * @param subSequenceLength
+	 * @param alphabet
+	 * @param symbolListWindowIteratorFactory
+	 * @throws ValueOutOfBoundsException
+	 */
 	public SubSequencesArrayIndex(int subSequenceLength, FiniteAlphabet alphabet, SymbolListWindowIteratorFactory symbolListWindowIteratorFactory) throws ValueOutOfBoundsException {
 		assert (symbolListWindowIteratorFactory != null);
 		assert (alphabet != null);
@@ -41,7 +53,7 @@ public class SubSequencesArrayIndex {
 
 		bitsByAlphabetSize = bitsByAlphabetSize(alphabet.size());
 		int indexSize = subSequenceLength * bitsByAlphabetSize;
-//		this.integerType = getClassFromSize(indexSize);
+		// this.integerType = getClassFromSize(indexSize);
 		this.index = new IndexBucket[indexSize];
 	}
 
@@ -75,6 +87,7 @@ public class SubSequencesArrayIndex {
 
 	/**
 	 * Add a sequence into index
+	 * 
 	 * @param sequence
 	 */
 	public void addSequence(Sequence sequence) {
@@ -89,6 +102,65 @@ public class SubSequencesArrayIndex {
 			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, next, symbolListWindowIterator.getActualPos(), this.subSequenceLength);
 			addSubSequence(next, subSequenceInfo);
 		}
+	}
+
+	public int[] encodeSymbolListToIntArray(SymbolList sequence) {
+		assert (sequence.getAlphabet().equals(alphabet));
+		int size = sequence.length() / subSequenceLength;
+		int extra = sequence.length() % subSequenceLength;
+		if (extra != 0) { // extra space for the incomplete sub-sequence
+			size++;
+		}
+		size++; // extra space for the length information.
+		int sequenceEncoded[] = new int[size];
+		sequenceEncoded[POSITION_LENGTH] = sequence.length();
+
+		if (sequence.length() < subSequenceLength) {
+			sequenceEncoded[POSITION_BEGIN_BITS_VECTOR] = encodeSubsequenceToInt(sequence.subList(1, sequence.length()));
+		} else {
+			int pos = POSITION_BEGIN_BITS_VECTOR;
+			SymbolListWindowIterator symbolListWindowIterator = symbolListWindowIteratorFactory.newSymbolListWindowIterator(sequence, this.subSequenceLength);
+			while (symbolListWindowIterator.hasNext()) {
+				SymbolList next = symbolListWindowIterator.next();
+				sequenceEncoded[pos] = encodeSubsequenceToInt(next);
+				pos++;
+			}
+			if (pos < size) {
+				int from = sequence.length() - extra +1;
+				sequenceEncoded[pos] = encodeSubsequenceToInt(sequence.subList(from, sequence.length()));
+			}
+		}
+
+		return sequenceEncoded;
+	}
+	
+	public SymbolList decodeIntArrayToSymbolList(int [] encodedSequence) throws IllegalSymbolException, BioException {
+		String sequenceString = decodeIntArrayToString(encodedSequence);
+		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);		
+	}
+	
+	/**
+	 * @param encodedSequence
+	 * @return
+	 */
+	public String decodeIntArrayToString(int[] encodedSequence) {
+		StringBuilder sequence = new StringBuilder(encodedSequence[encodedSequence.length-1]);
+		int extra = encodedSequence[POSITION_LENGTH] % subSequenceLength;
+		
+		if (extra == 0) {					
+			for(int i = POSITION_BEGIN_BITS_VECTOR; i < encodedSequence.length; i++) {
+				sequence.append(decodeSubsequenceToString(encodedSequence[i]));
+			}
+			return sequence.toString();
+
+		} else {
+			int i;
+			for(i = POSITION_BEGIN_BITS_VECTOR; i < encodedSequence.length-1; i++) {
+				sequence.append(decodeSubsequenceToString(encodedSequence[i]));
+			}				
+			sequence.append(decodeSubsequenceToString(encodedSequence[i], extra));
+			return sequence.toString();
+		}			
 	}
 
 	/**
@@ -139,10 +211,10 @@ public class SubSequencesArrayIndex {
 	 * Encode a SubSequence into a integer of the type of integerClass TODO:
 	 * Remove it from a inner class
 	 * 
-	 * @author Usuario
+	 * @author Albrecht
 	 * 
 	 */
-	
+
 	static Hashtable<Symbol, Byte> DNASymbolToBitsSubstitionTable;
 	static {
 		DNASymbolToBitsSubstitionTable = new Hashtable<Symbol, Byte>();
@@ -158,21 +230,20 @@ public class SubSequencesArrayIndex {
 
 	/**
 	 * Encode a subsequence to your int representation
+	 * 
 	 * @param symbolList
-	 * @return a int containing the representation of the subsequence
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 * @return an int containing the representation of the subsequence
 	 */
-	public int encodeToInt(SymbolList symbolList) throws InstantiationException, IllegalAccessException {
-		assert (symbolList.length() == subSequenceLength);
+	public int encodeSubsequenceToInt(SymbolList symbolList) {
+		assert (symbolList.length() <= subSequenceLength);
 		int encoded = 0;
 		for (int i = 1; i <= symbolList.length(); i++) {
-			encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((symbolList.length()-i) * bitsByAlphabetSize));
+			encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
 		}
 
 		return encoded;
 	}
-	
+
 	static Hashtable<Byte, Character> DNABitsToSymbolSubstitionTable;
 	static {
 		DNABitsToSymbolSubstitionTable = new Hashtable<Byte, Character>();
@@ -181,35 +252,49 @@ public class SubSequencesArrayIndex {
 		DNABitsToSymbolSubstitionTable.put((byte) 0x02, 'G');
 		DNABitsToSymbolSubstitionTable.put((byte) 0x03, 'T');
 	}
-	
+
 	protected char getSymbolFromBits(byte bits) {
 		return DNABitsToSymbolSubstitionTable.get(bits);
+	}
+
+	
+	public String decodeSubsequenceToString(int encoded) {
+		return decodeSubsequenceToString(encoded, subSequenceLength);
 	}
 	
 	/**
 	 * @param encoded
-	 * @return a array with the symbols that are represented in that encoded value
+	 * @param length 
+	 * @return a array with the symbols that are represented in that encoded
+	 *         value
 	 */
-	public String decodeToString(int encoded) {
-		StringBuilder sb = new StringBuilder(subSequenceLength);
-		for (int i = subSequenceLength-1; i >= 0; i--) {
+	private String decodeSubsequenceToString(int encoded, int length) {
+		StringBuilder sb = new StringBuilder(length);
+		for (int i = subSequenceLength - 1; i >= subSequenceLength - length; i--) {
 			int shift = i * bitsByAlphabetSize;
-			int mask = ((1 << bitsByAlphabetSize) -1) << shift;
+			int mask = ((1 << bitsByAlphabetSize) - 1) << shift;
 			int value = encoded & mask;
 			byte symbolValue = (byte) (value >> shift);
 			sb.append(getSymbolFromBits(symbolValue));
 		}
-		
-		return sb.toString();				
+
+		return sb.toString();
 	}
-	
-	public SymbolList decodeToSymbolList(int encoded) throws IllegalSymbolException, BioException {
-		String sequenceString = decodeToString(encoded);		
+
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 */
+	public SymbolList decodeSubsequenceToSymbolList(int encoded) throws IllegalSymbolException, BioException {
+		String sequenceString = decodeSubsequenceToString(encoded);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);
 	}
 
 	/**
-	 * Each bucket containing the positions of each sub-sequence indexed 
+	 * Each bucket containing the positions of each sub-sequence indexed
+	 * 
 	 * @author albrecht
 	 */
 	public class IndexBucket {
