@@ -1,5 +1,6 @@
 package bio.pih.index;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +23,18 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
  */
 public class SubSequencesArrayIndex {
 	
+	/**
+	 * Position in integer vector that is the information of the symbollist length
+	 */
 	public static int POSITION_LENGTH = 0;
+	/**
+	 * Position that the bit vector itself begin 
+	 */
 	public static int POSITION_BEGIN_BITS_VECTOR = 1;
 
 	private static int maximumAlphabetBitsSize = 8;
 	private IndexBucket index[];
+	private HashMap<String, short[]> nameToSequenceMap;
 	private final int subSequenceLength;
 	private final int bitsByAlphabetSize;
 	private final FiniteAlphabet alphabet;
@@ -54,7 +62,8 @@ public class SubSequencesArrayIndex {
 		bitsByAlphabetSize = bitsByAlphabetSize(alphabet.size());
 		int indexSize = subSequenceLength * bitsByAlphabetSize;
 		// this.integerType = getClassFromSize(indexSize);
-		this.index = new IndexBucket[indexSize];
+		this.index = new IndexBucket[1 << indexSize];
+		this.nameToSequenceMap = new HashMap<String, short[]>();
 	}
 
 	/**
@@ -94,16 +103,64 @@ public class SubSequencesArrayIndex {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
 		}
-
-		SymbolListWindowIterator symbolListWindowIterator = symbolListWindowIteratorFactory.newSymbolListWindowIterator(sequence, this.subSequenceLength);
-
-		while (symbolListWindowIterator.hasNext()) {
-			SymbolList next = symbolListWindowIterator.next();
-			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, next, symbolListWindowIterator.getActualPos(), this.subSequenceLength);
-			addSubSequence(next, subSequenceInfo);
+		
+		short[] encodedSequence = encodeSymbolListToShortArray(sequence);
+		nameToSequenceMap.put(sequence.getName(), encodedSequence);
+		int length = encodedSequence[POSITION_LENGTH] / subSequenceLength;
+				
+		for (int pos = POSITION_BEGIN_BITS_VECTOR; pos < POSITION_BEGIN_BITS_VECTOR + length; pos++) {
+			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, encodedSequence[pos], (pos - POSITION_BEGIN_BITS_VECTOR) * subSequenceLength);  
+			addSubSequence(subSequenceInfo);	
 		}
+			
+	}
+	
+	/**
+	 * @param subSymbolList
+	 * @param subSequenceInfo
+	 */
+	private void addSubSequence(SubSequenceInfo subSequenceInfo) {
+		IndexBucket indexBucket = index[subSequenceInfo.getSubSequence() & 0xFFFF];
+		if (indexBucket == null) {
+			indexBucket = new IndexBucket(subSequenceInfo.getSubSequence());
+			index[subSequenceInfo.getSubSequence() & 0xFFFF] = indexBucket;
+		}
+		indexBucket.addElement(subSequenceInfo);
+	}
+	
+	public String indexStatus() {
+		StringBuilder sb = new StringBuilder();
+		for (IndexBucket bucket : index) {
+			if (bucket != null) {
+				sb.append(bucket.getValue() & 0xFFFF);
+				sb.append("(");
+				sb.append(decodeShortToString(bucket.getValue()));
+				sb.append(")");
+				sb.append(":\n");
+				for (SubSequenceInfo subSequenceInfo : bucket.getElements()) {
+					sb.append("\t");
+					sb.append(subSequenceInfo.getSequence().getName());
+					sb.append(": ");
+					sb.append(subSequenceInfo.getStart());
+					sb.append("\n");
+				}
+			}
+		}
+		return sb.toString();
 	}
 
+	/**
+	 * @param subSymbolList
+	 * @return
+	 */
+	List<SubSequenceInfo> retrievePosition(SymbolList subSymbolList) {
+		return null;
+	}
+
+	/**
+	 * @param sequence
+	 * @return a vector of short as bit vector
+	 */
 	public short[] encodeSymbolListToShortArray(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
 		int size = sequence.length() / subSequenceLength;
@@ -134,6 +191,12 @@ public class SubSequencesArrayIndex {
 		return sequenceEncoded;
 	}
 	
+	/**
+	 * @param encodedSequence
+	 * @return the {@link SymbolList} that is stored in encodedSequence 
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 */
 	public SymbolList decodeShortArrayToSymbolList(short [] encodedSequence) throws IllegalSymbolException, BioException {
 		String sequenceString = decodeShortArrayToString(encodedSequence);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);		
@@ -149,62 +212,18 @@ public class SubSequencesArrayIndex {
 		
 		if (extra == 0) {					
 			for(int i = POSITION_BEGIN_BITS_VECTOR; i < encodedSequence.length; i++) {
-				sequence.append(decodeSubsequenceToString(encodedSequence[i]));
+				sequence.append(decodeShortToString(encodedSequence[i]));
 			}
 			return sequence.toString();
 
 		} else {
 			int i;
 			for(i = POSITION_BEGIN_BITS_VECTOR; i < encodedSequence.length-1; i++) {
-				sequence.append(decodeSubsequenceToString(encodedSequence[i]));
+				sequence.append(decodeShortToString(encodedSequence[i]));
 			}				
-			sequence.append(decodeSubsequenceToString(encodedSequence[i], extra));
+			sequence.append(decodeShortToString(encodedSequence[i], extra));
 			return sequence.toString();
 		}			
-	}
-
-	/**
-	 * 
-	 * @param size
-	 * @return the integer Class that is need to store the value passed in size
-	 *         param.
-	 * @throws ValueOutOfBoundsException
-	 */
-	@SuppressWarnings("unchecked")
-	public static Class getClassFromSize(int size) throws ValueOutOfBoundsException {
-		if (size <= 0) {
-			throw new ValueOutOfBoundsException("size lower than zero.");
-		}
-		if (size > Long.MAX_VALUE) {
-			throw new ValueOutOfBoundsException("size higher than " + Long.MAX_VALUE);
-		}
-
-		if (size <= 8) {
-			return Byte.class;
-		} else if (size <= 16) {
-			return Short.class;
-		} else if (size <= 32) {
-			return Integer.class;
-		} else if (size <= 64) {
-			return Long.class;
-		} else {
-			throw new ValueOutOfBoundsException("size is higher than a " + Long.MAX_VALUE + "? May be it's a bug.");
-		}
-	}
-
-	/**
-	 * @param subSymbolList
-	 * @param info
-	 */
-	private void addSubSequence(SymbolList subSymbolList, SubSequenceInfo info) {
-	}
-
-	/**
-	 * @param subSymbolList
-	 * @return
-	 */
-	List<SubSequenceInfo> retrievePosition(SymbolList subSymbolList) {
-		return null;
 	}
 
 	/**
@@ -258,8 +277,13 @@ public class SubSequencesArrayIndex {
 	}
 
 	
-	public String decodeSubsequenceToString(short encoded) {
-		return decodeSubsequenceToString(encoded, subSequenceLength);
+	/**
+	 * Decode a short vector to its sequence string representation
+	 * @param encoded
+	 * @return the sequence string
+	 */
+	public String decodeShortToString(short encoded) {
+		return decodeShortToString(encoded, subSequenceLength);
 	}
 	
 	/**
@@ -268,7 +292,7 @@ public class SubSequencesArrayIndex {
 	 * @return a array with the symbols that are represented in that encoded
 	 *         value
 	 */
-	private String decodeSubsequenceToString(short encoded, int length) {
+	private String decodeShortToString(short encoded, int length) {
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = subSequenceLength - 1; i >= subSequenceLength - length; i--) {
 			int shift = i * bitsByAlphabetSize;
@@ -287,24 +311,61 @@ public class SubSequencesArrayIndex {
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */
-	public SymbolList decodeSubsequenceToSymbolList(short encoded) throws IllegalSymbolException, BioException {
-		String sequenceString = decodeSubsequenceToString(encoded);
+	public SymbolList decodeShortToSymbolList(short encoded) throws IllegalSymbolException, BioException {
+		String sequenceString = decodeShortToString(encoded);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), sequenceString);
 	}
 
+	
+	/**
+	 * 
+	 * @param size
+	 * @return the integer Class that is need to store the value passed in size
+	 *         param.
+	 * @throws ValueOutOfBoundsException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Class getClassFromSize(int size) throws ValueOutOfBoundsException {
+		if (size <= 0) {
+			throw new ValueOutOfBoundsException("size lower than zero.");
+		}
+		if (size > Long.MAX_VALUE) {
+			throw new ValueOutOfBoundsException("size higher than " + Long.MAX_VALUE);
+		}
+
+		if (size <= 8) {
+			return Byte.class;
+		} else if (size <= 16) {
+			return Short.class;
+		} else if (size <= 32) {
+			return Integer.class;
+		} else if (size <= 64) {
+			return Long.class;
+		} else {
+			throw new ValueOutOfBoundsException("size is higher than a " + Long.MAX_VALUE + "? May be it's a bug.");
+		}
+	}
+		
 	/**
 	 * Each bucket containing the positions of each sub-sequence indexed
 	 * 
 	 * @author albrecht
 	 */
 	public class IndexBucket {
-		int value;
+		short value;
 		List<SubSequenceInfo> elements;
 
 		/**
+		 * @param subSequenceInfo
+		 */
+		public void addElement(SubSequenceInfo subSequenceInfo) {
+			this.elements.add(subSequenceInfo);
+		}
+		
+		/**
 		 * @param value
 		 */
-		public IndexBucket(int value) {
+		public IndexBucket(short value) {
 			this.value = value;
 			this.elements = new LinkedList<SubSequenceInfo>();
 		}
@@ -312,7 +373,7 @@ public class SubSequencesArrayIndex {
 		/**
 		 * @return the value associate with this bucket
 		 */
-		public int getValue() {
+		public short getValue() {
 			return value;
 		}
 

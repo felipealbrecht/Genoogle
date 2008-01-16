@@ -15,20 +15,17 @@ public class SubSequenceInfo implements Serializable {
 	
 	private Sequence sequenceRef;
 	private int start ;
-	private int lenght;
-	private SymbolList subSequence;
+	private short subSequenceEncoded;
 	
 	/**
 	 * @param sequenceRef
-	 * @param subSequence
+	 * @param sequenceEncoded 
 	 * @param start
-	 * @param length
 	 */
-	public SubSequenceInfo(Sequence sequenceRef, SymbolList subSequence, int start, int length) {
+	public SubSequenceInfo(Sequence sequenceRef, short sequenceEncoded, int start) {
 		this.sequenceRef = sequenceRef;
-		this.subSequence = subSequence;
+		this.subSequenceEncoded = sequenceEncoded;
 		this.start = start;
-		this.lenght = start;
 	}
 	
 	/**
@@ -46,17 +43,17 @@ public class SubSequenceInfo implements Serializable {
 	}
 	
 	/**
-	 * @param subSequence
+	 * @param subSequenceEncoded 
 	 */
-	public void setSubSequence(SymbolList subSequence) {
-		this.subSequence = subSequence;
+	public void setSubSequence(short subSequenceEncoded) {
+		this.subSequenceEncoded = subSequenceEncoded;
 	}
 	
 	/**
 	 * @return
 	 */
-	public SymbolList getSubSequence() {
-		return subSequence;
+	public short getSubSequence() {
+		return subSequenceEncoded;
 	}
 	
 	/**
@@ -72,23 +69,9 @@ public class SubSequenceInfo implements Serializable {
 	public int getStart() {
 		return start;
 	}
-	
-	/**
-	 * @param lenght
-	 */
-	public void setLenght(int lenght) {
-		 this.lenght = lenght;
-	}
-	
-	/**
-	 * @return
-	 */
-	public int getLenght() {
-		return lenght;
-	}
-	
+		
 	@Override
 	public String toString() {
-		return this.sequenceRef.toString() + " ("+start+","+(start+lenght)+")";
+		return this.sequenceRef.toString() + " ("+start+")";
 	}
 }

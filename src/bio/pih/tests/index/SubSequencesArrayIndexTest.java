@@ -123,31 +123,31 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		SubSequencesArrayIndex index = new SubSequencesArrayIndex(8, DNATools.getDNA(), symbolListWindowIteratorFactory);
 
 		// String stringSequence = "TCGGACTG"; // 1101101000011110
-		String stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("1101101000011110", 2));
+		String stringSequence = index.decodeShortToString((short) Integer.parseInt("1101101000011110", 2));
 		assertEquals("TCGGACTG", stringSequence);
 
 		// String stringSequence = "AACAACAA"; // 0000010000010000
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("0000010000010000", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("0000010000010000", 2));
 		assertEquals("AACAACAA", stringSequence);
 
 		// stringSequence = "CCCCCCCC"; // 0101010101010101
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("0101010101010101", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("0101010101010101", 2));
 		assertEquals("CCCCCCCC", stringSequence);
 
 		// stringSequence = "TTTTTTTT"; // 1111111111111111
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("1111111111111111", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("1111111111111111", 2));
 		assertEquals("TTTTTTTT", stringSequence);
 
 		// stringSequence = "ACTGGTCA"; // 0001111010110100
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("0001111010110100", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("0001111010110100", 2));
 		assertEquals("ACTGGTCA", stringSequence);
 
 		// stringSequence = "ATTTTTTT"; // 0011111111111111
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("0011111111111111", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("0011111111111111", 2));
 		assertEquals("ATTTTTTT", stringSequence);
 
 		// stringSequence = "TCTAGCCA"; // 1101110010010100
-		stringSequence = index.decodeSubsequenceToString((short) Integer.parseInt("1101110010010100", 2));
+		stringSequence = index.decodeShortToString((short) Integer.parseInt("1101110010010100", 2));
 		assertEquals("TCTAGCCA", stringSequence);
 	}
 
@@ -159,37 +159,37 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		String stringSequence = "TCGGACTG"; // 1101101000011110
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
 		short encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "AACAACAA"; // 0000010000010000
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "CCCCCCCC"; // 0101010101010101
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "TTTTTTTT"; // 1111111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "ACTGGTCA"; // 0001111010110100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "ATTTTTTT"; // 0011111111111111
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 
 		stringSequence = "TCTAGCCA"; // 1101110010010100
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		encoded = index.encodeSubsequenceToShort(symbolList);
-		assertEquals(symbolList, index.decodeSubsequenceToSymbolList(encoded));
+		assertEquals(symbolList, index.decodeShortToSymbolList(encoded));
 	}
 
 	@Test
@@ -251,9 +251,55 @@ public class SubSequencesArrayIndexTest extends TestCase {
 
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
-		SimpleSequence ss = new SimpleSequence(symbolList, null, "Simple Sequence", null);
+		SimpleSequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
 		index.addSequence(ss);
-
+		
+		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence 2", null);
+		index.addSequence(ss);
+		
+		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence 3", null);
+		index.addSequence(ss);
+		
+		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence A", null);
+		index.addSequence(ss);
+		
+		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence T", null);
+		index.addSequence(ss);
+		
+		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence C", null);
+		index.addSequence(ss);
+		
+		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence G", null);
+		index.addSequence(ss);
+		
+		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence ACTGGTCA", null);
+		index.addSequence(ss);
+		
+		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R1", null);
+		index.addSequence(ss);
+		
+		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		index.addSequence(ss);
+		
+		System.out.println(index.indexStatus());
 	}
 	
 }
