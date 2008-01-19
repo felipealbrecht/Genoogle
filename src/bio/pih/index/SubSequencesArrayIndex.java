@@ -128,6 +128,48 @@ public class SubSequencesArrayIndex {
 		indexBucket.addElement(subSequenceInfo);
 	}
 	
+	/**
+	 * @param subSequenceString
+	 * @return
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 * @throws ValueOutOfBoundsException
+	 */
+	public List<SubSequenceInfo> getMachingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {		
+		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), subSequenceString);
+		return getMachingSubSequence(subSequence);
+	}
+	
+	/**
+	 * @param subSequence
+	 * @return
+	 * @throws ValueOutOfBoundsException 
+	 */
+	public List<SubSequenceInfo> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+		if (subSequence.length() != subSequenceLength) {
+			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence ("+subSequenceLength+")");
+		}
+		short encodedSubSequence = encodeSubsequenceToShort(subSequence);
+		return getMachingSubSequence(encodedSubSequence);
+	}
+	
+	/**
+	 * @param encodedSubSequence
+	 * @return
+	 */
+	public List<SubSequenceInfo> getMachingSubSequence(short encodedSubSequence) {
+		IndexBucket bucket = index[encodedSubSequence & 0xFFFF];
+		if (bucket != null) {
+			return bucket.getElements();
+		}
+		return null;
+	}
+	
+	
+	
+	/**
+	 * @return a string containing the status of the index.
+	 */
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
 		for (IndexBucket bucket : index) {

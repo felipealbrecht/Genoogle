@@ -1,0 +1,263 @@
+package bio.pih.tests.seq.generator;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.xml.ws.ServiceMode;
+
+import junit.framework.TestCase;
+
+import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.seq.impl.SimpleSequence;
+import org.biojava.bio.symbol.Alphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
+import org.junit.AfterClass;
+import org.junit.Test;
+
+import bio.pih.seq.LightweightSymbolList;
+import bio.pih.seq.generator.DNASequencesPopulator;
+import bio.pih.seq.generator.RandomSequenceGenerator;
+
+public class SequencePopulatorTest extends TestCase {
+
+	
+	private static final String sequencePopulationTestFile = "data" + File.separator + "populator" + File.separator + "sequencePopulatorTest.seqs";
+	
+	@AfterClass
+	public void setDown() {
+		removeIfExistFile(sequencePopulationTestFile);
+	}
+	
+	private static void removeIfExistFile(String filePath) {
+		File serializableSequencePopulationFile = new File(filePath);
+		if (serializableSequencePopulationFile.exists()) {
+			serializableSequencePopulationFile.delete();
+		}		
+	}
+	
+	/**
+	 * Test if the length and {@link Alphabet} of sequence generated are correct.  
+	 */
+	@Test
+	public void testSequenceGenerator() {
+		int length = 1;
+		RandomSequenceGenerator randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		Sequence sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(1, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		
+		length = 10;
+		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(length, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		
+		length = 100;
+		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(length, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		
+		length = 250;
+		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(length, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		
+		length = 1000;
+		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(length, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		
+		length = 10000;
+		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		sequence = randomSequenceGenerator.generateSequence();
+		assertEquals(length, sequence.length());
+		assertEquals(DNATools.getDNA(), sequence.getAlphabet());		
+	}
+	
+	@Test
+	public void testDNASequencesPopulator() {
+		int from = 0;
+		int to = 3;
+		List<Sequence> sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}
+		
+		from = 0;
+		to = 100;
+		sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}
+		
+		from = 99;
+		to = 100;
+		sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}
+		
+		from = 0;
+		to = 1000;
+		sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}
+		
+		from = 999;
+		to = 1000;
+		sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}
+		
+		from = 1;
+		to = 2;
+		sequences = DNASequencesPopulator.populateSequences(100, from, to);
+		for(Sequence sequence: sequences) {
+			assertTrue(sequence.length() >= from);
+			assertTrue(sequence.length() <= to);
+		}	
+	}
+	
+	@Test
+	public void testCreateSaveAndLoadSequencePopulation() throws IllegalSymbolException, FileNotFoundException, IOException, ClassNotFoundException {
+		List<Sequence> sequences = new LinkedList<Sequence>();
+		
+		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
+		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
+		Sequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
+		sequences.add(ss);
+		
+		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence 2", null);
+		sequences.add(ss);
+		
+		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence 3", null);
+		sequences.add(ss);
+		
+		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence A", null);
+		sequences.add(ss);
+		
+		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence T", null);
+		sequences.add(ss);
+		
+		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence C", null);
+		sequences.add(ss);
+		
+		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence G", null);
+		sequences.add(ss);
+		
+		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence ACTGGTCA", null);
+		sequences.add(ss);
+		
+		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R1", null);
+		sequences.add(ss);
+		
+		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		sequences.add(ss);
+		
+		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		sequences.add(ss);
+				
+		removeIfExistFile(sequencePopulationTestFile);
+		DNASequencesPopulator.writePopulation(sequences, sequencePopulationTestFile);
+		
+		List<Sequence> readSequences = DNASequencesPopulator.readPopulation(sequencePopulationTestFile);
+		Iterator<Sequence> iterator = readSequences.iterator();
+		assertEquals(iterator.next().seqString().toUpperCase(), "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		assertEquals(iterator.next().seqString().toUpperCase(), "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+		assertEquals(iterator.next().seqString().toUpperCase(), "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+		assertEquals(iterator.next().seqString().toUpperCase(), "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA");
+		assertEquals(iterator.next().seqString().toUpperCase(), "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC");
+		assertEquals(iterator.next().seqString().toUpperCase(), "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC");
+		assertFalse(iterator.hasNext());
+		removeIfExistFile(sequencePopulationTestFile);
+	}
+		
+	/**
+	 * What is HUGE? May be 10k sequences is enough ? May be one million is huge, but 10k is enough for this test, I think...
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws ClassNotFoundException 
+	 */
+	@Test
+	public void testCreateSaveAndLoad_HUGE_RandomSequencePopulation() throws FileNotFoundException, IOException, ClassNotFoundException {
+		int stepSize = 10;
+		int maxSequences = 10000;
+		int lengthFrom = 20;
+		int lengthTo = 700;
+		
+		List<List<Sequence>> populations = new LinkedList<List<Sequence>>();
+		for (int sequenceQuantity = stepSize; sequenceQuantity <= maxSequences; sequenceQuantity *= stepSize) {
+			System.out.println("Creating population: " + sequenceQuantity + " sequences");
+			String populationPath = sequencePopulationTestFile + "_" + sequenceQuantity;
+			List<Sequence> populateSequences = DNASequencesPopulator.populateSequences(sequenceQuantity, lengthFrom, lengthTo);
+			populations.add(populateSequences);
+			removeIfExistFile(populationPath);
+			DNASequencesPopulator.writePopulation(populateSequences, populationPath);
+		}
+		
+		int listCreatedPos = 0;
+		for (int sequenceQuantity = stepSize; sequenceQuantity <= maxSequences; sequenceQuantity *= stepSize) {
+			String populationPath = sequencePopulationTestFile + "_" + sequenceQuantity;
+			System.out.println("Testing population: " + sequenceQuantity + " sequences");
+			Iterator<Sequence> storedPopulationIterator = DNASequencesPopulator.readPopulation(populationPath).iterator();
+			Iterator<Sequence> createdPopulationIterator = populations.get(listCreatedPos).iterator();
+			while (storedPopulationIterator.hasNext() && createdPopulationIterator.hasNext()) {
+				Sequence nextStored = storedPopulationIterator.next();
+				Sequence nextCreated = createdPopulationIterator.next();
+				checkSequenceEquals(nextStored, nextCreated);
+			}
+			assertFalse(storedPopulationIterator.hasNext());
+			assertFalse(createdPopulationIterator.hasNext());
+			removeIfExistFile(populationPath);
+			listCreatedPos++;
+		}
+	}
+	
+	private static void checkSequenceEquals(Sequence seq1, Sequence seq2) {
+		assertEquals(seq1.getAlphabet(), seq2.getAlphabet());
+		assertEquals(seq1.getName(), seq2.getName());
+		assertEquals(seq1.length(), seq2.length());
+		assertEquals(seq1.subList(1, seq1.length()), seq2.subList(1, seq2.length()));;
+	}
+}

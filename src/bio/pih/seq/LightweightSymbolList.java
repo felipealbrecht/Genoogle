@@ -1,5 +1,6 @@
 package bio.pih.seq;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -20,7 +21,7 @@ import org.biojava.bio.symbol.SymbolList;
  * @author albrecht
  *
  */
-public class LightweightSymbolList extends AbstractSymbolList {
+public class LightweightSymbolList extends AbstractSymbolList implements Serializable {
 	private static final long serialVersionUID = -3125317520644706924L;
 
 	private static final int INCREMENT = 100;

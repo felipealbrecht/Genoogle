@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,7 +21,12 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 	
 	@BeforeClass
 	public void setUp() {
-		factory = SymbolListWindowIteratorFactory.getNotOverlappedFactory(); 
+		factory = SymbolListWindowIteratorFactory.getOverlappedFactory(); 
+	}
+	
+	@AfterClass
+	public void setDown() {
+		factory = null;
 	}
 	
 	/**

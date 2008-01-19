@@ -248,6 +248,8 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	public void testCreateSubSequenceArrayIndex() throws ValueOutOfBoundsException, IllegalSymbolException {
 		SymbolListWindowIteratorFactory symbolListWindowIteratorFactory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
 		SubSequencesArrayIndex index = new SubSequencesArrayIndex(8, DNATools.getDNA(), symbolListWindowIteratorFactory);
+		
+		System.out.println("Populando indice");
 
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
@@ -295,6 +297,11 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		index.addSequence(ss);
 		
 		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
+		symbolList = LightweightSymbolList.createDNA(stringSequence);
+		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		index.addSequence(ss);
+		
+		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
 		index.addSequence(ss);

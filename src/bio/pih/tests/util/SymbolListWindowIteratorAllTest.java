@@ -7,13 +7,12 @@ import junit.framework.TestSuite;
  * @author albrecht
  *
  */
-public class SymbolListWindowIteratorAllTest {
+public class SymbolListWindowIteratorAllTest extends TestSuite {
 
-	/**
-	 * @return
-	 */
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for bio.pih.tests.util");
+	
+	@org.junit.Test
+	public static TestSuite suite() {
+		TestSuite suite = new TestSuite();
 		
 		suite.addTestSuite(OverlappedSymbolListWindowIteratorTest.class);
 		suite.addTestSuite(NotOverlappedSymbolListWindowIteratorTest.class);
