@@ -19,13 +19,15 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
 public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 	SymbolListWindowIteratorFactory factory;
 	
+	@Override
 	@BeforeClass
 	public void setUp() {
 		factory = SymbolListWindowIteratorFactory.getOverlappedFactory(); 
 	}
 	
+	@Override
 	@AfterClass
-	public void setDown() {
+	public void tearDown() {
 		factory = null;
 	}
 	

@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.ws.ServiceMode;
-
 import junit.framework.TestCase;
 
 import org.biojava.bio.seq.DNATools;
@@ -24,13 +22,18 @@ import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.generator.DNASequencesPopulator;
 import bio.pih.seq.generator.RandomSequenceGenerator;
 
+/**
+ * @author albrecht
+ *
+ */
 public class SequencePopulatorTest extends TestCase {
 
 	
 	private static final String sequencePopulationTestFile = "data" + File.separator + "populator" + File.separator + "sequencePopulatorTest.seqs";
 	
+	@Override
 	@AfterClass
-	public void setDown() {
+	public void tearDown() {
 		removeIfExistFile(sequencePopulationTestFile);
 	}
 	
@@ -83,6 +86,9 @@ public class SequencePopulatorTest extends TestCase {
 		assertEquals(DNATools.getDNA(), sequence.getAlphabet());		
 	}
 	
+	/**
+	 * Test if the length of the generated sequences are correct
+	 */
 	@Test
 	public void testDNASequencesPopulator() {
 		int from = 0;
@@ -134,6 +140,13 @@ public class SequencePopulatorTest extends TestCase {
 		}	
 	}
 	
+	/**
+	 * Test if the save and load sequence population from a file is working
+	 * @throws IllegalSymbolException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	@Test
 	public void testCreateSaveAndLoadSequencePopulation() throws IllegalSymbolException, FileNotFoundException, IOException, ClassNotFoundException {
 		List<Sequence> sequences = new LinkedList<Sequence>();
@@ -214,15 +227,15 @@ public class SequencePopulatorTest extends TestCase {
 	}
 		
 	/**
-	 * What is HUGE? May be 10k sequences is enough ? May be one million is huge, but 10k is enough for this test, I think...
+	 * What is enough? May be 1k sequences is enough ? May be one million is huge, but 1k is enough for this test, I think...
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 * @throws ClassNotFoundException 
 	 */
 	@Test
-	public void testCreateSaveAndLoad_HUGE_RandomSequencePopulation() throws FileNotFoundException, IOException, ClassNotFoundException {
+	public void testCreateSaveAndLoadRandomSequencePopulation() throws FileNotFoundException, IOException, ClassNotFoundException {
 		int stepSize = 10;
-		int maxSequences = 10000;
+		int maxSequences = 1000;
 		int lengthFrom = 20;
 		int lengthTo = 700;
 		

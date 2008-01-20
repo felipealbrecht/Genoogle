@@ -10,7 +10,7 @@ import org.biojava.bio.symbol.SymbolList;
 
 /**
  * @author albrecht
- *
+ * 
  */
 public class SimpleSubSequencesIndex implements Serializable {
 	
@@ -34,6 +34,11 @@ public class SimpleSubSequencesIndex implements Serializable {
 		this.index = new Hashtable<SymbolList, List<SubSequenceInfo>>();
 	}
 	
+	/**
+	 * Add a {@link SymbolList}, that represents a sub sequence, into the index
+	 * @param subSymbolList
+	 * @param info
+	 */
 	public void addSubSequence(SymbolList subSymbolList, SubSequenceInfo info) {
 		List<SubSequenceInfo> infos = index.get(subSymbolList);
 		if (infos == null) {
@@ -45,6 +50,10 @@ public class SimpleSubSequencesIndex implements Serializable {
 		infos.add(info);
 	}
 
+	/**
+	 * @param subSymbolList
+	 * @return all subsequences that match exactly with the subSymbolList 
+	 */
 	public List<SubSequenceInfo> retrievePosition(SymbolList subSymbolList) {
 		return index.get(subSymbolList);
 	}

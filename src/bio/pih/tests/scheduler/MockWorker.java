@@ -66,15 +66,15 @@ public class MockWorker extends AbstractWorker {
 				System.out.println("Sao " + threadsCount + " threads");
 				System.out.println("doing search: " + this.searchInformation);
 				this.searchInformation.setActualStep(Step.SEEDS);
-				long sleepTime = Math.round(Math.random() * 1000);
+				long sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
 				this.searchInformation.setActualStep(Step.ALIGNMENT);
-				sleepTime = Math.round(Math.random() * 1000);
+				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
 				this.searchInformation.setActualStep(Step.SELECTING);
-				sleepTime = Math.round(Math.random() * 1000);
+				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
 				this.searchInformation.setActualStep(Step.FINISHED);

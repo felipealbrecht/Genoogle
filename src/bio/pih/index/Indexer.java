@@ -8,13 +8,10 @@ import java.util.NoSuchElementException;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.AlphabetManager;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
-import bio.pih.util.SymbolListWindowIterator;
-import bio.pih.util.SymbolListWindowIteratorFactory;
 
 /**
  * @author albrecht
@@ -38,12 +35,12 @@ public class Indexer {
 			while (readFastaDNA.hasNext()) {				
 				Sequence s = readFastaDNA.nextSequence();
 				System.out.println("Loading " + s.getName());
-				SymbolListWindowIterator iterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(s, subSequenceLenght);				                                           
-				while (iterator.hasNext()) {
-					SymbolList subSymbolList= iterator.next();
-					SubSequenceInfo info = new SubSequenceInfo(s, subSymbolList, iterator.getActualPos(), iterator.getWindowSize());
-					index.addSubSequence(subSymbolList, info);					
-				}			
+				//SymbolListWindowIterator iterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(s, subSequenceLenght);				                                           
+				//while (iterator.hasNext()) {
+					//SymbolList subSymbolList= iterator.next();
+					//SubSequenceInfo info = new SubSequenceInfo(s, subSymbolList, iterator.getActualPos(), iterator.getWindowSize());
+					//index.addSubSequence(subSymbolList, info);					
+				//}			
 			}
 			System.out.println("Cache count: " + LightweightSymbolList.getCacheCount());
 			System.out.println("Item no indice: " + index.getTotal());

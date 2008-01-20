@@ -3,7 +3,6 @@ package bio.pih.index;
 import java.io.Serializable;
 
 import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.symbol.SymbolList;
 
 /**
  * @author albrecht

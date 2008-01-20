@@ -137,6 +137,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		return compare(this, (SymbolList) o);
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean compare(SymbolList sl1, SymbolList sl2) {
 		if (sl1.length() != sl2.length()) {
 			return false;
