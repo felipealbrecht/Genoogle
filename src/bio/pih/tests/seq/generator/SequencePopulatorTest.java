@@ -1,7 +1,9 @@
 package bio.pih.tests.seq.generator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,6 +11,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.impl.SimpleSequence;
@@ -21,6 +24,8 @@ import org.junit.Test;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.generator.DNASequencesPopulator;
 import bio.pih.seq.generator.RandomSequenceGenerator;
+import bio.pih.seq.op.LightweightIOTools;
+import bio.pih.seq.op.LightweightStreamReader;
 
 /**
  * @author albrecht
@@ -47,7 +52,7 @@ public class SequencePopulatorTest extends TestCase {
 	/**
 	 * Test if the length and {@link Alphabet} of sequence generated are correct.  
 	 */
-	@Test
+	//@Test
 	public void testSequenceGenerator() {
 		int length = 1;
 		RandomSequenceGenerator randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
@@ -89,7 +94,7 @@ public class SequencePopulatorTest extends TestCase {
 	/**
 	 * Test if the length of the generated sequences are correct
 	 */
-	@Test
+	//@Test
 	public void testDNASequencesPopulator() {
 		int from = 0;
 		int to = 3;
@@ -147,7 +152,7 @@ public class SequencePopulatorTest extends TestCase {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	@Test
+	//@Test
 	public void testCreateSaveAndLoadSequencePopulation() throws IllegalSymbolException, FileNotFoundException, IOException, ClassNotFoundException {
 		List<Sequence> sequences = new LinkedList<Sequence>();
 		
@@ -272,5 +277,34 @@ public class SequencePopulatorTest extends TestCase {
 		assertEquals(seq1.getName(), seq2.getName());
 		assertEquals(seq1.length(), seq2.length());
 		assertEquals(seq1.subList(1, seq1.length()), seq2.subList(1, seq2.length()));;
+	}
+	
+	/**
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws BioException
+	 */
+	@Test
+	public static void testReadFormatedEqualsReadFasta() throws FileNotFoundException, IOException, ClassNotFoundException, BioException {
+		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
+		Iterator<Sequence> populationIterator = population.iterator();
+		
+		BufferedReader br = new BufferedReader(new FileReader("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.fasta"));
+		LightweightStreamReader readFasta = LightweightIOTools.readFastaDNA(br, null);	
+		
+		Sequence nextFastaSequence;
+		Sequence nextPopulationSequence;
+		while(readFasta.hasNext()) {
+			nextFastaSequence = readFasta.nextSequence();
+			nextPopulationSequence = populationIterator.next();
+			assertEquals(nextFastaSequence.length(), nextPopulationSequence.length());
+			assertEquals(nextFastaSequence.seqString(), nextPopulationSequence.seqString());
+			assertEquals(nextFastaSequence.subList(1, nextPopulationSequence.length()), nextPopulationSequence.subList(1, nextPopulationSequence.length()));
+			assertEquals(nextFastaSequence.getName(), nextPopulationSequence.getName());
+		}
+		
+		assertFalse(populationIterator.hasNext());
+		assertFalse(readFasta.hasNext());
 	}
 }

@@ -92,7 +92,7 @@ public class SubSequencesArrayIndex {
 	 * @throws BioException
 	 * @throws ValueOutOfBoundsException
 	 */
-	public List<SubSequenceInfo> getMachingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
+	public List<SubSequenceInfo> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
