@@ -32,8 +32,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		index = new SubSequencesArrayIndex(8, DNATools.getDNA());
-		populateNonSoRandomSequences(index);
+		index = new SubSequencesArrayIndex(8, DNATools.getDNA());		
 	}
 	
 	@Override
@@ -110,6 +109,8 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	 */
 	//@Test
 	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
+		populateNonSoRandomSequences(index);
+		
 		List<SubSequenceInfo> matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
 		
 		assertEquals(7, matchingSubSequence.size());
@@ -148,21 +149,34 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
+	 * @throws ValueOutOfBoundsException 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
 	@Test
-	public void test_DNA_1000_200_700_sequences() throws FileNotFoundException, IOException, ClassNotFoundException {
+	public void test_DNA_1000_200_700_sequences() throws FileNotFoundException, IOException, ClassNotFoundException, IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		
 		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
-		System.out.println(population.get(0).seqString());
-		System.out.println(population.get(1).seqString());
-		System.out.println(population.get(2).seqString());
-		System.out.println(population.get(3).seqString());
 		
-//		for (int i = 0; i < 1000; i++) {
-//			index.addSequence(population.get(i));
-//		}
-		//System.out.println(index.indexStatus());
+		for(Sequence sequence: population) {
+			index.addSequence(sequence);
+		}
 		
+		List<SubSequenceInfo> matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
+		assertEquals(2, matchingSubSequence.size());
+		assertEquals("RandomSequence_132", matchingSubSequence.get(0).getSequence().getName());
+		assertEquals(152, matchingSubSequence.get(0).getStart());
+		
+		assertEquals("RandomSequence_483", matchingSubSequence.get(1).getSequence().getName());
+		assertEquals(224, matchingSubSequence.get(1).getStart());
+				
+		matchingSubSequence = index.getMatchingSubSequence("GAGAATAC");
+		assertEquals(1, matchingSubSequence.size());
+		assertEquals("RandomSequence_0", matchingSubSequence.get(0).getSequence().getName());
+		assertEquals(0, matchingSubSequence.get(0).getStart());
+		
+		matchingSubSequence = index.getMatchingSubSequence("TCTTGCCG");
+		assertNull(matchingSubSequence);	
 	}
 	
 }

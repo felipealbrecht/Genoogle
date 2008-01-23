@@ -1,5 +1,6 @@
 package bio.pih.index;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,10 +78,11 @@ public class SubSequencesArrayIndex {
 	 * @param subSequenceInfo
 	 */
 	private void addSubSequence(SubSequenceInfo subSequenceInfo) {
-		IndexBucket indexBucket = index[subSequenceInfo.getSubSequence() & 0xFFFF];
+		int indexPos = subSequenceInfo.getSubSequence() & 0xFFFF;
+		IndexBucket indexBucket = index[indexPos];
 		if (indexBucket == null) {
 			indexBucket = new IndexBucket(subSequenceInfo.getSubSequence());
-			index[subSequenceInfo.getSubSequence() & 0xFFFF] = indexBucket;
+			index[indexPos] = indexBucket;
 		}
 		indexBucket.addElement(subSequenceInfo);
 	}
@@ -157,6 +159,7 @@ public class SubSequencesArrayIndex {
 	/**
 	 * Each bucket containing the positions of each sub-sequence indexed
 	 * 
+	 * TODO: remove it and substitute all by an {@link ArrayList}
 	 * @author albrecht
 	 */
 	public class IndexBucket {
