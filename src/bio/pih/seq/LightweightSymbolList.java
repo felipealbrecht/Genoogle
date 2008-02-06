@@ -113,7 +113,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	/**
-	 * @return
+	 * @return the internal string that represents this {@link SymbolList} 
 	 */
 	public String getString() {
 		return seqString;
@@ -167,7 +167,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	/**
-	 * @return
+	 * @return the symbols that compose this {@link SymbolList}
 	 */
 	public Symbol[] getSymbols() {
 		return symbols;
