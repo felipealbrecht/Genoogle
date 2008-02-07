@@ -69,6 +69,7 @@ public class DNASequencesPopulator {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Sequence> readPopulation(String path) throws FileNotFoundException, IOException, ClassNotFoundException {
 		File file = new File(path);
 		if (file.exists()) {

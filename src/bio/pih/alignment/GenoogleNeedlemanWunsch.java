@@ -307,6 +307,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 *         from query and target.
 	 * @throws Exception
 	 */
+	@Override
 	public Alignment getAlignment(Sequence query, Sequence target) throws Exception {
 		pairwiseAlignment(query, target);
 		return pairalign;
@@ -346,18 +347,14 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * 
 	 * @see toolbox.align.SequenceAlignment#getAlignment()
 	 */
+	@Override
 	public String getAlignmentString() throws BioException {
 		return alignment;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see toolbox.align.SequenceAlignment#alignAll(org.biojava.bio.seq.SequenceIterator,
-	 *      org.biojava.bio.seq.db.SequenceDB)
-	 */
-	public List alignAll(SequenceIterator source, SequenceDB subjectDB) throws NoSuchElementException, BioException {
-		List l = new LinkedList();
+	@Override
+	public List<Alignment> alignAll(SequenceIterator source, SequenceDB subjectDB) throws NoSuchElementException, BioException {
+		List<Alignment> l = new LinkedList<Alignment>();
 		while (source.hasNext()) {
 			Sequence query = source.nextSequence();
 			// compare all the sequences of both sets.
@@ -374,9 +371,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * A simpler version of pairwiseAlignment that align {@link SymbolList} and
+	 * A simpler version of pairwiseAlignment that align two {@link SymbolList} and
 	 * return its score.
 	 */
+	@Override
 	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
@@ -441,10 +439,15 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	/**
 	 * Global pairwise sequence alginment of two BioJava-Sequence objects
 	 * according to the Needleman-Wunsch-algorithm.
+	 * @param query 
+	 * @param subject 
+	 * @return the alignment score
+	 * @throws BioRuntimeException 
 	 * 
 	 * @see org.biojava.bio.alignment.SequenceAlignment#pairwiseAlignment(org.biojava.bio.seq.Sequence,
 	 *      org.biojava.bio.seq.Sequence)
 	 */
+	@Override
 	public double pairwiseAlignment(Sequence query, Sequence subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
@@ -628,7 +631,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 				query = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(query.getAlphabet().getTokenization("token"), align[0]), query.getURN(), query.getName(), query.getAnnotation()));
 				subject = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(subject.getAlphabet().getTokenization("token"), align[1]), subject.getURN(), subject.getName(), subject.getAnnotation()));
-				Map m = new HashMap();
+				Map<String, Sequence> m = new HashMap<String, Sequence>();
 				m.put(query.getName(), query);
 				m.put(subject.getName(), subject);
 				pairalign = new SimpleAlignment(m);

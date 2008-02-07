@@ -103,6 +103,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param ins
 	 *            costs for a single insert operation
 	 */
+	@Override
 	public void setInsert(double ins) {
 		this.insert = -ins;
 	}
@@ -116,6 +117,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param del
 	 *            costs for a single deletion operation
 	 */
+	@Override
 	public void setDelete(double del) {
 		this.delete = -del;
 	}
@@ -129,6 +131,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param ge
 	 *            costs for any gap extension
 	 */
+	@Override
 	public void setGapExt(double ge) {
 		this.gapExt = -ge;
 	}
@@ -142,6 +145,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param ma
 	 *            costs for a single match operation
 	 */
+	@Override
 	public void setMatch(double ma) {
 		this.match = -ma;
 	}
@@ -155,6 +159,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param rep
 	 *            costs for a single replace operation
 	 */
+	@Override
 	public void setReplace(double rep) {
 		this.replace = -rep;
 	}
@@ -162,6 +167,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	/**
 	 * A simpler version of pairwiseAlignment that align {@link SymbolList} and return its score.
 	 */
+	@Override
 	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
@@ -237,6 +243,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @see GenoogleSequenceAlignment#pairwiseAlignment(org.biojava.bio.seq.Sequence,
 	 *      org.biojava.bio.seq.Sequence)
 	 */
+	@Override
 	public double pairwiseAlignment(Sequence query, Sequence subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 

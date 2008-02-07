@@ -48,7 +48,7 @@ public abstract class GenoogleSequenceAlignment {
    * @return a string representation of the alignment
    * @throws BioException
    */
-  public abstract String getAlignmentString() throws Exception;
+  public abstract String getAlignmentString() throws BioException;
 
   /**
    * @param source
@@ -61,11 +61,11 @@ public abstract class GenoogleSequenceAlignment {
    * @throws NoSuchElementException
    * @throws Exception
    */
-  public abstract List alignAll(SequenceIterator source, SequenceDB subjectDB)
+  public abstract List<Alignment> alignAll(SequenceIterator source, SequenceDB subjectDB)
       throws Exception;
 
   /**
-   * Performs a pairwise sequence alignment of the two given sequences.
+   * Performs a pairwise sequence alignment of the two given SymbolList.
    * 
    * @param query
    * @param subject
@@ -73,6 +73,18 @@ public abstract class GenoogleSequenceAlignment {
    * @throws Exception
    */
   public abstract double pairwiseAlignment(SymbolList query, SymbolList subject)
+      throws Exception;
+  
+  
+  /**
+   * Performs a pairwise sequence alignment of the two given Sequence.
+   * 
+   * @param query
+   * @param subject
+   * @return score of the alignment or the distance.
+   * @throws Exception
+   */
+  public abstract double pairwiseAlignment(Sequence query, Sequence subject)
       throws Exception;
 
   /**
@@ -82,6 +94,7 @@ public abstract class GenoogleSequenceAlignment {
    * @param query
    * @param subject
    * @return Alignment
+   * @throws Exception 
    */
   public abstract Alignment getAlignment(Sequence query, Sequence subject)
       throws Exception;

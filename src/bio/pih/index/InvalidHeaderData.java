@@ -8,7 +8,7 @@ package bio.pih.index;
 public class InvalidHeaderData extends Exception {
 	
 	/**
-	 * @param the message
+	 * @param string the message 
 	 */
 	public InvalidHeaderData(String string) {
 		super(string);

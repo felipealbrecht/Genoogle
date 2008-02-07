@@ -83,7 +83,7 @@ public class SubSequenceComparerTest extends TestCase {
 	 * 
 	 */
 	@Test
-	public void testCreateData_SubSequenceLength6()  throws ValueOutOfBoundsException, IllegalSymbolException, IOException, BioException, InvalidHeaderData  {
+	public void testCreateData_SubSequenceLength5()  throws ValueOutOfBoundsException, IllegalSymbolException, IOException, BioException, InvalidHeaderData  {
 		int defaultTreadshould = 5;
 		int defaultMatch = -1;
 		int defaultDismatch = 1;
