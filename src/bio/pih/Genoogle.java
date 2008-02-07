@@ -3,10 +3,12 @@ package bio.pih;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import bio.pih.index.InvalidHeaderData;
+import bio.pih.index.SubSequencesComparer;
+import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.interfaces.CommandLine;
@@ -24,10 +26,12 @@ public class Genoogle {
 	 * <p>Options: <br>
 	 * -s Scheduler
 	 * -w [port] Worker
-	 * @throws IOException 
-	 * @throws ClassNotFoundException 
+	 * -g [gerar dados]
+	 * @throws Exception 
+	 * @throws InvalidHeaderData 
+	 * @throws ValueOutOfBoundsException 
 	 */
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	public static void main(String[] args) throws ValueOutOfBoundsException, InvalidHeaderData, Exception {
 		if (args.length < 1) {
 			System.out.println("argumentos invÃ¡lidos");
 			return;
@@ -57,8 +61,11 @@ public class Genoogle {
 			AbstractWorker worker = new MockWorker(port);
 			worker.start();
 			
+		} else if (args[0].equals("-g")) {
+			SubSequencesComparer.getDefaultInstance().generateData(true);
+			
 		} else {
-			System.out.println("-s para scheduler ou -w [port] para worker");
+			System.out.println("-s para scheduler ou -w [port] para worker ou -g para gerar dados necessários.");
 		}
 
 	}

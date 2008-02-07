@@ -1,12 +1,10 @@
 package bio.pih.index;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
@@ -20,157 +18,320 @@ import java.util.LinkedList;
 import org.biojava.bio.BioException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.alignment.GenoogleNeedlemanWunsch;
 import bio.pih.compressor.DNASequenceCompressorToShort;
-import bio.pih.search.AlignmentResult;
 import bio.pih.seq.LightweightSymbolList;
 
 /**
  * Given two sub-sequences, return the *global* alignment between they.
  * 
- * @author Albrecht
+ * @author albrecht
  * 
+ * 
+ * <p>How to use:
+ * 
+ * Create a instance, check if exists, if not createData(), else loadData(). 
+ * 
+ * <p>FILES FORMAT:<br> 
+ * Index File:<br>
+ * <code>
+ * ([encodedSequence:short][quantity:short][data offset:long]){4^8 times}
+ * </code>
+ * <br>
+ * Data file:<br>
+ * <code>
+ * ([encodedSequence:short][quantity:short]([encodedSequence,score:int]){quantity times}){4^8 times}
+ * </code>
+ * <br>
+ * The encodedSequence and quantity appears also in data file for sanity checks.<br>
+ * <br>
+ * 
+ * TODO: Remove the default values from hardcoded class and put in a configuration file.
  */
 public class SubSequencesComparer {
 
-	private final String indexFileName = "sequences.idx";
-	private final String dataFileName  = "sequences.dat";
-		
-	private final SubstitutionMatrix substitutionMatrix;
 	private final GenoogleNeedlemanWunsch aligner;
 	private final DNASequenceCompressorToShort encoder;
 
-	private static final int threadshould = 1;
-	private static final int match = -1;
-	private static final int dismatch = 1;
-	private static final int gapOpen = 2;
-	private static final int gapExtend = 0;
-
+	private static final int defaultTreadshould = 1;
+	private static final int defaultMatch = -1;
+	private static final int defaultDismatch = 1;
+	private static final int defaultGapOpen = 2;
+	private static final int defaultGapExtend = 0;
+	private static final int defaultSubSequenceLength = 8;
+	
+	private final int subSequenceLength;
+	private final int threshold;
+	private final int match;
+	private final int dismatch;
+	private final int gapOpen;
+	private final int gapExtend;	
+	private final int maxEncodedSequenceValue;
+								
+	private File indexFile = null;
+	private File dataFile  = null;
+	private FileChannel dataFileChannel = null;
+	
+	private long[] dataOffsetIndex;
+	private short[] dataQuantityIndex;
+	
+		
+	private static SubSequencesComparer defaultInstance = null;
+	
 	/**
-	 * @param args
-	 * @throws Exception
+	 * @return the default instance of {@link SubSequencesComparer} 
+	 * @throws ValueOutOfBoundsException
+	 * @throws IOException
+	 * @throws InvalidHeaderData
 	 */
-	public static void main(String[] args) throws Exception {
-		new SubSequencesComparer(DNATools.getDNA(), 8, match, dismatch, gapOpen, gapOpen, gapExtend).createData(threadshould);
-		//new SubSequencesComparer(DNATools.getDNA(), 8, match, dismatch, gapOpen, gapOpen, gapExtend).readData();
+	public static SubSequencesComparer getDefaultInstance() throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		if (defaultInstance == null) {
+			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould); 
+		}
+		return defaultInstance;
 	}
+	 
 
 	/**
 	 * @param alphabet
 	 * @param subSequenceLength
 	 * @param match
-	 * @param replace
-	 * @param insert
-	 * @param delete
+	 * @param dismatch
+	 * @param gapOpen
 	 * @param gapExtend
-	 * @throws ValueOutOfBoundsException
+	 * @param threshold
+	 * @throws ValueOutOfBoundsException 
 	 */
-	public SubSequencesComparer(FiniteAlphabet alphabet, int subSequenceLength, int match, int replace, int insert, int delete, int gapExtend) throws ValueOutOfBoundsException {
-		this.substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1, dismatch * -1); // values
-		// from
-		// ftp://ftp.ncbi.nlm.nih.gov/blast/matrices/NUC.4.4
-		this.aligner = new GenoogleNeedlemanWunsch(match, replace, insert, delete, gapExtend, substitutionMatrix);
-		this.encoder = new DNASequenceCompressorToShort(8);
-	}
-
-	private void readData() throws IOException, InvalidHeaderData {
-		File indexFile = new File(indexFileName);		
-		MappedByteBuffer mappedIndexFile = new FileInputStream(indexFile).getChannel().map(MapMode.READ_ONLY, 0, indexFile.length());				
+	public SubSequencesComparer(FiniteAlphabet alphabet, int subSequenceLength, int match, int dismatch, int gapOpen, int gapExtend, int threshold) throws ValueOutOfBoundsException {
+		this.subSequenceLength = subSequenceLength;
+		this.match = match;
+		this.dismatch = dismatch;
+		this.gapOpen = gapOpen;
+		this.gapExtend = gapExtend;
+		this.threshold = threshold;
 		
-		File dataFile = new File(dataFileName);
-		FileChannel dataChannel = new FileInputStream(dataFile).getChannel();
-		
-		for (int i = 0; i <= 10; i++) {
-			short sequence = mappedIndexFile.getShort();
-			short quantity = mappedIndexFile.getShort();
-			long  offset   = mappedIndexFile.getLong();
-		
-			System.out.println(encoder.decodeShortToString(sequence));
-			System.out.println(quantity);
-			System.out.println(offset);
-				
-			int[] similarSequences = getSimilarSequences(dataChannel, sequence, quantity, offset);
-			int exacly = similarSequences[1];
-			int veryDifferent = similarSequences[similarSequences.length-1];
-			
-			System.out.println("mais similar e nao exata: " + (encoder.decodeShortToString(ComparationResult.getSequenceFromRepresentation(exacly))) + " pontuation: " + ComparationResult.getScoreFromRepresentation(exacly));
-			System.out.println("mais diferente: " + (encoder.decodeShortToString(ComparationResult.getSequenceFromRepresentation(veryDifferent))) + " pontuação: " + ComparationResult.getScoreFromRepresentation(veryDifferent));
-			System.out.println("-------");			
-		}
-
+		SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1, dismatch * -1); // values
+		this.aligner = new GenoogleNeedlemanWunsch(match, dismatch, gapOpen, gapOpen, gapExtend, substitutionMatrix);
+		this.encoder = new DNASequenceCompressorToShort(subSequenceLength);
+		this.maxEncodedSequenceValue = (int) Math.pow(alphabet.size(), subSequenceLength) - 1;
 	}
 	
-	int[] getSimilarSequences(FileChannel dataChannel, short sequence, short quantity, long offset) throws IOException, InvalidHeaderData {
+	/**
+	 * @return the maximum value for a sequence that is possible for this actual alphabet and sequence length
+	 */
+	public int getMaxEncodedSequenceValue() {
+		return this.maxEncodedSequenceValue;
+	}
+
+	private String indexFileName = null;
+	/**
+	 * @return name of the file containing the index of the data of this {@link SubSequencesComparer} score scheme. 
+	 */
+	public String getIndexFileName() {
+		if (this.indexFileName == null) {
+			StringBuilder sb = new StringBuilder("subSequencesComparer");
+			sb.append("_");
+			sb.append(subSequenceLength);
+			sb.append("_");
+			sb.append(match);
+			sb.append("_");
+			sb.append(dismatch);
+			sb.append("_");
+			sb.append(gapOpen);
+			sb.append("_");
+			sb.append(gapExtend);
+			sb.append("_");
+			sb.append(threshold);
+			sb.append(".idx");
+			this.indexFileName = sb.toString();
+		}
+		return this.indexFileName;
+	}
+	
+	private String dataFileName = null;
+	/**
+	 * @return name of the file containing the the data of this {@link SubSequencesComparer} score scheme. 
+	 */
+	public String getDataFileName() {
+		if (this.dataFileName == null) {
+			StringBuilder sb = new StringBuilder("subSequencesComparer");
+			sb.append("_");
+			sb.append(subSequenceLength);
+			sb.append("_");
+			sb.append(match);
+			sb.append("_");
+			sb.append(dismatch);
+			sb.append("_");
+			sb.append(gapOpen);
+			sb.append("_");
+			sb.append(gapExtend);
+			sb.append("_");
+			sb.append(threshold);
+			sb.append(".bin");
+			this.dataFileName = sb.toString();
+		}
+		return this.dataFileName;
+	}
+	
+	private File getIndexFile() {
+		if (indexFile == null) {
+			indexFile = new File(getIndexFileName());
+		}
+		return indexFile;
+	}
+	
+	/**
+	 * TODO: check if the file is *really* a index file 
+	 * @return if a file having the appropriate name for index exists.
+	 */
+	public boolean hasIndexFile() {
+		return getIndexFile().isFile() && getIndexFile().exists();
+	}
+	
+	
+	private File getDataFile() {
+		if (dataFile == null) {
+			dataFile = new File(getDataFileName());
+		}
+		return dataFile;
+	}
+	
+	/**
+	 * TODO: check if the file is *really* a data file
+	 * @return if a file having the appropriate name for data exists.
+	 */
+	public boolean hasDataFile() {
+		return getDataFile().isFile() && getDataFile().exists();
+	}
+	
+	private FileChannel getDataFileChannel() throws FileNotFoundException {
+		if (dataFileChannel == null) {
+			dataFileChannel = new FileInputStream(dataFile).getChannel(); 
+		}
+		return dataFileChannel;
+	}
+	
+	/**
+	 * Load the data (index and the data itself) for utilize it.
+	 * @throws IOException
+	 * @throws InvalidHeaderData
+	 */
+	public void load() throws IOException, InvalidHeaderData {
+		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, indexFile.length());
 		
-		int resultsQtd = quantity * 4;
-		MappedByteBuffer map = dataChannel.map(MapMode.READ_ONLY, offset, 2+2+resultsQtd);
+		short sequence ;
+		short quantity;
+		long offset;
+ 
+		this.dataQuantityIndex = new short[maxEncodedSequenceValue+1];
+		this.dataOffsetIndex = new long[maxEncodedSequenceValue+1];
+							
+		for (int i = 0; i <= maxEncodedSequenceValue; i++) {
+			sequence = mappedIndexFile.getShort();
+			quantity = mappedIndexFile.getShort();
+			offset = mappedIndexFile.getLong();
+
+			// Just to check the headers
+			getSimilarSequences(sequence, quantity, offset);
+
+			if (sequence != i) {
+				throw new InvalidHeaderData("Sequence count do not match sequence position.");
+			}
+			this.dataQuantityIndex[sequence] = quantity;
+			this.dataOffsetIndex[sequence] = offset;
+		}
+	}
+
+	/**
+	 * @param encodedSequence
+	 * @return the similar subsequences that are equal or higher than threshold.
+	 * @throws IOException
+	 * @throws InvalidHeaderData
+	 */
+	public int[] getSimilarSequences(short encodedSequence) throws IOException, InvalidHeaderData {
+		long offset = dataOffsetIndex[encodedSequence];
+		short quantity = dataQuantityIndex[encodedSequence];
+		
+		return getSimilarSequences(encodedSequence, quantity, offset);
+	}
+	
+	private int[] getSimilarSequences(short encodedSequence, short quantity, long offset) throws IOException, InvalidHeaderData {
+		int resultsInByte = quantity * 4;
+		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 2 + 2 + resultsInByte);
 		IntBuffer buffer = map.asIntBuffer();
 		int header = buffer.get();
-		if ((header >> 16) != sequence) {
-			throw new InvalidHeaderData("the value " + (header >> 16) + " is different from " + sequence);
+		if ((header >> 16) != encodedSequence) {
+			throw new InvalidHeaderData("the value " + (header >> 16) + " is different from " + encodedSequence);
 		}
-		
+
 		if ((header & 0xFFFF) != quantity) {
-			throw new InvalidHeaderData("the value " + (header & 0xFFFF) + " is different from " + sequence);
+			throw new InvalidHeaderData("the value " + (header & 0xFFFF) + " is different from " + encodedSequence);
 		}
-						
+
 		int similarSequences[] = new int[quantity];
 		buffer.get(similarSequences, 0, quantity);
 		return similarSequences;
 	}
 
-	/*
-	 * offset index
-	 * 
-	 * <SEQUENCIA:2><QUANTITY:2><OFFSET:64>
-	 * 
+	/**
+	 * @param alignmentIntRepresentation
+	 * @return the score from int representation
 	 */
-
-	/*
-	 * data:
-	 * 
-	 * <SEQUENCIA:2><QUANTIDADE:4><<SEQUENCIA:><SCORE:8>>(CONTINUA)
+	public static short getScoreFromIntRepresentation(int alignmentIntRepresentation) {
+		return ComparationResult.getScoreFromRepresentation(alignmentIntRepresentation);
+	}
+	
+	/**
+	 * @param alignmentIntRepresentation
+	 * @return the sequence from int representation
 	 */
-
-	private void createData(int threadshould) throws Exception {
-		int max = 0xFFFF;
+	public static short getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
+		return ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation);
+	}
+	
+	/**
+	 * Same as generateData(false)
+	 * @throws IOException
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 */
+	public void generateData() throws IOException, IllegalSymbolException, BioException {
+		generateData(false);
+	}
+	
+	
+	/**
+	 * Calculate and store data for the actual score schema.  
+	 * @param verbose 
+	 * @throws IOException 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
+	 * @throws Exception
+	 */
+	public void generateData(boolean verbose) throws IOException, IllegalSymbolException, BioException {
 		int score;
 		long initialTime = System.currentTimeMillis();
+		ComparationResult ar;
 		LinkedList<ComparationResult> results;
 
-		File indexFile = new File(indexFileName);
-		indexFile.delete();
-		indexFile.createNewFile();
-		FileChannel indexFileChannel = new FileOutputStream(indexFile).getChannel();
+		
+		getIndexFile().delete();
+		getIndexFile().createNewFile();
+		FileChannel indexFileChannel = new FileOutputStream(getIndexFile()).getChannel();
 
-		File dataFile = new File(dataFileName);
-		dataFile.delete();
-		dataFile.createNewFile();
-		FileChannel dataFileChannel = new FileOutputStream(dataFile).getChannel();
+		getDataFile().delete();
+		getDataFile().createNewFile();
+		FileChannel dataFileChannel = new FileOutputStream(getDataFile()).getChannel();
 
-		for (int encodedSequence1 = 0; encodedSequence1 <= max; encodedSequence1++) {
-
+		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
 			results = new LinkedList<ComparationResult>();
-			for (int encodedSequence2 = 0; encodedSequence2 <= max; encodedSequence2++) {
+			for (int encodedSequence2 = 0; encodedSequence2 <= maxEncodedSequenceValue; encodedSequence2++) {
 				score = (int) compareCompactedSequences((short) encodedSequence1, (short) encodedSequence2);
-
-				ComparationResult ar = new ComparationResult((short) score, (short) encodedSequence2);
-				int alignmentIntRepresentation = ar.getIntRepresentation();
-
-				if (ComparationResult.getScoreFromRepresentation(alignmentIntRepresentation) != (short) score) {
-					System.out.println("score DIFERENTE!");
-				}
-
-				if (ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation) != (short) encodedSequence2) {
-					System.out.println("sequence DIfererente");
-				}
-
-				if (score > 0) {
+				ar = new ComparationResult((short) score, (short) encodedSequence2);
+				if (score >= this.threshold) {
 					results.add(ar);
 				}
 			}
@@ -180,46 +341,49 @@ public class SubSequencesComparer {
 					return o2.getScore() - o1.getScore();
 				}
 			});
-			System.out.println(getSequenceFromShort((short) (encodedSequence1 & 0xFFF)).getString() + " - " + results.size());
-			
-			System.out.println(encoder.decodeShortToString(results.get(results.size()-1).getSequence()));
-			
-			 // 2 for sequence + 2 for the quantity + 64 for offset
+
+			if (verbose) {
+				System.out.println(getSequenceFromShort(
+						(short) (encodedSequence1 & 0xFFFF)).getString() + "\t" + 
+						results.size() +"\t" + 
+						encodedSequence1 +"\t" + 
+						Integer.toHexString(encodedSequence1) + "\t" + 
+						Integer.toBinaryString(encodedSequence1));				
+			}
+
+			// 2 for sequence + 2 for the quantity + 64 for offset
 			ByteBuffer buffer = ByteBuffer.allocate(68);
-			
-			buffer.putShort((short)(encodedSequence1 & 0xFFFF));
-			buffer.putShort((short)results.size()); 			
+			buffer.putShort((short) (encodedSequence1 & 0xFFFF));
+			buffer.putShort((short) results.size());
 			buffer.putLong(dataFileChannel.position());
 			buffer.flip();
-			
 			indexFileChannel.write(buffer);
-							
-			// 2 for sequence itself and 2 for the quantity (both for sanity check) and 4 bytes for each result
+
+			// 2 for sequence itself and 2 for the quantity (both for sanity
+			// check) and 4 bytes for each result
 			int size = results.size() * 4 + 2 + 2;
 			buffer = ByteBuffer.allocate(size);
 			buffer.putShort((short) (encodedSequence1 & 0xFFFF));
 			buffer.putShort((short) results.size());
-			for(ComparationResult cr: results) {
+			for (ComparationResult cr : results) {
 				buffer.putInt(cr.getIntRepresentation());
 			}
 			buffer.flip();
 			dataFileChannel.write(buffer);
 		}
-		
+
 		indexFileChannel.close();
 		dataFileChannel.close();
 
-		System.out.println("-----------------------------");
-		System.out.println(" tempo total: " + (System.currentTimeMillis() - initialTime));
-		System.out.println("");
+		if (verbose) {
+			System.out.println("-----------------------------");
+			System.out.println(" tempo total: " + (System.currentTimeMillis() - initialTime));
+			System.out.println("");
+		}
 	}
 
-	private void saveData() {
 
-	}
-
-	static HashMap<Short, LightweightSymbolList> encodedToSymbolList = new HashMap<Short, LightweightSymbolList>();
-
+	private HashMap<Short, LightweightSymbolList> encodedToSymbolList = new HashMap<Short, LightweightSymbolList>();
 	private LightweightSymbolList getSequenceFromShort(short encodedSymbolList) throws IllegalSymbolException, BioException {
 		LightweightSymbolList symbolList = encodedToSymbolList.get(encodedSymbolList);
 		if (symbolList == null) {
@@ -229,104 +393,13 @@ public class SubSequencesComparer {
 		return symbolList;
 	}
 
-	private double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws Exception {
+	private double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws IllegalSymbolException, BioException {
 		LightweightSymbolList symbolList1 = getSequenceFromShort(encodedSequence1);
 		LightweightSymbolList symbolList2 = getSequenceFromShort(encodedSequence2);
-
-		// System.out.println(symbolList1.getString() + " - " +
-		// symbolList2.getString());
 		return aligner.pairwiseAlignment(symbolList1, symbolList2) * -1;
 	}
 
-	private void blah() throws BioException {
-		Sequence seq1 = new SimpleSequence(LightweightSymbolList.createDNA("ACTGCGTC"), null, "ACTGCGTC", null);
-		Sequence seq2 = new SimpleSequence(LightweightSymbolList.createDNA("TGCGTCCA"), null, "TGCGTCCA", null);
-		double value = aligner.pairwiseAlignment(seq1, seq2);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq3 = new SimpleSequence(LightweightSymbolList.createDNA("TGGACCCC"), null, "TGGACCCC", null);
-		Sequence seq4 = new SimpleSequence(LightweightSymbolList.createDNA("TGGACCCC"), null, "TGGACCCC", null);
-		value = aligner.pairwiseAlignment(seq3, seq4);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq3a = new SimpleSequence(LightweightSymbolList.createDNA("AAAAAAAA"), null, "AAAAAAAA", null);
-		Sequence seq4a = new SimpleSequence(LightweightSymbolList.createDNA("CCCCCCCC"), null, "CCCCCCCC", null);
-		value = aligner.pairwiseAlignment(seq3a, seq4a);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq5 = new SimpleSequence(LightweightSymbolList.createDNA("AAAACCCC"), null, "AAAACCCC", null);
-		Sequence seq6 = new SimpleSequence(LightweightSymbolList.createDNA("CCCCAAAA"), null, "CCCCAAAA", null);
-		value = aligner.pairwiseAlignment(seq6, seq5);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq5a = new SimpleSequence(LightweightSymbolList.createDNA("AATCCCCT"), null, "AATCCCCT", null);
-		Sequence seq6a = new SimpleSequence(LightweightSymbolList.createDNA("CCCCAAGA"), null, "CCCCAAGA", null);
-		value = aligner.pairwiseAlignment(seq6a, seq5a);
-		System.out.println(aligner.getAlignmentString());
-
-		// continuacao da seq6a
-		Sequence seq5aa = new SimpleSequence(LightweightSymbolList.createDNA("AATCCCCT"), null, "AATCCCCT", null);
-		Sequence seq6aa = new SimpleSequence(LightweightSymbolList.createDNA("TCCCCAAG"), null, "TCCCAAAG", null);
-		value = aligner.pairwiseAlignment(seq6aa, seq5aa);
-		System.out.println(aligner.getAlignmentString());
-
-		// continuacao da seq5a
-		Sequence seq5ab = new SimpleSequence(LightweightSymbolList.createDNA("CAATCCCC"), null, "CAATCCCC", null);
-		Sequence seq6ab = new SimpleSequence(LightweightSymbolList.createDNA("CCCCAAGA"), null, "CCCCAAGA", null);
-		value = aligner.pairwiseAlignment(seq6ab, seq5ab);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq5b = new SimpleSequence(LightweightSymbolList.createDNA("AACCCCCT"), null, "AACCCCCT", null);
-		Sequence seq6b = new SimpleSequence(LightweightSymbolList.createDNA("CCCCCAAA"), null, "CCCCCAAA", null);
-		value = aligner.pairwiseAlignment(seq6b, seq5b);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq5c = new SimpleSequence(LightweightSymbolList.createDNA("AACCCCCT"), null, "AACCCCCT", null);
-		Sequence seq6c = new SimpleSequence(LightweightSymbolList.createDNA("ACCCCCAA"), null, "ACCCCAAA", null);
-		value = aligner.pairwiseAlignment(seq6c, seq5c);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq5d = new SimpleSequence(LightweightSymbolList.createDNA("TACCCCCT"), null, "TACCCCCT", null);
-		Sequence seq6d = new SimpleSequence(LightweightSymbolList.createDNA("TCCCCCAA"), null, "TCCCCCAA", null);
-		value = aligner.pairwiseAlignment(seq6d, seq5d);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq7 = new SimpleSequence(LightweightSymbolList.createDNA("AAAAAAAA"), null, "AAAAAAAA", null);
-		Sequence seq8 = new SimpleSequence(LightweightSymbolList.createDNA("AAAAAAAA"), null, "AAAAAAAA", null);
-		value = aligner.pairwiseAlignment(seq7, seq8);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq7a = new SimpleSequence(LightweightSymbolList.createDNA("AAAAAAAA"), null, "AAAAAAAA", null);
-		Sequence seq8a = new SimpleSequence(LightweightSymbolList.createDNA("AAAAAAAC"), null, "AAAAAAAC", null);
-		value = aligner.pairwiseAlignment(seq7a, seq8a);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq9 = new SimpleSequence(LightweightSymbolList.createDNA("AACCAACC"), null, "AACCAACC", null);
-		Sequence seq10 = new SimpleSequence(LightweightSymbolList.createDNA("CCAACCAA"), null, "CCAACCAA", null);
-		value = aligner.pairwiseAlignment(seq9, seq10);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq11 = new SimpleSequence(LightweightSymbolList.createDNA("AAAAACCC"), null, "AAAAACCC", null);
-		Sequence seq12 = new SimpleSequence(LightweightSymbolList.createDNA("CCCAAAAA"), null, "CCCAAAAA", null);
-		value = aligner.pairwiseAlignment(seq11, seq12);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq11a = new SimpleSequence(LightweightSymbolList.createDNA("AAATGCCC"), null, "AAATGCCC", null);
-		Sequence seq12a = new SimpleSequence(LightweightSymbolList.createDNA("CCCGTAAA"), null, "CCCGTAAA", null);
-		value = aligner.pairwiseAlignment(seq11a, seq12a);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq13 = new SimpleSequence(LightweightSymbolList.createDNA("AAAGGCCC"), null, "AAAAACCC", null);
-		Sequence seq14 = new SimpleSequence(LightweightSymbolList.createDNA("CCCGGAAA"), null, "CCCAAAAA", null);
-		aligner.pairwiseAlignment(seq13, seq14);
-		System.out.println(aligner.getAlignmentString());
-
-		Sequence seq15 = new SimpleSequence(LightweightSymbolList.createDNA("ACTGCCCC"), null, "AAAAACCC", null);
-		Sequence seq16 = new SimpleSequence(LightweightSymbolList.createDNA("ACTGTTTT"), null, "CCCAAAAA", null);
-		aligner.pairwiseAlignment(seq15, seq16);
-		System.out.println(aligner.getAlignmentString());
-	}
-
+	
 	private static class ComparationResult {
 		short score;
 		short sequence;
@@ -379,7 +452,7 @@ public class SubSequencesComparer {
 
 		@Override
 		public String toString() {
-			return "[" + score + "/" + encodedToSymbolList.get((short) (sequence & 0xFFFF)).getString() + "]";
+			return "[" + score + "/" + (sequence & 0xFFFF) + "]";
 		}
 
 	}
