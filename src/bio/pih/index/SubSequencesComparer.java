@@ -22,6 +22,7 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.alignment.GenoogleNeedlemanWunsch;
+import bio.pih.alignment.GenoogleSequenceAlignment;
 import bio.pih.compressor.DNASequenceCompressorToShort;
 import bio.pih.seq.LightweightSymbolList;
 
@@ -56,7 +57,7 @@ public class SubSequencesComparer {
 	private final GenoogleNeedlemanWunsch aligner;
 	private final DNASequenceCompressorToShort encoder;
 
-	private static final int defaultTreadshould = 1;
+	private static final int defaultThreshold = 1;
 	private static final int defaultMatch = -1;
 	private static final int defaultDismatch = 1;
 	private static final int defaultGapOpen = 2;
@@ -76,20 +77,18 @@ public class SubSequencesComparer {
 	private FileChannel dataFileChannel = null;
 	
 	private long[] dataOffsetIndex;
-	private short[] dataQuantityIndex;
+	private int[] dataQuantityIndex;
 	
 		
 	private static SubSequencesComparer defaultInstance = null;
 	
 	/**
 	 * @return the default instance of {@link SubSequencesComparer} 
-	 * @throws ValueOutOfBoundsException
-	 * @throws IOException
-	 * @throws InvalidHeaderData
+	 * @throws ValueOutOfBoundsException 
 	 */
-	public static SubSequencesComparer getDefaultInstance() throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public static SubSequencesComparer getDefaultInstance() throws ValueOutOfBoundsException {
 		if (defaultInstance == null) {
-			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould); 
+			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold); 
 		}
 		return defaultInstance;
 	}
@@ -215,27 +214,41 @@ public class SubSequencesComparer {
 	}
 	
 	/**
-	 * Load the data (index and the data itself) for utilize it.
+	 * Same <code>load(false)</code>
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
 	public void load() throws IOException, InvalidHeaderData {
-		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, indexFile.length());
+		load(false);
+	}
+	
+	/**
+	 * Load the data (index and the data itself) for utilize it.
+	 * @param check <code>true</code> if the consistency must be checked
+	 * @throws IOException
+	 * @throws InvalidHeaderData
+	 */
+	public void load(boolean check) throws IOException, InvalidHeaderData {
+		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, indexFile.length());		
 		
-		short sequence ;
-		short quantity;
+		int encodedSequenceAndQuantity;
+		int sequence ;
+		int quantity;
 		long offset;
  
-		this.dataQuantityIndex = new short[maxEncodedSequenceValue+1];
+		this.dataQuantityIndex = new int[maxEncodedSequenceValue+1];
 		this.dataOffsetIndex = new long[maxEncodedSequenceValue+1];
 							
 		for (int i = 0; i <= maxEncodedSequenceValue; i++) {
-			sequence = mappedIndexFile.getShort();
-			quantity = mappedIndexFile.getShort();
+			encodedSequenceAndQuantity = mappedIndexFile.getInt();
+			sequence = (encodedSequenceAndQuantity >> 16) & 0xFFFF;
+			quantity = encodedSequenceAndQuantity & 0xFFFF;
 			offset = mappedIndexFile.getLong();
 
-			// Just to check the headers
-			getSimilarSequences(sequence, quantity, offset);
+			// check the data consistency ?
+			if (check) {
+				getSimilarSequences(sequence, quantity, offset);
+			}
 
 			if (sequence != i) {
 				throw new InvalidHeaderData("Sequence count do not match sequence position.");
@@ -251,19 +264,19 @@ public class SubSequencesComparer {
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
-	public int[] getSimilarSequences(short encodedSequence) throws IOException, InvalidHeaderData {
+	public int[] getSimilarSequences(int encodedSequence) throws IOException, InvalidHeaderData {
 		long offset = dataOffsetIndex[encodedSequence];
-		short quantity = dataQuantityIndex[encodedSequence];
+		int quantity = dataQuantityIndex[encodedSequence];
 		
 		return getSimilarSequences(encodedSequence, quantity, offset);
 	}
 	
-	private int[] getSimilarSequences(short encodedSequence, short quantity, long offset) throws IOException, InvalidHeaderData {
+	private int[] getSimilarSequences(int encodedSequence, int quantity, long offset) throws IOException, InvalidHeaderData {
 		int resultsInByte = quantity * 4;
 		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 2 + 2 + resultsInByte);
 		IntBuffer buffer = map.asIntBuffer();
 		int header = buffer.get();
-		if ((header >> 16) != encodedSequence) {
+		if (((header >> 16) & 0xFFFF) != encodedSequence) {
 			throw new InvalidHeaderData("the value " + (header >> 16) + " is different from " + encodedSequence);
 		}
 
@@ -288,7 +301,7 @@ public class SubSequencesComparer {
 	 * @param alignmentIntRepresentation
 	 * @return the sequence from int representation
 	 */
-	public static short getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
+	public static int getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
 		return ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation);
 	}
 	
@@ -335,12 +348,7 @@ public class SubSequencesComparer {
 					results.add(ar);
 				}
 			}
-			Collections.sort(results, new Comparator<ComparationResult>() {
-				@Override
-				public int compare(ComparationResult o1, ComparationResult o2) {
-					return o2.getScore() - o1.getScore();
-				}
-			});
+			Collections.sort(results, ComparationResult.getScoreComparator());
 
 			if (verbose) {
 				System.out.println(getSequenceFromShort(
@@ -393,14 +401,85 @@ public class SubSequencesComparer {
 		return symbolList;
 	}
 
-	private double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws IllegalSymbolException, BioException {
+	/**
+	 * Compare and align two encoded sub-sequences
+	 * @param encodedSequence1
+	 * @param encodedSequence2
+	 * @return the alignment score
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 */
+	public double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws IllegalSymbolException, BioException {
 		LightweightSymbolList symbolList1 = getSequenceFromShort(encodedSequence1);
 		LightweightSymbolList symbolList2 = getSequenceFromShort(encodedSequence2);
 		return aligner.pairwiseAlignment(symbolList1, symbolList2) * -1;
 	}
 
 	
-	private static class ComparationResult {
+	/**
+	 * @return the default threshold
+	 */
+	public static int getDefaultTreadshould() {
+		return defaultThreshold;
+	}
+	
+	/**
+	 * @return the default dismatch cost
+	 */
+	public static int getDefaultDismatch() {
+		return defaultDismatch;
+	}
+	
+	/**
+	 * @return the default gap extend cost
+	 */
+	public static int getDefaultGapExtend() {
+		return defaultGapExtend;
+	}
+	/**
+	 * @return the default gap open cost
+	 */	
+	public static int getDefaultGapOpen() {
+		return defaultGapOpen;
+	}
+	
+	/**
+	 * @return the default match value
+	 */
+	public static int getDefaultMatch() {
+		return defaultMatch;
+	}
+	
+	/**
+	 * @return the default sub-sequence length
+	 */
+	public static int getDefaultSubSequenceLength() {
+		return defaultSubSequenceLength;
+	}	
+	
+	
+	/**
+	 * @return the aligner used
+	 */
+	public GenoogleSequenceAlignment getAligner() {
+		return aligner;
+	}
+	
+	
+	/**
+	 * @return the encoder used
+	 */
+	public DNASequenceCompressorToShort getEncoder() {
+		return encoder;
+	}
+	
+	
+	/**
+	 * Stores an sequences and its scores.
+	 * Used to represent these informations into a int
+	 *
+	 */
+	public static class ComparationResult {
 		short score;
 		short sequence;
 
@@ -446,14 +525,33 @@ public class SubSequencesComparer {
 		 * @param alignmentIntRepresentation
 		 * @return the sequence
 		 */
-		public static short getSequenceFromRepresentation(int alignmentIntRepresentation) {
-			return (short) (alignmentIntRepresentation >> 16);
+		public static int getSequenceFromRepresentation(int alignmentIntRepresentation) {
+			return (alignmentIntRepresentation >> 16) & 0xFFFF;
 		}
 
 		@Override
 		public String toString() {
 			return "[" + score + "/" + (sequence & 0xFFFF) + "]";
 		}
+		
+		static Comparator<ComparationResult> scoreComparator = null;		
+		/**
+		 * @return a comparator to compare two {@link ComparationResult} based in their score.
+		 */
+		public static Comparator<ComparationResult> getScoreComparator() {
+			if (scoreComparator == null) {
+				scoreComparator = new Comparator<ComparationResult>() {
+					@Override
+					public int compare(ComparationResult o1, ComparationResult o2) {
+						return o2.getScore() - o1.getScore();
+					}
+				};
+			}
+			return scoreComparator;
+		}
+
+
+		
 
 	}
 }
