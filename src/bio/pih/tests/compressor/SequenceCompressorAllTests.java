@@ -1,7 +1,7 @@
 package bio.pih.tests.compressor;
 
-import bio.pih.compressor.SequenceCompressor;
 import junit.framework.TestSuite;
+import bio.pih.encoder.SequenceEncoder;
 
 /**
  * @author albrecht
@@ -10,7 +10,7 @@ import junit.framework.TestSuite;
 public class SequenceCompressorAllTests extends TestSuite {
 	
 	/**
-	 * @return all tests from {@link SequenceCompressor} and its subclasses
+	 * @return all tests from {@link SequenceEncoder} and its subclasses
 	 */
 	@org.junit.Test
 	public static TestSuite suite() {

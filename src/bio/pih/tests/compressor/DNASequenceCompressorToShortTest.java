@@ -7,8 +7,8 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.junit.Test;
 
-import bio.pih.compressor.DNASequenceCompressorToShort;
-import bio.pih.compressor.SequenceCompressor;
+import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.seq.LightweightSymbolList;
 
@@ -27,8 +27,8 @@ public class DNASequenceCompressorToShortTest extends TestCase {
 	 * @throws IllegalAccessException
 	 */
 	@Test
-	public void testEncodeDNASubSymbolList() throws ValueOutOfBoundsException, IllegalSymbolException, InstantiationException, IllegalAccessException {
-		DNASequenceCompressorToShort compressor = new DNASequenceCompressorToShort(8);
+	public void testEncodeDNASubSymbolList() throws ValueOutOfBoundsException, IllegalSymbolException {
+		DNASequenceEncoderToShort compressor = new DNASequenceEncoderToShort(8);
 		
 		String stringSequence = "TCGGACTG"; // 1101101000011110
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
@@ -67,8 +67,8 @@ public class DNASequenceCompressorToShortTest extends TestCase {
 	 * @throws IllegalAccessException
 	 */
 	@Test
-	public void testDecodeToStringSubSequence() throws ValueOutOfBoundsException, IllegalSymbolException, InstantiationException, IllegalAccessException {
-		DNASequenceCompressorToShort compressor = new DNASequenceCompressorToShort(8);
+	public void testDecodeToStringSubSequence() throws ValueOutOfBoundsException {
+		DNASequenceEncoderToShort compressor = new DNASequenceEncoderToShort(8);
 
 		// String stringSequence = "TCGGACTG"; // 1101101000011110
 		String stringSequence = compressor.decodeShortToString((short) Integer.parseInt("1101101000011110", 2));
@@ -107,8 +107,8 @@ public class DNASequenceCompressorToShortTest extends TestCase {
 	 * @throws BioException
 	 */
 	@Test
-	public void testEncodedAndDecodeToShortSubSequence() throws ValueOutOfBoundsException, InstantiationException, IllegalAccessException, BioException {
-		DNASequenceCompressorToShort compressor = new DNASequenceCompressorToShort(8);
+	public void testEncodedAndDecodeToShortSubSequence() throws ValueOutOfBoundsException, BioException {
+		DNASequenceEncoderToShort compressor = new DNASequenceEncoderToShort(8);
 
 		String stringSequence = "TCGGACTG"; // 1101101000011110
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
@@ -147,40 +147,40 @@ public class DNASequenceCompressorToShortTest extends TestCase {
 	}
 
 	/**
-	 * Test the sequence encodeing of {@link DNASequenceCompressorToShort}
+	 * Test the sequence encoding of {@link DNASequenceCompressorToShort}
 	 * @throws ValueOutOfBoundsException
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 * @throws BioException
 	 */
 	@Test
-	public void testDecodeToIntegerSequence() throws ValueOutOfBoundsException, InstantiationException, IllegalAccessException, BioException {
-		DNASequenceCompressorToShort compressor = new DNASequenceCompressorToShort(8);
+	public void testDecodeToIntegerSequence() throws ValueOutOfBoundsException, BioException {
+		DNASequenceEncoderToShort compressor = new DNASequenceEncoderToShort(8);
 
 		SymbolList createDNA = LightweightSymbolList.createDNA("TCTAGCCAATTTTTTTACTGGTCATTTTTTTTCCCCCCCCAACAACAATCGGACTG");		                                                        
 		short[] encodeSequenceToShort = compressor.encodeSymbolListToShortArray(createDNA);
-		assertEquals((short) Integer.parseInt("1101110010010100", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()]);
-		assertEquals((short) Integer.parseInt("0011111111111111", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+1]);
-		assertEquals((short) Integer.parseInt("0001111010110100", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+2]);
-		assertEquals((short) Integer.parseInt("1111111111111111", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+3]);
-		assertEquals((short) Integer.parseInt("0101010101010101", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+4]);
-		assertEquals((short) Integer.parseInt("0000010000010000", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+5]);
-		assertEquals((short) Integer.parseInt("1101101000011110", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+6]);
-		assertEquals( createDNA.length(), encodeSequenceToShort[SequenceCompressor.getPositionLength()]);
+		assertEquals((short) Integer.parseInt("1101110010010100", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()]);
+		assertEquals((short) Integer.parseInt("0011111111111111", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+1]);
+		assertEquals((short) Integer.parseInt("0001111010110100", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+2]);
+		assertEquals((short) Integer.parseInt("1111111111111111", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+3]);
+		assertEquals((short) Integer.parseInt("0101010101010101", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+4]);
+		assertEquals((short) Integer.parseInt("0000010000010000", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+5]);
+		assertEquals((short) Integer.parseInt("1101101000011110", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+6]);
+		assertEquals( createDNA.length(), encodeSequenceToShort[SequenceEncoder.getPositionLength()]);
 		assertEquals( createDNA, compressor.decodeShortArrayToSymbolList(encodeSequenceToShort));
 		
 
 		createDNA = LightweightSymbolList.createDNA("TCTAGC");
 		encodeSequenceToShort = compressor.encodeSymbolListToShortArray(createDNA);
-		assertEquals((short) Integer.parseInt("1101110010010000", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()]);
-		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceCompressor.getPositionLength()]);
+		assertEquals((short) Integer.parseInt("1101110010010000", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()]);
+		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceEncoder.getPositionLength()]);
 		assertEquals(createDNA, compressor.decodeShortArrayToSymbolList(encodeSequenceToShort));
 
 		createDNA = LightweightSymbolList.createDNA("TTTTACTGGTC");
 		encodeSequenceToShort = compressor.encodeSymbolListToShortArray(createDNA);
-		assertEquals((short) Integer.parseInt("1111111100011110", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()]);
-		assertEquals((short) Integer.parseInt("1011010000000000", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+1]);
-		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceCompressor.getPositionLength()]);
+		assertEquals((short) Integer.parseInt("1111111100011110", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()]);
+		assertEquals((short) Integer.parseInt("1011010000000000", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+1]);
+		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceEncoder.getPositionLength()]);
 		assertEquals(createDNA, compressor.decodeShortArrayToSymbolList(encodeSequenceToShort));
 
 		createDNA = LightweightSymbolList.createDNA("AAACACTA" + // 0000000100011100
@@ -190,13 +190,13 @@ public class DNASequenceCompressorToShortTest extends TestCase {
 				"GCATGAGC" + // 1001001110001001
 				"ACAACTG"); //  0001000001111000
 		encodeSequenceToShort = compressor.encodeSymbolListToShortArray(createDNA);
-		assertEquals((short) Integer.parseInt("0000000100011100", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()]);
-		assertEquals((short) Integer.parseInt("1001110001101101", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+1]);
-		assertEquals((short) Integer.parseInt("1000001100100100", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+2]);
-		assertEquals((short) Integer.parseInt("0001111000100011", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+3]);
-		assertEquals((short) Integer.parseInt("1001001110001001", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+4]);
-		assertEquals((short) Integer.parseInt("0001000001111000", 2), encodeSequenceToShort[SequenceCompressor.getPositionBeginBitsVector()+5]);
-		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceCompressor.getPositionLength()]);
+		assertEquals((short) Integer.parseInt("0000000100011100", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()]);
+		assertEquals((short) Integer.parseInt("1001110001101101", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+1]);
+		assertEquals((short) Integer.parseInt("1000001100100100", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+2]);
+		assertEquals((short) Integer.parseInt("0001111000100011", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+3]);
+		assertEquals((short) Integer.parseInt("1001001110001001", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+4]);
+		assertEquals((short) Integer.parseInt("0001000001111000", 2), encodeSequenceToShort[SequenceEncoder.getPositionBeginBitsVector()+5]);
+		assertEquals(createDNA.length(), encodeSequenceToShort[SequenceEncoder.getPositionLength()]);
 		assertEquals(createDNA, compressor.decodeShortArrayToSymbolList(encodeSequenceToShort));
 	}
 }

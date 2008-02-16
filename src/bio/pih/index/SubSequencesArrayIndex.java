@@ -11,14 +11,14 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.compressor.DNASequenceCompressorToShort;
-import bio.pih.compressor.SequenceCompressor;
+import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.SequenceEncoder;
 import bio.pih.seq.LightweightSymbolList;
 
 /**
  * @author albrecht
  */
-public class SubSequencesArrayIndex {
+public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 
 	private IndexBucket index[];
 	private HashMap<String, short[]> nameToSequenceMap;
@@ -27,7 +27,7 @@ public class SubSequencesArrayIndex {
 
 	// Okay, okay.. in some not so near future will be needed to create a
 	// factory and do not use this class directly.
-	private final DNASequenceCompressorToShort compressor;
+	private final DNASequenceEncoderToShort compressor;
 
 	/**
 	 * @param subSequenceLength
@@ -43,20 +43,16 @@ public class SubSequencesArrayIndex {
 		this.subSequenceLength = subSequenceLength;
 		this.alphabet = alphabet;
 
-		this.compressor = new DNASequenceCompressorToShort(subSequenceLength);
+		this.compressor = new DNASequenceEncoderToShort(subSequenceLength);
 
-		int indexSize = subSequenceLength * SequenceCompressor.bitsByAlphabetSize(alphabet.size());
+		int indexSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(alphabet.size());
 		// this.integerType = getClassFromSize(indexSize);
 		this.index = new IndexBucket[1 << indexSize];
 		this.nameToSequenceMap = new HashMap<String, short[]>();
 
 	}
 
-	/**
-	 * Add a sequence into index
-	 * 
-	 * @param sequence
-	 */
+	@Override
 	public void addSequence(Sequence sequence) {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
@@ -64,10 +60,10 @@ public class SubSequencesArrayIndex {
 
 		short[] encodedSequence = compressor.encodeSymbolListToShortArray(sequence);
 		nameToSequenceMap.put(sequence.getName(), encodedSequence);
-		int length = encodedSequence[SequenceCompressor.getPositionLength()] / subSequenceLength;
+		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
 
-		for (int pos = SequenceCompressor.getPositionBeginBitsVector(); pos < SequenceCompressor.getPositionBeginBitsVector() + length; pos++) {
-			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, encodedSequence[pos], (pos - SequenceCompressor.getPositionBeginBitsVector()) * subSequenceLength);
+		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {
+			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, encodedSequence[pos], (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength);
 			addSubSequence(subSequenceInfo);
 		}
 
@@ -87,23 +83,13 @@ public class SubSequencesArrayIndex {
 		indexBucket.addElement(subSequenceInfo);
 	}
 
-	/**
-	 * @param subSequenceString
-	 * @return
-	 * @throws IllegalSymbolException
-	 * @throws BioException
-	 * @throws ValueOutOfBoundsException
-	 */
+	@Override
 	public List<SubSequenceInfo> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
 
-	/**
-	 * @param subSequence
-	 * @return
-	 * @throws ValueOutOfBoundsException
-	 */
+	@Override
 	public List<SubSequenceInfo> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
@@ -112,10 +98,7 @@ public class SubSequencesArrayIndex {
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
-	/**
-	 * @param encodedSubSequence
-	 * @return
-	 */
+	@Override
 	public List<SubSequenceInfo> getMachingSubSequence(short encodedSubSequence) {
 		IndexBucket bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
@@ -124,9 +107,7 @@ public class SubSequencesArrayIndex {
 		return null;
 	}
 
-	/**
-	 * @return a string containing the status of the index.
-	 */
+	@Override
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
 		for (IndexBucket bucket : index) {

@@ -23,7 +23,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.alignment.GenoogleNeedlemanWunsch;
 import bio.pih.alignment.GenoogleSequenceAlignment;
-import bio.pih.compressor.DNASequenceCompressorToShort;
+import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.seq.LightweightSymbolList;
 
 /**
@@ -55,7 +55,7 @@ import bio.pih.seq.LightweightSymbolList;
 public class SubSequencesComparer {
 
 	private final GenoogleNeedlemanWunsch aligner;
-	private final DNASequenceCompressorToShort encoder;
+	private final DNASequenceEncoderToShort encoder;
 
 	private static final int defaultThreshold = 1;
 	private static final int defaultMatch = -1;
@@ -114,7 +114,7 @@ public class SubSequencesComparer {
 		
 		SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1, dismatch * -1); // values
 		this.aligner = new GenoogleNeedlemanWunsch(match, dismatch, gapOpen, gapOpen, gapExtend, substitutionMatrix);
-		this.encoder = new DNASequenceCompressorToShort(subSequenceLength);
+		this.encoder = new DNASequenceEncoderToShort(subSequenceLength);
 		this.maxEncodedSequenceValue = (int) Math.pow(alphabet.size(), subSequenceLength) - 1;
 	}
 	
@@ -469,7 +469,7 @@ public class SubSequencesComparer {
 	/**
 	 * @return the encoder used
 	 */
-	public DNASequenceCompressorToShort getEncoder() {
+	public DNASequenceEncoderToShort getEncoder() {
 		return encoder;
 	}
 	

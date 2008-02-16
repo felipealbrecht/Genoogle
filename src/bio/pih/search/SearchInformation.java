@@ -8,7 +8,7 @@ public class SearchInformation {
 
 	String db;
 	String query;
-	Step actualStep;
+	SearchStep actualStep;
 	int code;
 	
 	/**
@@ -16,7 +16,7 @@ public class SearchInformation {
 	 * @author albrecht
 	 *
 	 */
-	public enum Step {
+	public enum SearchStep {
 		/**
 		 * Not initialized yet
 		 */
@@ -39,7 +39,19 @@ public class SearchInformation {
 		/**
 		 * The search finalized
 		 */
-		FINISHED;
+		FINISHED,
+		
+			
+		/**
+		 * The search was canceled and stopped
+		 */
+		CANCELED,
+		
+		
+		/**
+		 * 
+		 */
+		ERASED;
 	}
 	
 	/**
@@ -51,7 +63,7 @@ public class SearchInformation {
 		this.db = db;
 		this.query = query;
 		this.code = code;
-		this.actualStep = Step.NOT_INITIALIZED;
+		this.actualStep = SearchStep.NOT_INITIALIZED;
 	}
 	
 	/**
@@ -100,14 +112,14 @@ public class SearchInformation {
 	/**
 	 * @return the actual search step.
 	 */
-	public Step getActualStep() {
+	public SearchStep getActualStep() {
 		return actualStep;
 	}
 	
 	/**
 	 * @param step
 	 */
-	public void setActualStep(Step step) {
+	public void setActualStep(SearchStep step) {
 		this.actualStep = step;		
 	}
 	

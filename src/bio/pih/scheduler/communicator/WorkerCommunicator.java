@@ -42,7 +42,7 @@ public class WorkerCommunicator implements Communicator {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public WorkerCommunicator(AbstractWorker worker, int port) throws IOException, ClassNotFoundException {
+	public WorkerCommunicator(AbstractWorker worker, int port) {
 		this.worker = worker;
 		this.port = port;
 		this.ss = null;

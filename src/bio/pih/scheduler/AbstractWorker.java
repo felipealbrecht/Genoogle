@@ -37,7 +37,7 @@ public abstract class AbstractWorker {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public AbstractWorker(int port) throws IOException, ClassNotFoundException {
+	public AbstractWorker(int port) {
 		this.communicator = new WorkerCommunicator(this, port);
 		this.runningSearch = Collections.synchronizedList(new LinkedList<SearchInformation>());
 		this.waitingList = Collections.synchronizedList(new LinkedList<SearchInformation>());

@@ -28,7 +28,7 @@ public class PontuationSchemaTest extends TestCase {
 	 * It does not test many things really, but is a good place to verify the alignments scores. 
 	 */
 	@Test
-	public void testPontuation_1_minus1_minus4_0() throws ValueOutOfBoundsException, BioException {
+	public void testPontuation_1_minus1_minus4_0() throws BioException {
 		int match = -1;
 		int dismatch = 1;
 		int gapOpen = 2;

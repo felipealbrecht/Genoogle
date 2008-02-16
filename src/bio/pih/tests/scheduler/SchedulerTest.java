@@ -29,7 +29,7 @@ public class SchedulerTest extends TestCase {
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testWorkerStartUpAndFinalization() throws IOException, ClassNotFoundException, InterruptedException {
+	public void testWorkerStartUpAndFinalization() throws IOException, InterruptedException {
 		AbstractWorker w = new MockWorker(50000);
 		w.start();
 		
@@ -66,7 +66,7 @@ public class SchedulerTest extends TestCase {
 	 * @throws ClassNotFoundException
 	 * @throws InterruptedException 
 	 */
-	public void testSchedulerAndWorkers() throws IOException, ClassNotFoundException, InterruptedException {
+	public void testSchedulerAndWorkers() throws IOException, InterruptedException {
 		AbstractWorker w1 = new MockWorker(50000);
 		AbstractWorker w2 = new MockWorker(50001);
 
@@ -106,7 +106,7 @@ public class SchedulerTest extends TestCase {
 	 * @throws ClassNotFoundException
 	 * @throws InterruptedException 
 	 */
-	public void testDoSearchs() throws IOException, ClassNotFoundException, InterruptedException {
+	public void testDoSearchs() throws IOException, InterruptedException {
 		AbstractWorker w1 = new MockWorker(50000);
 		AbstractWorker w2 = new MockWorker(50001);
 		AbstractWorker w3 = new MockWorker(50002);
@@ -151,7 +151,7 @@ public class SchedulerTest extends TestCase {
 	 * @throws ClassNotFoundException
 	 * @throws InterruptedException 
 	 */
-	public void testInterfaceTest() throws IOException, ClassNotFoundException, InterruptedException {
+	public void testInterfaceTest() throws IOException, InterruptedException {
 		AbstractWorker w1 = new MockWorker(50000);
 		AbstractWorker w2 = new MockWorker(50001);
 		AbstractWorker w3 = new MockWorker(50002);
@@ -197,7 +197,7 @@ public class SchedulerTest extends TestCase {
 	 * @throws InterruptedException 
 	 * @throws LimitExceededException 
 	 */
-	public void testOneThreadByWorker() throws IOException, ClassNotFoundException, InterruptedException, LimitExceededException {
+	public void testOneThreadByWorker() throws IOException, InterruptedException, LimitExceededException {
 		AbstractWorker w1 = new MockWorker(50000);
 		AbstractWorker w2 = new MockWorker(50001);
 

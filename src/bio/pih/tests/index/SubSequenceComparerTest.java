@@ -14,7 +14,7 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.junit.Test;
 
-import bio.pih.compressor.DNASequenceCompressorToShort;
+import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
@@ -176,7 +176,7 @@ public class SubSequenceComparerTest extends TestCase {
 		int score;
 		int[] similarSequences;
 		
-		DNASequenceCompressorToShort encoder = defaultInstance.getEncoder();
+		DNASequenceEncoderToShort encoder = defaultInstance.getEncoder();
 		ComparationResult ar;
 		List<ComparationResult> results = null;
 		
@@ -232,7 +232,7 @@ public class SubSequenceComparerTest extends TestCase {
 		int score;
 		int[] similarSequences;
 		
-		DNASequenceCompressorToShort encoder = defaultInstance.getEncoder();
+		DNASequenceEncoderToShort encoder = defaultInstance.getEncoder();
 		ComparationResult ar;
 		List<ComparationResult> results = null;
 		

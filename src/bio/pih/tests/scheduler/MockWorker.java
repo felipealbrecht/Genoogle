@@ -12,7 +12,7 @@ import org.biojava.bio.seq.DNATools;
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchInformation;
-import bio.pih.search.SearchInformation.Step;
+import bio.pih.search.SearchInformation.SearchStep;
 
 /**
  * Mock class for unit tests
@@ -28,7 +28,7 @@ public class MockWorker extends AbstractWorker {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public MockWorker(int port) throws IOException, ClassNotFoundException {
+	public MockWorker(int port) {
 		super(port);
 	}
 
@@ -65,19 +65,19 @@ public class MockWorker extends AbstractWorker {
 			try {
 				System.out.println("Sao " + threadsCount + " threads");
 				System.out.println("doing search: " + this.searchInformation);
-				this.searchInformation.setActualStep(Step.SEEDS);
+				this.searchInformation.setActualStep(SearchStep.SEEDS);
 				long sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
-				this.searchInformation.setActualStep(Step.ALIGNMENT);
+				this.searchInformation.setActualStep(SearchStep.ALIGNMENT);
 				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
-				this.searchInformation.setActualStep(Step.SELECTING);
+				this.searchInformation.setActualStep(SearchStep.SELECTING);
 				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
-				this.searchInformation.setActualStep(Step.FINISHED);
+				this.searchInformation.setActualStep(SearchStep.FINISHED);
 
 				List<AlignmentResult> results = new LinkedList<AlignmentResult>();
 

@@ -192,7 +192,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 	 * @param symbolList
 	 * @throws IllegalAlphabetException
 	 */
-	public void addSymbols(SymbolList symbolList) throws IllegalAlphabetException {
+	public void addSymbols(SymbolList symbolList) {
 		this.symbolList = symbolList;
 	}
 

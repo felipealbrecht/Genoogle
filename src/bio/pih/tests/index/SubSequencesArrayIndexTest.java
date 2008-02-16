@@ -15,6 +15,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.junit.Test;
 
+import bio.pih.index.EncodedSubSequencesIndex;
 import bio.pih.index.SubSequenceInfo;
 import bio.pih.index.SubSequencesArrayIndex;
 import bio.pih.index.ValueOutOfBoundsException;
@@ -28,7 +29,7 @@ import bio.pih.seq.generator.DNASequencesPopulator;
  */
 public class SubSequencesArrayIndexTest extends TestCase {
 
-	SubSequencesArrayIndex index;
+	EncodedSubSequencesIndex index;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -40,7 +41,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		index = null;
 	}
 
-	private void populateNonSoRandomSequences(SubSequencesArrayIndex index) throws IllegalSymbolException {			
+	private void populateNonSoRandomSequences(EncodedSubSequencesIndex index) throws IllegalSymbolException {			
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
 		SimpleSequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
