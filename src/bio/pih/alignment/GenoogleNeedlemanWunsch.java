@@ -308,8 +308,9 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @throws Exception
 	 */
 	@Override
-	public Alignment getAlignment(Sequence query, Sequence target) throws Exception {
-		pairwiseAlignment(query, target);
+	
+	public Alignment getAlignment(SymbolList query, SymbolList subject) throws Exception {
+		pairwiseAlignment(query, subject);
 		return pairalign;
 	}
 
@@ -375,7 +376,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * return its score.
 	 */
 	@Override
-	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
+	public double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
 			int i, j;
@@ -444,10 +445,9 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @return the alignment score
 	 * @throws BioRuntimeException 
 	 * 
-	 * @see org.biojava.bio.alignment.SequenceAlignment#pairwiseAlignment(org.biojava.bio.seq.Sequence,
+	 * @see org.biojava.bio.alignment.SequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence,
 	 *      org.biojava.bio.seq.Sequence)
 	 */
-	@Override
 	public double pairwiseAlignment(Sequence query, Sequence subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
@@ -698,6 +698,11 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				return -match;
 			return -replace;
 		}
+	}
+
+	@Override
+	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws Exception {		
+		return fastPairwiseAlignment(query, subject);
 	}
 
 }

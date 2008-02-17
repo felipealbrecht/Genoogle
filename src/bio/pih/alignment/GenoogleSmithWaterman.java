@@ -168,7 +168,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * A simpler version of pairwiseAlignment that align {@link SymbolList} and return its score.
 	 */
 	@Override
-	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
+	public double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
 			int i, j, maxI = 0, maxJ = 0;
@@ -240,7 +240,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * define the k-th best hit, where k is somehow related to the number of
 	 * hits.
 	 * 
-	 * @see GenoogleSequenceAlignment#pairwiseAlignment(org.biojava.bio.seq.Sequence,
+	 * @see GenoogleSequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence,
 	 *      org.biojava.bio.seq.Sequence)
 	 */
 	@Override

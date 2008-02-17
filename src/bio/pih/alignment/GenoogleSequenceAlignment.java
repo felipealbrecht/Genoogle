@@ -16,7 +16,6 @@ public abstract class GenoogleSequenceAlignment extends SequenceAlignment {
    * @return score of the alignment or the distance.
    * @throws Exception
    */
-  public abstract double pairwiseAlignment(SymbolList query, SymbolList subject)
-      throws Exception;
-    
+  public abstract double fastPairwiseAlignment(SymbolList query, SymbolList subject)
+      throws Exception;    
 }
