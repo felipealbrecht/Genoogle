@@ -43,7 +43,6 @@ public class WorkerInfo implements Communicator {
 		this.searchesRunning = 0;
 	}
 
-	@Override
 	public void start() {
 		Runnable thread = new Runnable() {
 			public void run() {
@@ -69,7 +68,6 @@ public class WorkerInfo implements Communicator {
 		new Thread(thread, "WorkerInfo - " + socket.getPort()).start();
 	}
 
-	@Override
 	public Message receiveMessage() throws IOException, ClassNotFoundException {
 		Message m = (Message) this.ois.readObject();
 		switch (m.getKind()) {
@@ -88,7 +86,6 @@ public class WorkerInfo implements Communicator {
 
 	private void processIncomingMessage(final Message m) {
 		Runnable r = new Runnable() {
-			@Override
 			public void run() {
 				scheduler.processMessage(identifier, m);
 			}
@@ -130,13 +127,11 @@ public class WorkerInfo implements Communicator {
 		return sb.toString();
 	}
 
-	@Override
 	public void stop() throws IOException {
 		socket.close();
 		this.running = false;
 	}
 
-	@Override
 	public boolean isReady() {
 		return running && socket.isConnected();
 	}

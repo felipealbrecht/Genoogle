@@ -47,7 +47,6 @@ public class CommandLine implements Runnable {
 
 	}
 
-	@Override
 	public void run() {
 		BufferedReader lineReader = new BufferedReader(new InputStreamReader(is));
 		String line;

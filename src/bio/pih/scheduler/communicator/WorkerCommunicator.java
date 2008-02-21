@@ -48,17 +48,14 @@ public class WorkerCommunicator implements Communicator {
 		this.ss = null;
 	}
 
-	@Override
 	public Message receiveMessage() throws IOException, ClassNotFoundException {
 		return (Message) ois.readObject();
 	}
 
-	@Override
 	public synchronized void sendMessage(Message message) throws IOException {
 		oos.writeObject(message);
 	}
 
-	@Override
 	public void start() throws IOException {
 		ss = new ServerSocket(port);
 		ss.setSoTimeout(SOCKET_TIMEOUT);
@@ -142,7 +139,6 @@ public class WorkerCommunicator implements Communicator {
 		ss.close();
 	}
 
-	@Override
 	public boolean isReady() {
 		return running;
 	}

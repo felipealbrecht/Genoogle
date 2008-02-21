@@ -52,7 +52,6 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 
 	}
 
-	@Override
 	public void addSequence(Sequence sequence) {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
@@ -83,13 +82,11 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		indexBucket.addElement(subSequenceInfo);
 	}
 
-	@Override
 	public List<SubSequenceInfo> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
 
-	@Override
 	public List<SubSequenceInfo> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
@@ -98,7 +95,6 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
-	@Override
 	public List<SubSequenceInfo> getMachingSubSequence(short encodedSubSequence) {
 		IndexBucket bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
@@ -107,7 +103,6 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		return null;
 	}
 
-	@Override
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
 		for (IndexBucket bucket : index) {

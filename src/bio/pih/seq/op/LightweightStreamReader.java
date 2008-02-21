@@ -80,24 +80,20 @@ public class LightweightStreamReader implements RichSequenceIterator {
 		this(new BufferedReader(new InputStreamReader(is)), format,symParser,sf,ns);
 	}
 
-	@Override
 	public Sequence nextSequence() throws NoSuchElementException, BioException {
 		return this.nextRichSequence();
 	}
 	
 
-	@Override
 	public BioEntry nextBioEntry() throws NoSuchElementException, BioException {
 		return this.nextRichSequence();
 	}
 
 
-	@Override
 	public boolean hasNext() {
 		return moreSequenceAvailable;
 	}
 
-	@Override
 	public RichSequence nextRichSequence() throws NoSuchElementException, BioException {
 		if (!hasNext())
 			throw new NoSuchElementException("Stream is empty");

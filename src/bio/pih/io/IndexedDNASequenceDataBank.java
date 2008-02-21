@@ -3,7 +3,9 @@ package bio.pih.io;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
+import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 
 import bio.pih.search.SearchInformation;
@@ -13,6 +15,7 @@ import bio.pih.search.SearchParams;
  * A data bank witch index its sequences.
  *  
  * @author albrecht
+ * 
  */
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank {
 
@@ -20,8 +23,15 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank {
 	private final String[] extensions = new String[] {"ddbi"}; // Dna Data Bank Index
 	private final String[] allExtension;
 	
-	private final File indexFile;  
+	private final File indexFile;
 	
+	public static void main(String[] args) throws IOException, NoSuchElementException, BioException {
+		File file = new File("sequences_50mb.fsa");
+		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("teste", new File("."), 8, false);
+		indexedDNASequenceDataBank.loadInformations();
+		//indexedDNASequenceDataBank.addFastaFile(file);
+	}
+
 	/**
 	 * 
 	 * @param name the name of the data bank
@@ -35,50 +45,22 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank {
 		this.subSequenceLength = subSequenceLenth;
 		this.allExtension = new String[super.getExtensions().length + extensions.length];
 		System.arraycopy(super.getExtensions(), 0, allExtension, 0, super.getExtensions().length);
-		System.arraycopy(extensions, 0, allExtension, super.getExtensions().length-1, allExtension.length);
+		System.arraycopy(extensions, 0, allExtension, super.getExtensions().length, extensions.length);
 		
-		indexFile = new File(path, name);
-		checkFile(indexFile, readOnly);
-		
-		
-		
+		indexFile = new File(path, name + ".ddbi");
+		checkFile(indexFile, readOnly);						
 	}
 	
-	
-	
-	@Override
-	public void addSequence(Sequence sequence) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void addSequenceColection(Collection<Sequence> sequences) {
 		// TODO Auto-generated method stub
 
 	}
 
-
-
-	@Override
-	public void loadFastaFile(File fastaFile) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void loadInformations() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public SearchInformation requestSearch(Sequence input, SearchParams params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void sync() {
 		// TODO Auto-generated method stub
 	}
@@ -86,5 +68,6 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank {
 	@Override
 	public String[] getExtensions() {
 		return extensions;
-	}	
+	}
+	
 }

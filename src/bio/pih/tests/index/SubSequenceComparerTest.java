@@ -188,7 +188,7 @@ public class SubSequenceComparerTest extends TestCase {
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {
-				score =	(int) defaultInstance.getAligner().pairwiseAlignment(
+				score =	(int) defaultInstance.getAligner().fastPairwiseAlignment(
 						encoder.decodeShortToSymbolList((short)i),
 						encoder.decodeShortToSymbolList((short)encodedSequence));
 				score *= -1;
@@ -244,7 +244,7 @@ public class SubSequenceComparerTest extends TestCase {
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {							
-				score =	(int) defaultInstance.getAligner().pairwiseAlignment(
+				score =	(int) defaultInstance.getAligner().fastPairwiseAlignment(
 						encoder.decodeShortToSymbolList((short)i),
 						encoder.decodeShortToSymbolList((short)encodedSequence));
 				score *= -1;

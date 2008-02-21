@@ -1,10 +1,17 @@
 package bio.pih.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
+import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.FiniteAlphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
+import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.search.SearchInformation;
 import bio.pih.search.SearchParams;
@@ -67,15 +74,21 @@ public interface SequenceDataBank {
 	FiniteAlphabet getAlphabet();
 	
 	/**
-	 * Load a fasta formated sequence collection into the SequenceBank.
+	 * Add a fasta formated sequence collection into the SequenceBank.
 	 * @param fastaFile
+	 * @throws FileNotFoundException 
+	 * @throws NoSuchElementException 
+	 * @throws BioException 
+	 * @throws IOException 
 	 */
-	void loadFastaFile(File fastaFile);
-	
+	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException, IOException;
+		
 	/**
 	 * Load this sequence bank
+	 * @throws IOException 
+	 * @throws IllegalSymbolException 
 	 */
-	void loadInformations();
+	void loadInformations() throws IOException, IllegalSymbolException;
 	
 	/**
 	 * Synchronize the informations of this sequence bank into disk
@@ -84,15 +97,27 @@ public interface SequenceDataBank {
 	
 	/**
 	 * Add a new sequence into the sequence bank 
+	 * @param s 
 	 * @param sequence
+	 * @throws BioException 
+	 * @throws IOException 
 	 */
-	void addSequence(Sequence sequence);
+	public void addSequence(RichSequence s) throws BioException, IOException;
 	
 	/**
 	 * Add a new sequence collection into the sequence bank.
 	 * @param sequences
 	 */
 	void addSequenceColection(Collection<Sequence> sequences);
+	
+	/**
+	 * Get a {@link SymbolList} sequence from a GI
+	 * @param gi
+	 * @return the symbol list of the given gi
+	 * @throws IOException 
+	 * @throws IllegalSymbolException 
+	 */
+	SymbolList getSymbolListFromGi(String gi) throws IOException, IllegalSymbolException;
 	
 	/**
 	 * Request a search in this SequenceBank.

@@ -15,6 +15,24 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
  */
 public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 	
+	
+	private static DNASequenceEncoderToShort defaultEncoder = null;
+	
+	/**
+	 * @return singleton of the {@link DNASequenceEncoderToShort} 
+	 */
+	public static DNASequenceEncoderToShort getDefaultEncoder() {
+		if (defaultEncoder == null) {
+			try {
+				defaultEncoder = new DNASequenceEncoderToShort(8);
+			} catch (ValueOutOfBoundsException e) {
+				System.out.println("Problem creating the default instance for DNASequenceEncoderToShort. Please check the stackstrace above.");
+				e.printStackTrace();
+			}
+		}
+		return defaultEncoder;
+	}
+	
 	/**
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
@@ -127,7 +145,8 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 	
 	/**
 	 * @param encodedSequence
-	 * @return
+	 * @return the Sequence in String form encoded in encodedSequence
+	 * TODO: Do this method accepting an ShortBuffer as input
 	 */
 	public String decodeShortArrayToString(short[] encodedSequence) {
 		StringBuilder sequence = new StringBuilder(encodedSequence[getPositionLength()]);
@@ -147,5 +166,20 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 			sequence.append(decodeShortToString(encodedSequence[i], extra));
 			return sequence.toString();
 		}			
+	}
+
+	@Override
+	public int getLengthInBytes(int sequenceLength) {
+		int total = sequenceLength / subSequenceLength;
+		int extra = sequenceLength % subSequenceLength;
+		if (extra != 0) { // extra space for the incomplete sub-sequence
+			total++;
+		}
+		
+		total++; // extra space for length information
+		
+		total *= 2; // convert short to byte
+						
+		return total;
 	}	
 }

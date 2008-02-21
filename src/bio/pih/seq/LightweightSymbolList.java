@@ -37,20 +37,31 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	private LightweightSymbolList() {
 	}
 
-	// profile propose
-	private static int cacheCount = 0;
-	
+	/**
+	 * Construct a new {@link LightweightSymbolList} from a seqString
+	 * @param alphabet
+	 * @param parser
+	 * @param seqString
+	 * @return a LightweightSymbolList
+	 * @throws IllegalSymbolException
+	 */
+	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString) throws IllegalSymbolException {
+		return constructLightweightSymbolList(alphabet, parser, seqString, true);
+	}
 	/**
 	 * @param alphabet
 	 * @param parser
 	 * @param seqString
+	 * @param cacheResult 
 	 * @return
 	 * @throws IllegalSymbolException
 	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString) throws IllegalSymbolException {
+	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString, boolean cacheResult) throws IllegalSymbolException {
 		LightweightSymbolList lwsl = getFromCache(alphabet, seqString);
+		seqString = seqString.intern();
+		
+
 		if (lwsl != null) {
-			cacheCount++;
 			return lwsl;
 		}
 
@@ -62,6 +73,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 			lwsl.symbols = new Symbol[INCREMENT];
 		}
 		char[] charArray = new char[1024];
+		//char[] charArray = CharBuffer.allocate(1024).array();
 		int segLength = seqString.length();
 		StreamParser stParser = parser.parseStream(new SSLIOListener(lwsl));
 		int charCount = 0;
@@ -79,18 +91,14 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		lwsl.alphabet = parser.getAlphabet();
 		lwsl.seqString = seqString;
 		lwsl.parser = parser;
-		updateCache(lwsl);
+		
+		if (cacheResult) {
+			updateCache(lwsl);
+		}
 
 		return lwsl;
 	}
 	
-	/**
-	 * @return
-	 */
-	static public int getCacheCount() {
-		return cacheCount;
-	}
-
 	@Override
 	public SymbolList subList(int start, int end) throws IndexOutOfBoundsException {
 		String substring = this.getString().substring(start - 1, end);
@@ -102,18 +110,17 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		}
 	}
 
-	@Override
 	public Alphabet getAlphabet() {
 		return alphabet;
 	}
-
-	@Override	
+	
 	public int length() {
 		return length;
 	}
 
 	/**
 	 * @return the internal string that represents this {@link SymbolList} 
+	 * 
 	 */
 	public String getString() {
 		return seqString;
@@ -157,7 +164,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		return true;
 	}
 
-	@Override
 	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
 		try {
 			return symbols[pos - 1];
@@ -214,7 +220,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		} catch (BioException e) {
 			throw new BioError("Something has gone badly wrong with DNA", e);
 		}
-		return constructLightweightSymbolList(alphabet, p, dna);
+		return constructLightweightSymbolList(alphabet, p, dna, false);
 	}
 
 	// TODO: To create static methods for Protein and RNA sequencess

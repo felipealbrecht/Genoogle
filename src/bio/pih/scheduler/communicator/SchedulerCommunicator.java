@@ -109,7 +109,6 @@ public class SchedulerCommunicator implements Communicator {
 		return null;
 	}
 
-	@Override
 	public void sendMessage(Message message) throws IOException {
 		synchronized (getScheduler().getWorkers()) {
 			for (WorkerInfo worker : getScheduler().getWorkers()) {
@@ -118,7 +117,6 @@ public class SchedulerCommunicator implements Communicator {
 		}
 	}
 
-	@Override
 	public boolean isReady() {
 		return isReady;
 	}

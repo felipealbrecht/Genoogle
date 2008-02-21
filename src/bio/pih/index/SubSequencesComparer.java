@@ -229,7 +229,7 @@ public class SubSequencesComparer {
 	 * @throws InvalidHeaderData
 	 */
 	public void load(boolean check) throws IOException, InvalidHeaderData {
-		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, indexFile.length());		
+		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexFile().length());		
 		
 		int encodedSequenceAndQuantity;
 		int sequence ;
@@ -412,7 +412,7 @@ public class SubSequencesComparer {
 	public double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws IllegalSymbolException, BioException {
 		LightweightSymbolList symbolList1 = getSequenceFromShort(encodedSequence1);
 		LightweightSymbolList symbolList2 = getSequenceFromShort(encodedSequence2);
-		return aligner.pairwiseAlignment(symbolList1, symbolList2) * -1;
+		return aligner.fastPairwiseAlignment(symbolList1, symbolList2) * -1;
 	}
 
 	
@@ -541,7 +541,6 @@ public class SubSequencesComparer {
 		public static Comparator<ComparationResult> getScoreComparator() {
 			if (scoreComparator == null) {
 				scoreComparator = new Comparator<ComparationResult>() {
-					@Override
 					public int compare(ComparationResult o1, ComparationResult o2) {
 						return o2.getScore() - o1.getScore();
 					}

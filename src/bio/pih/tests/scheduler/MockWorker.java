@@ -47,7 +47,6 @@ public class MockWorker extends AbstractWorker {
 			this.searchInformation = searchInformation;
 		}
 
-		@Override
 		public void run() {
 			threadsCount++;
 			

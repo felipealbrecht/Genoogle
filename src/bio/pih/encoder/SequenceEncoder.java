@@ -9,7 +9,7 @@ import bio.pih.index.ValueOutOfBoundsException;
  * @author albrecht
  *
  */
-public class SequenceEncoder {
+public abstract class SequenceEncoder {
 	private static int POSITION_LENGTH = 0;
 	private static int POSITION_BEGIN_BITS_VECTOR = 1;
 
@@ -72,6 +72,13 @@ public class SequenceEncoder {
 	public static int getPositionBeginBitsVector() {
 		return POSITION_BEGIN_BITS_VECTOR;
 	}
+	
+	/**
+	 * Return the length in bytes that is required to store an encoded sequence
+	 * @param sequenceLength
+	 * @return the space in bytes
+	 */
+	abstract public int getLengthInBytes(int sequenceLength);
 
 	/**
 	 * 

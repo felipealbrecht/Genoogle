@@ -9,7 +9,6 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.AlphabetManager;
 
-import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
 
@@ -42,7 +41,6 @@ public class Indexer {
 					//index.addSubSequence(subSymbolList, info);					
 				//}			
 			}
-			System.out.println("Cache count: " + LightweightSymbolList.getCacheCount());
 			System.out.println("Item no indice: " + index.getTotal());
 			System.out.println("Subsequencias: " + index.getSubSymbolTotal());
 			System.out.println("Tempo total: " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
