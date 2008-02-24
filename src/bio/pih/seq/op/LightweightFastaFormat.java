@@ -100,7 +100,7 @@ public class LightweightFastaFormat extends FastaFormat {
 		}
 		if (!this.getElideSymbols()) {
 			try {
-				LightweightSymbolList sl = LightweightSymbolList.constructLightweightSymbolList(symParser.getAlphabet(), symParser, seq.toString().replaceAll("\\s+", "").replaceAll("[\\.|~]", "-"), false);
+				LightweightSymbolList sl = LightweightSymbolList.constructLightweightSymbolList(symParser.getAlphabet(), seq.toString().replaceAll("\\s+", "").replaceAll("[\\.|~]", "-"), false);
 				((LightweightSequenceBuilder)rsiol).addSymbols(sl);
 			} catch (Exception e) {
 				String message = ParseException.newMessage(this.getClass(), name, gi, "problem parsing symbols", seq.toString());

@@ -12,7 +12,7 @@ public class ResultMessage extends Message {
 	private static final long serialVersionUID = -5762601490806905960L;
 	String db;
 	String query;
-	int code;
+	long code;
 	AlignmentResult[] alignments;
 	
 	/**
@@ -21,7 +21,7 @@ public class ResultMessage extends Message {
 	 * @param code 
 	 * @param alignments 
 	 */
-	public ResultMessage(String db, String query, int code, AlignmentResult[] alignments) {
+	public ResultMessage(String db, String query, long code, AlignmentResult[] alignments) {
 		this.db = db;
 		this.query = query;
 		this.code = code;
@@ -68,7 +68,7 @@ public class ResultMessage extends Message {
 	/**
 	 * @return
 	 */
-	public int getCode() {
+	public long getCode() {
 		return code;
 	}
 	

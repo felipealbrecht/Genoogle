@@ -227,9 +227,9 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 			return scoreMatrix[maxI][maxJ];
 
-		} else {
+		} 
 			throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
-		}
+		
 	}
 
 	/**
@@ -467,8 +467,8 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 			} catch (BioException exc) {
 				throw new BioRuntimeException(exc);
 			}
-		} else
-			throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
+		}
+		throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
 	}
 
 	/**

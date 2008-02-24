@@ -1,15 +1,10 @@
 package bio.pih.search;
 
 /**
- * Informations about the search process
+ * Class that hold informations about one search process.
  * @author albrecht
  */
 public class SearchInformation {
-
-	String db;
-	String query;
-	SearchStep actualStep;
-	int code;
 	
 	/**
 	 * The step where the search is. 
@@ -54,12 +49,17 @@ public class SearchInformation {
 		ERASED;
 	}
 	
+	String db;
+	String query;
+	SearchStep actualStep;
+	long code;
+		
 	/**
 	 * @param db
 	 * @param query
 	 * @param code 
 	 */
-	public SearchInformation(String db, String query, int code) {
+	public SearchInformation(String db, String query, long code) {
 		this.db = db;
 		this.query = query;
 		this.code = code;
@@ -105,7 +105,7 @@ public class SearchInformation {
 	/**
 	 * @return
 	 */
-	public int getCode() {
+	public long getCode() {
 		return code;
 	}
 	

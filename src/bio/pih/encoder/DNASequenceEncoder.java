@@ -38,10 +38,9 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 		Byte b = DNASymbolToBitsSubstitionTable.get(symbol);
 		if (b == null) {
 			return defaultWildcharValue ;
-		} else {
-			return b.byteValue();
-		}
+		} 
 		
+		return b.byteValue();		
 	}
 	
 

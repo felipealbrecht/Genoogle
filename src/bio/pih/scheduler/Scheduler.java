@@ -23,12 +23,12 @@ import bio.pih.search.AlignmentResult;
  * @author albrecht
  */
 public class Scheduler {
-	private volatile int totalSearchs;
+	private volatile long totalSearchs;
 	private List<WorkerInfo> workers;
 	private String[] workerAddress;
 	private Communicator communicator;
 	private List<Searching> waitingList;
-	private Map<Integer, Searching> searches;
+	private Map<Long, Searching> searches;
 
 	/**
 	 * @param workerAddress
@@ -39,7 +39,7 @@ public class Scheduler {
 		communicator = new SchedulerCommunicator(this);
 		this.workers = Collections.synchronizedList(new LinkedList<WorkerInfo>());
 		waitingList = Collections.synchronizedList(new LinkedList<Searching>());
-		searches = Collections.synchronizedMap(new HashMap<Integer, Searching>());
+		searches = Collections.synchronizedMap(new HashMap<Long, Searching>());
 
 		
 	}
@@ -82,7 +82,7 @@ public class Scheduler {
 	/**
 	 * @return all the {@link Searching} that are being processed or still save
 	 */
-	public Map<Integer, Searching> getSearches() {
+	public Map<Long, Searching> getSearches() {
 		return searches;
 	}
 
@@ -206,7 +206,7 @@ public class Scheduler {
 		String database;
 		String query;
 		long startTime;
-		int code;
+		long code;
 		int totalAlignments;
 
 		/**
@@ -215,7 +215,7 @@ public class Scheduler {
 		 * @param query
 		 * @param qtdWorker
 		 */
-		public Searching(int code, String database, String query, int qtdWorker) {
+		public Searching(long code, String database, String query, int qtdWorker) {
 			this.database = database;
 			this.query = query;
 			this.startTime = System.currentTimeMillis();
@@ -248,7 +248,7 @@ public class Scheduler {
 		/**
 		 * @return the code of this search
 		 */
-		public int getCode() {
+		public long getCode() {
 			return code;
 		}
 

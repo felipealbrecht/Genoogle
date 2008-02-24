@@ -31,7 +31,7 @@ public class Genoogle {
 	 * @throws InvalidHeaderData 
 	 * @throws ValueOutOfBoundsException 
 	 */
-	public static void main(String[] args) throws ValueOutOfBoundsException, InvalidHeaderData, Exception {
+	public static void main(String[] args) throws ValueOutOfBoundsException, Exception {
 		if (args.length < 1) {
 			System.out.println("argumentos invÃ¡lidos");
 			return;
@@ -65,7 +65,7 @@ public class Genoogle {
 			SubSequencesComparer.getDefaultInstance().generateData(true);
 			
 		} else {
-			System.out.println("-s para scheduler ou -w [port] para worker ou -g para gerar dados necessários.");
+			System.out.println("-s para scheduler ou -w [port] para worker ou -g para gerar dados necessï¿½rios.");
 		}
 
 	}

@@ -433,8 +433,8 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 			return getEditDistance();
 
-		} else
-			throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
+		}
+		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
 	}
 
 	/**
@@ -670,8 +670,8 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 			} catch (BioException exc) {
 				throw new BioRuntimeException(exc);
 			}
-		} else
-			throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
+		}
+		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
 	}
 
 	/**

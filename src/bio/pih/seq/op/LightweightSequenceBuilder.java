@@ -85,15 +85,14 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	@Override
 	public void setVersion(int version) throws ParseException {
-		if (this.versionSeen)
+		if (this.versionSeen) {
 			throw new ParseException("Current BioEntry already has a version");
-		else {
-			try {
-				this.version = version;
-				this.versionSeen = true;
-			} catch (NumberFormatException e) {
-				throw new ParseException("Could not parse version as an integer");
-			}
+		}
+		try {
+			this.version = version;
+			this.versionSeen = true;
+		} catch (NumberFormatException e) {
+			throw new ParseException("Could not parse version as an integer");
 		}
 	}
 
@@ -226,7 +225,7 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 			if (this.featureStack.size() == 0)
 				this.rootFeatures.add(f);
 			else {
-				RichFeature parent = (RichFeature) this.featureStack.get(this.featureStack.size() - 1);
+				RichFeature parent = this.featureStack.get(this.featureStack.size() - 1);
 				parent.addFeatureRelationship(new SimpleRichFeatureRelationship(parent, f, SimpleRichFeatureRelationship.getContainsTerm(), 0));
 			}
 			this.featPropCount = 1; // reset feature anotation rank
@@ -246,10 +245,10 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 
 	@Override
 	public RichFeature getCurrentFeature() throws ParseException {
-		if (this.featureStack.size() == 0)
+		if (this.featureStack.size() == 0) {
 			throw new ParseException("Not currently within a feature");
-		else
-			return (RichFeature) this.featureStack.get(this.featureStack.size() - 1);
+		}
+		return this.featureStack.get(this.featureStack.size() - 1);
 	}
 
 	@Override
@@ -355,7 +354,6 @@ public class LightweightSequenceBuilder extends RichSeqIOAdapter implements Rich
 	}
 
 	private boolean circular = false;
-
 
 	public Sequence makeSequence() throws BioException {
 		this.endSequence();

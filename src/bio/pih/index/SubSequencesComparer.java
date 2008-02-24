@@ -88,7 +88,7 @@ public class SubSequencesComparer {
 	 */
 	public static SubSequencesComparer getDefaultInstance() throws ValueOutOfBoundsException {
 		if (defaultInstance == null) {
-			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold); 
+			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
 		}
 		return defaultInstance;
 	}
@@ -208,7 +208,7 @@ public class SubSequencesComparer {
 	
 	private FileChannel getDataFileChannel() throws FileNotFoundException {
 		if (dataFileChannel == null) {
-			dataFileChannel = new FileInputStream(dataFile).getChannel(); 
+			dataFileChannel = new FileInputStream(getDataFile()).getChannel(); 
 		}
 		return dataFileChannel;
 	}
@@ -250,8 +250,8 @@ public class SubSequencesComparer {
 				getSimilarSequences(sequence, quantity, offset);
 			}
 
-			if (sequence != i) {
-				throw new InvalidHeaderData("Sequence count do not match sequence position.");
+			if ((sequence) != i) {
+				throw new InvalidHeaderData("Sequence (" + sequence + ") count do not match sequence position ("+i+").");
 			}
 			this.dataQuantityIndex[sequence] = quantity;
 			this.dataOffsetIndex[sequence] = offset;
@@ -259,16 +259,30 @@ public class SubSequencesComparer {
 	}
 
 	/**
-	 * @param encodedSequence
+	 * Same <code>getSimilarSequences(encodedSubSequence & 0xFFFF);</code>
+	 * @param encodedSubSequence
+	 * @return
+	 * @throws IOException
+	 * @throws InvalidHeaderData
+	 */
+	public int[] getSimilarSequences(short encodedSubSequence) throws IOException, InvalidHeaderData {
+		return getSimilarSequences(encodedSubSequence & 0xFFFF);
+	
+	}
+	
+	/**
+	 * @param encodedSubSequence an int that where is read <b>only</b> its first 16bits.
+	 * If the code has a short, use: <br>
+	 * <code>getSimilarSequences(shortVariable & 0xFFFF)</code>
 	 * @return the similar subsequences that are equal or higher than threshold.
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
-	public int[] getSimilarSequences(int encodedSequence) throws IOException, InvalidHeaderData {
-		long offset = dataOffsetIndex[encodedSequence];
-		int quantity = dataQuantityIndex[encodedSequence];
+	private int[] getSimilarSequences(int encodedSubSequence) throws IOException, InvalidHeaderData {
+		long offset = dataOffsetIndex[encodedSubSequence];
+		int quantity = dataQuantityIndex[encodedSubSequence];
 		
-		return getSimilarSequences(encodedSequence, quantity, offset);
+		return getSimilarSequences(encodedSubSequence, quantity, offset);
 	}
 	
 	private int[] getSimilarSequences(int encodedSequence, int quantity, long offset) throws IOException, InvalidHeaderData {
@@ -276,7 +290,7 @@ public class SubSequencesComparer {
 		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 2 + 2 + resultsInByte);
 		IntBuffer buffer = map.asIntBuffer();
 		int header = buffer.get();
-		if (((header >> 16) & 0xFFFF) != encodedSequence) {
+		if (((header >> 16) & 0xFFFF) != (encodedSequence & 0xFFFF)) {
 			throw new InvalidHeaderData("the value " + (header >> 16) + " is different from " + encodedSequence);
 		}
 
@@ -291,7 +305,7 @@ public class SubSequencesComparer {
 
 	/**
 	 * @param alignmentIntRepresentation
-	 * @return the score from int representation
+	 * @return the score from short (16 bits) representation
 	 */
 	public static short getScoreFromIntRepresentation(int alignmentIntRepresentation) {
 		return ComparationResult.getScoreFromRepresentation(alignmentIntRepresentation);
@@ -299,9 +313,9 @@ public class SubSequencesComparer {
 	
 	/**
 	 * @param alignmentIntRepresentation
-	 * @return the sequence from int representation
+	 * @return the sequence from short (16 bits) representation
 	 */
-	public static int getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
+	public static short getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
 		return ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation);
 	}
 	
@@ -525,8 +539,8 @@ public class SubSequencesComparer {
 		 * @param alignmentIntRepresentation
 		 * @return the sequence
 		 */
-		public static int getSequenceFromRepresentation(int alignmentIntRepresentation) {
-			return (alignmentIntRepresentation >> 16) & 0xFFFF;
+		public static short getSequenceFromRepresentation(int alignmentIntRepresentation) {
+			return (short) ((alignmentIntRepresentation >> 16) & 0xFFFF);
 		}
 
 		@Override
@@ -548,9 +562,5 @@ public class SubSequencesComparer {
 			}
 			return scoreComparator;
 		}
-
-
-		
-
 	}
 }

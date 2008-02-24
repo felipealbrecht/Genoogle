@@ -10,7 +10,7 @@ public class RequestMessage extends Message {
 
 	private String query;
 	private String database;
-	private int code;
+	private long code;
 	
 	/**
 	 * A message representing a request 
@@ -19,7 +19,7 @@ public class RequestMessage extends Message {
 	 * @param code 
 	 * TODO: parameters like blodsum matrix or seed size.
 	 */
-	public RequestMessage(String database, String query, int code) {
+	public RequestMessage(String database, String query, long code) {
 		this.database = database;
 		this.query = query;
 		this.code = code;
@@ -72,7 +72,7 @@ public class RequestMessage extends Message {
 	/**
 	 * @return
 	 */
-	public int getCode() {
+	public long getCode() {
 		return code;
 	}
 	

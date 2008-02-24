@@ -38,20 +38,20 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private final FiniteAlphabet alphabet = DNATools.getDNA();
 	private final String name;
 	private final File path;
-	private final boolean readOnly;
-
-	private File dataBankFile;
 	
-	FileChannel dataBankFileChannel = null;
-
-	// Map the sequence gi to its position 
-	HashMap<String, Integer> giToSequenceInformationOffset = Maps.newHashMap();
-
+	private volatile int nextSequenceId;
+	
+	protected final boolean readOnly;
+	private File dataBankFile;		
+	private FileChannel dataBankFileChannel;
 	private volatile static boolean isRecording = false;
 
-	private final String[] extensions = new String[] { "dsdb" }; // Dna Sequences Data Bank
-
 	static DNASequenceEncoderToShort encoder = DNASequenceEncoderToShort.getDefaultEncoder();
+	
+	private final String[] extensions = new String[] { "dsdb" }; // Dna Sequences Data Bank
+	
+	// Map the sequence id to its position 
+	HashMap<Integer, Integer> sequenceIdToSequenceInformationOffset = Maps.newHashMap();
 
 	/**
 	 * Default constructor for all DNASequenceDataBank.
@@ -68,6 +68,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.name = name;
 		this.path = path;
 		this.readOnly = readOnly;
+		this.nextSequenceId = 0;
 	}
 
 	public void loadInformations() throws IOException {
@@ -82,7 +83,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	
 
 	void loadData() throws IOException {	
-		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, dataBankFile.length());
+		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		
 		SequenceInformation sequenceInformation  = null;
 		int variableLength = 0;
@@ -91,22 +92,17 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			sequenceInformationPosition = mappedIndexFile.position();
 			variableLength = mappedIndexFile.getInt();
 			sequenceInformation = SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);
-			giToSequenceInformationOffset.put(sequenceInformation.getGi(), sequenceInformationPosition);
-			System.out.println(sequenceInformation.getGi());
-			
-			try {
-				getSymbolListFromGi(sequenceInformation.getGi());
-			} catch (IllegalSymbolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			sequenceIdToSequenceInformationOffset.put(sequenceInformation.getId(), sequenceInformationPosition);
+			doSequenceLoadingProcessing(sequenceInformation);
 		}
 	}
+	
+	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);
 
-	public SymbolList getSymbolListFromGi(String gi) throws IOException, IllegalSymbolException {
-		int position = giToSequenceInformationOffset.get(gi);
+	public SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException {
+		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
 		
-		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, dataBankFile.length());
+		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		mappedIndexFile.position(position);
 		
 		int variableLength = mappedIndexFile.getInt();
@@ -116,80 +112,38 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return LightweightSymbolList.createDNA(decodeShortArrayToString);
 	}
 
-	public void setAlphabet(FiniteAlphabet alphabet) {
-		throw new IllegalStateException("The alphabet is imutable for this class");
-	}
-
-	public FiniteAlphabet getAlphabet() {
-		return alphabet;
-	}
-
-	public void setExtensions(String[] extensions) {
-		throw new IllegalStateException("The extension name is imutable for this class");
-	}
-
-	public String[] getExtensions() {
-		return extensions;
-	}
-
-	public void setName(String name) {
-		throw new IllegalStateException("The name is imutable for a DataBank");
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setPath(File directory) {
-		throw new IllegalStateException("The path is imutable for a DataBank");
-	}
-
-	public File getPath() {
-		return path;
-	}
-
-	protected File getDataBankFile() {
-		return dataBankFile;
-	}
 
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
-		if (readOnly) {
-			throw new IOException("The file " + dataBankFile + " is marked as read only");
-		}
-
-		FileChannel dataBankFileChannel = new FileOutputStream(dataBankFile).getChannel();
+		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile()).getChannel();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
 
 		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
 		RichSequence s;
 
-		long begin = System.currentTimeMillis();
-
-		int count = 0;
-		//for (count = 0; count < 1000; count++) {
+		//for (int i = 0; i < 100; i++) {
 		while (readFastaDNA.hasNext()) {
 			s = readFastaDNA.nextRichSequence();
 			addSequence(s, dataBankFileChannel);
-			count++;
 		}
-		System.out.println(count);
 
 		dataBankFileChannel.close();
-		System.out.println(System.currentTimeMillis() - begin);
 	}
 
-	public synchronized void addSequence(RichSequence s) throws IOException, BioException {
-		FileChannel dataBankFileChannel = new FileOutputStream(dataBankFile).getChannel();
+	public synchronized int addSequence(RichSequence s) throws IOException, BioException {
+		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile()).getChannel();
 
 		addSequence(s, dataBankFileChannel);
+		int id = getNextSequenceId();
 
 		dataBankFileChannel.close();
+		
+		return id;
 	}
 
-	synchronized void addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException, IOException {
+	private synchronized void addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException, IOException {
 		if (readOnly) {
-			throw new IOException("The file " + dataBankFile + " is marked as read only");
+			throw new IOException("The file " + getDataBankFile() + " is marked as read only");
 		}
 
 		if (!s.getAlphabet().equals(this.alphabet)) {
@@ -203,15 +157,17 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		
 		beginRecordind();
 
-		short[] encodedSequence = encoder.encodeSymbolListToShortArray(s);
-		SequenceInformation si = new SequenceInformation(s.getIdentifier(), s.getName(), s.getAccession(), (byte) s.getVersion(), s.getDescription(), encodedSequence);
+		short[] encodedSequence = encoder.encodeSymbolListToShortArray(s);		
+		SequenceInformation si = new SequenceInformation(getNextSequenceId(), s.getIdentifier(), s.getName(), s.getAccession(), (byte) s.getVersion(), s.getDescription(), encodedSequence);		
 		ByteBuffer bb = si.toByteBuffer();
-		bb.rewind();
-		
-		dataBankFileChannel.write(bb);
+		bb.rewind();		
+		dataBankFileChannel.write(bb);		
+		doSequenceAddingProcessing(si);
 		
 		endRecordind();		
 	}
+	
+	abstract void doSequenceAddingProcessing(SequenceInformation sequenceInformation);
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {
@@ -228,6 +184,48 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 	}
 
+	protected int getNextSequenceId() {
+		int id = nextSequenceId;
+		nextSequenceId++;
+		return id;
+	}
+	
+	public void setAlphabet(FiniteAlphabet alphabet) {
+		throw new IllegalStateException("The alphabet is imutable for this class");
+	}
+	
+	public FiniteAlphabet getAlphabet() {
+		return alphabet;
+	}
+	
+	public void setExtensions(String[] extensions) {
+		throw new IllegalStateException("The extension name is imutable for this class");
+	}
+	
+	public String[] getExtensions() {
+		return extensions;
+	}
+	
+	public void setName(String name) {
+		throw new IllegalStateException("The name is imutable for a DataBank");
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setPath(File directory) {
+		throw new IllegalStateException("The path is imutable for a DataBank");
+	}
+	
+	public File getPath() {
+		return path;
+	}
+	
+	private File getDataBankFile() {
+		return dataBankFile;
+	}
+	
 	synchronized void beginRecordind() {
 		isRecording = true;
 	}

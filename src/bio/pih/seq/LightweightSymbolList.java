@@ -1,14 +1,11 @@
 package bio.pih.seq;
 
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 
-import org.biojava.bio.BioError;
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.io.SeqIOAdapter;
-import org.biojava.bio.seq.io.StreamParser;
+import org.biojava.bio.seq.io.CharacterTokenization;
 import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.AbstractSymbolList;
 import org.biojava.bio.symbol.Alphabet;
@@ -17,6 +14,8 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
+import com.google.common.collect.Maps;
+
 /**
  * @author albrecht
  *
@@ -24,16 +23,12 @@ import org.biojava.bio.symbol.SymbolList;
 public class LightweightSymbolList extends AbstractSymbolList implements Serializable {
 	private static final long serialVersionUID = -3125317520644706924L;
 
-	private static final int INCREMENT = 100;
-
-	private static final Hashtable<Alphabet, Hashtable<String, LightweightSymbolList>> CACHE = new Hashtable<Alphabet, Hashtable<String, LightweightSymbolList>>(5);
+	private static final HashMap<Alphabet, HashMap<String, LightweightSymbolList>> CACHE = Maps.newHashMap();
 
 	private Alphabet alphabet;
 	private Symbol[] symbols;
-	private String seqString;
-	private int length;
-	private SymbolTokenization parser;
-
+	private String seqString;	
+			
 	private LightweightSymbolList() {
 	}
 
@@ -45,8 +40,8 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 * @return a LightweightSymbolList
 	 * @throws IllegalSymbolException
 	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString) throws IllegalSymbolException {
-		return constructLightweightSymbolList(alphabet, parser, seqString, true);
+	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
+		return constructLightweightSymbolList(alphabet, seqString, true);
 	}
 	/**
 	 * @param alphabet
@@ -56,41 +51,32 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 * @return
 	 * @throws IllegalSymbolException
 	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, SymbolTokenization parser, String seqString, boolean cacheResult) throws IllegalSymbolException {
-		LightweightSymbolList lwsl = getFromCache(alphabet, seqString);
-		seqString = seqString.intern();
+	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString, boolean cacheResult) throws IllegalSymbolException {
 		
-
+		LightweightSymbolList lwsl = getFromCache(alphabet, seqString);		
 		if (lwsl != null) {
 			return lwsl;
 		}
 
-		lwsl = new LightweightSymbolList();
-
-		if (parser.getTokenType() == SymbolTokenization.CHARACTER) {
-			lwsl.symbols = new Symbol[seqString.length()];
-		} else {
-			lwsl.symbols = new Symbol[INCREMENT];
+		Symbol[] symbols = new Symbol[seqString.length()];
+		
+		SymbolTokenization tokenization = null;
+		try {
+			tokenization = alphabet.getTokenization("token");
+		} catch (BioException e) {
+			e.printStackTrace();
+			return null;
 		}
-		char[] charArray = new char[1024];
-		//char[] charArray = CharBuffer.allocate(1024).array();
-		int segLength = seqString.length();
-		StreamParser stParser = parser.parseStream(new SSLIOListener(lwsl));
-		int charCount = 0;
-		int chunkLength;
-		while (charCount < segLength) {
-			chunkLength = Math.min(charArray.length, segLength - charCount);
-			seqString.getChars(charCount, charCount + chunkLength, charArray, 0);
-			stParser.characters(charArray, 0, chunkLength);
-			charCount += chunkLength;
+		for(int i = 0; i < seqString.length(); i++) {
+			symbols[i] = tokenization.parseTokenChar(seqString.charAt(i));
 		}
-		stParser.close();
-
-		assert (alphabet.equals(parser.getAlphabet()));
-
-		lwsl.alphabet = parser.getAlphabet();
+						
+		lwsl = new LightweightSymbolList();					
+		lwsl.symbols = symbols; 
+		lwsl.alphabet = alphabet;
 		lwsl.seqString = seqString;
-		lwsl.parser = parser;
+		
+		assert lwsl.symbols.length == lwsl.seqString.length();
 		
 		if (cacheResult) {
 			updateCache(lwsl);
@@ -103,7 +89,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	public SymbolList subList(int start, int end) throws IndexOutOfBoundsException {
 		String substring = this.getString().substring(start - 1, end);
 		try {
-			return constructLightweightSymbolList(this.getAlphabet(), this.getSymbolTokenization(), substring);
+			return constructLightweightSymbolList(this.getAlphabet(), substring);
 		} catch (IllegalSymbolException e) {
 			e.printStackTrace();
 			return null;
@@ -113,9 +99,9 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	public Alphabet getAlphabet() {
 		return alphabet;
 	}
-	
+		
 	public int length() {
-		return length;
+		return symbols.length;
 	}
 
 	/**
@@ -124,10 +110,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 */
 	public String getString() {
 		return seqString;
-	}
-
-	private SymbolTokenization getSymbolTokenization() {
-		return this.parser;
 	}
 
 	@Override
@@ -190,16 +172,16 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	private static void updateCache(LightweightSymbolList symbolList) {
-		Hashtable<String, LightweightSymbolList> c = CACHE.get(symbolList.getAlphabet());
+		HashMap<String, LightweightSymbolList> c = CACHE.get(symbolList.getAlphabet());
 		if (c == null) {
-			c = new Hashtable<String, LightweightSymbolList>();
+			c = Maps.newHashMapWithExpectedSize((int) Math.pow(4, 8));
 			CACHE.put(symbolList.getAlphabet(), c);
 		}
 		c.put(symbolList.getString(), symbolList);
 	}
 
 	private static LightweightSymbolList getFromCache(Alphabet alphabet, String seqString) {
-		Hashtable<String, LightweightSymbolList> c = CACHE.get(alphabet);
+		HashMap<String, LightweightSymbolList> c = CACHE.get(alphabet);
 		if (c == null) {
 			return null;
 		}
@@ -210,47 +192,11 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 * @param dna
 	 * @return
 	 * @throws IllegalSymbolException
+	 * 
 	 */
 	public static SymbolList createDNA(String dna) throws IllegalSymbolException {
-		SymbolTokenization p = null;
 		Alphabet alphabet = AlphabetManager.alphabetForName("DNA");
-
-		try {
-			p = DNATools.getDNA().getTokenization("token");
-		} catch (BioException e) {
-			throw new BioError("Something has gone badly wrong with DNA", e);
-		}
-		return constructLightweightSymbolList(alphabet, p, dna, false);
+		return constructLightweightSymbolList(alphabet, dna, false);
 	}
-
-	// TODO: To create static methods for Protein and RNA sequencess
-
-	/**
-	 * Simple inner class for channeling sequence notifications from a StreamParser.
-	 */
-	private static class SSLIOListener extends SeqIOAdapter {
-		LightweightSymbolList lwsl = null;
-
-		/**
-		 * @param lwsl
-		 */
-		public SSLIOListener(LightweightSymbolList lwsl) {
-			this.lwsl = lwsl;
-		}
-
-		@Override
-		public void addSymbols(Alphabet alpha, Symbol[] syms, int start, int length) {
-			if (this.lwsl.symbols.length < this.lwsl.length + length) {
-				Symbol[] dest;
-				dest = new Symbol[((int) (1.5 * this.lwsl.length)) + length];
-				System.arraycopy(this.lwsl.symbols, 0, dest, 0, this.lwsl.length);
-				System.arraycopy(syms, start, dest, this.lwsl.length, length);
-				this.lwsl.symbols = dest;
-			} else {
-				System.arraycopy(syms, start, this.lwsl.symbols, this.lwsl.length, length);
-			}
-
-			this.lwsl.length += length;
-		}
-	}
+	//TODO: To create static methods for Protein and RNA sequencess
 }

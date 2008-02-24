@@ -225,7 +225,7 @@ public abstract class AbstractWorker {
 	protected class ResultSender implements Runnable {
 		private String db;
 		private String query;
-		private int code;
+		private long code;
 		private AlignmentResult[] alignmentResult;
 
 		/**
@@ -235,7 +235,7 @@ public abstract class AbstractWorker {
 		 * @param alignemtnResult
 		 *            a
 		 */
-		public ResultSender(String db, String query, int code, AlignmentResult[] alignemtnResult) {
+		public ResultSender(String db, String query, long code, AlignmentResult[] alignemtnResult) {
 			this.db = db;
 			this.query = query;
 			this.code = code;

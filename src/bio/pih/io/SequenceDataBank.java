@@ -3,18 +3,13 @@ package bio.pih.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.biojavax.bio.seq.RichSequence;
-
-import bio.pih.search.SearchInformation;
-import bio.pih.search.SearchParams;
 
 /**
  * This interface specifies the ways to access a sequence bank.
@@ -89,41 +84,23 @@ public interface SequenceDataBank {
 	 * @throws IllegalSymbolException 
 	 */
 	void loadInformations() throws IOException, IllegalSymbolException;
-	
-	/**
-	 * Synchronize the informations of this sequence bank into disk
-	 */
-	void sync(); 
-	
+		
 	/**
 	 * Add a new sequence into the sequence bank 
 	 * @param s 
 	 * @param sequence
+	 * @return the added sequence id
 	 * @throws BioException 
 	 * @throws IOException 
 	 */
-	public void addSequence(RichSequence s) throws BioException, IOException;
-	
+	public int addSequence(RichSequence s) throws BioException, IOException;
+		
 	/**
-	 * Add a new sequence collection into the sequence bank.
-	 * @param sequences
-	 */
-	void addSequenceColection(Collection<Sequence> sequences);
-	
-	/**
-	 * Get a {@link SymbolList} sequence from a GI
-	 * @param gi
-	 * @return the symbol list of the given gi
+	 * Get a {@link SymbolList} sequence from an internal id
+	 * @param sequenceId
+	 * @return the symbol list of the given id
 	 * @throws IOException 
 	 * @throws IllegalSymbolException 
 	 */
-	SymbolList getSymbolListFromGi(String gi) throws IOException, IllegalSymbolException;
-	
-	/**
-	 * Request a search in this SequenceBank.
-	 * @param input
-	 * @param params
-	 * @return {@link SearchInformation} of this search.
-	 */
-	SearchInformation requestSearch(Sequence input, SearchParams params);	
+	SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException;		
 }

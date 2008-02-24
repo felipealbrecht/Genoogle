@@ -1,12 +1,10 @@
 package bio.pih.index;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -21,8 +19,9 @@ import bio.pih.seq.LightweightSymbolList;
 public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 
 	private IndexBucket index[];
-	private HashMap<String, short[]> nameToSequenceMap;
+	
 	private final int subSequenceLength;
+	private final int indexSize;
 	private final FiniteAlphabet alphabet;
 
 	// Okay, okay.. in some not so near future will be needed to create a
@@ -32,11 +31,9 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	/**
 	 * @param subSequenceLength
 	 * @param alphabet
-	 * @param symbolListWindowIteratorFactory
 	 * @throws ValueOutOfBoundsException
 	 */
 	public SubSequencesArrayIndex(int subSequenceLength, FiniteAlphabet alphabet) throws ValueOutOfBoundsException {
-		// assert (symbolListWindowIteratorFactory != null);
 		assert (alphabet != null);
 		assert (subSequenceLength > 0);
 
@@ -45,49 +42,51 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 
 		this.compressor = new DNASequenceEncoderToShort(subSequenceLength);
 
-		int indexSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(alphabet.size());
+		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(alphabet.size());
+		this.indexSize = 1 << indexBitsSize;
 		// this.integerType = getClassFromSize(indexSize);
-		this.index = new IndexBucket[1 << indexSize];
-		this.nameToSequenceMap = new HashMap<String, short[]>();
-
+		this.index = new IndexBucket[indexSize];
 	}
 
-	public void addSequence(Sequence sequence) {
+	public void addSequence(int sequenceId, SymbolList sequence) {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
 		}
 
 		short[] encodedSequence = compressor.encodeSymbolListToShortArray(sequence);
-		nameToSequenceMap.put(sequence.getName(), encodedSequence);
-		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
-
-		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {
-			SubSequenceInfo subSequenceInfo = new SubSequenceInfo(sequence, encodedSequence[pos], (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength);
-			addSubSequence(subSequenceInfo);
-		}
-
+		
+		addSequence(sequenceId, encodedSequence);
 	}
-
+	
+	public void addSequence(int sequenceId, short[] encodedSequence) {		
+		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
+		
+		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {
+			int subSequenceInfoIntRepresention = SubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength);
+			addSubSequenceInfoEncoded(encodedSequence[pos], subSequenceInfoIntRepresention);
+		}
+	}
+	
 	/**
 	 * @param subSymbolList
 	 * @param subSequenceInfo
 	 */
-	private void addSubSequence(SubSequenceInfo subSequenceInfo) {
-		int indexPos = subSequenceInfo.getSubSequence() & 0xFFFF;
+	private void addSubSequenceInfoEncoded(short subSequenceEncoded, int subSequenceInfoEncoded) {
+		int indexPos = subSequenceEncoded & 0xFFFF;
 		IndexBucket indexBucket = index[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new IndexBucket(subSequenceInfo.getSubSequence());
+			indexBucket = new IndexBucket(subSequenceEncoded);
 			index[indexPos] = indexBucket;
 		}
-		indexBucket.addElement(subSequenceInfo);
+		indexBucket.addElement(subSequenceInfoEncoded);
 	}
 
-	public List<SubSequenceInfo> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
-		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, alphabet.getTokenization("token"), subSequenceString);
+	public List<Integer> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
+		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
 
-	public List<SubSequenceInfo> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+	public List<Integer> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
@@ -95,7 +94,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
-	public List<SubSequenceInfo> getMachingSubSequence(short encodedSubSequence) {
+	public List<Integer> getMachingSubSequence(short encodedSubSequence) {
 		IndexBucket bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
 			return bucket.getElements();
@@ -112,11 +111,11 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 				sb.append(compressor.decodeShortToString(bucket.getValue()));
 				sb.append(")");
 				sb.append(":\n");
-				for (SubSequenceInfo subSequenceInfo : bucket.getElements()) {
+				for (int subSequenceInfoEncoded : bucket.getElements()) {
 					sb.append("\t");
-					sb.append(subSequenceInfo.getSequence().getName());
+					sb.append(SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
 					sb.append(": ");
-					sb.append(subSequenceInfo.getStart());
+					sb.append(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
 					sb.append("\n");
 				}
 			}
@@ -128,7 +127,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	 * @param subSymbolList
 	 * @return
 	 */
-	List<SubSequenceInfo> retrievePosition(SymbolList subSymbolList) {
+	List<SubSequenceIndexInfo> retrievePosition(SymbolList subSymbolList) {
 		return null;
 	}
 
@@ -140,13 +139,14 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	 */
 	public class IndexBucket {
 		short value;
-		List<SubSequenceInfo> elements;
+		List<Integer> elements;
 
 		/**
+		 * @param subSequenceInfoEncoded 
 		 * @param subSequenceInfo
 		 */
-		public void addElement(SubSequenceInfo subSequenceInfo) {
-			this.elements.add(subSequenceInfo);
+		public void addElement(int subSequenceInfoEncoded) {
+			this.elements.add(subSequenceInfoEncoded);
 		}
 
 		/**
@@ -154,7 +154,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		 */
 		public IndexBucket(short value) {
 			this.value = value;
-			this.elements = new LinkedList<SubSequenceInfo>();
+			this.elements = new ArrayList<Integer>(100);
 		}
 
 		/**
@@ -167,8 +167,9 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		/**
 		 * @return the elements in this bucket
 		 */
-		public List<SubSequenceInfo> getElements() {
+		public List<Integer> getElements() {
 			return elements;
 		}
 	}
+		
 }

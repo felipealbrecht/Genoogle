@@ -1,14 +1,16 @@
 package bio.pih.search;
 
 /**
+ * A class to hold parameters for a search.
+ * Now it is a bit useless, but when more parameters will be added, they should be stored here.
+ *  
  * @author albrecht
- *
  */
 public class SearchParams {
 
 	String database;
 	String query;
-	int code;
+	long code;
 	
 	
 	/**
@@ -16,7 +18,7 @@ public class SearchParams {
 	 * @param query
 	 * @param code 
 	 */
-	public SearchParams(String database, String query, int code) {
+	public SearchParams(String database, String query, long code) {
 		this.database = database;
 		this.query = query;
 		this.code = code;
@@ -36,9 +38,9 @@ public class SearchParams {
 	}
 	
 	/**
-	 * @return
+	 * @return the code of the associate search or -1 if is not associate with anyone Search
 	 */
-	public int getCode() {
+	public long getCode() {
 		return code;
 	}
 	
