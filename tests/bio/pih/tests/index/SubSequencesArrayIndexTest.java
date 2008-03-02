@@ -112,38 +112,38 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		populateNonSoRandomSequences(index);
 		
-		List<Integer> matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
+		int[] matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
 		
-		assertEquals(7, matchingSubSequence.size());
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
-		assertEquals(0, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
+		assertEquals(7, matchingSubSequence.length);
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
+		assertEquals(0, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
-		assertEquals(8, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
+		assertEquals(8, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(2)));
-		assertEquals(16, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(2)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[2]));
+		assertEquals(16, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[2]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(3)));
-		assertEquals(24, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(3)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[3]));
+		assertEquals(24, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[3]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(4)));
-		assertEquals(32, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(4)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[4]));
+		assertEquals(32, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[4]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(5)));
-		assertEquals(40, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(5)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[5]));
+		assertEquals(40, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[5]));
 		
-		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(6)));
-		assertEquals(48, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(6)));
+		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[6]));
+		assertEquals(48, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[6]));
 		
 		matchingSubSequence = index.getMatchingSubSequence("GCATGCAT");
-		assertEquals(2, matchingSubSequence.size());
+		assertEquals(2, matchingSubSequence.length);
 		
-		assertEquals(1, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
-		assertEquals(16, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
+		assertEquals(1, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
+		assertEquals(16, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
-		assertEquals(9, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
-		assertEquals(48, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
+		assertEquals(9, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
+		assertEquals(48, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
 	}
 	
 	/**
@@ -165,18 +165,18 @@ public class SubSequencesArrayIndexTest extends TestCase {
 			code++;
 		}
 		
-		List<Integer> matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
-		assertEquals(2, matchingSubSequence.size());
-		assertEquals(132, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
-		assertEquals(152, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
+		int[] matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
+		assertEquals(2, matchingSubSequence.length);
+		assertEquals(132, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
+		assertEquals(152, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
-		assertEquals(483, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
-		assertEquals(224, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(1)));
+		assertEquals(483, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
+		assertEquals(224, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
 				
 		matchingSubSequence = index.getMatchingSubSequence("GAGAATAC");
-		assertEquals(1, matchingSubSequence.size());
-		assertEquals(0, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
-		assertEquals(0, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence.get(0)));
+		assertEquals(1, matchingSubSequence.length);
+		assertEquals(0, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
+		assertEquals(0, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
 		matchingSubSequence = index.getMatchingSubSequence("TCTTGCCG");
 		assertNull(matchingSubSequence);	

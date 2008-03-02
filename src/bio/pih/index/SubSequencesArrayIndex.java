@@ -67,6 +67,16 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		}
 	}
 	
+	public void optime() {
+		for (IndexBucket bucket: index) {
+			if (bucket != null) {
+				bucket.compressData();
+			}
+		}
+		// Ok... it's ugly, but the unused index data is *huge* and should be free soon. 
+		System.gc();
+	}
+	
 	/**
 	 * @param subSymbolList
 	 * @param subSequenceInfo
@@ -81,12 +91,12 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		indexBucket.addElement(subSequenceInfoEncoded);
 	}
 
-	public List<Integer> getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
+	public int[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
 
-	public List<Integer> getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+	public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
@@ -94,7 +104,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
-	public List<Integer> getMachingSubSequence(short encodedSubSequence) {
+	public int[] getMachingSubSequence(short encodedSubSequence) {
 		IndexBucket bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
 			return bucket.getElements();
@@ -139,22 +149,34 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	 */
 	public class IndexBucket {
 		short value;
-		List<Integer> elements;
+		List<Integer> tempElements;
+		int[] elements;
+		
+		/**
+		 * A bucket in sub sequence array index that stores the data and takes care on compressing 
+		 * @param value
+		 */
+		public IndexBucket(short value) {
+			this.elements = null;
+			this.value = value;
+			this.tempElements = new LinkedList<Integer>();
+		}
+			
+		// TODO: update with new data.
+		protected void compressData() {
+			elements = new int[tempElements.size()];
+			for (int i = 0; i < elements.length; i++) {
+				elements[i] = tempElements.get(i);
+			}
+			tempElements = null; // Yes, it can occours a NullPointer exception at addElement(), but best it than something change the data and I do not know. 
+		}
 
 		/**
 		 * @param subSequenceInfoEncoded 
 		 * @param subSequenceInfo
 		 */
 		public void addElement(int subSequenceInfoEncoded) {
-			this.elements.add(subSequenceInfoEncoded);
-		}
-
-		/**
-		 * @param value
-		 */
-		public IndexBucket(short value) {
-			this.value = value;
-			this.elements = new ArrayList<Integer>(100);
+			this.tempElements.add(subSequenceInfoEncoded);
 		}
 
 		/**
@@ -167,9 +189,16 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		/**
 		 * @return the elements in this bucket
 		 */
-		public List<Integer> getElements() {
+		public int[] getElements() {
+			if (tempElements != null) {
+				compressData();
+			}
+			assert tempElements == null;
+			assert elements != null;
+			
 			return elements;
 		}
+				
 	}
 		
 }

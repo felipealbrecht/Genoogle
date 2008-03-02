@@ -6,12 +6,23 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>org.eclipse.hyades.probekit.probekitbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.hyades.probekit.probekitbundler</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.hyades.probekit.probekitnature</nature>
 	</natures>
 </projectDescription>

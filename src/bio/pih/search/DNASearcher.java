@@ -1,10 +1,10 @@
 package bio.pih.search;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-import org.biojava.bio.symbol.SymbolList;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.index.InvalidHeaderData;
@@ -12,12 +12,12 @@ import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.search.SearchInformation.SearchStep;
+import bio.pih.seq.LightweightSymbolList;
+import bio.pih.util.IntArray;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.TreeMultimap;
 
 /**
  * Interface witch defines methods for search for similar DNA sequences and checks the status of the searchers.
@@ -38,17 +38,16 @@ public class DNASearcher implements Searcher {
 
 	}
 
-	public long doSearch(SymbolList input, IndexedSequenceDataBank bank) {
+	public long doSearch(LightweightSymbolList input, IndexedSequenceDataBank bank) {
 		long id = getNextSearchId();
 
 		SearchInformation si = new SearchInformation(bank.getName(), input.toString(), id);
 		idToSearch.put(id, si);
 		si.setActualStep(SearchStep.NOT_INITIALIZED);
 
-		
 		SimilarSearcher ss = new SimilarSearcher(input, bank);
 		ss.run();
-		
+
 		return id;
 	}
 
@@ -73,42 +72,47 @@ public class DNASearcher implements Searcher {
 		return id;
 	}
 
-	private class SimilarSearcher implements Runnable {
-		final SymbolList sequence;
+	private static class SimilarSearcher implements Runnable {
+		final LightweightSymbolList sequence;
 		final IndexedSequenceDataBank databank;
 
 		short[] encodedSequence;
 
-		public SimilarSearcher(SymbolList sequence, IndexedSequenceDataBank databank) {
+		public SimilarSearcher(LightweightSymbolList sequence, IndexedSequenceDataBank databank) {
 			this.sequence = sequence;
 			this.databank = databank;
 		}
 
 		public void run() {
-			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory().newSymbolListWindowIterator(sequence, 8);			
+			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
+			//logger.setLevel(Level.ERROR);
+			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory().newSymbolListWindowIterator(sequence, 8);
 
-			// SequenceId, Positions			
-			TreeMultimap<Integer,Integer> sequenceIdPositions = Multimaps.newTreeMultimap();
-			int sequenceId;
-			int position;
-			
+			int totalSubsequences = 0;
+
+			IndexRetrievedData indexRetrievedData = new IndexRetrievedData(databank.getTotalSequences()/20);
+
+			logger.info("Begining the search of sequence with " + sequence.length() + "bases " + sequence.getString());
+
+			long init = System.currentTimeMillis();
 			try {
 				while (symbolListWindowIterator.hasNext()) {
-					SymbolList subSequence = symbolListWindowIterator.next();
+					//long iterationBegin = System.currentTimeMillis();
+					totalSubsequences++;
+					LightweightSymbolList subSequence = (LightweightSymbolList) symbolListWindowIterator.next();
 					short encodedSubSequence = DNASequenceEncoderToShort.getDefaultEncoder().encodeSubSymbolListToShort(subSequence);
-					Map<Short, List<Integer>> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence, 1);
-					for (Short similarSubSequence: similarSubSequences.keySet()) {
-						for (Integer subSequenceInfoIntRepresention: similarSubSequences.get(similarSubSequence)) {
-							sequenceId = SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
-							position = SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
-							
-							sequenceIdPositions.put(sequenceId, position);							 
+
+					Map<Short, int[]> similarSubSequencesMap = databank.getSimilarSubSequence(encodedSubSequence, 7);
+
+					for (int[] similarSubSequences: similarSubSequencesMap.values()) {				
+						for (int subSequenceInfoIntRepresention : similarSubSequences) {
+							indexRetrievedData.addSubSequenceInfoIntRepresention(subSequenceInfoIntRepresention);
 						}
 					}
+					//System.out.println("Iteracao " + totalSubsequences + " demorou: " + (System.currentTimeMillis() - iterationBegin));
 				}
-				
+
 			} catch (ValueOutOfBoundsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -117,13 +121,47 @@ public class DNASearcher implements Searcher {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + indexRetrievedData.getTotal() + " possible seeds");
+			indexRetrievedData = null;
+			System.gc();
+			
 
 		}
-		
 
 		void searchSeeds() {
 
 		}
+	}
+
+	private static class IndexRetrievedData {
+		IntArray[] arrays;
+		int size;
+		
+		long total;
+
+		/**
+		 * @param size the qtd of lists
+		 */
+		@SuppressWarnings("unchecked")
+		public IndexRetrievedData(int size) {
+			this.size = size;
+			this.total = 0;
+
+			arrays = new IntArray[size];
+			for (int i = 0; i < size; i++) {
+				arrays[i] = new IntArray(500);
+			}
+		}
+
+		void addSubSequenceInfoIntRepresention(int subSequenceInfoIntRepresention) {
+			total++;
+			arrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention) % size].add(subSequenceInfoIntRepresention);
+		}
+		
+		public long getTotal() {
+			return total;
+		}
+
 	}
 
 }

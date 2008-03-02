@@ -57,7 +57,11 @@ import org.biojava.bio.symbol.SymbolList;
  */
 public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
-	private double match, replace, insert, delete, gapExt;
+	private double match;
+	private double replace;
+	private double insert;
+	private double delete;
+	private double gapExt;
 
 	/**
 	 * Constructs the new SmithWaterman alignment object. Alignments are only

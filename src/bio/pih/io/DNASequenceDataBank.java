@@ -40,6 +40,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private final File path;
 	
 	private volatile int nextSequenceId;
+	private int totalSequences;
 	
 	protected final boolean readOnly;
 	private File dataBankFile;		
@@ -69,20 +70,22 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.path = path;
 		this.readOnly = readOnly;
 		this.nextSequenceId = 0;
+		this.totalSequences = 0;
 	}
 
-	public void loadInformations() throws IOException {
+	public synchronized void loadInformations() throws IOException {
 		dataBankFile = new File(path, name + ".dsdb");
 		checkFile(dataBankFile, readOnly);
 		if (readOnly) {
 			dataBankFile.setReadOnly();
 		}
 		dataBankFileChannel = new FileInputStream(dataBankFile).getChannel();
-		loadData();
+		loadData();		
+		doOptimizations();
 	}
 	
 
-	void loadData() throws IOException {	
+	synchronized void loadData() throws IOException {	
 		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		
 		SequenceInformation sequenceInformation  = null;
@@ -92,12 +95,18 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			sequenceInformationPosition = mappedIndexFile.position();
 			variableLength = mappedIndexFile.getInt();
 			sequenceInformation = SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);
+			if (sequenceInformation.getId() > this.nextSequenceId) {
+				this.nextSequenceId = sequenceInformation.getId() + 1;
+			}
 			sequenceIdToSequenceInformationOffset.put(sequenceInformation.getId(), sequenceInformationPosition);
+			totalSequences++;
 			doSequenceLoadingProcessing(sequenceInformation);
 		}
 	}
 	
 	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);
+	
+	abstract void doOptimizations();
 
 	public SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
@@ -121,27 +130,25 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
 		RichSequence s;
 
-		//for (int i = 0; i < 100; i++) {
 		while (readFastaDNA.hasNext()) {
 			s = readFastaDNA.nextRichSequence();
 			addSequence(s, dataBankFileChannel);
 		}
 
 		dataBankFileChannel.close();
+		doOptimizations();
 	}
 
 	public synchronized int addSequence(RichSequence s) throws IOException, BioException {
+		
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile()).getChannel();
-
-		addSequence(s, dataBankFileChannel);
-		int id = getNextSequenceId();
-
+		int sequenceId = addSequence(s, dataBankFileChannel);
 		dataBankFileChannel.close();
 		
-		return id;
+		return sequenceId;
 	}
 
-	private synchronized void addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException, IOException {
+	private synchronized int addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException, IOException {
 		if (readOnly) {
 			throw new IOException("The file " + getDataBankFile() + " is marked as read only");
 		}
@@ -152,7 +159,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		if (s.length() < 8) {
 			System.out.println(s.getName() + "is too short (" + s.length() + ") and will not be stored in this data bank");
-			return;
+			return -1;
 		}
 		
 		beginRecordind();
@@ -163,8 +170,11 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		bb.rewind();		
 		dataBankFileChannel.write(bb);		
 		doSequenceAddingProcessing(si);
+		totalSequences++;
 		
 		endRecordind();		
+		
+		return si.getId();
 	}
 	
 	abstract void doSequenceAddingProcessing(SequenceInformation sequenceInformation);
@@ -188,6 +198,10 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		int id = nextSequenceId;
 		nextSequenceId++;
 		return id;
+	}
+	
+	public int getTotalSequences() {
+		return totalSequences;
 	}
 	
 	public void setAlphabet(FiniteAlphabet alphabet) {

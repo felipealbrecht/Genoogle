@@ -2,13 +2,12 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.BasicConfigurator;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequencesArrayIndex;
@@ -39,16 +38,20 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @throws InvalidHeaderData 
 	 */
 	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData {
-		File fastaFile = new File("sequences_50mb.fsa");
+		BasicConfigurator.configure();
+		
+		//File fastaFile = new File("sequences_50mb.fsa");
 		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("teste", new File("."), 8, false);
 		indexedDNASequenceDataBank.loadInformations();
 		//indexedDNASequenceDataBank.addFastaFile(fastaFile);
 								
 		String seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
-		SymbolList sequence = LightweightSymbolList.createDNA(seq);
+		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
 		
 		DNASearcher search = new DNASearcher();
-		search.doSearch(sequence, indexedDNASequenceDataBank);		
+		long init = System.currentTimeMillis();
+		search.doSearch(sequence, indexedDNASequenceDataBank);
+		System.out.println("Total:" + (System.currentTimeMillis() - init));
 	}
 
 	/**
@@ -76,31 +79,38 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	@Override
 	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
 		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
+		index.optime();
 	}
 	
 	@Override
 	void doSequenceLoadingProcessing(SequenceInformation sequenceInformation) {
-		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());		
+		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
 	}
-		
+	
+	@Override
+	void doOptimizations() {
+		index.optime();	
+	}
+			
 
-	public List<Integer> getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
+	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
 		return index.getMachingSubSequence(encodedSubSequence);
 	}
 
-	public Map<Short, List<Integer>> getSimilarSubSequence(short encodedSubSequence, int threshold) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		Map<Short, List<Integer>> similarSubSequences = Maps.newHashMap();
+	public Map<Short, int[]> getSimilarSubSequence(short encodedSubSequence, int threshold) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		Map<Short, int[]> similarSubSequences = Maps.newHashMap();
+		
 		int[] alignmentIntRepresentations = subSequenceComparer.getSimilarSequences(encodedSubSequence);
 		short scoreFromIntRepresentation;
 		short sequenceFromIntRepresentation;
-
+		
 		for (int alignmentIntRepresentation : alignmentIntRepresentations) {
 			scoreFromIntRepresentation = SubSequencesComparer.getScoreFromIntRepresentation(alignmentIntRepresentation);
 			if (scoreFromIntRepresentation < threshold) {
 				break;
 			}
 			sequenceFromIntRepresentation = SubSequencesComparer.getSequenceFromIntRepresentation(alignmentIntRepresentation);
-			List<Integer> machingSubSequence = index.getMachingSubSequence(sequenceFromIntRepresentation);
+			int[] machingSubSequence = index.getMachingSubSequence(sequenceFromIntRepresentation);
 			if (machingSubSequence != null) {
 				similarSubSequences.put(sequenceFromIntRepresentation, machingSubSequence);
 			}

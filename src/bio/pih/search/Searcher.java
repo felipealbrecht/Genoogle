@@ -1,9 +1,8 @@
 package bio.pih.search;
 
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.search.SearchInformation.SearchStep;
+import bio.pih.seq.LightweightSymbolList;
 
 /**
  * @author albrecht
@@ -22,7 +21,7 @@ public interface Searcher {
 	 * @param params
 	 * @return an unique identification of this search process.
 	 */
-	long doSearch(SymbolList input, IndexedSequenceDataBank bank);
+	long doSearch(LightweightSymbolList input, IndexedSequenceDataBank bank);
 	
 	/**
 	 * Verify the status of the given search.

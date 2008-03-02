@@ -59,7 +59,7 @@ public class SubSequencesComparer {
 
 	private static final int defaultThreshold = 1;
 	private static final int defaultMatch = -1;
-	private static final int defaultDismatch = 1;
+	private static final int defaultDismatch = 2;
 	private static final int defaultGapOpen = 2;
 	private static final int defaultGapExtend = 0;
 	private static final int defaultSubSequenceLength = 8;
@@ -94,6 +94,18 @@ public class SubSequencesComparer {
 	}
 	 
 
+	/**
+	 * Auxiliar main class for generate default data.
+	 * @param args
+	 * @throws IllegalSymbolException
+	 * @throws IOException
+	 * @throws BioException
+	 * @throws ValueOutOfBoundsException
+	 */
+	public static void main(String[] args) throws IllegalSymbolException, IOException, BioException, ValueOutOfBoundsException {
+		getDefaultInstance().generateData(true);
+	}
+	
 	/**
 	 * @param alphabet
 	 * @param subSequenceLength
@@ -355,6 +367,7 @@ public class SubSequencesComparer {
 
 		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
 			results = new LinkedList<ComparationResult>();
+			long time = System.currentTimeMillis();
 			for (int encodedSequence2 = 0; encodedSequence2 <= maxEncodedSequenceValue; encodedSequence2++) {
 				score = (int) compareCompactedSequences((short) encodedSequence1, (short) encodedSequence2);
 				ar = new ComparationResult((short) score, (short) encodedSequence2);
@@ -367,6 +380,7 @@ public class SubSequencesComparer {
 			if (verbose) {
 				System.out.println(getSequenceFromShort(
 						(short) (encodedSequence1 & 0xFFFF)).getString() + "\t" + 
+						(System.currentTimeMillis() - time) + "\t" +
 						results.size() +"\t" + 
 						encodedSequence1 +"\t" + 
 						Integer.toHexString(encodedSequence1) + "\t" + 

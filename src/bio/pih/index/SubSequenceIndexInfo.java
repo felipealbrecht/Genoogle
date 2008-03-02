@@ -60,11 +60,13 @@ public class SubSequenceIndexInfo implements Serializable {
 	
 	/**
 	 * @param sequenceId 
-	 * @param getStart 
+	 * @param pos 
 	 * @return an integer containing the sequenceId and start point
 	 */
-	public static int getSubSequenceInfoIntRepresention(int sequenceId, int getStart) {
-		return ((sequenceId << 16) | (getStart & 0xFFFF));
+	public static int getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
+		assert sequenceId <= (1 << 20) -1; 
+		assert pos <= (1 << 12) - 1;
+		return ((sequenceId << 20) | (pos & 0xFFF));
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class SubSequenceIndexInfo implements Serializable {
 	 * @return the start position
 	 */
 	public static int getStartFromSubSequenceInfoIntRepresentation(int subSequenceInfoIntRepresention) {
-		return (subSequenceInfoIntRepresention & 0xFFFF);
+		return (subSequenceInfoIntRepresention & 0xFFF);
 	}
 
 	/**
@@ -80,6 +82,6 @@ public class SubSequenceIndexInfo implements Serializable {
 	 * @return the sequence id
 	 */
 	public static int getSequenceIdFromSubSequenceInfoIntRepresentation(int subSequenceInfoIntRepresention) {
-		return (subSequenceInfoIntRepresention >> 16) & 0xFFFF;
+		return (subSequenceInfoIntRepresention >> 20) & 0xFFFF;
 	}
 }

@@ -11,33 +11,32 @@
 		<available classpath="${java.class.path}" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTest" property="junit.support" />
 
 
-		<property name="name" value="Genoogle" />
+		<property name="name"    value="Genoogle" />
 		<property name="version" value="0.01" />
 
-		<property name="docs.dir" location="./doc/javadoc" />
-		<property name="src.dir" location="./src" />
-		<property name="classpath" location="./lib/biojava-1.5.jar" />
-
-
+		<property name="docs.dir"  location="./doc/javadoc" />
+		<property name="src.dir"   location="./src" />
+		<property name="classpath" location="./lib/biojava-genoogle.jar:lib/google-collect-snapshot-20071022.jar:lib/log4j-1.2.15.jar"/>
 
 		<!-- Main build directory -->
-		<property name="build.dir" value="./ant-build" />
-		<property name="build.classes.dir" value="${build.dir}/classes" />
+		<property name="build.dir"         location="./ant-build" />
+		<property name="build.classes.dir" location="${build.dir}/classes" />
 
 		<!-- Jar configuration -->
 		<property name="manifest.dir" location="./manifest" />
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
 
+                
 		<!-- Javac properties -->
-		<property name="javac.depend" value="false" />
-		<property name="javac.debug" value="true" />
+		<property name="javac.depend"      value="false" />
+		<property name="javac.debug"       value="true" />
 		<property name="javac.deprecation" value="false" />
-		<property name="javac.source" value="1.6" />
-		<property name="javac.target" value="1.6" />
+		<property name="javac.source"      value="5" />
+		<property name="javac.target"      value="5" />
 
 		<!-- Javadoc properties -->
 		<property name="build.docs" location="${build.dir}/docs" />
-		<property name="packages" value="bio.pih.*" />
+		<property name="packages"   value="bio.pih.*" />
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
@@ -144,6 +143,11 @@
 			</batchtest>
 		</junit>
 	</target>
+	
+    <target name="clear" depends="init" description="clean">
+    	<echo message="Deleting ${build.dir}"/>
+        <delete dir="${build.dir}" />
+    </target>
 
 
 

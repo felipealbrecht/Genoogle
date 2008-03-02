@@ -9,10 +9,8 @@ import java.util.List;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.scheduler.AbstractWorker;
 import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.interfaces.CommandLine;
-import bio.pih.tests.scheduler.MockWorker;
 
 /**
  * Genoogle main class
@@ -58,8 +56,9 @@ public class Genoogle {
 				port = Integer.parseInt(args[1]);				
 			}
 			System.out.println("worker na porta: " + port);
-			AbstractWorker worker = new MockWorker(port);
-			worker.start();
+			// TOOD: create a real worker
+			//AbstractWorker worker = new MockWorker(port);
+			//worker.start();
 			
 		} else if (args[0].equals("-g")) {
 			SubSequencesComparer.getDefaultInstance().generateData(true);

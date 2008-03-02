@@ -1,7 +1,6 @@
 package bio.pih.io;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import bio.pih.index.EncodedSubSequencesIndex;
@@ -12,7 +11,7 @@ import bio.pih.index.ValueOutOfBoundsException;
 
 
 /**
- * This interface aims to work like a Façade for the DataBank access the {@link EncodedSubSequencesIndex} with the {@link SubSequencesComparer}
+ * This interface works like a Façade for the DataBank access the {@link EncodedSubSequencesIndex} with the {@link SubSequencesComparer}
  * 
  * @author albrecht
  */
@@ -26,7 +25,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it. 
 	 * @throws ValueOutOfBoundsException
 	 */
-	public List<Integer> getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException;
+	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException;
 	
 	
 
@@ -42,5 +41,5 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 
 	 */
-	public Map<Short, List<Integer>> getSimilarSubSequence(short encodedSubSequence, int threshold) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	public Map<Short, int[]> getSimilarSubSequence(short encodedSubSequence, int threshold) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 }
