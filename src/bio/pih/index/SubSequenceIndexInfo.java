@@ -63,25 +63,25 @@ public class SubSequenceIndexInfo implements Serializable {
 	 * @param pos 
 	 * @return an integer containing the sequenceId and start point
 	 */
-	public static int getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
-		assert sequenceId <= (1 << 20) -1; 
-		assert pos <= (1 << 12) - 1;
-		return ((sequenceId << 20) | (pos & 0xFFF));
+	public static long getSubSequenceInfoIntRepresention(long sequenceId, long pos) {
+		assert sequenceId <= 4294967295L; //((long)1 << 32) -1; 
+		assert pos <= 4294967295L; //((long)1 << 32) -1;
+		return ((sequenceId << 32) | (pos & 0xFFFFFFFF));
 	}
 
 	/**
 	 * @param subSequenceInfoIntRepresention 
 	 * @return the start position
 	 */
-	public static int getStartFromSubSequenceInfoIntRepresentation(int subSequenceInfoIntRepresention) {
-		return (subSequenceInfoIntRepresention & 0xFFF);
+	public static int getStartFromSubSequenceInfoIntRepresentation(long subSequenceInfoIntRepresention) {
+		return (int) (subSequenceInfoIntRepresention & 0xFFFFFFFF);
 	}
 
 	/**
-	 * @param subSequenceInfoIntRepresention 
-	 * @return the sequence id
+	 * @param subSequenceInfoIntRepresention
+	 * @return the sequence id 
 	 */
-	public static int getSequenceIdFromSubSequenceInfoIntRepresentation(int subSequenceInfoIntRepresention) {
-		return (subSequenceInfoIntRepresention >> 20) & 0xFFFF;
+	public static int getSequenceIdFromSubSequenceInfoIntRepresentation(long subSequenceInfoIntRepresention) {
+		return (int) (subSequenceInfoIntRepresention >> 32) & 0xFFFFFFFF;
 	}
 }

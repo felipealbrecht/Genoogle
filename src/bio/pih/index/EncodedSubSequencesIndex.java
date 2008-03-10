@@ -1,7 +1,5 @@
 package bio.pih.index;
 
-import java.util.List;
-
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -36,7 +34,7 @@ public interface EncodedSubSequencesIndex {
 	 * Optimize the internal data structure to lower memory requirements.
 	 * Should be called <b>after</b> that all sequences was inserted into index. 
 	 */
-	public void optime();
+	public void optimize();
 	
 	/**
 	 * @param subSequenceString
@@ -45,20 +43,20 @@ public interface EncodedSubSequencesIndex {
 	 * @throws BioException
 	 * @throws ValueOutOfBoundsException
 	 */
-	public abstract int[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException;
+	public abstract long[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException;
 
 	/**
 	 * @param subSequence
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 * @throws ValueOutOfBoundsException
 	 */
-	public abstract int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException;
+	public abstract long[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException;
 
 	/**
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 */
-	public abstract int[] getMachingSubSequence(short encodedSubSequence);
+	public abstract long[] getMachingSubSequence(short encodedSubSequence);
 
 	/**
 	 * @return a string containing the status of the index.

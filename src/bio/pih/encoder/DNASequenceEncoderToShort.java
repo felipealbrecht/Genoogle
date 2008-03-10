@@ -2,6 +2,7 @@ package bio.pih.encoder;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -19,8 +20,10 @@ import com.google.common.collect.Maps;
  */
 public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 
+	static Logger logger = Logger.getLogger("bio.pih.encoder.DNASequenceEncoderToShort");
+	
 	private static DNASequenceEncoderToShort defaultEncoder = null;
-
+	
 	/**
 	 * @return singleton of the {@link DNASequenceEncoderToShort}
 	 */
@@ -29,8 +32,9 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 			try {
 				defaultEncoder = new DNASequenceEncoderToShort(8);
 			} catch (ValueOutOfBoundsException e) {
-				System.out.println("Problem creating the default instance for DNASequenceEncoderToShort. Please check the stackstrace above.");
-				e.printStackTrace();
+				logger.fatal("Problem creating the default instance for DNASequenceEncoderToShort. Please check the stackstrace above.");
+				logger.fatal(e);
+				return null;
 			}
 		}
 		return defaultEncoder;
@@ -46,8 +50,6 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 
 	
 	Map<SymbolList, Short> subSymbolListToShort = Maps.newHashMapWithExpectedSize((int) Math.pow(4, 8));	
-	int subSymbolCached = 0;
-	int subSymbolNotCached = 0;
 	/**
 	 * Encode a subsequence of the length 8 to its short representation
 	 * 
@@ -59,10 +61,6 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 						
 		Short cached = subSymbolListToShort.get(subSymbolList);
 		if (cached != null) {
-			subSymbolCached++;
-			if (subSymbolCached % 1000 == 0) {
-				System.out.println("subSymbolCached: " + subSymbolCached + " total: " + (subSymbolCached + subSymbolNotCached));				
-			}
 			return cached.shortValue();
 		}
 		
@@ -72,13 +70,6 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 		}
 
 		subSymbolListToShort.put(subSymbolList, encoded);
-		
-		subSymbolNotCached++;
-		
-		if (subSymbolNotCached % 1000 == 0) {
-			System.out.println("subSymbolNotCached: " + subSymbolNotCached);
-		}
-		
 		return encoded;
 	}
 
@@ -142,10 +133,10 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 		assert (sequence.getAlphabet().equals(alphabet));
 		int size = sequence.length() / subSequenceLength;
 		int extra = sequence.length() % subSequenceLength;
-		if (extra != 0) { // extra space for the incomplete sub-sequence
+		if (extra != 0) { // extra space for incomplete sub-sequence
 			size++;
 		}
-		size++; // extra space for the length information.
+		size++; // extra space for information on the length.
 		short sequenceEncoded[] = new short[size];
 		sequenceEncoded[getPositionLength()] = (short) sequence.length();
 

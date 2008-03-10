@@ -4,176 +4,253 @@
  */
 package bio.pih.util;
 
+import java.util.Arrays;
+
 /**
  * @author Thomas
- * some changes by Felipe Albrecht
+ * @author Felipe Albrecht
+ * 
+ * TODO: junits!
  */
 public class IntArray {
 
-    private int[] data;
-    private int pos;
-    private int hash;
+	private ArraysPool tmpPool;
+	private int[] data;
+	private int pos;
+	private int hash;
+	public int compressCount;
+	private double previousGaim;
 
-    public IntArray() {
-        this.data = new int[10];
-    }
+	public IntArray(int size) {
+		this.data = new int[size];
+		this.pos = 0;
+		this.compressCount = 0;
+		this.previousGaim = 1.0;
+	}
 
-    public IntArray(int[] data) {
-        this.data = data;
-        this.pos = 0;
-    }
-    
-    public IntArray(int size) {
-        this.data = new int[size];
-        this.pos = 0;
-    }
+	public void add(int value) {
+		ensureCapacity();
+		data[pos++] = value;
+	}
 
-    public void add(int value) {
-        ensureCapacity();
-        data[pos++] = value;
-    }
+	public boolean addUnique(int value) {
+		for (int i = 0; i < pos; i++) {
+			if (data[i] == value) {
+				return false;
+			}
+		}
+		add(value);
+		return true;
+	}
 
-    public int get(int i) {
-        if (i >= pos) {
-            throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
-        }
-        return data[i];
-    }
+	public void add(int i, int value) {
+		if (i > pos) {
+			throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
+		}
+		ensureCapacity();
+		if (i == pos) {
+			add(value);
+		} else {
+			System.arraycopy(data, i, data, i + 1, pos - i);
+			data[i] = value;
+			pos++;
+		}
+	}
 
-    public int remove(int i) {
-        if (i >= pos) {
-            throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
-        }
-        int value = data[i];
-        System.arraycopy(data, i + 1, data, i, pos - i - 1);
-        pos--;
-        return value;
-    }
+	public int get(int i) {
+		if (i >= pos) {
+			throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
+		}
+		return data[i];
+	}
 
-    private void ensureCapacity() {
-        if (pos == data.length) {
-            int[] d = new int[data.length * 2];
-            System.arraycopy(data, 0, d, 0, data.length);
-            data = d;
-        }
-    }
+	public int remove(int i) {
+		if (i >= pos) {
+			throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
+		}
+		int value = data[i];
+		System.arraycopy(data, i + 1, data, i, pos - i - 1);
+		pos--;
+		return value;
+	}
 
-    public void add(int i, int value) {
-        if (i > pos) {
-            throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
-        }
-        ensureCapacity();
-        if (i == pos) {
-            add(value);
-        } else {
-            System.arraycopy(data, i, data, i + 1, pos - i);
-            data[i] = value;
-            pos++;
-        }
-    }
+	private void ensureCapacity() {
+		if (pos == data.length) {
+//			if (previousGaim > 0.25) {
+//				compress();
+//			}
+			if (pos == data.length) {
+				int[] d = new int[data.length * 2];
+				System.arraycopy(data, 0, d, 0, data.length);
+				data = d;
+				previousGaim = 0.5;
+			}
+		}
+	}
 
-    public void set(int i, int value) {
-        if (i >= pos) {
-            throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
-        }
-        data[i] = value;
-    }
+	public static void mainX(String[] args) {
+		// int[] a = new int[] {1, 2, 3, 2, 5, 3, 4}; // 1, 2, 3, 4, 5
+		IntArray intArray = new IntArray(10);
+		intArray.add(1);
+		intArray.add(2);
+		intArray.add(3);
+		intArray.add(2);
+		intArray.add(5);
+		intArray.add(3);
+		intArray.add(4);
+		intArray.compress();
+		System.out.println(intArray);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(7);
+		intArray.add(9);
+		System.out.println(intArray);
+		intArray.compress();
+		intArray.add(15);
+		intArray.add(21);
+		System.out.println(intArray);
+		intArray.compress();
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(7);
+		intArray.add(9);
+		intArray.compress();
+		intArray.add(1);
+		intArray.add(2);
+		intArray.add(3);
+		intArray.add(2);
+		intArray.add(5);
+		intArray.add(3);
+		intArray.add(4);
+		intArray.compress();
+		System.out.println(intArray);
+		intArray.add(15);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(7);
+		intArray.add(9);
+		intArray.compress();
+		System.out.println(intArray);
+		intArray.compress();
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(6);
+		intArray.add(7);
+		intArray.add(9);
+		intArray.add(7);
+		intArray.add(6);
+		intArray.add(11);
+		intArray.compress();
+		System.out.println(intArray);
+	}
 
-    public boolean equals(Object obj) {
-        if (!(obj instanceof IntArray)) {
-            return false;
-        }
-        IntArray other = (IntArray) obj;
-        if (hashCode() != other.hashCode() || pos != other.pos) {
-            return false;
-        }
-        for (int i = 0; i < pos; i++) {
-            if (data[i] != other.data[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
+	
+	public void compress() {		
+		if (pos == 0) return;		
+		this.sort();
+		int k = 1;
+		for (int i = 1; i < pos; i++) {
+			if (this.data[i] != this.data[i - 1]) {
+				this.data[k++] = this.data[i];
+			}
+		}
+		compressCount++;
+		assert k <= pos;
+		previousGaim = (pos - k) / (double) pos;
+		if (previousGaim >= 0.5){
+			System.out.println("ohu!");
+		}
+		this.pos = k;
+	}
 
-    public int hashCode() {
-        if (hash != 0) {
-            return hash;
-        }
-        int h = pos + 1;
-        for (int i = 0; i < pos; i++) {
-            h = h * 31 + data[i];
-        }
-        hash = h;
-        return h;
-    }
+	public void set(int i, int value) {
+		if (i >= pos) {
+			throw new ArrayIndexOutOfBoundsException("i=" + i + " size=" + pos);
+		}
+		data[i] = value;
+	}
 
-    public int size() {
-        return data.length;
-    }
-    
-    public int pos() {
-    	return pos;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof IntArray)) {
+			return false;
+		}
+		IntArray other = (IntArray) obj;
+		if (hashCode() != other.hashCode() || pos != other.pos) {
+			return false;
+		}
+		for (int i = 0; i < pos; i++) {
+			if (data[i] != other.data[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    public void addValueSorted(int value) {
-        int l = 0, r = pos;
-        while (l < r) {
-            int i = (l + r) >>> 1;
-            int d = data[i];
-            if (d == value) {
-                return;
-            } else if (d > value) {
-                r = i;
-            } else {
-                l = i + 1;
-            }
-        }
-        add(l, value);
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		if (pos >= 1) {
+			sb.append(data[0]);
+			for (int i = 1; i < pos; i++) {
+				sb.append(',');
+				sb.append(data[i]);
+			}
+		}
+		sb.append(']');
+		return sb.toString();
+	}
 
-    public void removeValue(int value) {
-        for (int i = 0; i < pos; i++) {
-            if (data[i] == value) {
-                remove(i);
-                return;
-            }
-        }        
-    }
+	public int size() {
+		return data.length;
+	}
 
-    public int findNextValueIndex(int value) {
-        int l = 0, r = pos;
-        while (l < r) {
-            int i = (l + r) >>> 1;
-            int d = data[i];
-            if (d >= value) {
-                r = i;
-            } else {
-                l = i + 1;
-            }
-        }
-        return l;
+	public int pos() {
+		return pos;
+	}
 
-//        for(int i=0; i<size; i++) {
-//            if(data[i] >= value) {
-//                return i;
-//            }
-//        }
-//        return size;
-    }
+	public void sort() {
+		Arrays.sort(this.data, 0, pos);
+	}
 
-    public void sort() {
-        // insertion sort
-        for (int i = 1, j; i < size(); i++) {
-            int t = get(i);
-            for (j = i - 1; j >= 0 && (get(j) > t); j--) {
-                set(j + 1, get(j));
-            }
-            set(j + 1, t);
-        }
-    }
 
-    public void toArray(int[] array) {
-        System.arraycopy(data, 0, array, 0, pos);
-    }
+	public void toArray(int[] array) {
+		System.arraycopy(data, 0, array, 0, pos);
+	}
+	
 
+	private class ArraysPool {
+		final int[][] arraysPool; 
+		final int initialSize;
+		final int deep;
+
+		public ArraysPool(int initialSize, int deep) {
+			this.initialSize = initialSize;
+			this.deep = deep;
+			this.arraysPool = new int[deep][];
+		}
+
+		public int[] getArray(int size) {
+			int deep = Integer.highestOneBit(size / initialSize) - 1;
+			int[] array = arraysPool[deep]; 
+			if (array == null) {
+				array = new int[size];
+				arraysPool[deep] = array;
+			}
+			return array;
+		}
+		
+		public void setArray(int size, int[] array) {
+			int deep = Integer.highestOneBit(size / initialSize) - 1;
+			arraysPool[deep] = array;
+		}
+	}
 }

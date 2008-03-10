@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
@@ -59,7 +60,7 @@ public class SubSequencesComparer {
 
 	private static final int defaultThreshold = 1;
 	private static final int defaultMatch = -1;
-	private static final int defaultDismatch = 2;
+	private static final int defaultDismatch = 3;
 	private static final int defaultGapOpen = 2;
 	private static final int defaultGapExtend = 0;
 	private static final int defaultSubSequenceLength = 8;
@@ -78,9 +79,10 @@ public class SubSequencesComparer {
 	
 	private long[] dataOffsetIndex;
 	private int[] dataQuantityIndex;
-	
-		
+			
 	private static SubSequencesComparer defaultInstance = null;
+	
+	static Logger logger = Logger.getLogger("bio.pih.index.SubSequencesComparer");
 	
 	/**
 	 * @return the default instance of {@link SubSequencesComparer} 
@@ -241,6 +243,8 @@ public class SubSequencesComparer {
 	 * @throws InvalidHeaderData
 	 */
 	public void load(boolean check) throws IOException, InvalidHeaderData {
+		logger.info("Loading " + this.toString() + " data");
+		long begin = System.currentTimeMillis();
 		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexFile().length());		
 		
 		int encodedSequenceAndQuantity;
@@ -268,6 +272,7 @@ public class SubSequencesComparer {
 			this.dataQuantityIndex[sequence] = quantity;
 			this.dataOffsetIndex[sequence] = offset;
 		}
+		logger.info("SubSequencesComparer data loaded in "  + (System.currentTimeMillis() - begin) + "ms");
 	}
 
 	/**
@@ -365,6 +370,7 @@ public class SubSequencesComparer {
 		getDataFile().createNewFile();
 		FileChannel dataFileChannel = new FileOutputStream(getDataFile()).getChannel();
 
+		System.out.println("Gerating data for  "+ this.toString());
 		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
 			results = new LinkedList<ComparationResult>();
 			long time = System.currentTimeMillis();
@@ -499,6 +505,22 @@ public class SubSequencesComparer {
 	 */
 	public DNASequenceEncoderToShort getEncoder() {
 		return encoder;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SubSequenceComparer ");
+		sb.append(match);
+		sb.append('/');
+		sb.append(dismatch);
+		sb.append('/');
+		sb.append(gapOpen);
+		sb.append('/');
+		sb.append(gapExtend);
+		sb.append('/');
+		sb.append(threshold);
+		return sb.toString();
 	}
 	
 	

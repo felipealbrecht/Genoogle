@@ -2,10 +2,10 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 
@@ -15,8 +15,6 @@ import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.search.DNASearcher;
 import bio.pih.seq.LightweightSymbolList;
-
-import com.google.common.collect.Maps;
 
 /**
  * A data bank witch index its sequences.
@@ -28,6 +26,8 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 
 	private final SubSequencesComparer subSequenceComparer;
 	private final SubSequencesArrayIndex index;
+	
+	Logger logger = Logger.getLogger("pih.bio.io.IndexedDNASequenceDataBank");
 
 	/**
 	 * @param args
@@ -40,16 +40,19 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData {
 		BasicConfigurator.configure();
 		
-		//File fastaFile = new File("sequences_50mb.fsa");
-		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("teste", new File("."), 8, false);
+		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
 		indexedDNASequenceDataBank.loadInformations();
-		//indexedDNASequenceDataBank.addFastaFile(fastaFile);
+		
+//		indexedDNASequenceDataBank.addFastaFile(new File("mouse.rna.fna"));
+//		indexedDNASequenceDataBank.addFastaFile(new File("cow.rna.fna"));
 								
 		String seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
 		
 		DNASearcher search = new DNASearcher();
 		long init = System.currentTimeMillis();
+		search.doSearch(sequence, indexedDNASequenceDataBank);
+		search.doSearch(sequence, indexedDNASequenceDataBank);
 		search.doSearch(sequence, indexedDNASequenceDataBank);
 		System.out.println("Total:" + (System.currentTimeMillis() - init));
 	}
@@ -78,45 +81,34 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	
 	@Override
 	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
-		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
-		index.optime();
+		short[] encodedSequence = sequenceInformation.getEncodedSequence();
+		int id = sequenceInformation.getId();
+		index.addSequence(id, encodedSequence);
+		if (id % 5000 == 0) {
+			doOptimizations();
+		}
 	}
 	
 	@Override
 	void doSequenceLoadingProcessing(SequenceInformation sequenceInformation) {
 		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
+		if (sequenceInformation.getId() % 5000 == 0) {
+			doOptimizations();
+		}
 	}
 	
 	@Override
-	void doOptimizations() {
-		index.optime();	
+	void doOptimizations() {		
+		index.optimize();	
 	}
 			
 
-	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
+	public long[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
 		return index.getMachingSubSequence(encodedSubSequence);
 	}
-
-	public Map<Short, int[]> getSimilarSubSequence(short encodedSubSequence, int threshold) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		Map<Short, int[]> similarSubSequences = Maps.newHashMap();
-		
-		int[] alignmentIntRepresentations = subSequenceComparer.getSimilarSequences(encodedSubSequence);
-		short scoreFromIntRepresentation;
-		short sequenceFromIntRepresentation;
-		
-		for (int alignmentIntRepresentation : alignmentIntRepresentations) {
-			scoreFromIntRepresentation = SubSequencesComparer.getScoreFromIntRepresentation(alignmentIntRepresentation);
-			if (scoreFromIntRepresentation < threshold) {
-				break;
-			}
-			sequenceFromIntRepresentation = SubSequencesComparer.getSequenceFromIntRepresentation(alignmentIntRepresentation);
-			int[] machingSubSequence = index.getMachingSubSequence(sequenceFromIntRepresentation);
-			if (machingSubSequence != null) {
-				similarSubSequences.put(sequenceFromIntRepresentation, machingSubSequence);
-			}
-		}
-
-		return similarSubSequences;
+	
+	public int[] getSimilarSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {		
+		return subSequenceComparer.getSimilarSequences(encodedSubSequence);		
 	}
 	
 }

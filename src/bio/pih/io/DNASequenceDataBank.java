@@ -13,6 +13,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
@@ -46,6 +47,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private File dataBankFile;		
 	private FileChannel dataBankFileChannel;
 	private volatile static boolean isRecording = false;
+	
+	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
 	static DNASequenceEncoderToShort encoder = DNASequenceEncoderToShort.getDefaultEncoder();
 	
@@ -74,18 +77,21 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	public synchronized void loadInformations() throws IOException {
+		
 		dataBankFile = new File(path, name + ".dsdb");
 		checkFile(dataBankFile, readOnly);
 		if (readOnly) {
 			dataBankFile.setReadOnly();
 		}
 		dataBankFileChannel = new FileInputStream(dataBankFile).getChannel();
-		loadData();		
-		doOptimizations();
+		loadData();			
 	}
 	
 
-	synchronized void loadData() throws IOException {	
+	synchronized void loadData() throws IOException {
+		logger.info("Loading databank from " + getDataBankFile());
+		long begin = System.currentTimeMillis();
+		
 		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		
 		SequenceInformation sequenceInformation  = null;
@@ -102,11 +108,11 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			totalSequences++;
 			doSequenceLoadingProcessing(sequenceInformation);
 		}
+		doOptimizations();
+		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " +totalSequences+" sequences." );
 	}
 	
-	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);
-	
-	abstract void doOptimizations();
+	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);	
 
 	public SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
@@ -117,13 +123,16 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		int variableLength = mappedIndexFile.getInt();
 		SequenceInformation sequenceInformation = SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);						
 		String decodeShortArrayToString = DNASequenceEncoderToShort.getDefaultEncoder().decodeShortArrayToString(sequenceInformation.getEncodedSequence());
-
+		
 		return LightweightSymbolList.createDNA(decodeShortArrayToString);
 	}
 
 
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
-		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile()).getChannel();
+		logger.info("Adding a FASTA file from " + fastaFile);
+		long begin = System.currentTimeMillis();
+		
+		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
 
@@ -137,7 +146,10 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		dataBankFileChannel.close();
 		doOptimizations();
+		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
+	
+	abstract void doOptimizations();
 
 	public synchronized int addSequence(RichSequence s) throws IOException, BioException {
 		
@@ -168,7 +180,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		SequenceInformation si = new SequenceInformation(getNextSequenceId(), s.getIdentifier(), s.getName(), s.getAccession(), (byte) s.getVersion(), s.getDescription(), encodedSequence);		
 		ByteBuffer bb = si.toByteBuffer();
 		bb.rewind();		
-		dataBankFileChannel.write(bb);		
+		dataBankFileChannel.write(bb);	
 		doSequenceAddingProcessing(si);
 		totalSequences++;
 		

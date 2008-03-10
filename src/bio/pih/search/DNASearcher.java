@@ -1,14 +1,17 @@
 package bio.pih.search;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequenceIndexInfo;
+import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.search.SearchInformation.SearchStep;
@@ -85,33 +88,65 @@ public class DNASearcher implements Searcher {
 
 		public void run() {
 			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
-			//logger.setLevel(Level.ERROR);
+			// logger.setLevel(Level.ERROR);
 			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory().newSymbolListWindowIterator(sequence, 8);
 
-			int totalSubsequences = 0;
+			BitSet subSequencesSearched = new BitSet(65536);
 
-			IndexRetrievedData indexRetrievedData = new IndexRetrievedData(databank.getTotalSequences()/20);
+			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 50);
 
 			logger.info("Begining the search of sequence with " + sequence.length() + "bases " + sequence.getString());
 
+			SymbolList subSequence;
+			short[] iess = new short[sequence.length() - (8 - 1)];
+			int pos = -1;
+			while (symbolListWindowIterator.hasNext()) {
+				pos++;
+				subSequence = symbolListWindowIterator.next();
+				iess[pos] = DNASequenceEncoderToShort.getDefaultEncoder().encodeSubSymbolListToShort(subSequence);
+			}
+			Arrays.sort(iess);
+			int k = 1;
+			for (int i = 1; i < pos; i++) {
+				if (iess[i] != iess[i - 1]) {
+					iess[k++] = iess[i];
+				}
+			}
+			short[] inputSubSequences = new short[k];
+			System.arraycopy(iess, 0, inputSubSequences, 0, k);
+			logger.info("from " + pos + " subSequences to " + k);
+
+			int eco = 0;
+
+			int[] similarSubSequences;
+			long[] indexPositions;
+			int threshould = 4;
+
 			long init = System.currentTimeMillis();
 			try {
-				while (symbolListWindowIterator.hasNext()) {
-					//long iterationBegin = System.currentTimeMillis();
-					totalSubsequences++;
-					LightweightSymbolList subSequence = (LightweightSymbolList) symbolListWindowIterator.next();
-					short encodedSubSequence = DNASequenceEncoderToShort.getDefaultEncoder().encodeSubSymbolListToShort(subSequence);
+				for (short encodedSubSequence : inputSubSequences) {
+					similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 
-					Map<Short, int[]> similarSubSequencesMap = databank.getSimilarSubSequence(encodedSubSequence, 7);
+					for (int i = 0; i < similarSubSequences.length; i++) {
+						if (SubSequencesComparer.getScoreFromIntRepresentation(similarSubSequences[i]) < threshould) {
+							break;
+						}
 
-					for (int[] similarSubSequences: similarSubSequencesMap.values()) {				
-						for (int subSequenceInfoIntRepresention : similarSubSequences) {
-							indexRetrievedData.addSubSequenceInfoIntRepresention(subSequenceInfoIntRepresention);
+						int sequenceFromIntRepresentation = SubSequencesComparer.getSequenceFromIntRepresentation(similarSubSequences[i]) & 0xFFFF;
+						if (!subSequencesSearched.get(sequenceFromIntRepresentation)) {
+							indexPositions = databank.getMachingSubSequence((short) sequenceFromIntRepresentation);
+							if (indexPositions != null) {
+								for (long subSequenceIndexInfo : indexPositions) {
+									retrievedData.addSubSequenceInfoIntRepresention(subSequenceIndexInfo);
+								}
+							}
+							subSequencesSearched.set(sequenceFromIntRepresentation);
+						} else {
+							eco++;
 						}
 					}
-					//System.out.println("Iteracao " + totalSubsequences + " demorou: " + (System.currentTimeMillis() - iterationBegin));
-				}
 
+				}
 			} catch (ValueOutOfBoundsException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -121,14 +156,13 @@ public class DNASearcher implements Searcher {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + indexRetrievedData.getTotal() + " possible seeds");
-			indexRetrievedData = null;
+			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
+			System.out.println("eco = " + eco);
+			retrievedData.compress();
+			retrievedData.filterData();
+			// logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
+			retrievedData = null;
 			System.gc();
-			
-
-		}
-
-		void searchSeeds() {
 
 		}
 	}
@@ -136,30 +170,86 @@ public class DNASearcher implements Searcher {
 	private static class IndexRetrievedData {
 		IntArray[] arrays;
 		int size;
-		
+
 		long total;
 
 		/**
-		 * @param size the qtd of lists
+		 * @param size
+		 *            the qtd of lists
+		 * @param initialSize
 		 */
 		@SuppressWarnings("unchecked")
-		public IndexRetrievedData(int size) {
+		public IndexRetrievedData(int size, int initialSize) {
 			this.size = size;
-			this.total = 0;
 
 			arrays = new IntArray[size];
 			for (int i = 0; i < size; i++) {
-				arrays[i] = new IntArray(500);
+				arrays[i] = new IntArray(initialSize);
 			}
 		}
 
-		void addSubSequenceInfoIntRepresention(int subSequenceInfoIntRepresention) {
-			total++;
-			arrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention) % size].add(subSequenceInfoIntRepresention);
+		void addSubSequenceInfoIntRepresention(long subSequenceInfoIntRepresention) {
+			arrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention)].add(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention));
 		}
-		
+
 		public long getTotal() {
+			int total = 0;
+			for (IntArray array : arrays) {
+				total += array.pos();
+			}
 			return total;
+		}
+
+		public void compress() {
+			for (int a = 0; a < arrays.length; a++) {
+				IntArray array = arrays[a];
+//				System.out.print(a + ":[");
+//				System.out.print(array.pos());
+//				System.out.print("] ");
+				array.sort();
+
+//				for (int i = 0; i < array.pos(); i++) {
+//					System.out.print(array.get(i));
+//					System.out.print(",");
+//				}
+//				System.out.println();
+			}
+		}
+
+		public void filterData() {
+			int[] c = new int[999999];
+			int previousPos;
+			int offset;
+			int score;
+			int maxScore;
+			int consecutives;
+			int cccc = 0;
+			for (IntArray results : arrays) {
+				score = 0;
+				maxScore = 0;
+				consecutives = 0;
+				if (results.pos() > 0) {
+					previousPos = results.get(0);
+					for (int i = 1; i < results.pos(); i++) {
+						offset = ((results.get(i) - previousPos) / 8) - 1;
+						if (offset == 0) {
+							consecutives++;
+						} else {
+							consecutives -= offset;
+						}
+						previousPos = results.get(i);
+					}
+					if (consecutives > 0) {
+						c[cccc] = consecutives;
+						//System.out.println(consecutives + " consecutivos.");
+					}
+					cccc++;
+				}
+			}
+			Arrays.sort(c);
+			for (int i = 999998; c[i] > 0; i--) {
+				System.out.println(c[i]);
+			}
 		}
 
 	}
