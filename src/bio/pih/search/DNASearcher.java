@@ -17,6 +17,7 @@ import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.search.SearchInformation.SearchStep;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.IntArray;
+import bio.pih.util.LongArray;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
@@ -93,7 +94,7 @@ public class DNASearcher implements Searcher {
 
 			BitSet subSequencesSearched = new BitSet(65536);
 
-			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 50);
+			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 40);
 
 			logger.info("Begining the search of sequence with " + sequence.length() + "bases " + sequence.getString());
 
@@ -120,7 +121,7 @@ public class DNASearcher implements Searcher {
 
 			int[] similarSubSequences;
 			long[] indexPositions;
-			int threshould = 4;
+			int threshould = 1;
 
 			long init = System.currentTimeMillis();
 			try {
@@ -158,8 +159,8 @@ public class DNASearcher implements Searcher {
 			}
 			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
 			System.out.println("eco = " + eco);
-			retrievedData.compress();
-			retrievedData.filterData();
+			//retrievedData.compress();
+			//retrievedData.filterData();
 			// logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
 			retrievedData = null;
 			System.gc();
@@ -195,7 +196,9 @@ public class DNASearcher implements Searcher {
 		public long getTotal() {
 			int total = 0;
 			for (IntArray array : arrays) {
-				total += array.pos();
+				if (array.getArray() != null){
+				total += array.getArray().length;
+			}
 			}
 			return total;
 		}
@@ -206,7 +209,9 @@ public class DNASearcher implements Searcher {
 //				System.out.print(a + ":[");
 //				System.out.print(array.pos());
 //				System.out.print("] ");
-				array.sort();
+				if (array.getArray() != null) {
+				Arrays.sort(array.getArray());
+				}
 
 //				for (int i = 0; i < array.pos(); i++) {
 //					System.out.print(array.get(i));
@@ -224,20 +229,22 @@ public class DNASearcher implements Searcher {
 			int maxScore;
 			int consecutives;
 			int cccc = 0;
+			int array[];
 			for (IntArray results : arrays) {
+				array = results.getArray();
 				score = 0;
 				maxScore = 0;
 				consecutives = 0;
-				if (results.pos() > 0) {
-					previousPos = results.get(0);
-					for (int i = 1; i < results.pos(); i++) {
-						offset = ((results.get(i) - previousPos) / 8) - 1;
+				if (array != null) {
+					previousPos = array[0];
+					for (int i = 1; i < array.length; i++) {
+						offset = ((array[i] - previousPos) / 8) - 1;
 						if (offset == 0) {
 							consecutives++;
 						} else {
 							consecutives -= offset;
 						}
-						previousPos = results.get(i);
+						previousPos = array[i];
 					}
 					if (consecutives > 0) {
 						c[cccc] = consecutives;

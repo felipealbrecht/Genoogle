@@ -40,10 +40,11 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData {
 		BasicConfigurator.configure();
 		
+		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("full_rna", new File("."), 8, false);
 		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
 		indexedDNASequenceDataBank.loadInformations();
 		
-//		indexedDNASequenceDataBank.addFastaFile(new File("mouse.rna.fna"));
+//		indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/full_rna.fna"));
 //		indexedDNASequenceDataBank.addFastaFile(new File("cow.rna.fna"));
 								
 		String seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
@@ -81,12 +82,12 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	
 	@Override
 	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
-		short[] encodedSequence = sequenceInformation.getEncodedSequence();
-		int id = sequenceInformation.getId();
-		index.addSequence(id, encodedSequence);
-		if (id % 5000 == 0) {
-			doOptimizations();
-		}
+		//short[] encodedSequence = sequenceInformation.getEncodedSequence();
+		//int id = sequenceInformation.getId();
+		//index.addSequence(id, encodedSequence);
+		//if (id % 5000 == 0) {
+		//	doOptimizations();
+		//}
 	}
 	
 	@Override

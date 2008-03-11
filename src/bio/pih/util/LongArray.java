@@ -11,15 +11,15 @@ import java.util.List;
  * 
  * TODO: junits!
  */
-public class IntArray {
+public class LongArray {
 
-	private List<int[]> blockArrays;
-	private int[] finalArray;
-	private int[] actualBlock;
+	private List<long[]> blockArrays;
+	private long[] finalArray;
+	private long[] actualBlock;
 	private int actualBockPos;
 	private int blockSize;
 
-	public IntArray(int blockSize) {
+	public LongArray(int blockSize) {
 		this.finalArray = null;
 		this.actualBlock = null;
 		this.blockArrays = null;
@@ -27,30 +27,30 @@ public class IntArray {
 		this.blockSize = blockSize;
 	}
 
-	public void add(int value) {
+	public void add(long value) {
 		ensureCapacity();
 		actualBlock[actualBockPos++] = value;
 	}
 
 	private void ensureCapacity() {
 		if (actualBlock == null) {
-			actualBlock = new int[blockSize];
+			actualBlock = new long[blockSize];
 			actualBockPos = 0;
 		} else if (actualBockPos == blockSize) {
 			getBlocksArray().add(actualBlock);
-			actualBlock = new int[blockSize];
+			actualBlock = new long[blockSize];
 			actualBockPos = 0;
 		}
 	}
 
-	private List<int[]> getBlocksArray() {
+	private List<long[]> getBlocksArray() {
 		if (blockArrays == null) {
-			blockArrays = new LinkedList<int[]>();
+			blockArrays = new LinkedList<long[]>();
 		}
 		return blockArrays;
 	}
 
-	public int[] getArray() {
+	public long[] getArray() {
 		// Special case: no data was added from begin or after the last getArray()
 		if ((actualBockPos == 0) && (getBlocksArray().size() == 0)) {
 			return finalArray;
@@ -64,17 +64,6 @@ public class IntArray {
 			return finalArray;
 		}
 
-		// Special case: only one block is being utilized, but it has previous finalArray
-		if ((getBlocksArray().size() == 0) & (finalArray != null)) {
-			int[] o = new int[finalArray.length + actualBockPos];
-			System.arraycopy(finalArray, 0, o, 0, finalArray.length);
-			System.arraycopy(actualBlock, 0, o, finalArray.length, actualBockPos);
-			finalArray = o;
-			actualBockPos = 0;
-			actualBlock = null;
-			return finalArray;
-		}
-
 		int size = 0;
 		if (finalArray != null) {
 			size += finalArray.length;
@@ -82,7 +71,7 @@ public class IntArray {
 		size += (getBlocksArray().size() * blockSize);
 		size += actualBockPos;
 
-		int[] o = new int[size];
+		long[] o = new long[size];
 
 		int pos = 0;
 
@@ -91,7 +80,7 @@ public class IntArray {
 			pos = finalArray.length;
 		}
 
-		for (int[] block : getBlocksArray()) {
+		for (long[] block : getBlocksArray()) {
 			System.arraycopy(block, 0, o, pos, blockSize);
 			pos += blockSize;
 		}
@@ -107,73 +96,73 @@ public class IntArray {
 	}
 
 	public static void mainX(String[] args) {
-		IntArray intArray = new IntArray(3);
-		intArray.add(1);
-		intArray.add(2);
-		intArray.add(3);
-		for (int i : intArray.getArray())
+		LongArray longArray = new LongArray(3);
+		longArray.add(1);
+		longArray.add(2);
+		longArray.add(3);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(2);
-		intArray.add(5);
-		intArray.add(3);
-		for (int i : intArray.getArray())
+		longArray.add(2);
+		longArray.add(5);
+		longArray.add(3);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(4);
-		for (int i : intArray.getArray())
+		longArray.add(4);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(30);
-		intArray.add(40);
-		intArray.add(50);
-		intArray.add(60);
-		intArray.add(70);
-		intArray.add(80);
-		for (int i : intArray.getArray())
+		longArray.add(30);
+		longArray.add(40);
+		longArray.add(50);
+		longArray.add(60);
+		longArray.add(70);
+		longArray.add(80);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(15);
-		intArray.add(21);
-		for (int i : intArray.getArray())
+		longArray.add(15);
+		longArray.add(21);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(7);
-		intArray.add(9);
-		intArray.add(1);
-		intArray.add(2);
-		intArray.add(3);
-		intArray.add(2);
-		intArray.add(5);
-		intArray.add(3);
-		intArray.add(4);
-		for (int i : intArray.getArray())
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(7);
+		longArray.add(9);
+		longArray.add(1);
+		longArray.add(2);
+		longArray.add(3);
+		longArray.add(2);
+		longArray.add(5);
+		longArray.add(3);
+		longArray.add(4);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(15);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(7);
-		intArray.add(9);
-		for (int i : intArray.getArray())
+		longArray.add(15);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(7);
+		longArray.add(9);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(6);
-		intArray.add(7);
-		intArray.add(9);
-		intArray.add(7);
-		intArray.add(6);
-		intArray.add(11);
-		for (int i : intArray.getArray())
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(6);
+		longArray.add(7);
+		longArray.add(9);
+		longArray.add(7);
+		longArray.add(6);
+		longArray.add(11);
+		for (long i : longArray.getArray())
 			System.out.print(i + " ");
 		System.out.println();
 	}

@@ -61,8 +61,7 @@ public class SequenceInformation {
 		byte[] nameBytes = null;
 		byte[] accessionBytes = null;
 		byte[] descriptionBytes = null;
-		
-
+			
 		giBytes = gi.getBytes(defaultCharset.name());
 		nameBytes = name.getBytes(defaultCharset.name());
 		accessionBytes = accession.getBytes(defaultCharset.name());
