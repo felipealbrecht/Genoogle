@@ -46,16 +46,19 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		
 //		indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/full_rna.fna"));
 //		indexedDNASequenceDataBank.addFastaFile(new File("cow.rna.fna"));
-								
-		String seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
+		
+		String seq;
+
+		//seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
+		
+		seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGATGAAAAAGTTTTGGAAATTGATAGTGGTAATGCAGCTCAACATTATGAATCTTTTTATAACTATGATGCACGGGGAGCGGATGAACTTTCTTTACAAATAGGAGACGCTGTGCACATCCTGGAAACATACGAAGGGTGGTACAGAGGTTACACCTTAAGAAAAAAGTCTAAGAAGGGTATATTTCCTGCTTCGTACATCCATCTTAAAGAAGCCATAGTTGAAGGAAAAGGGCAACATGA";
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
 		
 		DNASearcher search = new DNASearcher();
 		long init = System.currentTimeMillis();
 		search.doSearch(sequence, indexedDNASequenceDataBank);
-		search.doSearch(sequence, indexedDNASequenceDataBank);
-		search.doSearch(sequence, indexedDNASequenceDataBank);
-		System.out.println("Total:" + (System.currentTimeMillis() - init));
+//		search.doSearch(sequence, indexedDNASequenceDataBank);
+//		search.doSearch(sequence, indexedDNASequenceDataBank);
 	}
 
 	/**
@@ -82,20 +85,14 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	
 	@Override
 	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
-		//short[] encodedSequence = sequenceInformation.getEncodedSequence();
-		//int id = sequenceInformation.getId();
-		//index.addSequence(id, encodedSequence);
-		//if (id % 5000 == 0) {
-		//	doOptimizations();
-		//}
+		short[] encodedSequence = sequenceInformation.getEncodedSequence();
+		int id = sequenceInformation.getId();
+		index.addSequence(id, encodedSequence);		
 	}
 	
 	@Override
 	void doSequenceLoadingProcessing(SequenceInformation sequenceInformation) {
 		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
-		if (sequenceInformation.getId() % 5000 == 0) {
-			doOptimizations();
-		}
 	}
 	
 	@Override

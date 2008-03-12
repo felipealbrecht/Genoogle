@@ -18,7 +18,13 @@ public class LongArray {
 	private long[] actualBlock;
 	private int actualBockPos;
 	private int blockSize;
+	
+	private static int defaultInitialSize = 50; 
 
+	public LongArray() {
+		this(defaultInitialSize);
+	}
+	
 	public LongArray(int blockSize) {
 		this.finalArray = null;
 		this.actualBlock = null;
@@ -56,14 +62,6 @@ public class LongArray {
 			return finalArray;
 		}
 
-		// Special case: only one block is being utilized.
-		if ((getBlocksArray().size() == 0) & (finalArray == null)) {
-			finalArray = actualBlock;
-			actualBockPos = 0;
-			actualBlock = null;
-			return finalArray;
-		}
-
 		int size = 0;
 		if (finalArray != null) {
 			size += finalArray.length;
@@ -86,11 +84,12 @@ public class LongArray {
 		}
 
 		System.arraycopy(actualBlock, 0, o, pos, actualBockPos);
-
+		
 		actualBockPos = 0;
 		actualBlock = null;
 		blockArrays = null;
 		finalArray = o;
+		
 
 		return finalArray;
 	}

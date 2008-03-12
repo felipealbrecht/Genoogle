@@ -8,13 +8,13 @@ public class SequenceMutator {
 
 	private static Random random = new Random();
 
-	public static double DEFAULT_MUTATE_BASE_RATION = 0.02;
-	public static double DEFAULT_DELETION_RATIO = 0.01;
-	public static double DEFAULT_INSERTION_RATIO = 0.01;
-	public static double DEFAULT_DUPLICATION_RATIO = 0.001;
-	public static double DEFAULT_DESLOCATION_RATIO = 0.001;
-	public static double DEFAULT_INVERSION_RATIO = 0.001;
-	public static double DEFAULT_DESLOCATION_INVERSION_RATIO = 0.001;
+	public static double DEFAULT_MUTATE_BASE_RATION = 0.05;
+	public static double DEFAULT_DELETION_RATIO = 0.05;
+	public static double DEFAULT_INSERTION_RATIO = 0.04;
+	public static double DEFAULT_DUPLICATION_RATIO = 0.01;
+	public static double DEFAULT_DESLOCATION_RATIO = 0.01;
+	public static double DEFAULT_INVERSION_RATIO = 0.01;
+	public static double DEFAULT_DESLOCATION_INVERSION_RATIO = 0.01;
 	public static int DEFAULT_PROPORSION_SIZE = 4;
 
 	static int PROBABILITIES_VECTOR_SIZE = 10000;
@@ -119,9 +119,13 @@ public class SequenceMutator {
 	public static void main(String[] args) throws IllegalSymbolException {
 		String sequence = randomSequence(10);
 
-		System.out.println(sequence);
-		sequence = mutateSequence(sequence, 1000, 4, DEFAULT_PROBABILITY_VECTOR);
-		System.out.println(sequence);
+		System.out.println(sequence + "(entrada)");
+		String nSequence = mutateSequence(sequence, 100, 4, DEFAULT_PROBABILITY_VECTOR);
+		System.out.println(nSequence + "(100 geracoes)");
+		 nSequence = mutateSequence(sequence, 1000, 4, DEFAULT_PROBABILITY_VECTOR);
+		System.out.println(nSequence + "(1000 geracoes)");
+		 nSequence = mutateSequence(sequence, 10000, 4, DEFAULT_PROBABILITY_VECTOR);
+		System.out.println(nSequence + "(10000 geracoes)");
 	}
 
 	public static String mutateBase(String sequence) {

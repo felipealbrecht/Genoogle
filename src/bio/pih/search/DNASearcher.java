@@ -6,6 +6,10 @@ import java.util.BitSet;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.biojava.bio.BioException;
+import org.biojava.bio.alignment.SmithWaterman;
+import org.biojava.bio.alignment.SubstitutionMatrix;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
@@ -121,7 +125,7 @@ public class DNASearcher implements Searcher {
 
 			int[] similarSubSequences;
 			long[] indexPositions;
-			int threshould = 1;
+			int threshould = 8;
 
 			long init = System.currentTimeMillis();
 			try {
@@ -159,17 +163,48 @@ public class DNASearcher implements Searcher {
 			}
 			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
 			System.out.println("eco = " + eco);
-			//retrievedData.compress();
-			//retrievedData.filterData();
-			// logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
-			retrievedData = null;
-			System.gc();
-
+			System.out.println("matches: " + retrievedData.getMatchAreas().length);
+			
+			for(long encodedMatchZone: retrievedData.getMatchAreas()) {
+				long sequenceId = MatchArea.getSequenceIdFromEncodedMatchArea(encodedMatchZone);
+				long begin    = MatchArea.getBeginFromEncodedMatchArea(encodedMatchZone);
+				long length   = MatchArea.getLengthFromEncodedMatchArea(encodedMatchZone);
+				
+				LightweightSymbolList symbolList = null;
+				
+				try {
+					symbolList  = (LightweightSymbolList) databank.getSymbolListFromSequenceId((int) sequenceId);
+				} catch (IllegalSymbolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				SymbolList subSymbolList  = symbolList.subList((int) begin+1, (int) (begin+length+8+1));
+				
+				SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
+				
+				SmithWaterman smithWaterman = new SmithWaterman(-1, 2, 1, 1, 1, substitutionMatrix);
+				smithWaterman.pairwiseAlignment(subSymbolList, sequence);
+				
+				System.out.println("Sequence " + sequenceId + " from :" + begin + " to " +(begin+length+8+1) );
+				try {
+					System.out.println(smithWaterman.getAlignmentString());
+				} catch (BioException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			
+			
 		}
 	}
 
 	private static class IndexRetrievedData {
-		IntArray[] arrays;
+		IntArray[] sequencesResultArrays;
 		int size;
 
 		long total;
@@ -183,80 +218,55 @@ public class DNASearcher implements Searcher {
 		public IndexRetrievedData(int size, int initialSize) {
 			this.size = size;
 
-			arrays = new IntArray[size];
+			sequencesResultArrays = new IntArray[size];
 			for (int i = 0; i < size; i++) {
-				arrays[i] = new IntArray(initialSize);
+				sequencesResultArrays[i] = new IntArray(initialSize);
 			}
 		}
 
 		void addSubSequenceInfoIntRepresention(long subSequenceInfoIntRepresention) {
-			arrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention)].add(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention));
+			sequencesResultArrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention)].add(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention));
 		}
 
 		public long getTotal() {
 			int total = 0;
-			for (IntArray array : arrays) {
-				if (array.getArray() != null){
-				total += array.getArray().length;
-			}
+			for (IntArray array : sequencesResultArrays) {
+				if (array.getArray() != null) {
+					total += array.getArray().length;
+				}
 			}
 			return total;
 		}
 
-		public void compress() {
-			for (int a = 0; a < arrays.length; a++) {
-				IntArray array = arrays[a];
-//				System.out.print(a + ":[");
-//				System.out.print(array.pos());
-//				System.out.print("] ");
-				if (array.getArray() != null) {
-				Arrays.sort(array.getArray());
-				}
+		public long[] getMatchAreas() {
+			LongArray matchAreas = new LongArray(3000);
+			int[] sequenceMatchs;
+			int match, previousMatch, beginArea;
 
-//				for (int i = 0; i < array.pos(); i++) {
-//					System.out.print(array.get(i));
-//					System.out.print(",");
-//				}
-//				System.out.println();
-			}
-		}
+			for (int sequenceNumber = 0; sequenceNumber < sequencesResultArrays.length; sequenceNumber++) {
+				sequenceMatchs = sequencesResultArrays[sequenceNumber].getArray();
+				if (sequenceMatchs != null) {
+					Arrays.sort(sequenceMatchs);
 
-		public void filterData() {
-			int[] c = new int[999999];
-			int previousPos;
-			int offset;
-			int score;
-			int maxScore;
-			int consecutives;
-			int cccc = 0;
-			int array[];
-			for (IntArray results : arrays) {
-				array = results.getArray();
-				score = 0;
-				maxScore = 0;
-				consecutives = 0;
-				if (array != null) {
-					previousPos = array[0];
-					for (int i = 1; i < array.length; i++) {
-						offset = ((array[i] - previousPos) / 8) - 1;
-						if (offset == 0) {
-							consecutives++;
-						} else {
-							consecutives -= offset;
+					previousMatch = sequenceMatchs[0];
+					beginArea = sequenceMatchs[0];
+
+					for (int i = 1; i < sequenceMatchs.length; i++) {
+						match = sequenceMatchs[i];
+
+						// End the area
+						if (match - previousMatch >= 16) {
+							// Add? at least 2 subsequences
+							if (previousMatch - beginArea >= 16) {
+								matchAreas.add(MatchArea.encodeMatchZone(sequenceNumber, beginArea, previousMatch - beginArea));
+							}							
+							beginArea = match;
 						}
-						previousPos = array[i];
+						previousMatch = match;
 					}
-					if (consecutives > 0) {
-						c[cccc] = consecutives;
-						//System.out.println(consecutives + " consecutivos.");
-					}
-					cccc++;
 				}
 			}
-			Arrays.sort(c);
-			for (int i = 999998; c[i] > 0; i--) {
-				System.out.println(c[i]);
-			}
+			return matchAreas.getArray();
 		}
 
 	}

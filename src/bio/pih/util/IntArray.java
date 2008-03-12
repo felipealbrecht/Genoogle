@@ -1,6 +1,5 @@
 package bio.pih.util;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,26 +54,7 @@ public class IntArray {
 		if ((actualBockPos == 0) && (getBlocksArray().size() == 0)) {
 			return finalArray;
 		}
-
-		// Special case: only one block is being utilized.
-		if ((getBlocksArray().size() == 0) & (finalArray == null)) {
-			finalArray = actualBlock;
-			actualBockPos = 0;
-			actualBlock = null;
-			return finalArray;
-		}
-
-		// Special case: only one block is being utilized, but it has previous finalArray
-		if ((getBlocksArray().size() == 0) & (finalArray != null)) {
-			int[] o = new int[finalArray.length + actualBockPos];
-			System.arraycopy(finalArray, 0, o, 0, finalArray.length);
-			System.arraycopy(actualBlock, 0, o, finalArray.length, actualBockPos);
-			finalArray = o;
-			actualBockPos = 0;
-			actualBlock = null;
-			return finalArray;
-		}
-
+		
 		int size = 0;
 		if (finalArray != null) {
 			size += finalArray.length;
