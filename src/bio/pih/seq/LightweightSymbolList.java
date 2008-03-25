@@ -2,10 +2,8 @@ package bio.pih.seq;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.io.CharacterTokenization;
 import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.AbstractSymbolList;
 import org.biojava.bio.symbol.Alphabet;
@@ -113,38 +111,14 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;// just for optimality
+	public int hashCode() {
+		int value = 0;
+		for (int i = 0; i < seqString.length();i++) {
+			value += (seqString.charAt(i) * (i+1));
 		}
-		if (o == null) {
-			return false;
-		}
-		if (!(o instanceof SymbolList)) {
-			return false;
-		}
-		return compare(this, (SymbolList) o);
+		return value;
 	}
-
-	@SuppressWarnings("unchecked")
-	private boolean compare(SymbolList sl1, SymbolList sl2) {
-		if (sl1.length() != sl2.length()) {
-			return false;
-		}
-
-		if (sl1.hashCode() != sl2.hashCode()) {
-			return false;
-		}
-
-		Iterator si1 = sl1.iterator();
-		Iterator si2 = sl2.iterator();
-		while (si1.hasNext()) {
-			if (!(si1.next() == si2.next())) {
-				return false;
-			}
-		}
-		return true;
-	}
+	
 
 	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
 		try {
@@ -152,13 +126,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		} catch (IndexOutOfBoundsException e) {
 			throw new IndexOutOfBoundsException("Index must be within [1.." + length() + "] : " + pos);
 		}
-	}
-
-	/**
-	 * @return the symbols that compose this {@link SymbolList}
-	 */
-	public Symbol[] getSymbols() {
-		return symbols;
 	}
 
 	@Override

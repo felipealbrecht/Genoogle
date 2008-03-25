@@ -180,10 +180,16 @@ public class SchedulerTest extends TestCase {
 							
 		
 		CommandLine commandLine = new CommandLine(s, new ByteArrayInputStream(commands.getBytes()), true);
-		new Thread(commandLine, "command line").run();
+		new Thread(commandLine, "command line").start();
 		 		
 		while (s.isWaitingSearch()) {
 			Thread.sleep(10);
+		}
+		
+		s.stop();
+		
+		while (s.hasWorker()) {
+			Thread.sleep(100);
 		}
 		
 		// Time for workers socket timeout
@@ -233,7 +239,7 @@ public class SchedulerTest extends TestCase {
 				"exit";							
 		
 		CommandLine commandLine = new CommandLine(s, new ByteArrayInputStream(commands.getBytes()), true);
-		new Thread(commandLine, "command line").run();
+		new Thread(commandLine, "command line").start();
 		 
 		
 		while (s.isWaitingSearch()) {

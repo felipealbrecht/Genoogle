@@ -24,13 +24,13 @@ public class SequenceInformation {
 
 	static Charset defaultCharset = Charset.forName("ISO-8859-1");
 
-	private int id;
-	private String gi;
-	private String name;
-	private String accession;
-	private short version;
-	private String description;
-	private short[] encodedSequence;
+	private final int id;
+	private final String gi;
+	private final String name;
+	private final String accession;
+	private final short version;
+	private final String description;
+	private final short[] encodedSequence;
 
 	/**
 	 * @param id 
@@ -48,7 +48,7 @@ public class SequenceInformation {
 		this.accession = accession;
 		this.description = description;
 		this.version = version;
-		this.encodedSequence = encodedSequence;
+		this.encodedSequence = encodedSequence.clone();
 	}
 
 	/**
@@ -158,9 +158,18 @@ public class SequenceInformation {
 				
 		return new SequenceInformation(id, gi, name, accession, version, description, encodedSequence); 
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.id;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
 		if (!(obj instanceof SequenceInformation)) {
 			return false;
 		}
@@ -259,7 +268,6 @@ public class SequenceInformation {
 	 * @return encodedSequence
 	 */
 	public short[] getEncodedSequence() {
-		return encodedSequence;
-	}
-
+		return encodedSequence.clone();
+	}	
 }

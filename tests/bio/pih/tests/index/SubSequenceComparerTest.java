@@ -1,7 +1,6 @@
 package bio.pih.tests.index;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -49,6 +48,7 @@ public class SubSequenceComparerTest extends TestCase {
 		int defaultSubSequenceLength = 4;
 
 		SubSequencesComparer subSequenceComparer = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		subSequenceComparer.deleteData();
 		subSequenceComparer.generateData();
 		subSequenceComparer = null;
 
@@ -97,6 +97,7 @@ public class SubSequenceComparerTest extends TestCase {
 		int defaultSubSequenceLength = 5;
 
 		SubSequencesComparer subSequenceComparer = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		subSequenceComparer.deleteData();
 		subSequenceComparer.generateData();
 		subSequenceComparer = null;
 
@@ -128,11 +129,9 @@ public class SubSequenceComparerTest extends TestCase {
 	/**
 	 * Test the load process of some similar sequences and check if they are realy similar 
 	 * @throws ValueOutOfBoundsException 
-	 * @throws IOException 
-	 * @throws InvalidHeaderData 
 	 */
-	@Test(expected=FileNotFoundException.class)
-	public void testLoadingNonexistentData() throws ValueOutOfBoundsException, InvalidHeaderData, IOException {
+	@Test(expected=IOException.class)
+	public void testLoadingNonexistentData() throws ValueOutOfBoundsException {
 		int defaultTreadshould = 10;
 		int defaultMatch = -10;
 		int defaultDismatch = 10;
@@ -144,11 +143,16 @@ public class SubSequenceComparerTest extends TestCase {
 		assertFalse(subSequencesReader.hasDataFile());
 		assertFalse(subSequencesReader.hasIndexFile());
 
+		
 		try {
-			subSequencesReader.load();			
-		} catch (FileNotFoundException fnfe) {
+			subSequencesReader.load();
+		} catch (IOException e) {
+			System.out.println("Okay!");
 			return;
+		} catch (InvalidHeaderData e) {
+			fail("Invalid header data " + e.getMessage());
 		}
+			
 		fail("FileNotFoundException has not raised");
 	}
 	

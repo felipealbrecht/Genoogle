@@ -46,11 +46,6 @@ public interface SequenceDataBank {
 	void setPath(File directory);
 
 	/**
-	 * @return the extensions that are related with this SequenceDataBank.
-	 */
-	String[] getExtensions();
-
-	/**
 	 * @return the total quantity of sequences stored in this SequenceDataBank
 	 */
 	int getTotalSequences();

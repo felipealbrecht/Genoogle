@@ -65,7 +65,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	/**
 	 * A matrix with the size length(sequence1) times length(sequence2)
 	 */
-	protected double[][] CostMatrix;
+	protected double[][] costMatrix;
 
 	/**
 	 * A matrix with the size length(alphabet) times length(alphabet)
@@ -324,7 +324,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @return returns the edit_distance computed with the given parameters.
 	 */
 	public double getEditDistance() {
-		return CostMatrix[CostMatrix.length - 1][CostMatrix[CostMatrix.length - 1].length - 1];
+		return costMatrix[costMatrix.length - 1][costMatrix[costMatrix.length - 1].length - 1];
 	}
 
 	/**
@@ -380,11 +380,11 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
 			int i, j;
-			this.CostMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
+			this.costMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
 
 
 			// construct the matrix:
-			CostMatrix[0][0] = 0;
+			costMatrix[0][0] = 0;
 
 			/*
 			 * If we want to have affine gap penalties, we have to initialise
@@ -400,18 +400,18 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				for (i = 1; i <= query.length(); i++) {
 					// CostMatrix[i][0] = CostMatrix[i-1][0] + delete;
 					E[i][0] = Double.POSITIVE_INFINITY;
-					CostMatrix[i][0] = F[i][0] = delete + i * gapExt;
+					costMatrix[i][0] = F[i][0] = delete + i * gapExt;
 				}
 				for (j = 1; j <= subject.length(); j++) {
 					// CostMatrix[0][j] = CostMatrix[0][j - 1] + insert;
 					F[0][j] = Double.POSITIVE_INFINITY;
-					CostMatrix[0][j] = E[0][j] = insert + j * gapExt;
+					costMatrix[0][j] = E[0][j] = insert + j * gapExt;
 				}
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
-						E[i][j] = Math.min(E[i][j - 1], CostMatrix[i][j - 1] + insert) + gapExt;
-						F[i][j] = Math.min(F[i - 1][j], CostMatrix[i - 1][j] + delete) + gapExt;
-						CostMatrix[i][j] = min(E[i][j], F[i][j], CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
+						E[i][j] = Math.min(E[i][j - 1], costMatrix[i][j - 1] + insert) + gapExt;
+						F[i][j] = Math.min(F[i - 1][j], costMatrix[i - 1][j] + delete) + gapExt;
+						costMatrix[i][j] = min(E[i][j], F[i][j], costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
 					}
 
 				/*
@@ -421,12 +421,12 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 			} else {
 
 				for (i = 1; i <= query.length(); i++)
-					CostMatrix[i][0] = CostMatrix[i - 1][0] + delete;
+					costMatrix[i][0] = costMatrix[i - 1][0] + delete;
 				for (j = 1; j <= subject.length(); j++)
-					CostMatrix[0][j] = CostMatrix[0][j - 1] + insert;
+					costMatrix[0][j] = costMatrix[0][j - 1] + insert;
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
-						CostMatrix[i][j] = min(CostMatrix[i - 1][j] + delete, CostMatrix[i][j - 1] + insert, CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
+						costMatrix[i][j] = min(costMatrix[i - 1][j] + delete, costMatrix[i][j - 1] + insert, costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
 					}
 
 			}
@@ -453,7 +453,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 			long time = System.currentTimeMillis();
 			int i, j;
-			this.CostMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
+			this.costMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
 			// CostMatrix
 
 			/*
@@ -463,7 +463,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 			String path = "";
 
 			// construct the matrix:
-			CostMatrix[0][0] = 0;
+			costMatrix[0][0] = 0;
 
 			/*
 			 * If we want to have affine gap penalties, we have to initialise
@@ -479,18 +479,18 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				for (i = 1; i <= query.length(); i++) {
 					// CostMatrix[i][0] = CostMatrix[i-1][0] + delete;
 					E[i][0] = Double.POSITIVE_INFINITY;
-					CostMatrix[i][0] = F[i][0] = delete + i * gapExt;
+					costMatrix[i][0] = F[i][0] = delete + i * gapExt;
 				}
 				for (j = 1; j <= subject.length(); j++) {
 					// CostMatrix[0][j] = CostMatrix[0][j - 1] + insert;
 					F[0][j] = Double.POSITIVE_INFINITY;
-					CostMatrix[0][j] = E[0][j] = insert + j * gapExt;
+					costMatrix[0][j] = E[0][j] = insert + j * gapExt;
 				}
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
-						E[i][j] = Math.min(E[i][j - 1], CostMatrix[i][j - 1] + insert) + gapExt;
-						F[i][j] = Math.min(F[i - 1][j], CostMatrix[i - 1][j] + delete) + gapExt;
-						CostMatrix[i][j] = min(E[i][j], F[i][j], CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
+						E[i][j] = Math.min(E[i][j - 1], costMatrix[i][j - 1] + insert) + gapExt;
+						F[i][j] = Math.min(F[i - 1][j], costMatrix[i - 1][j] + delete) + gapExt;
+						costMatrix[i][j] = min(E[i][j], F[i][j], costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
 					}
 
 				/*
@@ -499,10 +499,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 				try {
 					boolean[] gap_extend = { false, false };
-					j = this.CostMatrix[CostMatrix.length - 1].length - 1;
+					j = this.costMatrix[costMatrix.length - 1].length - 1;
 					SymbolTokenization st = subMatrix.getAlphabet().getTokenization("default");
 
-					for (i = this.CostMatrix.length - 1; i > 0;) {
+					for (i = this.costMatrix.length - 1; i > 0;) {
 						do {
 							// only Insert.
 							if (i == 0) {
@@ -517,7 +517,8 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 								path = ' ' + path;
 
 								// Match/Replace
-							} else if ((CostMatrix[i][j] == CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j)) && !(gap_extend[0] || gap_extend[1])) {
+							} else if ( (Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) 
+									&& !(gap_extend[0] || gap_extend[1])) {
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
 								else
@@ -527,10 +528,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 								// Insert || finish gap if extended gap is
 								// opened
-							} else if (CostMatrix[i][j] == E[i][j] || gap_extend[0]) {
+							} else if (costMatrix[i][j] == E[i][j] || gap_extend[0]) {
 								// check if gap has been extended or freshly
 								// opened
-								gap_extend[0] = (E[i][j] != CostMatrix[i][j - 1] + insert + gapExt);
+								gap_extend[0] = (Math.abs(E[i][j] - (costMatrix[i][j - 1] + insert + gapExt)) > 0.0001);
 
 								align[0] = '-' + align[0];
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
@@ -541,7 +542,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 							} else {
 								// check if gap has been extended or freshly
 								// opened
-								gap_extend[1] = (F[i][j] != CostMatrix[i - 1][j] + delete + gapExt);
+								gap_extend[1] = (Math.abs(F[i][j] - (costMatrix[i - 1][j] + delete + gapExt)) > 0.0001);
 
 								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
 								align[1] = '-' + align[1];
@@ -561,12 +562,12 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 			} else {
 
 				for (i = 1; i <= query.length(); i++)
-					CostMatrix[i][0] = CostMatrix[i - 1][0] + delete;
+					costMatrix[i][0] = costMatrix[i - 1][0] + delete;
 				for (j = 1; j <= subject.length(); j++)
-					CostMatrix[0][j] = CostMatrix[0][j - 1] + insert;
+					costMatrix[0][j] = costMatrix[0][j - 1] + insert;
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
-						CostMatrix[i][j] = min(CostMatrix[i - 1][j] + delete, CostMatrix[i][j - 1] + insert, CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
+						costMatrix[i][j] = min(costMatrix[i - 1][j] + delete, costMatrix[i][j - 1] + insert, costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j));
 					}
 
 				/*
@@ -574,13 +575,13 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				 */
 
 				try {
-					j = this.CostMatrix[CostMatrix.length - 1].length - 1;
+					j = this.costMatrix[costMatrix.length - 1].length - 1;
 					SymbolTokenization st = subMatrix.getAlphabet().getTokenization("default");
 					// System.out.println(printCostMatrix(CostMatrix,
 					// query.seqString().toCharArray(),
 					// subject.seqString().toCharArray()));
 
-					for (i = this.CostMatrix.length - 1; i > 0;) {
+					for (i = this.costMatrix.length - 1; i > 0;) {
 						do {
 							// only Insert.
 							if (i == 0) {
@@ -595,7 +596,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 								path = ' ' + path;
 
 								// Match/Replace
-							} else if (CostMatrix[i][j] == CostMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j)) {
+							} else if (Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) {
 
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
@@ -605,7 +606,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
 
 								// Insert
-							} else if (CostMatrix[i][j] == CostMatrix[i][j - 1] + insert) {
+							} else if (Math.abs(costMatrix[i][j] - (costMatrix[i][j - 1] + insert)) < 0.0001) {
 								align[0] = '-' + align[0];
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
 								path = ' ' + path;
@@ -647,16 +648,16 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 						path, // String match/missmatch representation
 						0, // Start position of the alignment in the query
 						// sequence
-						CostMatrix.length - 1, // End position of the alignment
+						costMatrix.length - 1, // End position of the alignment
 						// in the
 						// query sequence
-						CostMatrix.length - 1, // length of the query sequence
+						costMatrix.length - 1, // length of the query sequence
 						0, // Start position of the alignment in the target
 						// sequence
-						CostMatrix[0].length - 1, // End position of the
+						costMatrix[0].length - 1, // End position of the
 						// alignment in the
 						// target sequence
-						CostMatrix[0].length - 1, // length of the target
+						costMatrix[0].length - 1, // length of the target
 						// sequence
 						getEditDistance(), // the edit distance
 						System.currentTimeMillis() - time) + System.getProperty("line.separator"); // time

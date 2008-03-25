@@ -2,35 +2,88 @@ package bio.pih.util.mutation;
 
 import java.util.Random;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
-
+/**
+ * @author albrecht
+ *
+ */
+/**
+ * @author albrecht (felipe.albrecht@gmail.com)
+ *
+ * TODO: javadoc methods comments, a better main method. 
+ */
 public class SequenceMutator {
 
 	private static Random random = new Random();
 
-	public static double DEFAULT_MUTATE_BASE_RATION = 0.05;
-	public static double DEFAULT_DELETION_RATIO = 0.05;
-	public static double DEFAULT_INSERTION_RATIO = 0.04;
-	public static double DEFAULT_DUPLICATION_RATIO = 0.01;
-	public static double DEFAULT_DESLOCATION_RATIO = 0.01;
-	public static double DEFAULT_INVERSION_RATIO = 0.01;
-	public static double DEFAULT_DESLOCATION_INVERSION_RATIO = 0.01;
-	public static int DEFAULT_PROPORSION_SIZE = 4;
+	/**
+	 * Default probability for a base mutation occurs.
+	 */
+	public static final double DEFAULT_MUTATE_BASE_RATION = 0.003;
+	
+	/**
+	 * Default probability for a sub-sequence be deleted occurs.
+	 */
+	public static final double DEFAULT_DELETION_RATIO = 0.05;
+	
+	/**
+	 * Default probability for a sub-sequence be inserted occurs.
+	 */
+	public static final double DEFAULT_INSERTION_RATIO = 0.04;
+	
+	/**
+	 * Default probability for a sub-sequence be duplicated occurs.
+	 */
+	public static final double DEFAULT_DUPLICATION_RATIO = 0.01;
+	
+	/**
+	 * Default probability for a sub-sequence be dislocated occurs.
+	 */
+	public static final double DEFAULT_DISLOCATION_RATIO = 0.01;
+	
+	/**
+	 * Default probability for a sub-sequence be inverted occurs.
+	 */
+	public static final double DEFAULT_INVERSION_RATIO = 0.01;
 
-	static int PROBABILITIES_VECTOR_SIZE = 10000;
-	public static int[] DEFAULT_PROBABILITY_VECTOR = fillProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION, DEFAULT_DELETION_RATIO, DEFAULT_INSERTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DESLOCATION_RATIO, DEFAULT_INVERSION_RATIO, DEFAULT_DESLOCATION_INVERSION_RATIO);
+	/**
+	 * Default probability for a sub-sequence be inverted occurs.
+	 */
+	public static final double DEFAULT_DISLOCATION_INVERSION_RATIO = 0.01;
 
-	// Informations to fill the proabibilities vector.
+	/**
+	 * Proportional size related with sequence that will be modified.
+	 * <p>Example, for a deletion mutation on a 20 bases length sequence and proportional_size of 4
+	 *  the maximum size of the deleted sub-sequence will be 20/4: 5 bases.
+	 */
+	public static final int DEFAULT_PROPORTION_SIZE = 4;
+
+	private final static int PROBABILITIES_VECTOR_SIZE = 10000;
+	private static final int[] DEFAULT_PROBABILITY_VECTOR = createProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION, DEFAULT_DELETION_RATIO, DEFAULT_INSERTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DISLOCATION_RATIO, DEFAULT_INVERSION_RATIO, DEFAULT_DISLOCATION_INVERSION_RATIO);
+
+	// Informations to fill the probabilities vector.
 	static final int NOTHING = 0;
 	static final int MUTATE_BASE = 1;
 	static final int DELETION = 2;
 	static final int INSERTION = 3;
 	static final int DUPLICATION = 4;
-	static final int DESLOCATION = 5;
+	static final int DISLOCATION = 5;
 	static final int INVERSION = 6;
-	static final int DESLOCATION_INVERSION = 7;
+	static final int DISLOCATION_INVERSION = 7;
 
-	public static int[] fillProbabilitiesVector(double mutateBase, double deletion, double insertion, double duplication, double deslocation, double inversion, double deslocationWithInversion) {
+	/**
+	 * Create a probabilities vector with the given probabilities.
+	 * The sensibilities for each mutation came from 0.001 (0.00001%) to 10,000.00 (100%)
+	 * This methods do <b>not</b> check if a single or the total probabilities are higher then   
+	 * @param mutateBase
+	 * @param deletion
+	 * @param insertion
+	 * @param duplication
+	 * @param dislocation
+	 * @param inversion
+	 * @param dislocationWithInversion
+	 * @return a vector with the probabilities.
+	 */
+	public static int[] createProbabilitiesVector(double mutateBase, double deletion, double insertion, double duplication, double dislocation, double inversion, double dislocationWithInversion) {
 		int[] probabilitiesVector = new int[PROBABILITIES_VECTOR_SIZE];
 
 		int pos = 0;
@@ -54,29 +107,31 @@ public class SequenceMutator {
 		}
 
 		pos += duplication * 1000;
-		for (int i = pos; i < (deslocation * 1000) + pos; i++) {
-			probabilitiesVector[i] = DESLOCATION;
+		for (int i = pos; i < (dislocation * 1000) + pos; i++) {
+			probabilitiesVector[i] = DISLOCATION;
 		}
 
-		pos += deslocation * 1000;
+		pos += dislocation * 1000;
 		for (int i = pos; i < (inversion * 1000) + pos; i++) {
 			probabilitiesVector[i] = INVERSION;
 		}
 
 		pos += inversion * 1000;
-		for (int i = pos; i < (deslocationWithInversion * 1000) + pos; i++) {
-			probabilitiesVector[i] = DESLOCATION_INVERSION;
+		for (int i = pos; i < (dislocationWithInversion * 1000) + pos; i++) {
+			probabilitiesVector[i] = DISLOCATION_INVERSION;
 		}
 
 		return probabilitiesVector;
 	}
 
 	/**
+	 * Mutate the input sequence using the probabilities vector generations times.
+	 * 
 	 * @param sequence
 	 * @param generations
 	 * @param proporsionSize
 	 * @param probabilitiesVector
-	 * @return
+	 * @return a new sequence mutated.
 	 */
 	public static String mutateSequence(String sequence, int generations, int proporsionSize, int[] probabilitiesVector) {
 
@@ -99,16 +154,16 @@ public class SequenceMutator {
 				sequence = mutateDuplication(sequence, proporsionSize);
 				break;
 
-			case DESLOCATION:
-				sequence = mutateDeslocation(sequence, proporsionSize);
+			case DISLOCATION:
+				sequence = mutateDislocation(sequence, proporsionSize);
 				break;
 
 			case INVERSION:
 				sequence = mutateInvertation(sequence);
 				break;
 
-			case DESLOCATION_INVERSION:
-				sequence = mutateDeslocationInvertation(sequence, proporsionSize);
+			case DISLOCATION_INVERSION:
+				sequence = mutateDislocationInvertation(sequence, proporsionSize);
 				break;
 			}
 		}
@@ -116,18 +171,36 @@ public class SequenceMutator {
 		return sequence;
 	}
 
-	public static void main(String[] args) throws IllegalSymbolException {
-		String sequence = randomSequence(10);
-
-		System.out.println(sequence + "(entrada)");
-		String nSequence = mutateSequence(sequence, 100, 4, DEFAULT_PROBABILITY_VECTOR);
-		System.out.println(nSequence + "(100 geracoes)");
-		 nSequence = mutateSequence(sequence, 1000, 4, DEFAULT_PROBABILITY_VECTOR);
-		System.out.println(nSequence + "(1000 geracoes)");
-		 nSequence = mutateSequence(sequence, 10000, 4, DEFAULT_PROBABILITY_VECTOR);
-		System.out.println(nSequence + "(10000 geracoes)");
+	/**
+	 * Simple main for test and fast applications.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		if (args.length == 1) {
+			printHelp();			
+		}
+		
+		String sequence = args[0];
+		int generations = Integer.parseInt(args[1]);
+		System.out.println(mutateSequence(sequence, generations, 4, DEFAULT_PROBABILITY_VECTOR));
+		
+	}
+	
+	private static void printHelp() {
+		System.out.println("SequenceMutator help:");
+		System.out.println("<sequence> <generations>");
+		System.out.println("Exemple: java SequenceMutator GCTAGCTAGCATGACTGCAGCTGACACGCGGCGATTATTGCATCG 100");
+		System.out.println("to change the probabilities values, change at souce code :-)");
+		System.out.println("It's only a main for test propose, please, implement yours application and use this class.");
 	}
 
+	/**
+	 * Change a random base in the input sequence.
+	 * 
+	 * @param sequence
+	 * @return a new sequence with the mutation.
+	 */
 	public static String mutateBase(String sequence) {
 		if (sequence.length() == 0) {
 			return sequence;
@@ -139,6 +212,14 @@ public class SequenceMutator {
 		return new String(charArray);
 	}
 
+	/**
+	 * Delete a random sub-sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be removed.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
 	public static String mutateDelete(String sequence, int maxSizeProportion) {
 		if (sequence.length() == 0) {
 			return sequence;
@@ -159,6 +240,14 @@ public class SequenceMutator {
 		return new String(charArray);
 	}
 
+	/**
+	 * Insert a random sub-sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be inserted.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
 	public static String mutateInsertion(String sequence, int maxSizeProportion) {
 		assert maxSizeProportion >= 1;
 
@@ -171,6 +260,14 @@ public class SequenceMutator {
 		return new String(charArray);
 	}
 
+	/**
+	 * Duplicate a random sub-sequence and put into a random place in the sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be duplicated.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
 	public static String mutateDuplication(String sequence, int maxSizeProportion) {
 		if (sequence.length() == 0) {
 			return sequence;
@@ -192,35 +289,51 @@ public class SequenceMutator {
 		return new String(charArray);
 	}
 
-	public static String mutateDeslocation(String sequence, int maxSizeProportion) {
+	/**
+	 * Dislocate a random sub-sequence and put into a random place in the sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be dislocated.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
+	public static String mutateDislocation(String sequence, int maxSizeProportion) {
 		if (sequence.length() == 0 || sequence.length() == 1) {
 			return sequence;
 		}
 		assert maxSizeProportion >= 1;
 
 		int remotionPos = randomPos(sequence);
-		int deslocationLength = randomLength(sequence, maxSizeProportion);
+		int dislocationLength = randomLength(sequence, maxSizeProportion);
 
-		if (remotionPos + deslocationLength > sequence.length() - 1) {
-			remotionPos = sequence.length() - deslocationLength;
+		if (remotionPos + dislocationLength > sequence.length() - 1) {
+			remotionPos = sequence.length() - dislocationLength;
 		}
-		String deslocationSequence = sequence.substring(remotionPos, remotionPos + deslocationLength);
+		String dislocationSequence = sequence.substring(remotionPos, remotionPos + dislocationLength);
 
-		char[] charArray = new char[sequence.length() - deslocationLength];
+		char[] charArray = new char[sequence.length() - dislocationLength];
 
 		for (int i = 0; i < remotionPos; i++) {
 			charArray[i] = sequence.charAt(i);
 		}
-		for (int i = remotionPos + deslocationLength; i < sequence.length(); i++) {
-			charArray[i - deslocationLength] = sequence.charAt(i);
+		for (int i = remotionPos + dislocationLength; i < sequence.length(); i++) {
+			charArray[i - dislocationLength] = sequence.charAt(i);
 		}
 
 		int destinationPos = randomPos(charArray.length);
-		charArray = insertSequence(new String(charArray), destinationPos, deslocationSequence.toCharArray());
+		charArray = insertSequence(new String(charArray), destinationPos, dislocationSequence.toCharArray());
 
 		return new String(charArray);
 	}
 
+	/**
+	 * Invert a random sub-sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be inverted.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
 	public static String mutateInvertation(String sequence) {
 		if (sequence.length() <= 1) {
 			return sequence;
@@ -235,33 +348,41 @@ public class SequenceMutator {
 		return new String(charArray);
 	}
 
-	public static String mutateDeslocationInvertation(String sequence, int maxSizeProportion) {
+	/**
+	 * Dislocate and invert a random sub-sequence.
+	 * 
+	 * @param sequence 
+	 * @param maxSizeProportion max proportion of the sequence that will be dislocate and inverted.
+	 * 
+	 * @return a new sequence with the mutation.
+	 */
+	public static String mutateDislocationInvertation(String sequence, int maxSizeProportion) {
 		if (sequence.length() == 0 || sequence.length() == 1) {
 			return sequence;
 		}
 		assert maxSizeProportion >= 1;
 
 		int remotionPos = randomPos(sequence);
-		int deslocationLength = randomLength(sequence, maxSizeProportion);
+		int dislocationLength = randomLength(sequence, maxSizeProportion);
 
-		if (remotionPos + deslocationLength > sequence.length() - 1) {
-			remotionPos = sequence.length() - deslocationLength;
+		if (remotionPos + dislocationLength > sequence.length() - 1) {
+			remotionPos = sequence.length() - dislocationLength;
 		}
 
-		String deslocationSequence = sequence.substring(remotionPos, remotionPos + deslocationLength);
-		deslocationSequence = mutateInvertation(deslocationSequence);
+		String dislocationSequence = sequence.substring(remotionPos, remotionPos + dislocationLength);
+		dislocationSequence = mutateInvertation(dislocationSequence);
 
-		char[] charArray = new char[sequence.length() - deslocationLength];
+		char[] charArray = new char[sequence.length() - dislocationLength];
 
 		for (int i = 0; i < remotionPos; i++) {
 			charArray[i] = sequence.charAt(i);
 		}
-		for (int i = remotionPos + deslocationLength; i < sequence.length(); i++) {
-			charArray[i - deslocationLength] = sequence.charAt(i);
+		for (int i = remotionPos + dislocationLength; i < sequence.length(); i++) {
+			charArray[i - dislocationLength] = sequence.charAt(i);
 		}
 
 		int destinationPos = randomPos(charArray.length);
-		charArray = insertSequence(new String(charArray), destinationPos, deslocationSequence.toCharArray());
+		charArray = insertSequence(new String(charArray), destinationPos, dislocationSequence.toCharArray());
 
 		return new String(charArray);
 	}
@@ -309,6 +430,13 @@ public class SequenceMutator {
 		return random.nextInt(length);
 	}
 
+	/**
+	 * Create a random sequence.
+	 * 
+	 * @param length of the new sequence.
+	 * 
+	 * @return the generated sequence.
+	 */
 	public static String randomSequence(int length) {
 		char[] charArray = new char[length];
 		for (int i = 0; i < length; i++) {
@@ -319,20 +447,12 @@ public class SequenceMutator {
 
 	static char[] bases = new char[] { 'A', 'C', 'G', 'T' };
 
+	/**
+	 * Get a random DNA base.
+	 * 
+	 * @return a random DNA base.
+	 */
 	public static char getRandomBase() {
 		return bases[random.nextInt(4)];
-	}
-
-	/**
-	 * 1.0 = 100% 0.5 = 50%
-	 * 
-	 * @param probability
-	 * @return <code>true</code> or <code>false</code> related with the given probability
-	 */
-	private boolean test(double probability) {
-		if (random.nextDouble() <= probability) {
-			return true;
-		}
-		return false;
 	}
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 
@@ -27,8 +26,6 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	private final SubSequencesComparer subSequenceComparer;
 	private final SubSequencesArrayIndex index;
 	
-	Logger logger = Logger.getLogger("pih.bio.io.IndexedDNASequenceDataBank");
-
 	/**
 	 * @param args
 	 * @throws IOException
@@ -55,7 +52,6 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
 		
 		DNASearcher search = new DNASearcher();
-		long init = System.currentTimeMillis();
 		search.doSearch(sequence, indexedDNASequenceDataBank);
 //		search.doSearch(sequence, indexedDNASequenceDataBank);
 //		search.doSearch(sequence, indexedDNASequenceDataBank);

@@ -11,8 +11,8 @@ import org.biojava.bio.seq.Sequence;
 public class AlignmentResult implements Serializable {
 
 	private static final long serialVersionUID = -7701610542981141900L;
-			
-	Sequence sequence;
+		
+	transient Sequence sequence;
 	int pontuation;	
 	
 	/**

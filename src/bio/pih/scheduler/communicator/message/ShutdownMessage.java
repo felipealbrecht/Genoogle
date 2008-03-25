@@ -10,7 +10,7 @@ public class ShutdownMessage extends Message {
 	/**
 	 * Singleton for ShutdownMessage
 	 */
-	public static ShutdownMessage SHUTDOWN_MESSAGE = new ShutdownMessage();
+	public final static ShutdownMessage SHUTDOWN_MESSAGE = new ShutdownMessage();
 
 	/**
 	 * For access the a ShutdowMessage instance, uses the singleton <code>SHUTDOWN_MESSAGE</code>

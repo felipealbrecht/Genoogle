@@ -12,12 +12,27 @@ import java.util.List;
  */
 public class IntArray {
 
+	private static int[] EMPTY_ARRAY = new int[0];
 	private List<int[]> blockArrays;
 	private int[] finalArray;
 	private int[] actualBlock;
 	private int actualBockPos;
 	private int blockSize;
 
+	private static int defaultInitialSize = 50;
+
+	/**
+	 * Default constructor that uses default size for the blocks.
+	 */
+	public IntArray() {
+		this(defaultInitialSize);
+	}
+
+	/**
+	 * Constructor that gives the block size.
+	 * 
+	 * @param blockSize
+	 */
 	public IntArray(int blockSize) {
 		this.finalArray = null;
 		this.actualBlock = null;
@@ -26,6 +41,11 @@ public class IntArray {
 		this.blockSize = blockSize;
 	}
 
+	/**
+	 * Add a new value into the array
+	 * 
+	 * @param value
+	 */
 	public void add(int value) {
 		ensureCapacity();
 		actualBlock[actualBockPos++] = value;
@@ -49,12 +69,20 @@ public class IntArray {
 		return blockArrays;
 	}
 
+	/**
+	 * Get the data as a int array. It returns the internal array reference, do not a copy, for performance reasons.
+	 * 
+	 * @return the array, without empty fields.
+	 */
 	public int[] getArray() {
 		// Special case: no data was added from begin or after the last getArray()
 		if ((actualBockPos == 0) && (getBlocksArray().size() == 0)) {
-			return finalArray;
+			if (finalArray == null) {
+				return EMPTY_ARRAY;
+			}
+			return finalArray.clone();
 		}
-		
+
 		int size = 0;
 		if (finalArray != null) {
 			size += finalArray.length;
@@ -83,9 +111,14 @@ public class IntArray {
 		blockArrays = null;
 		finalArray = o;
 
-		return finalArray;
+		return finalArray.clone();
 	}
 
+	/**
+	 * Test
+	 * 
+	 * @param args
+	 */
 	public static void mainX(String[] args) {
 		IntArray intArray = new IntArray(3);
 		intArray.add(1);

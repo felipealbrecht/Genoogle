@@ -317,7 +317,8 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								i = j = 0;
 
 								// Match/Replace
-							} else if ((scoreMatrix[i][j] == scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j)) && !(gap_extend[0] || gap_extend[1])) {
+							} else if ((Math.abs(scoreMatrix[i][j] - (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001)
+									&& !(gap_extend[0] || gap_extend[1])) {
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
 								else
@@ -331,7 +332,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 							} else if (scoreMatrix[i][j] == E[i][j] || gap_extend[0]) {
 								// check if gap has been extended or freshly
 								// opened
-								gap_extend[0] = (E[i][j] != scoreMatrix[i][j - 1] + insert + gapExt);
+								gap_extend[0] = Math.abs(E[i][j] - (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
 
 								align[0] = '-' + align[0];
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
@@ -342,7 +343,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 							} else {
 								// check if gap has been extended or freshly
 								// opened
-								gap_extend[1] = (F[i][j] != scoreMatrix[i - 1][j] + delete + gapExt);
+								gap_extend[1] = Math.abs(F[i][j] - (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
 
 								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
 								align[1] = '-' + align[1];
@@ -390,7 +391,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								i = j = 0;
 
 								// Match/Replace
-							} else if (scoreMatrix[i][j] == scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j)) {
+							} else if (Math.abs(scoreMatrix[i][j] - (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001) {
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
 								else
@@ -400,7 +401,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
 
 								// Insert
-							} else if (scoreMatrix[i][j] == scoreMatrix[i][j - 1] + insert) {
+							} else if (Math.abs(scoreMatrix[i][j] - (scoreMatrix[i][j - 1] + insert)) < 0.0001) {
 								align[0] = '-' + align[0];
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
 								path = ' ' + path;
@@ -428,8 +429,8 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 			try {
 				// this is necessary to have a value for the getEditDistance
 				// method.
-				this.CostMatrix = new double[1][1];
-				CostMatrix[0][0] = -scoreMatrix[maxI][maxJ];
+				this.costMatrix = new double[1][1];
+				costMatrix[0][0] = -scoreMatrix[maxI][maxJ];
 
 				query = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(query.getAlphabet().getTokenization("token"), align[0]), query.getURN(), query.getName(), query.getAnnotation()));
 				subject = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(subject.getAlphabet().getTokenization("token"), align[1]), subject.getURN(), subject.getName(), subject.getAnnotation()));
@@ -464,8 +465,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 				// Don't waste any memory.
 				double value = scoreMatrix[maxI][maxJ];
-				scoreMatrix = null;
-				Runtime.getRuntime().gc();
 				return value;
 
 			} catch (BioException exc) {

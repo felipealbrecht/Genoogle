@@ -74,7 +74,6 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 				bucket.getArray();
 			}
 		}
-		System.gc();
 	}
 
 	/**

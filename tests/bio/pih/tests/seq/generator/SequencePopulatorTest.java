@@ -39,13 +39,20 @@ public class SequencePopulatorTest extends TestCase {
 	@Override
 	@AfterClass
 	public void tearDown() {
-		removeIfExistFile(sequencePopulationTestFile);
+		try {
+			removeIfExistFile(sequencePopulationTestFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	private static void removeIfExistFile(String filePath) {
+	private static void removeIfExistFile(String filePath) throws IOException {
 		File serializableSequencePopulationFile = new File(filePath);
 		if (serializableSequencePopulationFile.exists()) {
-			serializableSequencePopulationFile.delete();
+			if (serializableSequencePopulationFile.delete() == false) {
+				throw new IOException("Was not possible to delete " + serializableSequencePopulationFile);
+			}
 		}		
 	}
 	
@@ -300,7 +307,11 @@ public class SequencePopulatorTest extends TestCase {
 			nextPopulationSequence = populationIterator.next();
 			assertEquals(nextFastaSequence.length(), nextPopulationSequence.length());
 			assertEquals(nextFastaSequence.seqString(), nextPopulationSequence.seqString());
-			assertEquals(nextFastaSequence.subList(1, nextPopulationSequence.length()), nextPopulationSequence.subList(1, nextPopulationSequence.length()));
+						
+			SymbolList fastaSubList = nextFastaSequence.subList(1, nextPopulationSequence.length());
+			SymbolList populationSubList = nextPopulationSequence.subList(1, nextPopulationSequence.length());
+			
+			assertEquals(fastaSubList, populationSubList);
 			assertEquals(nextFastaSequence.getName(), nextPopulationSequence.getName());
 		}
 		

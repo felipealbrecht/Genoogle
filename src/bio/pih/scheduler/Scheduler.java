@@ -25,7 +25,7 @@ import bio.pih.search.AlignmentResult;
 public class Scheduler {
 	private volatile long totalSearchs;
 	private List<WorkerInfo> workers;
-	private String[] workerAddress;
+	private final String[] workerAddress;
 	private Communicator communicator;
 	private List<Searching> waitingList;
 	private Map<Long, Searching> searches;
@@ -35,7 +35,7 @@ public class Scheduler {
 	 *            a array of String in the "address:port" format.
 	 */
 	public Scheduler(String[] workerAddress) {
-		this.workerAddress = workerAddress;
+		this.workerAddress = workerAddress.clone(); 
 		communicator = new SchedulerCommunicator(this);
 		this.workers = Collections.synchronizedList(new LinkedList<WorkerInfo>());
 		waitingList = Collections.synchronizedList(new LinkedList<Searching>());
@@ -76,7 +76,7 @@ public class Scheduler {
 	 * @return a <code>Array</code> containing the workers addresses.
 	 */
 	public String[] getWorkerAddress() {
-		return workerAddress;
+		return workerAddress.clone();
 	}
 	
 	/**
@@ -199,7 +199,7 @@ public class Scheduler {
 	/**
 	 * @author albrecht 
 	 */
-	public class Searching {
+	public static class Searching {
 		volatile int remainsResult;
 		AlignmentResult[] alignments;
 		ResultMessage[] partialResults;
@@ -256,7 +256,7 @@ public class Scheduler {
 		 * @return the {@link ResultMessage} received from the {@link AbstractWorker} for this search 
 		 */
 		public ResultMessage[] getPartialResults() {
-			return partialResults;
+			return partialResults.clone();
 		}
 
 		/**
@@ -270,8 +270,8 @@ public class Scheduler {
 		 * Set the alignments merged and sorted 
 		 * @param alignments
 		 */
-		public void setAlignments(AlignmentResult[] alignments) {
-			this.alignments = alignments;
+		public void setAlignments(AlignmentResult[] alignments) {			
+			this.alignments = alignments.clone(); 
 		}
 		
 		/**
@@ -279,7 +279,12 @@ public class Scheduler {
 		 * @return The alignments merged and sorted
 		 */
 		public AlignmentResult[] getAlignments() {
-			return alignments;
+			return alignments.clone();
+		}
+		
+		@Override
+		public String toString() {		
+			return database + " " + query + " " + startTime;
 		}
 	}
 

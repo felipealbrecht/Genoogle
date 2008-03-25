@@ -76,14 +76,14 @@ public class ResultMessage extends Message {
 	 * @param alignments
 	 */
 	public void setAlignments(AlignmentResult[] alignments) {
-		this.alignments = alignments;
+		this.alignments = alignments.clone();
 	}
 	
 	/**
 	 * @return
 	 */
 	public AlignmentResult[] getAlignments() {
-		return alignments;
+		return alignments.clone();
 	}
 	
 	

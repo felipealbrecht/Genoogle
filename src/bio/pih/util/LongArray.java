@@ -1,6 +1,5 @@
 package bio.pih.util;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
  */
 public class LongArray {
 
+	private static long[] EMPTY_ARRAY = new long[0];
 	private List<long[]> blockArrays;
 	private long[] finalArray;
 	private long[] actualBlock;
@@ -21,10 +21,18 @@ public class LongArray {
 	
 	private static int defaultInitialSize = 50; 
 
+	/**
+	 * Default constructor that uses default size for the blocks.
+	 */
 	public LongArray() {
 		this(defaultInitialSize);
 	}
 	
+	/**
+	 * Constructor that gives the block size.
+	 *  
+	 * @param blockSize
+	 */
 	public LongArray(int blockSize) {
 		this.finalArray = null;
 		this.actualBlock = null;
@@ -33,6 +41,10 @@ public class LongArray {
 		this.blockSize = blockSize;
 	}
 
+	/**
+	 * Add a new value into the array
+	 * @param value
+	 */
 	public void add(long value) {
 		ensureCapacity();
 		actualBlock[actualBockPos++] = value;
@@ -56,10 +68,19 @@ public class LongArray {
 		return blockArrays;
 	}
 
+	/**
+	 * Get the data as a long array. 
+	 * It returns the internal array reference, do not a copy, for performance reasons.
+	 * 
+	 * @return the array, without empty fields.
+	 */
 	public long[] getArray() {
 		// Special case: no data was added from begin or after the last getArray()
 		if ((actualBockPos == 0) && (getBlocksArray().size() == 0)) {
-			return finalArray;
+			if (finalArray == null) {
+				return EMPTY_ARRAY;
+			}
+			return finalArray.clone();
 		}
 
 		int size = 0;
@@ -90,10 +111,13 @@ public class LongArray {
 		blockArrays = null;
 		finalArray = o;
 		
-
-		return finalArray;
+		return finalArray.clone();
 	}
 
+	/**
+	 * test
+	 * @param args
+	 */
 	public static void mainX(String[] args) {
 		LongArray longArray = new LongArray(3);
 		longArray.add(1);

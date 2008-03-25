@@ -37,6 +37,9 @@ public class DNASearcher implements Searcher {
 	Map<Long, SearchInformation> idToSearch = Maps.newHashMap();
 	long searchId;
 
+	/**
+	 * Construction of the searcher.
+	 */
 	public DNASearcher() {
 		searchId = 0;
 	}
@@ -84,8 +87,12 @@ public class DNASearcher implements Searcher {
 		final LightweightSymbolList sequence;
 		final IndexedSequenceDataBank databank;
 
-		short[] encodedSequence;
-
+		/**
+		 * Constructor for the inner class that construct a searcher to find sequences that are similar with the sequence into databank.
+		 * 
+		 * @param sequence
+		 * @param databank
+		 */
 		public SimilarSearcher(LightweightSymbolList sequence, IndexedSequenceDataBank databank) {
 			this.sequence = sequence;
 			this.databank = databank;
@@ -164,50 +171,45 @@ public class DNASearcher implements Searcher {
 			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
 			System.out.println("eco = " + eco);
 			System.out.println("matches: " + retrievedData.getMatchAreas().length);
-			
-			for(long encodedMatchZone: retrievedData.getMatchAreas()) {
+
+			for (long encodedMatchZone : retrievedData.getMatchAreas()) {
 				long sequenceId = MatchArea.getSequenceIdFromEncodedMatchArea(encodedMatchZone);
-				long begin    = MatchArea.getBeginFromEncodedMatchArea(encodedMatchZone);
-				long length   = MatchArea.getLengthFromEncodedMatchArea(encodedMatchZone);
-				
+				long begin = MatchArea.getBeginFromEncodedMatchArea(encodedMatchZone);
+				long length = MatchArea.getLengthFromEncodedMatchArea(encodedMatchZone);
+
 				LightweightSymbolList symbolList = null;
-				
+
 				try {
-					symbolList  = (LightweightSymbolList) databank.getSymbolListFromSequenceId((int) sequenceId);
+					symbolList = (LightweightSymbolList) databank.getSymbolListFromSequenceId((int) sequenceId);
+					SymbolList subSymbolList = symbolList.subList((int) begin + 1, (int) (begin + length + 8 + 1));
+
+					SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
+
+					SmithWaterman smithWaterman = new SmithWaterman(-1, 2, 1, 1, 1, substitutionMatrix);
+					smithWaterman.pairwiseAlignment(subSymbolList, sequence);
+
+					System.out.println("Sequence " + sequenceId + " from :" + begin + " to " + (begin + length + 8 + 1));
+
+					System.out.println(smithWaterman.getAlignmentString());
+
 				} catch (IllegalSymbolException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-				
-				SymbolList subSymbolList  = symbolList.subList((int) begin+1, (int) (begin+length+8+1));
-				
-				SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
-				
-				SmithWaterman smithWaterman = new SmithWaterman(-1, 2, 1, 1, 1, substitutionMatrix);
-				smithWaterman.pairwiseAlignment(subSymbolList, sequence);
-				
-				System.out.println("Sequence " + sequenceId + " from :" + begin + " to " +(begin+length+8+1) );
-				try {
-					System.out.println(smithWaterman.getAlignmentString());
 				} catch (BioException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
-			
-			
+
 		}
 	}
 
 	private static class IndexRetrievedData {
 		IntArray[] sequencesResultArrays;
-		int size;
-
-		long total;
 
 		/**
 		 * @param size
@@ -216,8 +218,6 @@ public class DNASearcher implements Searcher {
 		 */
 		@SuppressWarnings("unchecked")
 		public IndexRetrievedData(int size, int initialSize) {
-			this.size = size;
-
 			sequencesResultArrays = new IntArray[size];
 			for (int i = 0; i < size; i++) {
 				sequencesResultArrays[i] = new IntArray(initialSize);
@@ -228,6 +228,9 @@ public class DNASearcher implements Searcher {
 			sequencesResultArrays[SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention)].add(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention));
 		}
 
+		/**
+		 * @return possible seeds total.
+		 */
 		public long getTotal() {
 			int total = 0;
 			for (IntArray array : sequencesResultArrays) {
@@ -238,6 +241,9 @@ public class DNASearcher implements Searcher {
 			return total;
 		}
 
+		/**
+		 * @return the match areas.
+		 */
 		public long[] getMatchAreas() {
 			LongArray matchAreas = new LongArray(3000);
 			int[] sequenceMatchs;
@@ -245,7 +251,7 @@ public class DNASearcher implements Searcher {
 
 			for (int sequenceNumber = 0; sequenceNumber < sequencesResultArrays.length; sequenceNumber++) {
 				sequenceMatchs = sequencesResultArrays[sequenceNumber].getArray();
-				if (sequenceMatchs != null) {
+				if (sequenceMatchs.length > 1) {
 					Arrays.sort(sequenceMatchs);
 
 					previousMatch = sequenceMatchs[0];
@@ -254,12 +260,12 @@ public class DNASearcher implements Searcher {
 					for (int i = 1; i < sequenceMatchs.length; i++) {
 						match = sequenceMatchs[i];
 
-						// End the area
+						// End of area
 						if (match - previousMatch >= 16) {
 							// Add? at least 2 subsequences
 							if (previousMatch - beginArea >= 16) {
-								matchAreas.add(MatchArea.encodeMatchZone(sequenceNumber, beginArea, previousMatch - beginArea));
-							}							
+								matchAreas.add(MatchArea.encodeMatchArea(sequenceNumber, beginArea, previousMatch - beginArea));
+							}
 							beginArea = match;
 						}
 						previousMatch = match;
