@@ -3,6 +3,7 @@ package bio.pih.io;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -109,7 +110,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			totalSequences++;
 			doSequenceLoadingProcessing(sequenceInformation);
 		}
-		doOptimizations();
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " + totalSequences + " sequences.");
 	}
 
@@ -132,9 +132,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
-
-		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
-
+	
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
 
 		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
@@ -142,22 +140,17 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		while (readFastaDNA.hasNext()) {
 			s = readFastaDNA.nextRichSequence();
-			addSequence(s, dataBankFileChannel);
+			addSequence(s, getDataBankFileChannel());
 		}
 
 		dataBankFileChannel.close();
-		doOptimizations();
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	abstract void doOptimizations();
-
 	public synchronized int addSequence(RichSequence s) throws IOException, BioException {
-
-		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile()).getChannel();
-		int sequenceId = addSequence(s, dataBankFileChannel);
-		dataBankFileChannel.close();
-
+		
+		int sequenceId = addSequence(s, getDataBankFileChannel());
+		
 		return sequenceId;
 	}
 
@@ -254,6 +247,14 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private File getDataBankFile() {
 		return dataBankFile;
 	}
+	
+	
+	private FileChannel getDataBankFileChannel() throws FileNotFoundException {
+		if (dataBankFileChannel == null) {
+			dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();	
+		}
+		return dataBankFileChannel;
+	}		
 
 	synchronized void beginRecordind() {
 		isRecording = true;

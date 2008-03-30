@@ -112,7 +112,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		populateNonSoRandomSequences(index);
 		
-		long[] matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
+		int[] matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
 		
 		assertEquals(7, matchingSubSequence.length);
 		assertEquals(4, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
@@ -165,7 +165,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 			code++;
 		}
 		
-		long[] matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
+		int[] matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
 		assertEquals(2, matchingSubSequence.length);
 		assertEquals(132, SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		assertEquals(152, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
@@ -179,7 +179,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		assertEquals(0, SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
 		matchingSubSequence = index.getMatchingSubSequence("TCTTGCCG");
-		assertNull(matchingSubSequence);	
+		assertEquals(0, matchingSubSequence.length);	
 	}
 	
 }

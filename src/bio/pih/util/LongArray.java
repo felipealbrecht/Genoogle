@@ -1,5 +1,6 @@
 package bio.pih.util;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,6 +113,16 @@ public class LongArray {
 		finalArray = o;
 		
 		return finalArray.clone();
+	}
+	
+	/**
+	 * Sort the array
+	 */
+	public void sort() {
+		getArray();
+		if (finalArray != null) {
+			Arrays.sort(finalArray);
+		}
 	}
 
 	/**

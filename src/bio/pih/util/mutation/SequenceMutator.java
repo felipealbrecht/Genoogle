@@ -125,6 +125,19 @@ public class SequenceMutator {
 	}
 
 	/**
+	 * Same as mutateSequence(String sequence, int generations, int proporsionSize, int[] probabilitiesVector)
+	 * but using default probability vector.
+	 * 
+	 * @param sequence
+	 * @param generations
+	 * @param proporsionSize
+	 * @return
+	 */
+	public static String mutateSequence(String sequence, int generations, int proporsionSize) {
+		return mutateSequence(sequence, generations, proporsionSize, DEFAULT_PROBABILITY_VECTOR);
+	}
+	
+	/**
 	 * Mutate the input sequence using the probabilities vector generations times.
 	 * 
 	 * @param sequence

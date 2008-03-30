@@ -48,24 +48,24 @@ public class SequenceInformation {
 		this.accession = accession;
 		this.description = description;
 		this.version = version;
-		this.encodedSequence = encodedSequence.clone();
+		this.encodedSequence = encodedSequence;
 	}
 
 	/**
 	 * @return an {@link ByteBuffer} containing this instance serialized
 	 * @throws UnsupportedEncodingException 
 	 */
-	public ByteBuffer toByteBuffer() throws UnsupportedEncodingException {
+	public ByteBuffer toByteBuffer() {
 
 		byte[] giBytes = null;
 		byte[] nameBytes = null;
 		byte[] accessionBytes = null;
 		byte[] descriptionBytes = null;
 			
-		giBytes = gi.getBytes(defaultCharset.name());
-		nameBytes = name.getBytes(defaultCharset.name());
-		accessionBytes = accession.getBytes(defaultCharset.name());
-		descriptionBytes = description.getBytes(defaultCharset.name());
+		giBytes = gi.getBytes(defaultCharset);
+		nameBytes = name.getBytes(defaultCharset);
+		accessionBytes = accession.getBytes(defaultCharset);
+		descriptionBytes = description.getBytes(defaultCharset);
 		
 		int encodedSequenceLengthInByte = encodedSequence.length * 2;
 		ByteBuffer sequenceByteBuffer = ByteBuffer.allocate(encodedSequenceLengthInByte);
@@ -106,7 +106,7 @@ public class SequenceInformation {
 	 * @return
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer) throws UnsupportedEncodingException {
+	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer) {
 		return informationFromByteBuffer(buffer, -1);
 	}
 	
@@ -117,7 +117,7 @@ public class SequenceInformation {
 	 * @return the {@link SequenceInformation} stored
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer, int variableCapacity) throws UnsupportedEncodingException {
+	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer, int variableCapacity) {
 		if (variableCapacity == -1) {
 			variableCapacity = buffer.getInt();
 		}
@@ -134,19 +134,19 @@ public class SequenceInformation {
 
 		byte[] giBytes = new byte[giLength];
 		buffer.get(giBytes);
-		String gi = new String(giBytes, defaultCharset.name());
+		String gi = new String(giBytes, defaultCharset);
 
 		byte[] nameBytes = new byte[nameLength];
 		buffer.get(nameBytes);
-		String name = new String(nameBytes, defaultCharset.name());
+		String name = new String(nameBytes, defaultCharset);
 
 		byte[] accessionBytes = new byte[accessionLength];
 		buffer.get(accessionBytes);
-		String accession = new String(accessionBytes, defaultCharset.name());
+		String accession = new String(accessionBytes, defaultCharset);
 
 		byte[] descriptionBytes = new byte[descriptionLength];
 		buffer.get(descriptionBytes);
-		String description = new String(descriptionBytes, defaultCharset.name());
+		String description = new String(descriptionBytes, defaultCharset);
 
 		short version = buffer.getShort();				
 		
@@ -265,9 +265,9 @@ public class SequenceInformation {
 	}
 	
 	/**
-	 * @return encodedSequence
+	 * @return a REFERENCE of encodedSequence for optimization issues.
 	 */
 	public short[] getEncodedSequence() {
-		return encodedSequence.clone();
+		return encodedSequence;
 	}	
 }

@@ -11,18 +11,19 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.seq.LightweightSymbolList;
-import bio.pih.util.LongArray;
+import bio.pih.util.IntArray;
 
 /**
  * @author albrecht
  */
 public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 
-	private LongArray index[];
+	private IntArray index[];
 
 	private final int subSequenceLength;
 	private final int indexSize;
 	private final FiniteAlphabet alphabet;
+	private final int[] EMPTY_ARRAY = new int[0];
 	
 	// Okay, okay.. in some not so near future will be needed to create a
 	// factory and do not use this class directly.
@@ -47,7 +48,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(alphabet.size());
 		this.indexSize = 1 << indexBitsSize;
 		// this.integerType = getClassFromSize(indexSize);
-		this.index = new LongArray[indexSize];
+		this.index = new IntArray[indexSize];
 	}
 
 	public void addSequence(int sequenceId, SymbolList sequence) {
@@ -60,6 +61,8 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		addSequence(sequenceId, encodedSequence);
 	}
 
+        // todo: passar length para ver se a ultima subsequencia nao é parcial
+        // tentar executar com 300 megas
 	public void addSequence(int sequenceId, short[] encodedSequence) {
 		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
 
@@ -69,7 +72,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	}
 
 	public void optimize() {
-		for (LongArray bucket : index) {
+		for (IntArray bucket : index) {
 			if (bucket != null) {
 				bucket.getArray();
 			}
@@ -80,22 +83,22 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	 * @param subSymbolList
 	 * @param subSequenceInfo
 	 */
-	private void addSubSequenceInfoEncoded(short subSequenceEncoded, long subSequenceInfoEncoded) {
+	private void addSubSequenceInfoEncoded(short subSequenceEncoded, int subSequenceInfoEncoded) {
 		int indexPos = subSequenceEncoded & 0xFFFF;
-		LongArray indexBucket = index[indexPos];
+		IntArray indexBucket = index[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new LongArray();
+			indexBucket = new IntArray();
 			index[indexPos] = indexBucket;
 		}
 		indexBucket.add(subSequenceInfoEncoded);
 	}
 
-	public long[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
+	public int[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, subSequenceString);
 		return getMachingSubSequence(subSequence);
 	}
 
-	public long[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+	public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
@@ -103,17 +106,17 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
-	public long[] getMachingSubSequence(short encodedSubSequence) {
-		LongArray bucket = index[encodedSubSequence & 0xFFFF];
+	public int[] getMachingSubSequence(short encodedSubSequence) {
+		IntArray bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
 			return bucket.getArray();
 		}
-		return null;
+		return EMPTY_ARRAY;
 	}
 
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
-		for (LongArray bucket : index) {
+		for (IntArray bucket : index) {
 			if (bucket != null) {
 				for (long subSequenceInfoEncoded : bucket.getArray()) {
 					sb.append("\t");

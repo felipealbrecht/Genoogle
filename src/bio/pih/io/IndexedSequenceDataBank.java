@@ -24,7 +24,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it. 
 	 * @throws ValueOutOfBoundsException
 	 */
-	public long[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException;
+	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException;
 	
 	
 

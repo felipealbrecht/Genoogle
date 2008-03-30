@@ -1,5 +1,7 @@
 package bio.pih.search;
 
+import bio.pih.util.IntArray;
+
 /**
  * A class that represent a found similar sub-sequence
  * 
@@ -7,44 +9,50 @@ package bio.pih.search;
  */
 public class MatchArea {
 	
-	/**
-	 * @param encodedMatchZone
-	 * @return the sequence id of the match area.
-	 */
-	public static long getSequenceIdFromEncodedMatchArea(long encodedMatchZone) {
-		return encodedMatchZone >> 32;
-	}
+	private final int sequenceId;
+	private final int begin;
+	private final int length;
+	private final IntArray querySubSequences;
 	
 	/**
-	 * @param encodedMatchArea
-	 * @return the begin of the  match area,
-	 */
-	public static long getBeginFromEncodedMatchArea(long encodedMatchArea) {
-		return (encodedMatchArea >> 12) & 0xFFFFF; 
-	}
-	
-	/**
-	 * @param encodedMatchArea
-	 * @return the length of the  match area,
-	 */
-	public static long getLengthFromEncodedMatchArea(long encodedMatchArea) {
-		return encodedMatchArea & 0xFFF;
-	}
-	
-	/**
-	 * 32 bits for sequence
-	 * 20 for begin
-	 * 12 for length
-	 * @param sequence
+	 * @param sequenceId
 	 * @param begin
 	 * @param length
-	 * @return encoded match area
+	 * @param querySubSequences
 	 */
-	public static long encodeMatchArea(long sequence, long begin, long length) {
-		long value = ((sequence << 32) | ((begin & 0xFFFFF) << 12) | (length & 0xFFF ));
-		assert getSequenceIdFromEncodedMatchArea(value) == sequence;
-		assert getBeginFromEncodedMatchArea(value) == begin;
-		assert getLengthFromEncodedMatchArea(value) == length;
-		return value;
+	public MatchArea(int sequenceId, int begin, int length, IntArray querySubSequences) {
+		this.sequenceId = sequenceId;
+		this.begin = begin;
+		this.length = length;
+		this.querySubSequences = querySubSequences;
 	}
+	
+	/**
+	 * @return sequenceId
+	 */
+	public int getSequenceId() {
+		return sequenceId;
+	}
+	
+	/**
+	 * @return begin in the sequence
+	 */
+	public int getBegin() {
+		return begin;
+	}
+	
+	/**
+	 * @return length of the match area
+	 */
+	public int getLength() {
+		return length;
+	}
+	
+	/**
+	 * @return query subsequences.
+	 */
+	public IntArray getQuerySubSequences() {
+		return querySubSequences;
+	}
+	
 }

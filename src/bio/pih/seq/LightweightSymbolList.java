@@ -1,7 +1,7 @@
 package bio.pih.seq;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.io.SymbolTokenization;
@@ -21,7 +21,7 @@ import com.google.common.collect.Maps;
 public class LightweightSymbolList extends AbstractSymbolList implements Serializable {
 	private static final long serialVersionUID = -3125317520644706924L;
 
-	private static final HashMap<Alphabet, HashMap<String, LightweightSymbolList>> CACHE = Maps.newHashMap();
+	private static final Map<Alphabet, Map<String, LightweightSymbolList>> CACHE = Maps.newHashMap();
 
 	private Alphabet alphabet;
 	private Symbol[] symbols;
@@ -139,16 +139,16 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	private static void updateCache(LightweightSymbolList symbolList) {
-		HashMap<String, LightweightSymbolList> c = CACHE.get(symbolList.getAlphabet());
+		Map<String, LightweightSymbolList> c = CACHE.get(symbolList.getAlphabet());
 		if (c == null) {
-			c = Maps.newHashMapWithExpectedSize((int) Math.pow(4, 8));
+			c = Maps.newHashMap();
 			CACHE.put(symbolList.getAlphabet(), c);
 		}
 		c.put(symbolList.getString(), symbolList);
 	}
 
 	private static LightweightSymbolList getFromCache(Alphabet alphabet, String seqString) {
-		HashMap<String, LightweightSymbolList> c = CACHE.get(alphabet);
+		Map<String, LightweightSymbolList> c = CACHE.get(alphabet);
 		if (c == null) {
 			return null;
 		}

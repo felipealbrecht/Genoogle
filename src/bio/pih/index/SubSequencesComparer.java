@@ -356,10 +356,17 @@ public class SubSequencesComparer {
 	
 	/**
 	 * Delete the data. Use with caution!
+	 * @return <code>true</code> if the data was deleted sucesfull.
 	 */
-	public void deleteData() {
-		getDataFile().delete();
-		getIndexFile().delete();		
+	public boolean deleteData() {
+		boolean r = true;
+		if (getDataFile().delete() == false) {
+			r = false;
+		}
+		if (getIndexFile().delete() == false) {
+			r = false;
+		}
+		return r;
 	}
 
 	/**

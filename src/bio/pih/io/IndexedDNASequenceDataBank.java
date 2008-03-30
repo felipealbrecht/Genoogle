@@ -37,22 +37,41 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData {
 		BasicConfigurator.configure();
 		
-		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("full_rna", new File("."), 8, false);
 		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
+		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
+		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("lazy", new File("."), 8, false);
 		indexedDNASequenceDataBank.loadInformations();
 		
-//		indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/full_rna.fna"));
+		//indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/mouse.rna.fna"));
 //		indexedDNASequenceDataBank.addFastaFile(new File("cow.rna.fna"));
+		//indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/lazy"));
 		
 		String seq;
 
-		//seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";
+		//seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";		
+		//seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGATGAAAAAGTTTTGGAAATTGATAGTGGTAATGCAGCTCAACATTATGAATCTTTTTATAACTATGATGCACGGGGAGCGGATGAACTTTCTTTACAAATAGGAGACGCTGTGCACATCCTGGAAACATACGAAGGGTGGTACAGAGGTTACACCTTAAGAAAAAAGTCTAAGAAGGGTATATTTCCTGCTTCGTACATCCATCTTAAAGAAGCCATAGTTGAAGGAAAAGGGCAACATGA";
 		
-		seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGATGAAAAAGTTTTGGAAATTGATAGTGGTAATGCAGCTCAACATTATGAATCTTTTTATAACTATGATGCACGGGGAGCGGATGAACTTTCTTTACAAATAGGAGACGCTGTGCACATCCTGGAAACATACGAAGGGTGGTACAGAGGTTACACCTTAAGAAAAAAGTCTAAGAAGGGTATATTTCCTGCTTCGTACATCCATCTTAAAGAAGCCATAGTTGAAGGAAAAGGGCAACATGA";
+		
+		// 40164
+		//seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
+		seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGTTTTTTTTTTTTTTTTTTTTTTTTCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
+/*
+ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCC <---
+AGTTTTTTTTTTTTTTTTTTTTTTTTCAGGG
+TGTTCAGGATGGATGGGGCTTCTGTTTGGAG <--- 
+TGA
+*/
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
+
+
 		
 		DNASearcher search = new DNASearcher();
 		search.doSearch(sequence, indexedDNASequenceDataBank);
+		
+//		seq = SequenceMutator.mutateSequence(seq, 100, 4);
+//		sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
+//		search.doSearch(sequence, indexedDNASequenceDataBank);
+		
 //		search.doSearch(sequence, indexedDNASequenceDataBank);
 //		search.doSearch(sequence, indexedDNASequenceDataBank);
 	}
@@ -65,13 +84,13 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 *            the path where the data bank is/will be stored
 	 * @param subSequenceLenth
 	 *            the length of the sub sequences for the indexing propose.
-	 * @param readOnly
+	 * @param isReadOnly
 	 * @throws IOException
 	 * @throws ValueOutOfBoundsException
 	 * @throws InvalidHeaderData 
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, int subSequenceLenth, boolean readOnly) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
-		super(name, path, readOnly);
+	public IndexedDNASequenceDataBank(String name, File path, int subSequenceLenth, boolean isReadOnly) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+		super(name, path, isReadOnly);
 
 		index = new SubSequencesArrayIndex(subSequenceLenth, DNATools.getDNA());
 
@@ -89,15 +108,9 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	@Override
 	void doSequenceLoadingProcessing(SequenceInformation sequenceInformation) {
 		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
-	}
-	
-	@Override
-	void doOptimizations() {		
-		index.optimize();	
-	}
-			
+	}			
 
-	public long[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
+	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException {
 		return index.getMachingSubSequence(encodedSubSequence);
 	}
 	

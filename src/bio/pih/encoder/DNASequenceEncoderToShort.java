@@ -1,7 +1,5 @@
 package bio.pih.encoder;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -11,8 +9,6 @@ import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author albrecht
@@ -47,9 +43,7 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 	public DNASequenceEncoderToShort(int subSequenceLength) throws ValueOutOfBoundsException {
 		super(subSequenceLength);
 	}
-
 	
-	Map<SymbolList, Short> subSymbolListToShort = Maps.newHashMapWithExpectedSize((int) Math.pow(4, 8));	
 	/**
 	 * Encode a subsequence of the length 8 to its short representation
 	 * 
@@ -58,23 +52,29 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 	 */
 	public short encodeSubSymbolListToShort(SymbolList subSymbolList) {
 		assert subSymbolList.length() <= subSequenceLength;
-						
-		Short cached = subSymbolListToShort.get(subSymbolList);
-		if (cached != null) {
-			return cached.shortValue();
+								
+		short encoded = 0;
+		
+		if (subSymbolList.length() == 8) {
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(1)) << 14);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(2)) << 12);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(3)) << 10);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(4)) << 8);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(5)) << 6);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(6)) << 4);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(7)) << 2);
+			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(8)) << 0);
+		} else {
+			for (int i = 1; i <= subSymbolList.length(); i++) {
+				encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
+			}
 		}
 		
-		short encoded = 0;
-		for (int i = 1; i <= subSymbolList.length(); i++) {
-			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
-		}
-
-		subSymbolListToShort.put(subSymbolList, encoded);
 		return encoded;
 	}
 
 	
-	Map<Short, String> encodedToString = Maps.newHashMapWithExpectedSize((int) Math.pow(4, 8));
+	String[] encodedToString = new String[(int) Math.pow(4, 8)];
 	int cacheUse = 0;
 	/**
 	 * Decode a short vector to its sequence string representation
@@ -83,10 +83,10 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 	 * @return the sequence string
 	 */
 	public String decodeShortToString(short encoded) {
-		String result = encodedToString.get(encoded);
+		String result = encodedToString[encoded & 0xFFFF];
 		if (result == null) {
 			result = decodeShortToString(encoded, subSequenceLength);
-			encodedToString.put(encoded, result);
+			encodedToString[encoded & 0xFFFF] = result;
 		} else {
 			cacheUse++;
 		}
