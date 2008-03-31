@@ -106,5 +106,5 @@ public interface SequenceDataBank {
 	 * @throws IOException
 	 * @throws IllegalSymbolException
 	 */
-	SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException;
+	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException;
 }

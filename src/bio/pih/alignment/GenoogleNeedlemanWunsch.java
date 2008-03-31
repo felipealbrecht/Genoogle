@@ -20,10 +20,8 @@
  */
 package bio.pih.alignment;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
@@ -32,12 +30,8 @@ import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.SequenceIterator;
 import org.biojava.bio.seq.db.SequenceDB;
-import org.biojava.bio.seq.impl.SimpleGappedSequence;
-import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.Alignment;
-import org.biojava.bio.symbol.SimpleAlignment;
-import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
 
 /*
@@ -45,13 +39,7 @@ import org.biojava.bio.symbol.SymbolList;
  */
 
 /**
- * Needleman and Wunsch definied the problem of global sequence alignments, from
- * the first till the last symbol of a sequence. This class is able to perform
- * such global sequence comparisons efficiently by dynamic programing. If
- * inserts and deletes are equally expensive and as expensive as the extension
- * of a gap, the alignment method of this class does not use affine gap
- * panelties. Otherwise it does. Those costs need four times as much memory,
- * which has significant effects on the run time, if the computer needs to swap.
+ * Needleman and Wunsch definied the problem of global sequence alignments, from the first till the last symbol of a sequence. This class is able to perform such global sequence comparisons efficiently by dynamic programing. If inserts and deletes are equally expensive and as expensive as the extension of a gap, the alignment method of this class does not use affine gap panelties. Otherwise it does. Those costs need four times as much memory, which has significant effects on the run time, if the computer needs to swap.
  * 
  * Some changes by Felipe Albrecht for faster alignment methods
  * 
@@ -108,29 +96,20 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	private double replace;
 
 	/**
-	 * Constructs a new Object with the given parameters based on the
-	 * Needleman-Wunsch algorithm The alphabet of sequences to be aligned will
-	 * be taken from the given substitution matrix.
+	 * Constructs a new Object with the given parameters based on the Needleman-Wunsch algorithm The alphabet of sequences to be aligned will be taken from the given substitution matrix.
 	 * 
 	 * @param match
-	 *            This gives the costs for a match operation. It is only used,
-	 *            if there is no entry for a certain match of two symbols in the
-	 *            substitution matrix (default value).
+	 *            This gives the costs for a match operation. It is only used, if there is no entry for a certain match of two symbols in the substitution matrix (default value).
 	 * @param replace
-	 *            This is like the match parameter just the default, if there is
-	 *            no entry in the substitution matrix object.
+	 *            This is like the match parameter just the default, if there is no entry in the substitution matrix object.
 	 * @param insert
 	 *            The costs of a single insert operation.
 	 * @param delete
 	 *            The expenses of a single delete operation.
 	 * @param gapExtend
-	 *            The expenses of an extension of a existing gap (that is a
-	 *            previous insert or delete. If the costs for insert and delete
-	 *            are equal and also equal to gapExtend, no affine gap penalties
-	 *            will be used, which saves a significant amount of memory.
+	 *            The expenses of an extension of a existing gap (that is a previous insert or delete. If the costs for insert and delete are equal and also equal to gapExtend, no affine gap penalties will be used, which saves a significant amount of memory.
 	 * @param subMat
-	 *            The substitution matrix object which gives the costs for
-	 *            matches and replaces.
+	 *            The substitution matrix object which gives the costs for matches and replaces.
 	 */
 	public GenoogleNeedlemanWunsch(double match, double replace, double insert, double delete, double gapExtend, SubstitutionMatrix subMat) {
 		this.subMatrix = subMat;
@@ -143,9 +122,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * Sets the substitution matrix to be used to the specified one. Afterwards
-	 * it is only possible to align sequences of the alphabet of this
-	 * substitution matrix.
+	 * Sets the substitution matrix to be used to the specified one. Afterwards it is only possible to align sequences of the alphabet of this substitution matrix.
 	 * 
 	 * @param matrix
 	 *            an instance of a substitution matrix.
@@ -175,8 +152,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * Sets the penalty for an extension of any gap (insert or delete) to the
-	 * specified value.
+	 * Sets the penalty for an extension of any gap (insert or delete) to the specified value.
 	 * 
 	 * @param ge
 	 *            costs for any gap extension
@@ -251,10 +227,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * Prints a String representation of the CostMatrix for the given Alignment
-	 * on the screen. This can be used to get a better understanding of the
-	 * algorithm. There is no other purpose. This method also works for all
-	 * extensions of this class with all kinds of matrices.
+	 * Prints a String representation of the CostMatrix for the given Alignment on the screen. This can be used to get a better understanding of the algorithm. There is no other purpose. This method also works for all extensions of this class with all kinds of matrices.
 	 * 
 	 * @param CostMatrix
 	 *            The matrix that contains all expenses for swaping symbols.
@@ -289,37 +262,26 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * prints the alignment String on the screen (standard output).
 	 * 
 	 * @param align
-	 *            The parameter is typically given by the
-	 *            {@link #getAlignmentString() getAlignmentString()} method.
+	 *            The parameter is typically given by the {@link #getAlignmentString() getAlignmentString()} method.
 	 */
 	public static void printAlignment(String align) {
 		System.out.print(align);
 	}
 
 	/**
-	 * This method is good if one wants to reuse the alignment calculated by
-	 * this class in another BioJava class. It just performs
-	 * {@link #pairwiseAlignment(Sequence, Sequence) pairwiseAlignment} and
-	 * returns an <code>Alignment</code> instance containing the two aligned
-	 * sequences.
+	 * This method is good if one wants to reuse the alignment calculated by this class in another BioJava class. It just performs {@link #pairwiseAlignment(Sequence, Sequence) pairwiseAlignment} and returns an <code>Alignment</code> instance containing the two aligned sequences.
 	 * 
-	 * @return Alignment object containing the two gapped sequences constructed
-	 *         from query and target.
+	 * @return Alignment object containing the two gapped sequences constructed from query and target.
 	 * @throws Exception
 	 */
 	@Override
-	
 	public Alignment getAlignment(SymbolList query, SymbolList subject) throws Exception {
 		pairwiseAlignment(query, subject);
 		return pairalign;
 	}
 
 	/**
-	 * This gives the edit distance acording to the given parameters of this
-	 * certain object. It returns just the last element of the internal cost
-	 * matrix (left side down). So if you extend this class, you can just do the
-	 * following:
-	 * <code>double myDistanceValue = foo; this.CostMatrix = new double[1][1]; this.CostMatrix[0][0] = myDistanceValue;</code>
+	 * This gives the edit distance acording to the given parameters of this certain object. It returns just the last element of the internal cost matrix (left side down). So if you extend this class, you can just do the following: <code>double myDistanceValue = foo; this.CostMatrix = new double[1][1]; this.CostMatrix[0][0] = myDistanceValue;</code>
 	 * 
 	 * @return returns the edit_distance computed with the given parameters.
 	 */
@@ -372,8 +334,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * A simpler version of pairwiseAlignment that align two {@link SymbolList} and
-	 * return its score.
+	 * A simpler version of pairwiseAlignment that align two {@link SymbolList} and return its score.
 	 */
 	@Override
 	public double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
@@ -382,14 +343,11 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 			int i, j;
 			this.costMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
 
-
 			// construct the matrix:
 			costMatrix[0][0] = 0;
 
 			/*
-			 * If we want to have affine gap penalties, we have to initialise
-			 * additional matrices: If this is not necessary, we won't do that
-			 * (because it's expensive).
+			 * If we want to have affine gap penalties, we have to initialise additional matrices: If this is not necessary, we won't do that (because it's expensive).
 			 */
 			if ((gapExt != delete) || (gapExt != insert)) {
 
@@ -415,8 +373,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 					}
 
 				/*
-				 * No affine gap penalties, constant gap penalties, which is
-				 * much faster and needs less memory.
+				 * No affine gap penalties, constant gap penalties, which is much faster and needs less memory.
 				 */
 			} else {
 
@@ -437,38 +394,37 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
 	}
 
-	/**
-	 * Global pairwise sequence alginment of two BioJava-Sequence objects
-	 * according to the Needleman-Wunsch-algorithm.
-	 * @param query 
-	 * @param subject 
-	 * @return the alignment score
-	 * @throws BioRuntimeException 
-	 * 
-	 * @see org.biojava.bio.alignment.SequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence,
-	 *      org.biojava.bio.seq.Sequence)
+	/*
+	 * Variables needed for traceback
 	 */
-	public double pairwiseAlignment(Sequence query, Sequence subject) throws BioRuntimeException {
+	double score = Double.NaN;
+	String[] align = new String[] { "", "" };
+	String path = "";
+	long time;
+
+	/**
+	 * Global pairwise sequence alginment of two BioJava-Sequence objects according to the Needleman-Wunsch-algorithm.
+	 * 
+	 * @param query
+	 * @param subject
+	 * @return the alignment score
+	 * @throws BioRuntimeException
+	 * 
+	 * @see org.biojava.bio.alignment.SequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence, org.biojava.bio.seq.Sequence)
+	 */
+	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
-			long time = System.currentTimeMillis();
+			long beginTime = System.currentTimeMillis();
 			int i, j;
 			this.costMatrix = new double[query.length() + 1][subject.length() + 1]; // Matrix
 			// CostMatrix
-
-			/*
-			 * Variables for the traceback
-			 */
-			String[] align = new String[] { "", "" };
-			String path = "";
 
 			// construct the matrix:
 			costMatrix[0][0] = 0;
 
 			/*
-			 * If we want to have affine gap penalties, we have to initialise
-			 * additional matrices: If this is not necessary, we won't do that
-			 * (because it's expensive).
+			 * If we want to have affine gap penalties, we have to initialise additional matrices: If this is not necessary, we won't do that (because it's expensive).
 			 */
 			if ((gapExt != delete) || (gapExt != insert)) {
 
@@ -517,8 +473,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 								path = ' ' + path;
 
 								// Match/Replace
-							} else if ( (Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) 
-									&& !(gap_extend[0] || gap_extend[1])) {
+							} else if ((Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) && !(gap_extend[0] || gap_extend[1])) {
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
 								else
@@ -555,8 +510,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				}
 
 				/*
-				 * No affine gap penalties, constant gap penalties, which is
-				 * much faster and needs less memory.
+				 * No affine gap penalties, constant gap penalties, which is much faster and needs less memory.
 				 */
 
 			} else {
@@ -625,70 +579,63 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 			}
 
-			/*
-			 * From here both cases are equal again.
-			 */
-			try {
+			time = System.currentTimeMillis() - beginTime;
 
-				query = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(query.getAlphabet().getTokenization("token"), align[0]), query.getURN(), query.getName(), query.getAnnotation()));
-				subject = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(subject.getAlphabet().getTokenization("token"), align[1]), subject.getURN(), subject.getName(), subject.getAnnotation()));
-				Map<String, Sequence> m = new HashMap<String, Sequence>();
-				m.put(query.getName(), query);
-				m.put(subject.getName(), subject);
-				pairalign = new SimpleAlignment(m);
+			this.score = getEditDistance();
+			
+			return this.score;
 
-				// this.printCostMatrix(queryChar, targetChar); // only for
-				// tests
-				// important
-				this.alignment = formatOutput(query.getName(), // name of the
-						// query
-						// sequence
-						subject.getName(), // name of the target sequence
-						align, // the String representation of the alignment
-						path, // String match/missmatch representation
-						0, // Start position of the alignment in the query
-						// sequence
-						costMatrix.length - 1, // End position of the alignment
-						// in the
-						// query sequence
-						costMatrix.length - 1, // length of the query sequence
-						0, // Start position of the alignment in the target
-						// sequence
-						costMatrix[0].length - 1, // End position of the
-						// alignment in the
-						// target sequence
-						costMatrix[0].length - 1, // length of the target
-						// sequence
-						getEditDistance(), // the edit distance
-						System.currentTimeMillis() - time) + System.getProperty("line.separator"); // time
-				// consumption
-
-				// System.out.println(printCostMatrix(CostMatrix,
-				// query.seqString().toCharArray(),
-				// subject.seqString().toCharArray()));
-				return getEditDistance();
-
-			} catch (BioException exc) {
-				throw new BioRuntimeException(exc);
-			}
 		}
 		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
 	}
 
+	public String getQueryAligned() {
+		return align[0];
+	}
+
+	public String getTargetAligned() {
+		return align[1];
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public int getQueryStart() {
+		return 0;
+	}
+
+	public int getTargetStart() {
+		return 0;
+	}
+
+	public int getQueryEnd() {
+		return costMatrix.length - 1;
+	}
+
+	public int getTargetEnd() {
+		return costMatrix[0].length - 1;
+	}
+
+	public long getTime() {
+		return time;
+	}
+	
+	public double getScore() {
+		return score;
+	}	
+
 	/**
-	 * This method computes the scores for the substution of the i-th symbol of
-	 * query by the j-th symbol of subject.
+	 * This method computes the scores for the substution of the i-th symbol of query by the j-th symbol of subject.
 	 * 
 	 * @param query
 	 *            The query symbolList
 	 * @param subject
 	 *            The target symbolList
 	 * @param i
-	 *            The position of the symbol under consideration within the
-	 *            query sequence (starting from one)
+	 *            The position of the symbol under consideration within the query sequence (starting from one)
 	 * @param j
-	 *            The position of the symbol under consideration within the
-	 *            target sequence
+	 *            The position of the symbol under consideration within the target sequence
 	 * @return The score for the given substitution.
 	 */
 	private double matchReplace(SymbolList query, SymbolList subject, int i, int j) {
@@ -699,11 +646,6 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 				return -match;
 			return -replace;
 		}
-	}
-
-	@Override
-	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws Exception {		
-		return fastPairwiseAlignment(query, subject);
 	}
 
 }

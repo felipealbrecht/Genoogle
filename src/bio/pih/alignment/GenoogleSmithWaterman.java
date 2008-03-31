@@ -20,18 +20,10 @@
  */
 package bio.pih.alignment;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.biojava.bio.BioException;
 import org.biojava.bio.BioRuntimeException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.impl.SimpleGappedSequence;
-import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.SimpleAlignment;
-import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
 
 /*
@@ -40,14 +32,7 @@ import org.biojava.bio.symbol.SymbolList;
  */
 
 /**
- * Smith and Waterman developed an efficient dynamic programing algorithm to
- * perform local sequence alignments, which returns the most conserved region of
- * two sequences (longes common substring with modifications). This algorithm is
- * performed by the method <code>pairwiseAlignment</code> of this class. It
- * uses affine gap penalties if and only if the expenses of a delete or insert
- * operation are unequal to the expenses of gap extension. This uses
- * significantly more memory (four times as much) and increases the runtime if
- * swaping is performed.
+ * Smith and Waterman developed an efficient dynamic programing algorithm to perform local sequence alignments, which returns the most conserved region of two sequences (longes common substring with modifications). This algorithm is performed by the method <code>pairwiseAlignment</code> of this class. It uses affine gap penalties if and only if the expenses of a delete or insert operation are unequal to the expenses of gap extension. This uses significantly more memory (four times as much) and increases the runtime if swaping is performed.
  * 
  * Some changes by Felipe Albrecht for faster alignment methods
  * 
@@ -64,15 +49,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	private double gapExt;
 
 	/**
-	 * Constructs the new SmithWaterman alignment object. Alignments are only
-	 * performed, if the alphabet of the given <code>SubstitutionMatrix</code>
-	 * equals the alpabet of both the query and the target <code>Sequence</code>.
-	 * The alignment parameters here are expenses and not scores as they are in
-	 * the <code>NeedlemanWunsch</code> object. scores are just given by
-	 * multipliing the expenses with <code>(-1)</code>. For example you could
-	 * use parameters like "-2, 5, 3, 3, 0". If the expenses for gap extension
-	 * are equal to the cost of starting a gap (delete or insert), no affine gap
-	 * penalties are used, which saves memory.
+	 * Constructs the new SmithWaterman alignment object. Alignments are only performed, if the alphabet of the given <code>SubstitutionMatrix</code> equals the alpabet of both the query and the target <code>Sequence</code>. The alignment parameters here are expenses and not scores as they are in the <code>NeedlemanWunsch</code> object. scores are just given by multipliing the expenses with <code>(-1)</code>. For example you could use parameters like "-2, 5, 3, 3, 0". If the expenses for gap extension are equal to the cost of starting a gap (delete or insert), no affine gap penalties are used, which saves memory.
 	 * 
 	 * @param match
 	 *            expenses for a match
@@ -99,10 +76,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and sets the
-	 * penalty for an insert operation to the specified value. Reason: internaly
-	 * scores are used instead of penalties so that the value is muliplied with
-	 * -1.
+	 * Overrides the method inherited from the NeedlemanWunsch and sets the penalty for an insert operation to the specified value. Reason: internaly scores are used instead of penalties so that the value is muliplied with -1.
 	 * 
 	 * @param ins
 	 *            costs for a single insert operation
@@ -113,10 +87,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and sets the
-	 * penalty for a delete operation to the specified value. Reason: internaly
-	 * scores are used instead of penalties so that the value is muliplied with
-	 * -1.
+	 * Overrides the method inherited from the NeedlemanWunsch and sets the penalty for a delete operation to the specified value. Reason: internaly scores are used instead of penalties so that the value is muliplied with -1.
 	 * 
 	 * @param del
 	 *            costs for a single deletion operation
@@ -127,10 +98,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and sets the
-	 * penalty for an extension of any gap (insert or delete) to the specified
-	 * value. Reason: internaly scores are used instead of penalties so that the
-	 * value is muliplied with -1.
+	 * Overrides the method inherited from the NeedlemanWunsch and sets the penalty for an extension of any gap (insert or delete) to the specified value. Reason: internaly scores are used instead of penalties so that the value is muliplied with -1.
 	 * 
 	 * @param ge
 	 *            costs for any gap extension
@@ -141,10 +109,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and sets the
-	 * penalty for a match operation to the specified value. Reason: internaly
-	 * scores are used instead of penalties so that the value is muliplied with
-	 * -1.
+	 * Overrides the method inherited from the NeedlemanWunsch and sets the penalty for a match operation to the specified value. Reason: internaly scores are used instead of penalties so that the value is muliplied with -1.
 	 * 
 	 * @param ma
 	 *            costs for a single match operation
@@ -155,10 +120,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and sets the
-	 * penalty for a replace operation to the specified value. Reason: internaly
-	 * scores are used instead of penalties so that the value is muliplied with
-	 * -1.
+	 * Overrides the method inherited from the NeedlemanWunsch and sets the penalty for a replace operation to the specified value. Reason: internaly scores are used instead of penalties so that the value is muliplied with -1.
 	 * 
 	 * @param rep
 	 *            costs for a single replace operation
@@ -231,35 +193,26 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 			return scoreMatrix[maxI][maxJ];
 
-		} 
-			throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
-		
+		}
+		throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
+
 	}
 
+	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
+
 	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and performs only
-	 * a local alignment. It finds only the longest common subsequence. This is
-	 * good for the beginning, but it might be better to have a system to find
-	 * more than only one hit within the score matrix. Therfore one should only
-	 * define the k-th best hit, where k is somehow related to the number of
-	 * hits.
+	 * Overrides the method inherited from the NeedlemanWunsch and performs only a local alignment. It finds only the longest common subsequence. This is good for the beginning, but it might be better to have a system to find more than only one hit within the score matrix. Therfore one should only define the k-th best hit, where k is somehow related to the number of hits.
 	 * 
-	 * @see GenoogleSequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence,
-	 *      org.biojava.bio.seq.Sequence)
+	 * @see GenoogleSequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence, org.biojava.bio.seq.Sequence)
 	 */
 	@Override
-	public double pairwiseAlignment(Sequence query, Sequence subject) throws BioRuntimeException {
+	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
-			long time = System.currentTimeMillis();
-			int i, j, maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
+			long beginTime = System.currentTimeMillis();
+			int i, j;
 			double[][] scoreMatrix = new double[query.length() + 1][subject.length() + 1];
 
-			/*
-			 * Variables needed for traceback
-			 */
-			String[] align = new String[] { "", "" };
-			String path = "";
 			SymbolTokenization st;
 			try {
 				st = query.getAlphabet().getTokenization("default");
@@ -317,8 +270,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								i = j = 0;
 
 								// Match/Replace
-							} else if ((Math.abs(scoreMatrix[i][j] - (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001)
-									&& !(gap_extend[0] || gap_extend[1])) {
+							} else if ((Math.abs(scoreMatrix[i][j] - (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001) && !(gap_extend[0] || gap_extend[1])) {
 								if (query.symbolAt(i) == subject.symbolAt(j))
 									path = '|' + path;
 								else
@@ -419,59 +371,30 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				}
 			}
 
-			/*
-			 * From here both cases are equal again.
-			 */
+	        this.costMatrix = new double[1][1];
+	        costMatrix[0][0] = -scoreMatrix[maxI][maxJ];
+			this.time = System.currentTimeMillis() - beginTime;
+			this.score = scoreMatrix[maxI][maxJ];
+			return this.score;
 
-			// System.out.println(printCostMatrix(scoreMatrix,
-			// query.seqString().toCharArray(),
-			// subject.seqString().toCharArray()));
-			try {
-				// this is necessary to have a value for the getEditDistance
-				// method.
-				this.costMatrix = new double[1][1];
-				costMatrix[0][0] = -scoreMatrix[maxI][maxJ];
-
-				query = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(query.getAlphabet().getTokenization("token"), align[0]), query.getURN(), query.getName(), query.getAnnotation()));
-				subject = new SimpleGappedSequence(new SimpleSequence(new SimpleSymbolList(subject.getAlphabet().getTokenization("token"), align[1]), subject.getURN(), subject.getName(), subject.getAnnotation()));
-				Map<String, Sequence> m = new HashMap<String, Sequence>();
-				m.put(query.getName(), query);
-				m.put(subject.getName(), subject);
-				pairalign = new SimpleAlignment(m);
-
-				/*
-				 * Construct the output with only 60 symbols in each line.
-				 */
-				this.alignment = formatOutput(query.getName(), // name of the
-																// query
-						// sequence
-						subject.getName(), // name of the target sequence
-						align, // the String representation of the alignment
-						path, // String match/missmatch representation
-						queryStart, // Start position of the alignment in the
-									// query sequence
-						maxI, // End position of the alignment in the query
-								// sequence
-						scoreMatrix.length - 1, // length of the query sequence
-						targetStart, // Start position of the alignment in
-										// the target
-						// sequence
-						maxJ, // End position of the alignment in the target
-								// sequence
-						scoreMatrix[0].length - 1, // length of the target
-													// sequence
-						getEditDistance(), System.currentTimeMillis() - time) + System.getProperty("line.separator"); // time
-																														// consumption
-
-				// Don't waste any memory.
-				double value = scoreMatrix[maxI][maxJ];
-				return value;
-
-			} catch (BioException exc) {
-				throw new BioRuntimeException(exc);
-			}
 		}
 		throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
+	}
+
+	public int getQueryStart() {
+		return queryStart;
+	}
+
+	public int getQueryEnd() {
+		return maxI;
+	}
+
+	public int getTargetStart() {
+		return targetStart;
+	}
+
+	public int getTargetEnd() {
+		return maxJ;
 	}
 
 	/**
@@ -494,19 +417,16 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * This method computes the scores for the substution of the i-th symbol of
-	 * query by the j-th symbol of subject.
+	 * This method computes the scores for the substution of the i-th symbol of query by the j-th symbol of subject.
 	 * 
 	 * @param query
 	 *            The query sequence
 	 * @param subject
 	 *            The target sequence
 	 * @param i
-	 *            The position of the symbol under consideration within the
-	 *            query sequence (starting from one)
+	 *            The position of the symbol under consideration within the query sequence (starting from one)
 	 * @param j
-	 *            The position of the symbol under consideration within the
-	 *            target sequence
+	 *            The position of the symbol under consideration within the target sequence
 	 * @return The score for the given substitution.
 	 */
 	private double matchReplace(SymbolList query, SymbolList subject, int i, int j) {

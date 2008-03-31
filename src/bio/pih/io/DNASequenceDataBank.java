@@ -19,11 +19,9 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
-import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
 
@@ -115,7 +113,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);
 
-	public synchronized SymbolList getSymbolListFromSequenceId(int sequenceId) throws IOException, IllegalSymbolException {
+	public synchronized SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
 
 		MappedByteBuffer mappedIndexFile = this.dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
@@ -123,10 +121,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		mappedIndexFile.position(position);
 
 		int variableLength = mappedIndexFile.getInt();
-		SequenceInformation sequenceInformation = SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);
-		String decodeShortArrayToString = DNASequenceEncoderToShort.getDefaultEncoder().decodeShortArrayToString(sequenceInformation.getEncodedSequence());
-
-		return LightweightSymbolList.createDNA(decodeShortArrayToString);
+		return SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);
 	}
 
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
