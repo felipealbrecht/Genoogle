@@ -79,6 +79,8 @@ public class SubSequencesComparer {
 
 	private long[] dataOffsetIndex;
 	private int[] dataQuantityIndex;
+	
+	private boolean isLoad = false;
 
 	private static SubSequencesComparer defaultInstance = null;
 
@@ -250,6 +252,11 @@ public class SubSequencesComparer {
 	 */
 	public void load(boolean check) throws IOException, InvalidHeaderData {
 		logger.info("Loading " + this.toString() + " data");
+		if (this.isLoad) {
+			logger.info(this.toString() + " is already loaded.");
+			return;
+		}
+		
 		long begin = System.currentTimeMillis();
 		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexFile().length());
 
@@ -278,6 +285,7 @@ public class SubSequencesComparer {
 			this.dataQuantityIndex[sequence] = quantity;
 			this.dataOffsetIndex[sequence] = offset;
 		}
+		this.isLoad = true;
 		logger.info("SubSequencesComparer data loaded in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 

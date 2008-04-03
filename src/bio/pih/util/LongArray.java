@@ -81,7 +81,7 @@ public class LongArray {
 			if (finalArray == null) {
 				return EMPTY_ARRAY;
 			}
-			return finalArray.clone();
+			return finalArray;
 		}
 
 		int size = 0;
@@ -112,7 +112,7 @@ public class LongArray {
 		blockArrays = null;
 		finalArray = o;
 		
-		return finalArray.clone();
+		return finalArray;
 	}
 	
 	/**
@@ -123,6 +123,12 @@ public class LongArray {
 		if (finalArray != null) {
 			Arrays.sort(finalArray);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		getArray();
+		return Arrays.toString(finalArray);
 	}
 
 	/**

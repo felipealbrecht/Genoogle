@@ -35,9 +35,15 @@ public interface SequenceDataBank {
 	void setName(String name);
 
 	/**
-	 * @return the directory where is this SequenceBank.
+	 * @return the file name and directory where is this SequenceDataBank.
 	 */
 	File getPath();
+	
+	
+	/**
+	 * @return the file name and directory where is this SequenceDataBank considering its parent.
+	 */
+	File getFullPath();
 
 	/**
 	 * @param directory
@@ -49,12 +55,6 @@ public interface SequenceDataBank {
 	 * @return the total quantity of sequences stored in this SequenceDataBank
 	 */
 	int getTotalSequences();
-
-	/**
-	 * @param extensions
-	 *            for the files of this SequenceDataBank
-	 */
-	void setExtensions(String[] extensions);
 
 	/**
 	 * Set the {@link FiniteAlphabet} of the sequences of this sequence bank.
@@ -86,6 +86,14 @@ public interface SequenceDataBank {
 	 * @throws IllegalSymbolException
 	 */
 	void loadInformations() throws IOException, IllegalSymbolException;
+	
+	/**
+	 * Encode the sequences into a computer legible mode 
+	 * @throws IOException 
+	 * @throws BioException 
+	 * @throws NoSuchElementException 
+	 */
+	void encodeSequences() throws IOException, NoSuchElementException, BioException;
 
 	/**
 	 * Add a new sequence into the sequence bank
@@ -105,6 +113,19 @@ public interface SequenceDataBank {
 	 * @return the symbol list of the given id
 	 * @throws IOException
 	 * @throws IllegalSymbolException
+	 * @throws MultipleSequencesFoundException 
 	 */
-	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException;
+	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
+	
+	
+	/**
+	 * Set the parent.
+	 * @param parent
+	 */
+	void setParent(SequenceDataBank parent);
+	
+	/**
+	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 
+	 */
+	public SequenceDataBank getParent();
 }

@@ -15,7 +15,7 @@ public class SubSequenceIndexInfo {
 	 * @return an integer containing the sequenceId and start point
 	 */
 	public static int getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
-		//assert sequenceId <= 65535; //((long)1 << 16) -1; 
+		assert sequenceId <= 65535; //((long)1 << 16) -1; 
 		//assert pos <= 65535; //((long)1 << 16) -1;
 		return ((sequenceId << 16) | (pos & 0xFFFF));
 	}

@@ -2,18 +2,13 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequencesArrayIndex;
 import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.search.DNASearcher;
-import bio.pih.seq.LightweightSymbolList;
 
 /**
  * A data bank witch index its sequences.
@@ -27,81 +22,46 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	private final SubSequencesArrayIndex index;
 	
 	/**
-	 * @param args
-	 * @throws IOException
-	 * @throws NoSuchElementException
-	 * @throws BioException
+	 * Same as public IndexedDNASequenceDataBank(String name, SequenceDataBank parent, File path, boolean isReadOnly) without passing parent parameter.
+	 * @param name
+	 * @param path
+	 * @param isReadOnly
 	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData 
+	 * @throws IOException
+	 * @throws InvalidHeaderData
 	 */
-	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData {
-		BasicConfigurator.configure();
+	public IndexedDNASequenceDataBank(String name, File path, boolean isReadOnly) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		super(name, null, path, isReadOnly);
 		
-		IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
-		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("mouse_cow", new File("."), 8, false);
-		//IndexedDNASequenceDataBank indexedDNASequenceDataBank = new IndexedDNASequenceDataBank("lazy", new File("."), 8, false);
-		indexedDNASequenceDataBank.loadInformations();
+		index = new SubSequencesArrayIndex(8, DNATools.getDNA());
 		
-		//indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/mouse.rna.fna"));
-//		indexedDNASequenceDataBank.addFastaFile(new File("cow.rna.fna"));
-		//indexedDNASequenceDataBank.addFastaFile(new File("files/fasta/lazy"));
-		
-		String seq;
-
-		//seq = "TTAGGAGTTCAGCATTAATTTCCAAAATTTTCATGGGGCTTGTGGCAACACGGGCCGTGAATCTGTGTATAAAATTTACTGGCCTTCTTCACTTACCTGCTCTAGTATCGTATCGTGTGTGCGTGCGTGTGTGACGTCAGGCTGCCACGTAAACTTCAGAGAAGAACCTTAAAGCAGACCATCCATTTTTGCATGCTCTCTTCTAAGTAGAATGTTCAATGTAACTAAAACTAAAATTGCATGTCAAAGAGACCTAGGTTCTTTCTTTCTTTCTTTCTCTCTTTCTTTCAGTTTGCTTTTGGTTTCCTGTATATTTGCTTACTGTGCTGTTCTAGTGGTTGT";		
-		//seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGATGAAAAAGTTTTGGAAATTGATAGTGGTAATGCAGCTCAACATTATGAATCTTTTTATAACTATGATGCACGGGGAGCGGATGAACTTTCTTTACAAATAGGAGACGCTGTGCACATCCTGGAAACATACGAAGGGTGGTACAGAGGTTACACCTTAAGAAAAAAGTCTAAGAAGGGTATATTTCCTGCTTCGTACATCCATCTTAAAGAAGCCATAGTTGAAGGAAAAGGGCAACATGA";
-		
-		
-		// 40164
-		//seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
-		/*seq = "ATGGACCC        TGCCTGTA        TCTATCCA        TTCAGGAT        CTTCTGTT        
-		 *               GGTCACAG        AAGGGCAG        GCAGGGTG        GGATGGGG        TGGAGTGA  */
-		/*
-                 ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGTTTTTTTTTTTTTTTTTTTTTTTTCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA
-		 */
-		seq =   "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGTTTTTTTTTTTTTTTTTTTTTTTTCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
-		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
-
-
-		
-		DNASearcher search = new DNASearcher();
-		search.doSearch(sequence, indexedDNASequenceDataBank);
-		
-//		seq = SequenceMutator.mutateSequence(seq, 100, 4);
-//		sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
-//		search.doSearch(sequence, indexedDNASequenceDataBank);
-		
-//		search.doSearch(sequence, indexedDNASequenceDataBank);
-//		search.doSearch(sequence, indexedDNASequenceDataBank);
+		subSequenceComparer = SubSequencesComparer.getDefaultInstance();
+		subSequenceComparer.load();
 	}
 
 	/**
 	 * 
 	 * @param name
 	 *            the name of the data bank
+	 * @param parent 
 	 * @param path
 	 *            the path where the data bank is/will be stored
-	 * @param subSequenceLenth
-	 *            the length of the sub sequences for the indexing propose.
 	 * @param isReadOnly
 	 * @throws IOException
 	 * @throws ValueOutOfBoundsException
 	 * @throws InvalidHeaderData 
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, int subSequenceLenth, boolean isReadOnly) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
-		super(name, path, isReadOnly);
-
-		index = new SubSequencesArrayIndex(subSequenceLenth, DNATools.getDNA());
-
+	public IndexedDNASequenceDataBank(String name, SequenceDataBank parent, File path, boolean isReadOnly) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+		super(name, parent, path, isReadOnly);
+		index = new SubSequencesArrayIndex(8, DNATools.getDNA());
+		
 		subSequenceComparer = SubSequencesComparer.getDefaultInstance();
-		subSequenceComparer.load();
+		subSequenceComparer.load();		
 	}
 	
 	@Override
 	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
-		short[] encodedSequence = sequenceInformation.getEncodedSequence();
-		int id = sequenceInformation.getId();
-		index.addSequence(id, encodedSequence);		
+		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());		
 	}
 	
 	@Override

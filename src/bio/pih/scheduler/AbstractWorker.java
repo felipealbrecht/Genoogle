@@ -14,7 +14,7 @@ import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.ResultMessage;
 import bio.pih.search.AlignmentResult;
-import bio.pih.search.SearchInformation;
+import bio.pih.search.SearchStatus;
 import bio.pih.search.SearchParams;
 
 /**
@@ -26,8 +26,8 @@ import bio.pih.search.SearchParams;
 public abstract class AbstractWorker {
 
 	int availableProcessors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
-	private List<SearchInformation> waitingList; // search queue
-	private List<SearchInformation> runningSearch;
+	private List<SearchStatus> waitingList; // search queue
+	private List<SearchStatus> runningSearch;
 	private WorkerCommunicator communicator;
 	private int identifier;
 	volatile private int maxSimultaneousSearch;
@@ -39,8 +39,8 @@ public abstract class AbstractWorker {
 	 */
 	public AbstractWorker(int port) {
 		this.communicator = new WorkerCommunicator(this, port);
-		this.runningSearch = Collections.synchronizedList(new LinkedList<SearchInformation>());
-		this.waitingList = Collections.synchronizedList(new LinkedList<SearchInformation>());
+		this.runningSearch = Collections.synchronizedList(new LinkedList<SearchStatus>());
+		this.waitingList = Collections.synchronizedList(new LinkedList<SearchStatus>());
 		this.maxSimultaneousSearch = availableProcessors;
 	}
 
@@ -103,7 +103,7 @@ public abstract class AbstractWorker {
 	 * 
 	 * @return a <code>list</code> containing the running searches
 	 */
-	public List<SearchInformation> getRunningSearch() {
+	public List<SearchStatus> getRunningSearch() {
 		return runningSearch;
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractWorker {
 	 * @param params
 	 */
 	public void requestSearch(SearchParams params) {
-		SearchInformation si = new SearchInformation(params.getDatabase(), params.getQuery(), params.getCode());
+		SearchStatus si = new SearchStatus(params.getDatabase(), params.getQuery(), params.getCode());
 		if (canSearchOrQueue(si) != null) {
 			doSearch(si);
 		} else {
@@ -126,7 +126,7 @@ public abstract class AbstractWorker {
 	/**
 	 * @param searchInformation
 	 */
-	protected abstract void doSearch(SearchInformation searchInformation);
+	protected abstract void doSearch(SearchStatus searchInformation);
 
 	/**
 	 * @param m
@@ -163,9 +163,9 @@ public abstract class AbstractWorker {
 	}
 	
 	/**
-	 * @return a {@link List} containing {@link SearchInformation} of all search that are waiting to be processed.
+	 * @return a {@link List} containing {@link SearchStatus} of all search that are waiting to be processed.
 	 */
-	public List<SearchInformation> getWaitingList() {
+	public List<SearchStatus> getWaitingList() {
 		return waitingList;
 	}
 
@@ -191,9 +191,9 @@ public abstract class AbstractWorker {
 	 * Check if a search can be performed or the information must be put in the queue
 	 * 
 	 * @param searchInformation
-	 * @return {@link SearchInformation} if can search him or <code>null</code>.
+	 * @return {@link SearchStatus} if can search him or <code>null</code>.
 	 */
-	protected synchronized SearchInformation canSearchOrQueue(SearchInformation searchInformation) {
+	protected synchronized SearchStatus canSearchOrQueue(SearchStatus searchInformation) {
 		if (getRunningSearch().size() < getMaxSimultaneousSearch()) {
 			getRunningSearch().add(searchInformation);
 			return searchInformation;
@@ -206,13 +206,13 @@ public abstract class AbstractWorker {
 	 * 
 	 * @param lastSearch -
 	 *            the least search did by this thread.
-	 * @return the next {@link SearchInformation} in the queue
+	 * @return the next {@link SearchStatus} in the queue
 	 */
-	protected synchronized SearchInformation getNextSearchInformation(SearchInformation lastSearch) {
+	protected synchronized SearchStatus getNextSearchInformation(SearchStatus lastSearch) {
 		assert (getRunningSearch().remove(lastSearch) == true);
 
 		if (getWaitingList().size() > 0) {
-			SearchInformation searchInformation = getWaitingList().remove(0);
+			SearchStatus searchInformation = getWaitingList().remove(0);
 			getRunningSearch().add(searchInformation);
 			return searchInformation;
 		}

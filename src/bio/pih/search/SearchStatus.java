@@ -1,10 +1,16 @@
 package bio.pih.search;
 
+import java.util.List;
+
+import org.biojava.bio.symbol.SymbolList;
+
+import bio.pih.io.SequenceDataBank;
+
 /**
  * Class that hold informations about one search process.
  * @author albrecht
  */
-public class SearchInformation {
+public class SearchStatus {
 	
 	/**
 	 * The step where the search is. 
@@ -16,29 +22,52 @@ public class SearchInformation {
 		 * Not initialized yet
 		 */
 		NOT_INITIALIZED,
+		
 		/**
-		 * Searching the seeds
+		 * Initialized
+		 */
+		INITIALIZED,
+		
+		
+		/**
+		 * Searching the data in the Index.
+		 */
+		INDEX_SEARCH,
+		
+		/**
+		 * Computing the match areas found.
+		 */
+		COMPUTING_MATCHS,
+				
+		/**
+		 * Searching and creating the seeds.
 		 */
 		SEEDS,
 		
 		/**
-		 * Doing the alignments
+		 * Doing the alignments.
 		 */
 		ALIGNMENT,
 		
 		/**
-		 * Selecting the best alignments 
+		 * Selecting the best alignments. 
 		 */
 		SELECTING,
 		
+		
 		/**
-		 * The search finalized
+		 * Waiting the search result of its inner data banks.
+		 */
+		SEARCHING_INNER,
+		
+		/**
+		 * The search finalized.
 		 */
 		FINISHED,
 		
 			
 		/**
-		 * The search was canceled and stopped
+		 * The search was canceled and stopped.
 		 */
 		CANCELED,
 		
@@ -49,9 +78,10 @@ public class SearchInformation {
 		ERASED;
 	}
 	
-	String db;
-	String query;
+	SequenceDataBank db;
+	SymbolList query;
 	SearchStep actualStep;
+	List<AlignmentResult> results;
 	long code;
 		
 	/**
@@ -59,17 +89,18 @@ public class SearchInformation {
 	 * @param query
 	 * @param code 
 	 */
-	public SearchInformation(String db, String query, long code) {
+	public SearchStatus(SymbolList query, SequenceDataBank db, long code) {
 		this.db = db;
 		this.query = query;
 		this.code = code;
 		this.actualStep = SearchStep.NOT_INITIALIZED;
+		this.results = null;
 	}
 	
 	/**
 	 * @param db
 	 */
-	public void setDb(String db) {
+	public void setDb(SequenceDataBank db) {
 		this.db = db;
 	}
 	
@@ -77,21 +108,21 @@ public class SearchInformation {
 	/**
 	 * @return db
 	 */
-	public String getDb() {
+	public SequenceDataBank getDb() {
 		return db;
 	}
 	
 	/**
 	 * @param query
 	 */
-	public void setQuery(String query) {
+	public void setQuery(SymbolList query) {
 		this.query = query;
 	}
 	
 	/**
 	 * @return query
 	 */
-	public String getQuery() {
+	public SymbolList getQuery() {
 		return query;
 	}
 	
@@ -127,4 +158,21 @@ public class SearchInformation {
 	public String toString() {
 		return "Query '"+ query + "' against " + db + " ("+actualStep+")";
 	}
+	
+	public void setResults(List<AlignmentResult> results) {
+		this.results = results;
+	}
+	
+	public List<AlignmentResult> getResults() {
+		return results;
+	}
+	
+	
+	public boolean isDone() {
+		if (this.getActualStep() == SearchStep.FINISHED) {
+			return true;
+		}		
+		return false;
+	}
+	
 }

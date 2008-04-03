@@ -81,7 +81,7 @@ public class IntArray {
 			if (finalArray == null) {
 				return EMPTY_ARRAY;
 			}
-			return finalArray.clone();
+			return finalArray;
 		}
 
 		int size = 0;
@@ -112,7 +112,7 @@ public class IntArray {
 		blockArrays = null;
 		finalArray = o;
 
-		return finalArray.clone();
+		return finalArray;
 	}
 	
 	/**
@@ -130,6 +130,12 @@ public class IntArray {
 	 */
 	public int length() {
 		return getArray().length;
+	}
+	
+	@Override
+	public String toString() {
+		getArray();
+		return Arrays.toString(finalArray);
 	}
 
 	/**

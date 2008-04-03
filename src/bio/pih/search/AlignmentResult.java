@@ -1,59 +1,76 @@
 package bio.pih.search;
 
-import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 
-import org.biojava.bio.seq.Sequence;
+import bio.pih.alignment.GenoogleSmithWaterman;
 
 /**
  * @author albrecht
- *
+ * 
  */
-public class AlignmentResult implements Serializable {
+public class AlignmentResult {
 
 	private static final long serialVersionUID = -7701610542981141900L;
-		
-	transient Sequence sequence;
-	int pontuation;	
-	
+
+	private final String query;
+	private final GenoogleSmithWaterman alignment;
+	private final int sequenceId;
+	private final String databankName;
+	private final int queryOffset;
+	private final int targetOffset;
+
 	/**
+	 * @param query
+	 * @param alignment
+	 * @param sequenceId
+	 * @param databankName
+	 * @param queryOffset
+	 * @param targetOffset
 	 * @param sequence
 	 * @param pontuation
 	 */
-	public AlignmentResult(Sequence sequence, int pontuation) {
-		this.sequence = sequence;
-		this.pontuation = pontuation;
+	public AlignmentResult(String query, GenoogleSmithWaterman alignment, int sequenceId, String databankName, int queryOffset, int targetOffset) {
+		this.query = query;
+		this.alignment = alignment;
+		this.sequenceId = sequenceId;
+		this.databankName = databankName;
+		this.queryOffset = queryOffset;
+		this.targetOffset = targetOffset;
 	}
-	
-	/**
-	 * @return
-	 */
-	public int getPontuation() {
-		return pontuation;
+
+	public String getQuery() {
+		return query;
 	}
-	
-	/**
-	 * @param pontuation
-	 */
-	public void setPontuation(int pontuation) {
-		this.pontuation = pontuation;
+
+	public GenoogleSmithWaterman getAlignment() {
+		return alignment;
 	}
-	
-	/**
-	 * @return
-	 */
-	public Sequence getSequence() {
-		return sequence;
+
+	public int getSequenceId() {
+		return sequenceId;
 	}
-	
-	/**
-	 * @param sequence
-	 */
-	public void setSequence(Sequence sequence) {
-		this.sequence = sequence;
+
+	public String getDatabankName() {
+		return databankName;
 	}
-	
-	@Override
-	public String toString() {
-		return this.getPontuation() + "\t" + this.getSequence();
+
+	public int getQueryOffset() {
+		return queryOffset;
+	}
+
+	public int getTargetOffset() {
+		return targetOffset;
+	}
+
+	public static Comparator<AlignmentResult> getScoreComparetor() {
+		return new Comparator<AlignmentResult>() {
+			@Override
+			public int compare(AlignmentResult o1, AlignmentResult o2) {
+				GenoogleSmithWaterman osw1 = o1.getAlignment();
+				GenoogleSmithWaterman osw2 = o2.getAlignment();
+				return Double.compare(osw2.getScore(), osw1.getScore());
+			}
+		};
 	}
 }

@@ -11,8 +11,8 @@ import org.biojava.bio.seq.DNATools;
 
 import bio.pih.scheduler.AbstractWorker;
 import bio.pih.search.AlignmentResult;
-import bio.pih.search.SearchInformation;
-import bio.pih.search.SearchInformation.SearchStep;
+import bio.pih.search.SearchStatus;
+import bio.pih.search.SearchStatus.SearchStep;
 
 /**
  * Mock class for unit tests
@@ -33,17 +33,17 @@ public class MockWorker extends AbstractWorker {
 	}
 
 	@Override
-	protected void doSearch(SearchInformation searchInformation) {
+	protected void doSearch(SearchStatus searchInformation) {
 		new Thread(new Searcher(searchInformation), "Searcher at " + this.getIdentifier()).start();
 	}
 
 	private class Searcher implements Runnable {
-		SearchInformation searchInformation;
+		SearchStatus searchInformation;
 
 		/**
 		 * @param searchInformation
 		 */
-		public Searcher(SearchInformation searchInformation) {
+		public Searcher(SearchStatus searchInformation) {
 			this.searchInformation = searchInformation;
 		}
 
