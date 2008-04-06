@@ -1,6 +1,6 @@
 package bio.pih.scheduler.communicator.message;
 
-import bio.pih.search.AlignmentResult;
+import bio.pih.search.results.HSP;
 
 
 /**
@@ -13,7 +13,7 @@ public class ResultMessage extends Message {
 	String db;
 	String query;
 	long code;
-	AlignmentResult[] alignments;
+	HSP[] alignments;
 	
 	/**
 	 * @param db 
@@ -21,7 +21,7 @@ public class ResultMessage extends Message {
 	 * @param code 
 	 * @param alignments 
 	 */
-	public ResultMessage(String db, String query, long code, AlignmentResult[] alignments) {
+	public ResultMessage(String db, String query, long code, HSP[] alignments) {
 		this.db = db;
 		this.query = query;
 		this.code = code;
@@ -75,14 +75,14 @@ public class ResultMessage extends Message {
 	/**
 	 * @param alignments
 	 */
-	public void setAlignments(AlignmentResult[] alignments) {
+	public void setAlignments(HSP[] alignments) {
 		this.alignments = alignments.clone();
 	}
 	
 	/**
 	 * @return
 	 */
-	public AlignmentResult[] getAlignments() {
+	public HSP[] getAlignments() {
 		return alignments.clone();
 	}
 	

@@ -1,47 +1,86 @@
 package bio.pih.search;
 
+import org.biojava.bio.symbol.SymbolList;
+
 /**
- * A class to hold parameters for a search.
- * Now it is a bit useless, but when more parameters will be added, they should be stored here.
- *  
+ * A class to hold parameters for a search. Now it is a bit useless, but when more parameters will be added, they should be stored here.
+ * 
  * @author albrecht
  */
 public class SearchParams {
 
-	String database;
-	String query;
-	long code;
-	
-	
+	private final SymbolList query;
+	private final String databankName;
+	private final int minSimilarity;
+	private final int maxDatabankSubSequencesDistance;
+	private final int minMatchAreaLength;
+	private final int maxQuerySequenceSubSequencesDistance;
+	private final int minQuerySequenceSubSequence;
+
+	public static final int DEFAULT_MIN_SIMILARITY = 4;
+	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = 23;
+	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = 24;
+	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = 23;
+	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = 24;
+
 	/**
-	 * @param database
 	 * @param query
-	 * @param code 
+	 * @param databankName
 	 */
-	public SearchParams(String database, String query, long code) {
-		this.database = database;
-		this.query = query;
-		this.code = code;
+	public SearchParams(SymbolList query, String databankName) {
+		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE);
 	}
-	
+
 	/**
-	 * @return the database where the search will be performed
+	 * @param query
+	 * @param databankName
+	 * @param minSimilarity
+	 * @param maxDatabankSequenceSubSequencesDistance
+	 * @param minMatchAreaLength
+	 * @param maxQuerySequenceSubSequencesDistance
+	 * @param minQuerySequenceSubSequence
 	 */
-	public String getDatabase() {
-		return database;
+	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence) {
+		this.query = query;
+		this.databankName = databankName;
+		this.minSimilarity = minSimilarity;
+		this.maxDatabankSubSequencesDistance = maxDatabankSequenceSubSequencesDistance;
+		this.minMatchAreaLength = minMatchAreaLength;
+		this.maxQuerySequenceSubSequencesDistance = maxQuerySequenceSubSequencesDistance;
+		this.minQuerySequenceSubSequence = minQuerySequenceSubSequence;
 	}
+
 	/**
 	 * @return the query of the search
 	 */
-	public String getQuery() {
+	public SymbolList getQuery() {
 		return query;
 	}
-	
+
 	/**
-	 * @return the code of the associate search or -1 if is not associate with anyone Search
+	 * @return the data bank where the search will be performed
 	 */
-	public long getCode() {
-		return code;
+	public String getDatabank() {
+		return databankName;
 	}
-	
+
+	public int getMinSimilarity() {
+		return minSimilarity;
+	}
+
+	public int getMaxDatabankSequenceSubSequencesDistance() {
+		return maxDatabankSubSequencesDistance;
+	}
+
+	public int getMinMatchAreaLength() {
+		return minMatchAreaLength;
+	}
+
+	public int getMaxQuerySequenceSubSequencesDistance() {
+		return maxQuerySequenceSubSequencesDistance;
+	}
+
+	public int getMinQuerySequenceSubSequence() {
+		return minQuerySequenceSubSequence;
+	}
 }

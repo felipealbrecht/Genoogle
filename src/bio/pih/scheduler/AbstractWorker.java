@@ -13,9 +13,9 @@ import bio.pih.scheduler.communicator.WorkerCommunicator;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.ResultMessage;
-import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchStatus;
 import bio.pih.search.SearchParams;
+import bio.pih.search.results.HSP;
 
 /**
  * A interface that define a worker, or who will do the hard job
@@ -226,7 +226,7 @@ public abstract class AbstractWorker {
 		private String db;
 		private String query;
 		private long code;
-		private AlignmentResult[] alignmentResult;
+		private HSP[] alignmentResult;
 
 		/**
 		 * @param db
@@ -235,7 +235,7 @@ public abstract class AbstractWorker {
 		 * @param alignemtnResult
 		 *            a
 		 */
-		public ResultSender(String db, String query, long code, AlignmentResult[] alignemtnResult) {
+		public ResultSender(String db, String query, long code, HSP[] alignemtnResult) {
 			this.db = db;
 			this.query = query;
 			this.code = code;

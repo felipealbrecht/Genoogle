@@ -1,10 +1,6 @@
 package bio.pih.search;
 
-import javax.naming.directory.SearchResult;
-
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.seq.LightweightSymbolList;
 
 /**
  * @author albrecht
@@ -18,42 +14,15 @@ public interface Searcher {
 	
 	/**
 	 * Search similar sequences against the bank.
-	 * @param input
-	 * @param bank
-	 * @param params
+	 * @param sp 
+	 * @param query 
+	 * @param databank 
 	 * @return an unique identification of this search process.
 	 */
-	SearchStatus doSearch(LightweightSymbolList input, SequenceDataBank bank);
+	SearchStatus doSearch(SearchParams sp, SequenceDataBank databank);
 	
 	/**
-	 * Verify the status of the given search.
-	 * @param searchCode of the search
-	 * @return actual status of this search 
+	 * @return {@link SearchStatus} of this Search
 	 */
-	SearchStep verifySearch(long searchCode);
-	
-	/**
-	 * Obtain the result of the given search. 
-	 * @param searchCode of the search
-	 * @return the result of the given search, 
-	 * if the searchCode is invalid or the search did not finished,
-	 *  will return <code>null</code>. 
-	 */
-	SearchResult getSearchResult(long searchCode);	
-	
-	/**
-	 * Cancel the search and remove all data of this search. 
-	 * If the searchCode do not exist or the search is canceled, 
-	 * nothing is done.
-	 * @param searchCode of the search
-	 */
-	void cancelSearch(long searchCode);
-	
-	/**
-	 * Remove all data from a completed search.
-	 * If the searchCode do not exist or the search is canceled, 
-	 * nothing is done. 
-	 * @param searchCode of the search
-	 */
-	void removeSearch(long searchCode);
+	public SearchStatus getStatus();
 }

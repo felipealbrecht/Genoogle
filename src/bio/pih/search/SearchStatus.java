@@ -2,9 +2,8 @@ package bio.pih.search;
 
 import java.util.List;
 
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.io.SequenceDataBank;
+import bio.pih.search.results.HSP;
 
 /**
  * Class that hold informations about one search process.
@@ -78,61 +77,36 @@ public class SearchStatus {
 		ERASED;
 	}
 	
-	SequenceDataBank db;
-	SymbolList query;
-	SearchStep actualStep;
-	List<AlignmentResult> results;
-	long code;
+	protected final long timeBegin;
+	protected long timeEnd;
+	protected final SequenceDataBank db;
+	protected final SearchParams sp;
+	protected final long code;
+	protected List<HSP> results;
+	protected SearchStep actualStep;
 		
 	/**
+	 * @param sp
+	 * @param query 
 	 * @param db
-	 * @param query
-	 * @param code 
+	 * @param code
 	 */
-	public SearchStatus(SymbolList query, SequenceDataBank db, long code) {
+	public SearchStatus(SearchParams sp, SequenceDataBank db, long code) {
+		this.timeBegin = System.currentTimeMillis();
+		this.sp = sp;
 		this.db = db;
-		this.query = query;
 		this.code = code;
 		this.actualStep = SearchStep.NOT_INITIALIZED;
 		this.results = null;
 	}
-	
-	/**
-	 * @param db
-	 */
-	public void setDb(SequenceDataBank db) {
-		this.db = db;
-	}
-	
-	
+		
 	/**
 	 * @return db
 	 */
 	public SequenceDataBank getDb() {
 		return db;
 	}
-	
-	/**
-	 * @param query
-	 */
-	public void setQuery(SymbolList query) {
-		this.query = query;
-	}
-	
-	/**
-	 * @return query
-	 */
-	public SymbolList getQuery() {
-		return query;
-	}
-	
-	/**
-	 * @param code
-	 */
-	public void setCode(int code) {
-		this.code = code;
-	}
-	
+		
 	/**
 	 * @return
 	 */
@@ -151,19 +125,22 @@ public class SearchStatus {
 	 * @param step
 	 */
 	public void setActualStep(SearchStep step) {
-		this.actualStep = step;		
+		this.actualStep = step;
+		if (step == SearchStep.FINISHED) {
+			this.timeEnd = System.currentTimeMillis();
+		}
 	}
 	
 	@Override
 	public String toString() {
-		return "Query '"+ query + "' against " + db + " ("+actualStep+")";
+		return "Query '"+ sp.getQuery().seqString() + "' against " + db.getName() + " ("+actualStep+")";
 	}
 	
-	public void setResults(List<AlignmentResult> results) {
+	public void setResults(List<HSP> results) {
 		this.results = results;
 	}
 	
-	public List<AlignmentResult> getResults() {
+	public List<HSP> getResults() {
 		return results;
 	}
 	

@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.Scheduler.Searching;
-import bio.pih.search.AlignmentResult;
+import bio.pih.search.results.HSP;
 
 /**
  * A command line interface for perform search
@@ -108,8 +108,8 @@ public class CommandLine implements Runnable {
 					Searching searching = scheduler.getSearches().get(code);
 					if (searching != null) {
 						if (searching.isDone()) {
-							AlignmentResult[] alignments = searching.getAlignments();
-							for (AlignmentResult alignment : alignments) {
+							HSP[] alignments = searching.getAlignments();
+							for (HSP alignment : alignments) {
 								System.out.println(alignment);
 							}
 						} else {

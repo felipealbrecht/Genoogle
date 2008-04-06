@@ -1,4 +1,4 @@
-package bio.pih.search;
+package bio.pih.search.results;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,7 +9,7 @@ import bio.pih.alignment.GenoogleSmithWaterman;
  * @author albrecht
  * 
  */
-public class AlignmentResult {
+public class HSP {
 
 	private static final long serialVersionUID = -7701610542981141900L;
 
@@ -30,7 +30,7 @@ public class AlignmentResult {
 	 * @param sequence
 	 * @param pontuation
 	 */
-	public AlignmentResult(String query, GenoogleSmithWaterman alignment, int sequenceId, String databankName, int queryOffset, int targetOffset) {
+	public HSP(String query, GenoogleSmithWaterman alignment, int sequenceId, String databankName, int queryOffset, int targetOffset) {
 		this.query = query;
 		this.alignment = alignment;
 		this.sequenceId = sequenceId;
@@ -63,10 +63,10 @@ public class AlignmentResult {
 		return targetOffset;
 	}
 
-	public static Comparator<AlignmentResult> getScoreComparetor() {
-		return new Comparator<AlignmentResult>() {
+	public static Comparator<HSP> getScoreComparetor() {
+		return new Comparator<HSP>() {
 			@Override
-			public int compare(AlignmentResult o1, AlignmentResult o2) {
+			public int compare(HSP o1, HSP o2) {
 				GenoogleSmithWaterman osw1 = o1.getAlignment();
 				GenoogleSmithWaterman osw2 = o2.getAlignment();
 				return Double.compare(osw2.getScore(), osw1.getScore());

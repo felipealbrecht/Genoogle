@@ -10,9 +10,9 @@ import org.biojava.bio.dist.UniformDistribution;
 import org.biojava.bio.seq.DNATools;
 
 import bio.pih.scheduler.AbstractWorker;
-import bio.pih.search.AlignmentResult;
 import bio.pih.search.SearchStatus;
 import bio.pih.search.SearchStatus.SearchStep;
+import bio.pih.search.results.HSP;
 
 /**
  * Mock class for unit tests
@@ -78,16 +78,16 @@ public class MockWorker extends AbstractWorker {
 
 				this.searchInformation.setActualStep(SearchStep.FINISHED);
 
-				List<AlignmentResult> results = new LinkedList<AlignmentResult>();
+				List<HSP> results = new LinkedList<HSP>();
 
 				Distribution dist = new UniformDistribution(DNATools.getDNA());
 				long seqs = Math.round(Math.random() * 10) + 1; // 1 to 11
 				while (seqs-- > 0) {
-					results.add(new AlignmentResult(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs * 2));
+					results.add(new HSP(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs * 2));
 				}
 
 				System.out.println("Finished " + searchInformation + " in " + getIdentifier());
-				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(), results.toArray(new AlignmentResult[results.size()]));
+				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(), results.toArray(new HSP[results.size()]));
 
 				new Thread(resultSender).start();
 

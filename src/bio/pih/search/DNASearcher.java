@@ -9,11 +9,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.alignment.SubstitutionMatrix;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.alignment.GenoogleSequenceAlignment;
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.index.InvalidHeaderData;
@@ -21,10 +19,10 @@ import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.SubSequencesComparer;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
-import bio.pih.io.MultipleSequencesFoundException;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.io.SequenceInformation;
 import bio.pih.search.SearchStatus.SearchStep;
+import bio.pih.search.results.HSP;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.IntArray;
 import bio.pih.util.LongArray;
@@ -46,32 +44,34 @@ import com.google.common.collect.Lists;
 public class DNASearcher extends AbstractSearcher {
 
 	@Override
-	public SearchStatus doSearch(LightweightSymbolList input, SequenceDataBank bank) {
-		status = super.doSearch(input, bank);
-		IndexedDatabankSimilarSearcher ss = new IndexedDatabankSimilarSearcher(input, (IndexedSequenceDataBank) bank);
+	public SearchStatus doSearch(SearchParams sp, SequenceDataBank bank) {
+		status = super.doSearch(sp, bank);
+		IndexedDatabankSimilarSearcher ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
 		ss.start();
 
 		return status;
 	}
 
 	protected class IndexedDatabankSimilarSearcher extends Thread {
-		private final LightweightSymbolList querySequence;
 		private final IndexedSequenceDataBank databank;
+		private final SearchParams sp;
 
 		/**
 		 * Constructor for the inner class that construct a searcher to find sequences that are similar with the sequence into databank.
 		 * 
-		 * @param querySequence
+		 * @param sp
 		 * @param databank
 		 * @param status
 		 */
-		public IndexedDatabankSimilarSearcher(LightweightSymbolList querySequence, IndexedSequenceDataBank databank) {
-			this.querySequence = querySequence;
+		public IndexedDatabankSimilarSearcher(SearchParams sp, IndexedSequenceDataBank databank) {
+			this.sp = sp;
 			this.databank = databank;
 		}
 
 		@Override
 		public void run() {
+			SymbolList querySequence = sp.getQuery();
+			
 			status.setActualStep(SearchStep.INITIALIZED);
 			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
 			// logger.setLevel(Level.ERROR);
@@ -79,7 +79,7 @@ public class DNASearcher extends AbstractSearcher {
 
 			BitSet subSequencesSearched = new BitSet(65536);
 
-			logger.info("Begining the search of sequence with " + querySequence.length() + "bases " + querySequence.getString());
+			logger.info("Begining the search of sequence with " + querySequence.length() + "bases " + querySequence.seqString());
 
 			SymbolList subSequence;
 			short[] iess = new short[querySequence.length() - (8 - 1)];
@@ -148,7 +148,7 @@ public class DNASearcher extends AbstractSearcher {
 			List<MatchArea> matchAreas = retrievedData.getMatchAreas();
 			System.out.println("matches: " + matchAreas.size());
 
-			List<AlignmentResult> alignments = Lists.newLinkedList();
+			List<HSP> alignments = Lists.newLinkedList();
 
 			for (MatchArea matchZone : matchAreas) {
 				int sequenceId = matchZone.getSequenceId();
@@ -182,7 +182,7 @@ public class DNASearcher extends AbstractSearcher {
 						int queryOffset = beginQuerySegment - extensionResult.getQueryLeftExtended();
 						int targetOffset = sequenceAreaBegin - extensionResult.getTargetLeftExtender();
 
-						alignments.add(new AlignmentResult(querySequence.seqString(), smithWaterman, sequenceId, databank.getName(), queryOffset, targetOffset));
+						alignments.add(new HSP(querySequence.seqString(), smithWaterman, sequenceId, databank.getName(), queryOffset, targetOffset));
 
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -194,7 +194,7 @@ public class DNASearcher extends AbstractSearcher {
 
 			status.setActualStep(SearchStep.SELECTING);
 
-			Collections.sort(alignments, AlignmentResult.getScoreComparetor());
+			Collections.sort(alignments, HSP.getScoreComparetor());
 
 			status.setResults(alignments);
 			status.setActualStep(SearchStep.FINISHED);
@@ -242,7 +242,7 @@ public class DNASearcher extends AbstractSearcher {
 		}
 	}
 
-	private ExtensionResult doExtension(LightweightSymbolList querySequence, int beginQuerySegment, int endQuerySegment, LightweightSymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
+	private ExtensionResult doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;

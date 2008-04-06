@@ -19,9 +19,9 @@ import bio.pih.io.DuplicateDatabankException;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.MultipleSequencesFoundException;
 import bio.pih.io.SequenceInformation;
-import bio.pih.search.AlignmentResult;
-import bio.pih.search.SearchStatus;
-import bio.pih.search.SearcherFactory;
+import bio.pih.search.SearchManager;
+import bio.pih.search.SearchParams;
+import bio.pih.search.results.HSP;
 import bio.pih.seq.LightweightSymbolList;
 
 public class SOIS {
@@ -39,27 +39,29 @@ public class SOIS {
 		BasicConfigurator.configure();
 		
 		IndexedDNASequenceDataBank frogDb = new IndexedDNASequenceDataBank("Frog", new File("frog.rna.fna"), false);
-		IndexedDNASequenceDataBank cowDb = new IndexedDNASequenceDataBank("Cow", new File("cow.rna.fna"), false);
+		//IndexedDNASequenceDataBank cowDb = new IndexedDNASequenceDataBank("Cow", new File("cow.rna.fna"), false);
 		
 		DatabankCollection<IndexedDNASequenceDataBank> collection = new DatabankCollection<IndexedDNASequenceDataBank>("RefSeq", DNATools.getDNA(), new File("files/fasta"));
-		collection.addDatabank(cowDb);
+		//collection.addDatabank(cowDb);
 		collection.addDatabank(frogDb);
 		
 		collection.loadInformations();
 		
 		//collection.encodeSequences();
-
-
+		
 		String seq =   "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGTTTTTTTTTTTTTTTTTTTTTTTTCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
-
-		//frogDb.encodeSequences();
-		SearchStatus searchStatus = SearcherFactory.getSearcher(collection).doSearch(sequence, collection);
-		while (!searchStatus.isDone()) {
-			Thread.yield();
-		}
 		
-		for (AlignmentResult alignment : searchStatus.getResults()) {
+		SearchManager sm = new SearchManager();
+		sm.addDatabank(collection);
+		SearchParams sp = new SearchParams(sequence, "RefSeq");
+		long code = sm.doSearch(sp);
+		
+		while (!sm.checkSearch(code)) {
+			Thread.yield();
+		}	
+		
+		for (HSP alignment : sm.getResult(code)) {
 			GenoogleSmithWaterman smithWaterman = alignment.getAlignment();
 			String databankName = alignment.getDatabankName();
 			int queryOffset = alignment.getQueryOffset();

@@ -5,28 +5,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.biojava.bio.symbol.SymbolList;
+
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.seq.LightweightSymbolList;
+import bio.pih.search.results.HSP;
 
 import com.google.common.collect.Lists;
 
 public class DNACollectionSearcher extends AbstractSearcher {
 
-	// get the searchers individually
-	// do the searchers
-	// filter
-	// merge
-	// return
-
 	protected List<SearchStatus> innerDataBanksStatus = null;
 
 	@Override
-	public SearchStatus doSearch(LightweightSymbolList input, SequenceDataBank bank) {
-		SearchStatus status = super.doSearch(input, bank);
+	public SearchStatus doSearch(SearchParams sp, SequenceDataBank bank) {
+		SearchStatus status = super.doSearch(sp, bank);
 		
-		SimilarSearcherDelegate ss = new SimilarSearcherDelegate(input, (DatabankCollection<SequenceDataBank>) bank);
+		SimilarSearcherDelegate ss = new SimilarSearcherDelegate(sp, (DatabankCollection<SequenceDataBank>) bank);
 		ss.start();
 		
 		return status;
@@ -34,12 +30,12 @@ public class DNACollectionSearcher extends AbstractSearcher {
 
 	private class SimilarSearcherDelegate extends Thread {
 
-		private final LightweightSymbolList querySequence;
-		private final DatabankCollection<SequenceDataBank> collection;
+		private final SearchParams sp;
+		private final DatabankCollection<SequenceDataBank> databankCollection;
 
-		public SimilarSearcherDelegate(LightweightSymbolList querySequence, DatabankCollection<SequenceDataBank> collection) {
-			this.querySequence = querySequence;
-			this.collection = collection;
+		public SimilarSearcherDelegate(SearchParams sp, DatabankCollection<SequenceDataBank> databankCollection) {
+			this.sp = sp;
+			this.databankCollection = databankCollection;
 		}
 
 		@Override
@@ -47,14 +43,14 @@ public class DNACollectionSearcher extends AbstractSearcher {
 			status.setActualStep(SearchStep.SEARCHING_INNER);
 			innerDataBanksStatus = Lists.newLinkedList();
 			
-			Iterator<SequenceDataBank> it = collection.databanksIterator();
+			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
 				Searcher searcher = SearcherFactory.getSearcher(innerBank);
-				innerDataBanksStatus.add(searcher.doSearch(querySequence, innerBank));
+				innerDataBanksStatus.add(searcher.doSearch(sp, innerBank));
 			}
 
-			List<AlignmentResult> allResults = Lists.newLinkedList();
+			List<HSP> allResults = Lists.newLinkedList();
 			while (innerDataBanksStatus.size() > 0) {
 				ListIterator<SearchStatus> listIterator = innerDataBanksStatus.listIterator();
 				while (listIterator.hasNext()) {
@@ -69,7 +65,7 @@ public class DNACollectionSearcher extends AbstractSearcher {
 
 			status.setActualStep(SearchStep.SELECTING);
 
-			Collections.sort(allResults, AlignmentResult.getScoreComparetor());
+			Collections.sort(allResults, HSP.getScoreComparetor());
 
 			status.setResults(allResults);
 			status.setActualStep(SearchStep.FINISHED);

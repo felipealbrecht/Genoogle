@@ -15,7 +15,7 @@ import bio.pih.scheduler.communicator.WorkerInfo;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.ResultMessage;
-import bio.pih.search.AlignmentResult;
+import bio.pih.search.results.HSP;
 
 /**
  * The Scheduler!
@@ -153,15 +153,15 @@ public class Scheduler {
 
 		if (searching.isDone()) {
 			int actualPos = 0;
-			AlignmentResult[] alignments;
-			alignments = new AlignmentResult[searching.getTotalAlignments()];
+			HSP[] alignments;
+			alignments = new HSP[searching.getTotalAlignments()];
 			for (ResultMessage partialResults : searching.getPartialResults()) {
 				System.arraycopy(partialResults.getAlignments(), 0, alignments, actualPos, partialResults.getAlignments().length);
 				actualPos += partialResults.getAlignments().length;
 			}
 
-			Arrays.sort(alignments, new Comparator<AlignmentResult>() {
-				public int compare(AlignmentResult o1, AlignmentResult o2) {
+			Arrays.sort(alignments, new Comparator<HSP>() {
+				public int compare(HSP o1, HSP o2) {
 					return o2.getPontuation() - o1.getPontuation();
 				};
 			});
@@ -201,7 +201,7 @@ public class Scheduler {
 	 */
 	public static class Searching {
 		volatile int remainsResult;
-		AlignmentResult[] alignments;
+		HSP[] alignments;
 		ResultMessage[] partialResults;
 		String database;
 		String query;
@@ -270,7 +270,7 @@ public class Scheduler {
 		 * Set the alignments merged and sorted 
 		 * @param alignments
 		 */
-		public void setAlignments(AlignmentResult[] alignments) {			
+		public void setAlignments(HSP[] alignments) {			
 			this.alignments = alignments.clone(); 
 		}
 		
@@ -278,7 +278,7 @@ public class Scheduler {
 		 *  Get the alignments from this search
 		 * @return The alignments merged and sorted
 		 */
-		public AlignmentResult[] getAlignments() {
+		public HSP[] getAlignments() {
 			return alignments.clone();
 		}
 		
