@@ -6,7 +6,8 @@ import java.util.Map;
 
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.search.results.HSP;
+import bio.pih.search.results.Hit;
+import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Maps;
 
@@ -24,10 +25,10 @@ public class SearchManager {
 		databanks.put(databank.getName(), databank);
 	}
 
-	public long doSearch(SearchParams sp) {
+	public long doSearch(SearchParams sp) throws UnknowDataBankException {
 		SequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
-			return -1;
+			throw new UnknowDataBankException(this, sp.getDatabank()); 
 		}
 		SearchStatus search = SearcherFactory.getSearcher(databank).doSearch(sp, databank);
 		searchs.put(search.getCode(), search);
@@ -46,7 +47,7 @@ public class SearchManager {
 		return false;
 	}
 
-	public List<HSP> getResult(long code) {
+	public SearchResults  getResult(long code) {
 		SearchStatus searchStatus = searchs.get(code);
 		if (searchStatus == null) {
 			return null;

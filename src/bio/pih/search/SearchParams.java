@@ -14,8 +14,8 @@ public class SearchParams {
 	private final int minSimilarity;
 	private final int maxDatabankSubSequencesDistance;
 	private final int minMatchAreaLength;
-	private final int maxQuerySequenceSubSequencesDistance;
-	private final int minQuerySequenceSubSequence;
+	private final int maxQuerySubSequencesDistance;
+	private final int minQuerySubSequence;
 
 	public static final int DEFAULT_MIN_SIMILARITY = 4;
 	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = 23;
@@ -46,8 +46,8 @@ public class SearchParams {
 		this.minSimilarity = minSimilarity;
 		this.maxDatabankSubSequencesDistance = maxDatabankSequenceSubSequencesDistance;
 		this.minMatchAreaLength = minMatchAreaLength;
-		this.maxQuerySequenceSubSequencesDistance = maxQuerySequenceSubSequencesDistance;
-		this.minQuerySequenceSubSequence = minQuerySequenceSubSequence;
+		this.maxQuerySubSequencesDistance = maxQuerySequenceSubSequencesDistance;
+		this.minQuerySubSequence = minQuerySequenceSubSequence;
 	}
 
 	/**
@@ -77,10 +77,10 @@ public class SearchParams {
 	}
 
 	public int getMaxQuerySequenceSubSequencesDistance() {
-		return maxQuerySequenceSubSequencesDistance;
+		return maxQuerySubSequencesDistance;
 	}
 
 	public int getMinQuerySequenceSubSequence() {
-		return minQuerySequenceSubSequence;
+		return minQuerySubSequence;
 	}
 }

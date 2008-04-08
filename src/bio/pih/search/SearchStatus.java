@@ -3,7 +3,8 @@ package bio.pih.search;
 import java.util.List;
 
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.results.HSP;
+import bio.pih.search.results.Hit;
+import bio.pih.search.results.SearchResults;
 
 /**
  * Class that hold informations about one search process.
@@ -82,7 +83,7 @@ public class SearchStatus {
 	protected final SequenceDataBank db;
 	protected final SearchParams sp;
 	protected final long code;
-	protected List<HSP> results;
+	protected SearchResults results;
 	protected SearchStep actualStep;
 		
 	/**
@@ -136,11 +137,11 @@ public class SearchStatus {
 		return "Query '"+ sp.getQuery().seqString() + "' against " + db.getName() + " ("+actualStep+")";
 	}
 	
-	public void setResults(List<HSP> results) {
+	public void setResults(SearchResults  results) {
 		this.results = results;
 	}
 	
-	public List<HSP> getResults() {
+	public SearchResults getResults() {
 		return results;
 	}
 	

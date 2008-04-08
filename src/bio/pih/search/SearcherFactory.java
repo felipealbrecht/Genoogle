@@ -13,7 +13,7 @@ public class SearcherFactory {
 		}
 		
 		if (databank instanceof DatabankCollection) {
-			return new DNACollectionSearcher(); 
+			return new CollectionSearcher(); 
 		}
 		
 		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName() + " not implemented yet. :-( ");		

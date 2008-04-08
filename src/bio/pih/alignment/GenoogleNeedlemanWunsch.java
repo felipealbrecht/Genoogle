@@ -400,6 +400,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	double score = Double.NaN;
 	String[] align = new String[] { "", "" };
 	String path = "";
+	int identitySize;
 	long time;
 
 	/**
@@ -474,9 +475,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 								// Match/Replace
 							} else if ((Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) && !(gap_extend[0] || gap_extend[1])) {
-								if (query.symbolAt(i) == subject.symbolAt(j))
+								if (query.symbolAt(i) == subject.symbolAt(j)) {
 									path = '|' + path;
-								else
+									identitySize++;
+								} else
 									path = ' ' + path;
 								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
 								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
@@ -624,6 +626,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	public double getScore() {
 		return score;
 	}	
+	
+	public int getIdentitySize() {
+		return identitySize;
+	}
 
 	/**
 	 * This method computes the scores for the substution of the i-th symbol of query by the j-th symbol of subject.
