@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
@@ -28,7 +27,6 @@ import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
-import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.IntArray;
 import bio.pih.util.LongArray;
 import bio.pih.util.SymbolListWindowIterator;
@@ -48,12 +46,17 @@ import com.google.common.collect.Lists;
  */
 public class DNASearcher extends AbstractSearcher {
 
+	IndexedDatabankSimilarSearcher ss;
+	
+	public DNASearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
+		super(sp, bank, parent);
+		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
+		ss.setName("DNASearcher on " + bank.getName());		
+	}
+	
 	@Override
-	public SearchStatus doSearch(SearchParams sp, SequenceDataBank bank) {
-		status = super.doSearch(sp, bank);
-		IndexedDatabankSimilarSearcher ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
+	public SearchStatus doSearch() {
 		ss.start();
-
 		return status;
 	}
 
@@ -100,13 +103,13 @@ public class DNASearcher extends AbstractSearcher {
 			}
 
 			LookupTable lookup = new LookupTable();
-			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 40, lookup);
+			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 50, lookup, sp);
 
 			int eco = 0;
 
 			int[] similarSubSequences;
 			int[] indexPositions;
-			int threshould = 8;
+			int threshould = sp.getMinSimilarity();
 
 			long init = System.currentTimeMillis();
 			status.setActualStep(SearchStep.INDEX_SEARCH);
@@ -162,14 +165,15 @@ public class DNASearcher extends AbstractSearcher {
 				SymbolList hitSequence = null;
 				int hspNum = 0;
 
+				SequenceInformation sequenceInformation = null;
+				
 				for (MatchArea matchZone : matchAreas) {
+					int sequenceId = matchZone.getSequenceId();
 					if (hit == null) {
-						int sequenceId = matchZone.getSequenceId();
-						SequenceInformation sequenceInformation;
 						try {
 							sequenceInformation = databank.getSequenceInformationFromId(sequenceId);
 							hitSequence = DNASequenceEncoderToShort.getDefaultEncoder().decodeShortArrayToSymbolList(sequenceInformation.getEncodedSequence());
-							hit = new Hit(hitNum, sequenceInformation.getName(), sequenceInformation.getAccession(), sequenceInformation.getDescription(), hitSequence.length());
+							hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation.getAccession(), sequenceInformation.getDescription(), hitSequence.length(), databank.getName());
 						} catch (IllegalSymbolException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -190,22 +194,28 @@ public class DNASearcher extends AbstractSearcher {
 					IntArray querySubSequences = matchZone.getQuerySubSequences();
 
 					status.setActualStep(SearchStep.SEEDS);
-					for (int[] querySegments : connectQuerySubSequences(querySubSequences, lookup)) {
+					
+					for (int[] querySegments : connectQuerySubSequences(querySubSequences, lookup, sp)) {
 
 						int beginQuerySegment = querySegments[0];
 						int lastPosQuerySegment = querySegments[1];
 						int querySegmentLength = (lastPosQuerySegment - beginQuerySegment) + 8;
 
-						if (querySegmentLength < 24) { // if query segments is too short
+
+						status.setActualStep(SearchStep.ALIGNMENT);
+						
+						if (querySegmentLength <= sp.getMinQuerySequenceSubSequence()) {
 							continue;
 						}
 
-						status.setActualStep(SearchStep.ALIGNMENT);
-
-						ExtensionResult extensionResult = doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, 5);
+						ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, sp.getSequencesExtendDropoff());
+						
+						if (extensionResult.getQuerySequenceExtended().length() <= sp.getMinQuerySequenceSubSequence() || extensionResult.getTargetSequenceExtended().length() <= sp.getMinMatchAreaLength()) {
+							continue;
+						}
 
 						SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
-						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 3, 3, 2, substitutionMatrix);
+						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2, substitutionMatrix);
 						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(), extensionResult.getTargetSequenceExtended());
 
 						int queryOffset = beginQuerySegment - extensionResult.getQueryLeftExtended();
@@ -213,172 +223,98 @@ public class DNASearcher extends AbstractSearcher {
 
 						hit.addHSP(new HSP(hspNum++, smithWaterman, queryOffset, targetOffset));
 					}
+				}
+				if (hit.getHSPs().size() > 0) {
 					sr.addHit(hit);
 				}
-
 			}
 
 			status.setActualStep(SearchStep.SELECTING);
 
-			// Collections.sort(hits, HSP.getScoreComparetor());
+			Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
 			status.setResults(sr);
 			status.setActualStep(SearchStep.FINISHED);
 		}
 	}
 
-	private static class ExtensionResult {
-		SymbolList querySequenceExtended;
-		SymbolList targetSequenceExtended;
-
-		int queryLeftExtended, queryRightExtended, targetLeftExtended, targetRightExtended;
-
-		public ExtensionResult(SymbolList querySequenceExtended, SymbolList targetSequenceExtended, int queryLeftExtended, int queryRightExtended, int targetLeftExtended, int targetRightExtended) {
-			this.querySequenceExtended = querySequenceExtended;
-			this.targetSequenceExtended = targetSequenceExtended;
-
-			this.queryLeftExtended = queryLeftExtended;
-			this.targetLeftExtended = targetLeftExtended;
-			this.queryRightExtended = queryRightExtended;
-			this.targetRightExtended = targetRightExtended;
-		}
-
-		public SymbolList getQuerySequenceExtended() {
-			return querySequenceExtended;
-		}
-
-		public SymbolList getTargetSequenceExtended() {
-			return targetSequenceExtended;
-		}
-
-		public int getQueryLeftExtended() {
-			return queryLeftExtended;
-		}
-
-		public int getTargetLeftExtender() {
-			return targetLeftExtended;
-		}
-
-		public int getQueryRightExtended() {
-			return queryRightExtended;
-		}
-
-		public int getTargetRightExtender() {
-			return targetRightExtended;
-		}
-	}
-
-	private ExtensionResult doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
-		int score = 0;
-		int bestScore = 0;
-		int bestQueryPos, bestDatabankPos;
-		int queryPos, databankPos;
-
-		// Atention: biojava sequence symbols is from 1 to sequenceLength. It means that the first position is one and not zero!
-
-		// right extend
-		bestQueryPos = endQuerySegment;
-		bestDatabankPos = endDatabankSequenceSegment;
-
-		queryPos = endQuerySegment;
-		databankPos = endDatabankSequenceSegment;
-
-		while (queryPos < querySequence.length() && databankPos < databankSequence.length()) {
-			Symbol symbolAtQuery = querySequence.symbolAt(queryPos);
-			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos);
-			if (symbolAtQuery == symbolAtDatabank) {
-				score++;
-				if (score > bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
-				}
-			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
-			}
-			queryPos++;
-			databankPos++;
-		}
-
-		int rightBestQueryPos = bestQueryPos;
-		int rightBestDatabankPos = bestDatabankPos;
-
-		// left extend
-		score = 0;
-		bestScore = 0;
-
-		bestQueryPos = beginQuerySegment;
-		bestDatabankPos = beginDatabankSequenceSegment;
-
-		queryPos = beginQuerySegment;
-		databankPos = beginDatabankSequenceSegment;
-
-		while (queryPos > 0 && databankPos > 0) {
-			Symbol symbolAtQuery = querySequence.symbolAt(queryPos + 1);
-			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos + 1);
-			if (symbolAtQuery == symbolAtDatabank) {
-				score++;
-				if (score > bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
-				}
-			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
-			}
-			queryPos--;
-			databankPos--;
-		}
-
-		SymbolList queryExtended = querySequence.subList(bestQueryPos + 1, rightBestQueryPos);
-		SymbolList targetExtended = databankSequence.subList(bestDatabankPos + 1, rightBestDatabankPos);
-
-		int queryLeftExtended = beginQuerySegment - bestQueryPos;
-		int queryRightExtend = rightBestQueryPos - endQuerySegment;
-		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
-		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
-
-		return new ExtensionResult(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended);
-	}
-
-	private List<int[]> connectQuerySubSequences(IntArray querySubSequences, LookupTable lookup) {
+	private List<int[]> connectQuerySubSequences(IntArray querySubSequences, LookupTable lookup, SearchParams sp) {
 		List<int[]> sequenceSegments = Lists.newLinkedList();
-		boolean merged;
-		int maxPos = -1;
+		List<int[]> areas = Lists.newLinkedList();
 
-		for (int subSequence : querySubSequences.getArray()) {
-			for (int queryPos : lookup.getPos(subSequence)) {
-				merged = false;
-				if (queryPos > maxPos) {
-					for (int[] segment : sequenceSegments) {
-						if ((queryPos - segment[1] != 0) && (queryPos - segment[1] <= 16)) {
-							segment[1] = queryPos;
+		// para cada subSequence, comparar todas as posicoes que ela ocorre com as da sub-sequencia seguinte e criar pares.
+		int[] subSequences = querySubSequences.getArray();
+		if (subSequences.length >= 2) {
+			for (int i : lookup.getPos(subSequences[0])) {
+				int[] area = null;
+
+				boolean isIn = false;
+				
+				// The initial position is between existent areas?
+				for (int[] eArea : areas) {
+					if (i >= eArea[0] && i <= eArea[1]) {
+						isIn = true;
+						break;
+					}
+				}
+
+				if (!isIn) {
+				for (int j : lookup.getPos(subSequences[1])) {
+					boolean merged = false;
+
+					for (int[] eArea : areas) {
+						int offset = j - eArea[1];
+						if (offset != 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
+							eArea[1] = j;
 							merged = true;
-							maxPos = queryPos;
 						}
 					}
-					if (merged == false) {
-						sequenceSegments.add(new int[] { queryPos, queryPos });
-						maxPos = queryPos;
+
+					if (!merged) {
+						int offset = j - i;
+						if (offset > 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
+							if (area == null) {
+								area = new int[] { i, j };
+								areas.add(area);
+							}
+						}
 					}
+				}
+				}
+			}
+
+			for (int pos = 2; pos < subSequences.length; pos++) {
+				List<int[]> newAreas = Lists.newLinkedList();
+				ListIterator<int[]> areasIterator = areas.listIterator();
+
+				while (areasIterator.hasNext()) {
+					int[] area = areasIterator.next();
+
+					boolean added = false;
+					int lastPos = area[1];
+					for (int j : lookup.getPos(subSequences[pos])) {
+						if (j > lastPos && j - lastPos <= sp.getMaxQuerySequenceSubSequencesDistance() && j - lastPos != 0) {
+							lastPos = j;
+							added = true;
+						}
+					}
+					if (added) {
+						newAreas.add(new int[] { area[0], lastPos });
+					}
+				}
+				if (newAreas.size() != 0) {
+					areas = newAreas;					
 				}
 			}
 		}
-
-		assert sequenceSegments.size() > 0;
-		return sequenceSegments;
+		
+		return areas;
 	}
 
 	private static long encodeSubSequenceAndPos(int subSequence, int pos) {
 		long encodedPosAndSubSequence = ((long) pos << 32) | (subSequence & 0xFFFF);
-		assert decodePosFromEncoded(encodedPosAndSubSequence) == pos;
-		assert decodeSubSequenceFromEncoded(encodedPosAndSubSequence) == subSequence;
+		//assert decodePosFromEncoded(encodedPosAndSubSequence) == pos;
+		//assert decodeSubSequenceFromEncoded(encodedPosAndSubSequence) == subSequence;
 		return encodedPosAndSubSequence;
 	}
 
@@ -393,15 +329,16 @@ public class DNASearcher extends AbstractSearcher {
 	private static class IndexRetrievedData {
 		LongArray[] sequencesResultArrays;
 		private final LookupTable lookup;
+		private final SearchParams sp;
 
 		/**
 		 * @param size
 		 *            the qtd of lists
 		 * @param initialSize
 		 */
-		@SuppressWarnings("unchecked")
-		public IndexRetrievedData(int size, int initialSize, LookupTable lookup) {
+		public IndexRetrievedData(int size, int initialSize, LookupTable lookup, SearchParams sp) {
 			this.lookup = lookup;
+			this.sp = sp;
 			sequencesResultArrays = new LongArray[size];
 			for (int i = 0; i < size; i++) {
 				sequencesResultArrays[i] = new LongArray(initialSize);
@@ -434,8 +371,6 @@ public class DNASearcher extends AbstractSearcher {
 		 * @return the match areas of each sequence.
 		 */
 		public List<List<MatchArea>> getMatchAreas() {
-			int distanceThreshould = 16;
-			int lengthThreadshould = 24;
 			List<List<MatchArea>> matchAreas = Lists.newLinkedList();
 			long[] sequenceMatchs;
 			for (int sequenceNumber = 0; sequenceNumber < sequencesResultArrays.length; sequenceNumber++) {
@@ -450,10 +385,10 @@ public class DNASearcher extends AbstractSearcher {
 
 					// The first position
 					int previousMatch = decodePosFromEncoded(sequenceMatchs[0]);
-					int beginArea = decodePosFromEncoded(sequenceMatchs[0]);
-					int match = decodePosFromEncoded(sequenceMatchs[0]);
+					int beginArea = previousMatch;
+					int match = previousMatch;
 					int previousQuerySubSequence = decodeSubSequenceFromEncoded(sequenceMatchs[0]);
-					int querySubSequence = decodeSubSequenceFromEncoded(sequenceMatchs[0]);
+					int querySubSequence = previousQuerySubSequence;
 
 					querySubSequences.add(querySubSequence);
 
@@ -464,10 +399,12 @@ public class DNASearcher extends AbstractSearcher {
 						previousQuerySubSequence = querySubSequence;
 						querySubSequence = decodeSubSequenceFromEncoded(sequenceMatchs[i]);
 
-						// End of area. the if it's continuous in the databank sequence and too in query sequence
-						if ((match - previousMatch > distanceThreshould) || !checkContinuousInSequence(previousQuerySubSequence, querySubSequence, distanceThreshould, lookup)) {
+						assert match > previousMatch;
+
+						// End of area. the if it's continuous in the data bank sequence and too in query sequence
+						if ((match - previousMatch >= sp.getMaxDatabankSequenceSubSequencesDistance()) || !checkContinuousInSequence(previousQuerySubSequence, querySubSequence, sp.getMaxQuerySequenceSubSequencesDistance(), lookup)) {
 							// Add? at least 3 subsequences
-							if ((previousMatch - beginArea >= lengthThreadshould) && (querySubSequences.length() >= 3)) {
+							if ((previousMatch - beginArea >= sp.getMinMatchAreaLength()) && (querySubSequences.length() >= sp.getMinMatchAreaLength() / 8)) {
 								if (sequenceMatchAreas == null) {
 									sequenceMatchAreas = Lists.newLinkedList();
 								}
@@ -480,7 +417,7 @@ public class DNASearcher extends AbstractSearcher {
 						querySubSequences.add(querySubSequence);
 					}
 
-					if ((match - previousMatch < distanceThreshould) && checkContinuousInSequence(previousQuerySubSequence, querySubSequence, distanceThreshould, lookup) && (match - beginArea >= lengthThreadshould)) {
+					if ((match - previousMatch <= sp.getMaxDatabankSequenceSubSequencesDistance()) && checkContinuousInSequence(previousQuerySubSequence, querySubSequence, sp.getMaxQuerySequenceSubSequencesDistance(), lookup) && (match - beginArea >= sp.getMinMatchAreaLength())) {
 						if (sequenceMatchAreas == null) {
 							sequenceMatchAreas = Lists.newLinkedList();
 						}
@@ -497,44 +434,13 @@ public class DNASearcher extends AbstractSearcher {
 		boolean checkContinuousInSequence(int previousQuerySubSequence, int querySubSequence, int threshould, LookupTable lookup) {
 			for (int pPos : lookup.getPos(previousQuerySubSequence)) {
 				for (int pos : lookup.getPos(querySubSequence)) {
-					int offset = Math.abs(pos - pPos);
-					if ((offset != 0) && (offset <= threshould)) {
+					int offset = pos - pPos;
+					if ((offset > 0) && (offset <= threshould)) {
 						return true;
 					}
 				}
 			}
 			return false;
-		}
-	}
-
-	private static class LookupTable {
-		IntArray[] positions;
-		int[] EMPTY = new int[0];
-
-		public LookupTable() {
-			positions = new IntArray[(int) Math.pow(4, 8)];
-		}
-
-		public void addPosition(int subSequence, int pos) {
-			if (positions[subSequence] == null) {
-				positions[subSequence] = new IntArray(20);
-			}
-			positions[subSequence].add(pos);
-		}
-
-		public int[] getPos(int subSequence) {
-			if (positions[subSequence] != null) {
-				return positions[subSequence].getArray();
-			}
-			return EMPTY;
-		}
-
-		public void end() {
-			for (IntArray intArray : positions) {
-				if (intArray != null) {
-					intArray.sort();
-				}
-			}
 		}
 	}
 

@@ -1,12 +1,10 @@
 package bio.pih.search;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Maps;
@@ -30,10 +28,11 @@ public class SearchManager {
 		if (databank == null) {
 			throw new UnknowDataBankException(this, sp.getDatabank()); 
 		}
-		SearchStatus search = SearcherFactory.getSearcher(databank).doSearch(sp, databank);
-		searchs.put(search.getCode(), search);
+		SearchStatus search = SearcherFactory.getSearcher(sp, databank, null).doSearch();
+		long id = getNextSearchId();
+		searchs.put(id, search);
 		
-		return search.getCode();
+		return id;
 	}
 
 	public boolean checkSearch(long code) {
@@ -58,6 +57,13 @@ public class SearchManager {
 
 	public Collection<SequenceDataBank> getDatabankNames() {
 		return databanks.values();
+	}
+	
+	private static long searchId = 0; 
+	private  synchronized long getNextSearchId() {
+		long id = searchId;
+		searchId++;
+		return id;
 	}
 
 }

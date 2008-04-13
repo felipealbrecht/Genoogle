@@ -77,7 +77,7 @@ public class IntArray {
 	 */
 	public int[] getArray() {
 		// Special case: no data was added from begin or after the last getArray()
-		if ((actualBockPos == 0) && (getBlocksArray().size() == 0)) {
+		if ((actualBockPos == 0) && (blockArrays == null || getBlocksArray().size() == 0)) {
 			if (finalArray == null) {
 				return EMPTY_ARRAY;
 			}

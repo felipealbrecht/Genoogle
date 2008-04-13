@@ -271,9 +271,10 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 								// Match/Replace
 							} else if ((Math.abs(scoreMatrix[i][j] - (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001) && !(gap_extend[0] || gap_extend[1])) {
-								if (query.symbolAt(i) == subject.symbolAt(j))
+								if (query.symbolAt(i) == subject.symbolAt(j)) {
 									path = '|' + path;
-								else
+									identitySize++;
+								} else
 									path = ' ' + path;
 
 								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];

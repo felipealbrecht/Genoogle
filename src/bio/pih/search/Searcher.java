@@ -1,6 +1,5 @@
 package bio.pih.search;
 
-import bio.pih.io.SequenceDataBank;
 
 /**
  * @author albrecht
@@ -12,14 +11,23 @@ import bio.pih.io.SequenceDataBank;
  */
 public interface Searcher {
 	
+		
 	/**
 	 * Search similar sequences against the bank.
 	 * @param sp 
-	 * @param query 
 	 * @param databank 
+         * @param parent
 	 * @return an unique identification of this search process.
 	 */
-	SearchStatus doSearch(SearchParams sp, SequenceDataBank databank);
+	SearchStatus doSearch();
+	
+	/**
+	 * Alert this search that its soon was finished.
+	 *  
+	 * @param searchStatus
+	 * @return <code>true</code> if the search was found and marked as finished.
+	 */
+	boolean setFinished(SearchStatus searchStatus);
 	
 	/**
 	 * @return {@link SearchStatus} of this Search

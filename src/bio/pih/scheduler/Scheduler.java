@@ -138,7 +138,8 @@ public class Scheduler {
 		getSearches().put(totalSearchs, searching);
 		waitingList.add(searching);
 
-		communicator.sendMessage(new RequestMessage(database, query, totalSearchs));
+		// TODO update to use search params.
+		//communicator.sendMessage(new RequestMessage(database, query, totalSearchs));
 
 		return searching;
 	}
@@ -160,11 +161,7 @@ public class Scheduler {
 				actualPos += partialResults.getAlignments().length;
 			}
 
-			Arrays.sort(alignments, new Comparator<HSP>() {
-				public int compare(HSP o1, HSP o2) {
-					return o2.getPontuation() - o1.getPontuation();
-				};
-			});
+			Arrays.sort(alignments, HSP.COMPARATOR);
 
 			searching.setAlignments(alignments);
 			getWaitingList().remove(searching);

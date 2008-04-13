@@ -1,5 +1,7 @@
 package bio.pih.search;
 
+import java.io.Serializable;
+
 import org.biojava.bio.symbol.SymbolList;
 
 /**
@@ -7,7 +9,9 @@ import org.biojava.bio.symbol.SymbolList;
  * 
  * @author albrecht
  */
-public class SearchParams {
+public class SearchParams implements Serializable {
+
+	private static final long serialVersionUID = 6773155953856917786L;
 
 	private final SymbolList query;
 	private final String databankName;
@@ -16,19 +20,22 @@ public class SearchParams {
 	private final int minMatchAreaLength;
 	private final int maxQuerySubSequencesDistance;
 	private final int minQuerySubSequence;
+	private final int sequencesExtendDropoff;
+	private final long code;
 
-	public static final int DEFAULT_MIN_SIMILARITY = 4;
-	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = 23;
-	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = 24;
-	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = 23;
-	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = 24;
+	public static final int DEFAULT_MIN_SIMILARITY = 8;
+	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = 9; // 23
+	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = 24; // 24
+	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = 8; // 23
+	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = 24; // 16
+	public static final int SEQUENCES_EXTEND_DROPOFF = 5;
 
 	/**
 	 * @param query
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE);
+		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE, SEQUENCES_EXTEND_DROPOFF, -1);
 	}
 
 	/**
@@ -40,7 +47,7 @@ public class SearchParams {
 	 * @param maxQuerySequenceSubSequencesDistance
 	 * @param minQuerySequenceSubSequence
 	 */
-	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence) {
+	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence, int sequencesExtendDropoff, long code) {
 		this.query = query;
 		this.databankName = databankName;
 		this.minSimilarity = minSimilarity;
@@ -48,6 +55,8 @@ public class SearchParams {
 		this.minMatchAreaLength = minMatchAreaLength;
 		this.maxQuerySubSequencesDistance = maxQuerySequenceSubSequencesDistance;
 		this.minQuerySubSequence = minQuerySequenceSubSequence;
+		this.sequencesExtendDropoff = sequencesExtendDropoff;
+		this.code = code;
 	}
 
 	/**
@@ -83,4 +92,13 @@ public class SearchParams {
 	public int getMinQuerySequenceSubSequence() {
 		return minQuerySubSequence;
 	}
+
+	public int getSequencesExtendDropoff() {
+		return sequencesExtendDropoff;
+	}
+
+	public long getCode() {
+		return code;
+	}
+
 }

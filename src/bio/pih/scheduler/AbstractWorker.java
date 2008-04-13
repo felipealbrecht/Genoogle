@@ -113,9 +113,11 @@ public abstract class AbstractWorker {
 	 * This is a asynchronous call. When the search finish, the result will be sent to the scheduler.
 	 * 
 	 * @param params
+	 * 
+	 * TODO: move code into a search manager
 	 */
-	public void requestSearch(SearchParams params) {
-		SearchStatus si = new SearchStatus(params.getDatabase(), params.getQuery(), params.getCode());
+	public void requestSearch(SearchParams sp) {
+		SearchStatus si = null; // new SearchStatus(sp. );
 		if (canSearchOrQueue(si) != null) {
 			doSearch(si);
 		} else {
@@ -145,7 +147,7 @@ public abstract class AbstractWorker {
 	}
 
 	private SearchParams createSearchParams(RequestMessage m) {
-		return new SearchParams(m.getDatabase(), m.getQuery(), m.getCode());
+		return m.getSearchParams();
 	}
 
 	/**

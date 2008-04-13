@@ -554,8 +554,10 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 								// Match/Replace
 							} else if (Math.abs(costMatrix[i][j] - (costMatrix[i - 1][j - 1] - matchReplace(query, subject, i, j))) < 0.0001) {
 
-								if (query.symbolAt(i) == subject.symbolAt(j))
+								if (query.symbolAt(i) == subject.symbolAt(j)) {
+									identitySize++;
 									path = '|' + path;
+								}
 								else
 									path = ' ' + path;
 								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];

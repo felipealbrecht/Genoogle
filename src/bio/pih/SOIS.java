@@ -1,7 +1,9 @@
 package bio.pih;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.BasicConfigurator;
@@ -42,16 +44,26 @@ public class SOIS {
 
 		DatabankCollection<IndexedDNASequenceDataBank> collection = new DatabankCollection<IndexedDNASequenceDataBank>("RefSeq", DNATools.getDNA(), new File("files/fasta"));
 		collection.addDatabank(cowDb);
-//		collection.addDatabank(frogDb);
+		//collection.addDatabank(frogDb);
 
 		collection.loadInformations();
 
 		String seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGTTTTTTTTTTTTTTTTTTTTTTTTCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
+//		String seq = "ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA";
+//		
+//		char[] c = new char[seq.length()];
+//		for (int i = seq.length()-1; i >= 0; i--) {
+//			c[i] = seq.charAt(seq.length() - 1 - i);
+//		}
+//		seq = new String(c);
+//		System.out.println(seq);
+		
 		LightweightSymbolList sequence = (LightweightSymbolList) LightweightSymbolList.createDNA(seq);
 
 		SearchManager sm = new SearchManager();
 		sm.addDatabank(collection);
 		SearchParams sp = new SearchParams(sequence, "RefSeq");
+		long beginTime = System.currentTimeMillis(); 
 		long code = sm.doSearch(sp);
 
 		while (!sm.checkSearch(code)) {
@@ -59,10 +71,11 @@ public class SOIS {
 		}
 
 		Document document = Output.genoogleOutputToXML(sm.getResult(code));
+		System.out.println("total time: " + (System.currentTimeMillis() - beginTime));
 
 		OutputFormat outformat = OutputFormat.createPrettyPrint();
 		outformat.setEncoding("UTF-8");
-		XMLWriter writer = new XMLWriter(System.out, outformat);
+		XMLWriter writer = new XMLWriter(new FileOutputStream(new File("output.xml")), outformat);
 		writer.write(document);
 		writer.flush();
 

@@ -14,25 +14,27 @@ import bio.pih.search.SearchStatus.SearchStep;
 public abstract class AbstractSearcher implements Searcher {
 
 	protected SearchStatus status = null;
-	protected volatile long searchId;
+	protected Searcher parent;
+	protected Thread ss;
 	
-	public SearchStatus doSearch(SearchParams sp, SequenceDataBank bank) {
-		
-		searchId = getNextSearchId();
-		status= new SearchStatus(sp, bank, searchId);
+	public AbstractSearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
+		status = new SearchStatus(sp, bank, parent);
 		status.setActualStep(SearchStep.NOT_INITIALIZED);
-
-		return status;
+		
+	}
+	
+	public SearchStatus doSearch() {
+		ss.start();		
+		return status;		
 	}
 	
 	public SearchStatus getStatus() {
 		return status;
 	}
 	
-	protected synchronized long getNextSearchId() {
-		long id = searchId;
-		searchId++;
-		return id;
+	@Override
+	public boolean setFinished(SearchStatus searchStatus) {
+		throw new UnsupportedOperationException("This Searcher do not support sons.");
 	}
 
 }

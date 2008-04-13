@@ -83,13 +83,13 @@ public class MockWorker extends AbstractWorker {
 				Distribution dist = new UniformDistribution(DNATools.getDNA());
 				long seqs = Math.round(Math.random() * 10) + 1; // 1 to 11
 				while (seqs-- > 0) {
-					results.add(new HSP(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs * 2));
+					//results.add(new HSP(DistributionTools.generateSequence("random seq " + seqs, dist, 700), (int) seqs * 2));
 				}
 
 				System.out.println("Finished " + searchInformation + " in " + getIdentifier());
-				ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(), results.toArray(new HSP[results.size()]));
+				//ResultSender resultSender = new ResultSender(searchInformation.getDb(), searchInformation.getQuery(), searchInformation.getCode(), results.toArray(new HSP[results.size()]));
 
-				new Thread(resultSender).start();
+				//new Thread(resultSender).start();
 
 			} catch (InterruptedException e) {
 				e.printStackTrace();

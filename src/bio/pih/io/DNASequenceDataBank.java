@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -114,13 +115,21 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	public synchronized SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
-
-		FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
 		
-		MappedByteBuffer mappedIndexFile = channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
+		//FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
+		MappedByteBuffer mappedIndexFile = getMappedIndexFile();//channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		mappedIndexFile.position(position);
 
 		return SequenceInformation.informationFromByteBuffer(mappedIndexFile, mappedIndexFile.getInt());
+	}
+	
+	WeakReference<MappedByteBuffer> mappedIndexFile = new WeakReference<MappedByteBuffer>(null);
+	private MappedByteBuffer getMappedIndexFile() throws IOException {
+		if (mappedIndexFile.get() == null) {
+			FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();			
+			mappedIndexFile = new WeakReference<MappedByteBuffer>(channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length()));
+		}
+		return mappedIndexFile.get();
 	}
 	
 	/**

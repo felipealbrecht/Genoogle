@@ -1,9 +1,6 @@
 package bio.pih.search;
 
-import java.util.List;
-
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
 /**
@@ -82,21 +79,23 @@ public class SearchStatus {
 	protected long timeEnd;
 	protected final SequenceDataBank db;
 	protected final SearchParams sp;
-	protected final long code;
 	protected SearchResults results;
 	protected SearchStep actualStep;
+	private final Searcher parent;
 		
 	/**
+	 * @param searcher 
 	 * @param sp
 	 * @param query 
 	 * @param db
+	 * @param parent 
 	 * @param code
 	 */
-	public SearchStatus(SearchParams sp, SequenceDataBank db, long code) {
+	public SearchStatus(SearchParams sp, SequenceDataBank db, Searcher parent) {
 		this.timeBegin = System.currentTimeMillis();
 		this.sp = sp;
 		this.db = db;
-		this.code = code;
+		this.parent = parent;
 		this.actualStep = SearchStep.NOT_INITIALIZED;
 		this.results = null;
 	}
@@ -106,13 +105,6 @@ public class SearchStatus {
 	 */
 	public SequenceDataBank getDb() {
 		return db;
-	}
-		
-	/**
-	 * @return
-	 */
-	public long getCode() {
-		return code;
 	}
 	
 	/**
@@ -129,6 +121,9 @@ public class SearchStatus {
 		this.actualStep = step;
 		if (step == SearchStep.FINISHED) {
 			this.timeEnd = System.currentTimeMillis();
+			if (parent != null) {				
+				parent.setFinished(this);
+			}
 		}
 	}
 	
@@ -144,13 +139,4 @@ public class SearchStatus {
 	public SearchResults getResults() {
 		return results;
 	}
-	
-	
-	public boolean isDone() {
-		if (this.getActualStep() == SearchStep.FINISHED) {
-			return true;
-		}		
-		return false;
-	}
-	
 }

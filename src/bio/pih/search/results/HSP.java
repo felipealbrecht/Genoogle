@@ -65,7 +65,7 @@ public class HSP {
 	}
 	
 	public String getPathSeq() {
-		return alignment.getTargetAligned();
+		return alignment.getPath();
 	}
 	
 	public GenoogleSmithWaterman getAlignment() {
@@ -85,14 +85,13 @@ public class HSP {
 //   105               <Hsp_midline>|||| ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</Hsp_midline>
 
 
-	public static Comparator<HSP> getScoreComparetor() {
-		return new Comparator<HSP>() {
-			@Override
-			public int compare(HSP o1, HSP o2) {
-				GenoogleSmithWaterman osw1 = o1.getAlignment();
-				GenoogleSmithWaterman osw2 = o2.getAlignment();
-				return Double.compare(osw2.getScore(), osw1.getScore());
-			}
-		};
-	}
+	public static final Comparator<HSP> COMPARATOR = new Comparator<HSP>() {
+		@Override
+		public int compare(HSP o1, HSP o2) {
+			GenoogleSmithWaterman osw1 = o1.getAlignment();
+			GenoogleSmithWaterman osw2 = o2.getAlignment();
+			return Double.compare(osw2.getScore(), osw1.getScore());
+		}
+	};
+	
 }
