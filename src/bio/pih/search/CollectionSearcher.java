@@ -55,6 +55,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		public void run() {
 			status.setActualStep(SearchStep.SEARCHING_INNER);
 			innerDataBanksStatus = Lists.newLinkedList();
+			innerDataBanksStatus = Collections.synchronizedList(innerDataBanksStatus);
 
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {

@@ -19,8 +19,8 @@ public class LongArray {
 	private long[] actualBlock;
 	private int actualBockPos;
 	private int blockSize;
-	
-	private static int defaultInitialSize = 50; 
+
+	private static int defaultInitialSize = 50;
 
 	/**
 	 * Default constructor that uses default size for the blocks.
@@ -28,10 +28,10 @@ public class LongArray {
 	public LongArray() {
 		this(defaultInitialSize);
 	}
-	
+
 	/**
 	 * Constructor that gives the block size.
-	 *  
+	 * 
 	 * @param blockSize
 	 */
 	public LongArray(int blockSize) {
@@ -44,6 +44,7 @@ public class LongArray {
 
 	/**
 	 * Add a new value into the array
+	 * 
 	 * @param value
 	 */
 	public void add(long value) {
@@ -70,8 +71,7 @@ public class LongArray {
 	}
 
 	/**
-	 * Get the data as a long array. 
-	 * It returns the internal array reference, do not a copy, for performance reasons.
+	 * Get the data as a long array. It returns the internal array reference, do not a copy, for performance reasons.
 	 * 
 	 * @return the array, without empty fields.
 	 */
@@ -106,15 +106,15 @@ public class LongArray {
 		}
 
 		System.arraycopy(actualBlock, 0, o, pos, actualBockPos);
-		
+
 		actualBockPos = 0;
 		actualBlock = null;
 		blockArrays = null;
 		finalArray = o;
-		
+
 		return finalArray;
 	}
-	
+
 	/**
 	 * Sort the array
 	 */
@@ -124,7 +124,7 @@ public class LongArray {
 			Arrays.sort(finalArray);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		getArray();
@@ -132,7 +132,22 @@ public class LongArray {
 	}
 
 	/**
+	 * @return the length of the data
+	 */
+	public int length() {
+		return getArray().length;
+	}
+
+	public void reset() {
+		actualBockPos = 0;
+		actualBlock = null;
+		blockArrays = null;
+		finalArray = null;
+	}
+
+	/**
 	 * test
+	 * 
 	 * @param args
 	 */
 	public static void mainX(String[] args) {

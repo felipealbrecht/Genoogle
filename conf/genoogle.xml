@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
+
+  <genoogle:databanks>  
+   <genoogle:databank-collection name="RefSeq" path="files/fasta">
+     <genoogle:databank name="Cow"       path="cow.rna.fna" />
+     <genoogle:databank name="Frog"      path="frog.rna.fna" />
+     <genoogle:databank name="Human"     path="human.rna.fna" />
+     <genoogle:databank name="Mouse"     path="mouse.rna.fna" />
+     <genoogle:databank name="Rat"       path="rat.rna.fna" />
+     <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" />   
+   </genoogle:databank-collection>  
+  </genoogle:databanks>
+  
+</genoogle:conf>

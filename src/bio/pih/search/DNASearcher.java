@@ -37,23 +37,18 @@ import com.google.common.collect.Lists;
 /**
  * Interface witch defines methods for search for similar DNA sequences and checks the status of the searchers.
  * 
- * 
- * 40164
- * 
- * bio.pih.searchDNASearcher
- * 
  * @author albrecht
  */
 public class DNASearcher extends AbstractSearcher {
 
 	IndexedDatabankSimilarSearcher ss;
-	
+
 	public DNASearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
 		super(sp, bank, parent);
 		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
-		ss.setName("DNASearcher on " + bank.getName());		
+		ss.setName("DNASearcher on " + bank.getName());
 	}
-	
+
 	@Override
 	public SearchStatus doSearch() {
 		ss.start();
@@ -105,8 +100,6 @@ public class DNASearcher extends AbstractSearcher {
 			LookupTable lookup = new LookupTable();
 			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), 50, lookup, sp);
 
-			int eco = 0;
-
 			int[] similarSubSequences;
 			int[] indexPositions;
 			int threshould = sp.getMinSimilarity();
@@ -132,8 +125,6 @@ public class DNASearcher extends AbstractSearcher {
 								retrievedData.addSubSequenceInfoIntRepresention(similarSubSequence, subSequenceIndexInfo);
 							}
 							subSequencesSearched.set(similarSubSequence);
-						} else {
-							eco++;
 						}
 					}
 
@@ -150,23 +141,22 @@ public class DNASearcher extends AbstractSearcher {
 
 			lookup.end();
 
-			logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
-			System.out.println("eco = " + eco);
+			// logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
+			logger.info("Search total time:" + (System.currentTimeMillis() - init));
 			status.setActualStep(SearchStep.COMPUTING_MATCHS);
 			List<List<MatchArea>> sequencesMatchAreas = retrievedData.getMatchAreas();
-			System.out.println("sequencesHits: " + sequencesMatchAreas.size());
+			logger.info("sequencesHits: " + sequencesMatchAreas.size());
 
 			SearchResults sr = new SearchResults(sp);
 
 			int hitNum = 0;
-			List<Hit> hits = Lists.newLinkedList();
 			for (List<MatchArea> matchAreas : sequencesMatchAreas) {
 				Hit hit = null;
 				SymbolList hitSequence = null;
 				int hspNum = 0;
 
 				SequenceInformation sequenceInformation = null;
-				
+
 				for (MatchArea matchZone : matchAreas) {
 					int sequenceId = matchZone.getSequenceId();
 					if (hit == null) {
@@ -194,22 +184,21 @@ public class DNASearcher extends AbstractSearcher {
 					IntArray querySubSequences = matchZone.getQuerySubSequences();
 
 					status.setActualStep(SearchStep.SEEDS);
-					
+
 					for (int[] querySegments : connectQuerySubSequences(querySubSequences, lookup, sp)) {
 
 						int beginQuerySegment = querySegments[0];
 						int lastPosQuerySegment = querySegments[1];
 						int querySegmentLength = (lastPosQuerySegment - beginQuerySegment) + 8;
 
-
 						status.setActualStep(SearchStep.ALIGNMENT);
-						
+
 						if (querySegmentLength <= sp.getMinQuerySequenceSubSequence()) {
 							continue;
 						}
 
 						ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, sp.getSequencesExtendDropoff());
-						
+
 						if (extensionResult.getQuerySequenceExtended().length() <= sp.getMinQuerySequenceSubSequence() || extensionResult.getTargetSequenceExtended().length() <= sp.getMinMatchAreaLength()) {
 							continue;
 						}
@@ -239,7 +228,6 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private List<int[]> connectQuerySubSequences(IntArray querySubSequences, LookupTable lookup, SearchParams sp) {
-		List<int[]> sequenceSegments = Lists.newLinkedList();
 		List<int[]> areas = Lists.newLinkedList();
 
 		// para cada subSequence, comparar todas as posicoes que ela ocorre com as da sub-sequencia seguinte e criar pares.
@@ -249,7 +237,7 @@ public class DNASearcher extends AbstractSearcher {
 				int[] area = null;
 
 				boolean isIn = false;
-				
+
 				// The initial position is between existent areas?
 				for (int[] eArea : areas) {
 					if (i >= eArea[0] && i <= eArea[1]) {
@@ -259,27 +247,27 @@ public class DNASearcher extends AbstractSearcher {
 				}
 
 				if (!isIn) {
-				for (int j : lookup.getPos(subSequences[1])) {
-					boolean merged = false;
+					for (int j : lookup.getPos(subSequences[1])) {
+						boolean merged = false;
 
-					for (int[] eArea : areas) {
-						int offset = j - eArea[1];
-						if (offset != 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
-							eArea[1] = j;
-							merged = true;
+						for (int[] eArea : areas) {
+							int offset = j - eArea[1];
+							if (offset != 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
+								eArea[1] = j;
+								merged = true;
+							}
 						}
-					}
 
-					if (!merged) {
-						int offset = j - i;
-						if (offset > 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
-							if (area == null) {
-								area = new int[] { i, j };
-								areas.add(area);
+						if (!merged) {
+							int offset = j - i;
+							if (offset > 0 && offset <= sp.getMaxQuerySequenceSubSequencesDistance()) {
+								if (area == null) {
+									area = new int[] { i, j };
+									areas.add(area);
+								}
 							}
 						}
 					}
-				}
 				}
 			}
 
@@ -303,18 +291,18 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 				if (newAreas.size() != 0) {
-					areas = newAreas;					
+					areas = newAreas;
 				}
 			}
 		}
-		
+
 		return areas;
 	}
 
 	private static long encodeSubSequenceAndPos(int subSequence, int pos) {
 		long encodedPosAndSubSequence = ((long) pos << 32) | (subSequence & 0xFFFF);
-		//assert decodePosFromEncoded(encodedPosAndSubSequence) == pos;
-		//assert decodeSubSequenceFromEncoded(encodedPosAndSubSequence) == subSequence;
+		// assert decodePosFromEncoded(encodedPosAndSubSequence) == pos;
+		// assert decodeSubSequenceFromEncoded(encodedPosAndSubSequence) == subSequence;
 		return encodedPosAndSubSequence;
 	}
 
@@ -355,19 +343,6 @@ public class DNASearcher extends AbstractSearcher {
 		}
 
 		/**
-		 * @return possible seeds total.
-		 */
-		public long getTotal() {
-			int total = 0;
-			for (LongArray array : sequencesResultArrays) {
-				if (array.getArray() != null) {
-					total += array.getArray().length;
-				}
-			}
-			return total;
-		}
-
-		/**
 		 * @return the match areas of each sequence.
 		 */
 		public List<List<MatchArea>> getMatchAreas() {
@@ -378,15 +353,17 @@ public class DNASearcher extends AbstractSearcher {
 				List<MatchArea> sequenceMatchAreas = null;
 				sequenceMatchs = sequencesResultArrays[sequenceNumber].getArray();
 
-				if (sequenceMatchs.length > 1) {
+				if (sequenceMatchs.length >= sp.getMinMatchAreaLength() / 8) {
 					Arrays.sort(sequenceMatchs);
 
-					IntArray querySubSequences = new IntArray();
+					// Hardly a same sequence will have 20 hits
+					IntArray querySubSequences = new IntArray(20);
 
 					// The first position
 					int previousMatch = decodePosFromEncoded(sequenceMatchs[0]);
 					int beginArea = previousMatch;
 					int match = previousMatch;
+
 					int previousQuerySubSequence = decodeSubSequenceFromEncoded(sequenceMatchs[0]);
 					int querySubSequence = previousQuerySubSequence;
 
@@ -401,7 +378,7 @@ public class DNASearcher extends AbstractSearcher {
 
 						assert match > previousMatch;
 
-						// End of area. the if it's continuous in the data bank sequence and too in query sequence
+						// End of area. Check if it's continuous in the data bank sequence and too in query sequence
 						if ((match - previousMatch >= sp.getMaxDatabankSequenceSubSequencesDistance()) || !checkContinuousInSequence(previousQuerySubSequence, querySubSequence, sp.getMaxQuerySequenceSubSequencesDistance(), lookup)) {
 							// Add? at least 3 subsequences
 							if ((previousMatch - beginArea >= sp.getMinMatchAreaLength()) && (querySubSequences.length() >= sp.getMinMatchAreaLength() / 8)) {
@@ -409,8 +386,9 @@ public class DNASearcher extends AbstractSearcher {
 									sequenceMatchAreas = Lists.newLinkedList();
 								}
 								sequenceMatchAreas.add(new MatchArea(sequenceNumber, beginArea, (previousMatch - beginArea) + 8, querySubSequences));
+								querySubSequences = new IntArray(20);
 							}
-							querySubSequences = new IntArray();
+							querySubSequences.reset();
 							beginArea = match;
 						}
 						// add the

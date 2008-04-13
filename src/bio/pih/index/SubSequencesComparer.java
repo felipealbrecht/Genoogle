@@ -90,9 +90,13 @@ public class SubSequencesComparer {
 	 * @return the default instance of {@link SubSequencesComparer}
 	 * @throws ValueOutOfBoundsException
 	 */
-	public static SubSequencesComparer getDefaultInstance() throws ValueOutOfBoundsException {
+	public static SubSequencesComparer getDefaultInstance() {
 		if (defaultInstance == null) {
-			defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
+			try {
+				defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
+			} catch (ValueOutOfBoundsException e) {
+				logger.fatal("Fatar error in loading the default SubSequenceComparer. Probably related with subSequenceLength", e);
+			}
 		}
 		return defaultInstance;
 	}
@@ -106,7 +110,7 @@ public class SubSequencesComparer {
 	 * @throws BioException
 	 * @throws ValueOutOfBoundsException
 	 */
-	public static void main(String[] args) throws IllegalSymbolException, IOException, BioException, ValueOutOfBoundsException {
+	public static void main(String[] args) throws IllegalSymbolException, IOException, BioException {
 		getDefaultInstance().generateData(true);
 	}
 

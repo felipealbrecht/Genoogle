@@ -61,17 +61,15 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * Default constructor for all DNASequenceDataBank.
 	 * 
 	 * @param name
-	 *            the name of the data bank.
-	 * @param parent 
+	 *            the name of the data bank. 
 	 * @param path
 	 *            the path where will be stored.
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
 	 * @throws IOException
 	 */
-	public DNASequenceDataBank(String name, SequenceDataBank parent, File path, boolean readOnly) {
+	public DNASequenceDataBank(String name, File path, boolean readOnly) {
 		this.name = name;
-		this.parent = parent;
 		this.path = path;
 		this.readOnly = readOnly;
 		this.nextSequenceId = 0;

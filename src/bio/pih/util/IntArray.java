@@ -137,6 +137,13 @@ public class IntArray {
 		getArray();
 		return Arrays.toString(finalArray);
 	}
+        
+        public void reset() {
+                actualBockPos = 0;
+		actualBlock = null;
+		blockArrays = null;
+                finalArray = null;
+        }
 
 	/**
 	 * Test
