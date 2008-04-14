@@ -116,7 +116,7 @@ public class DNASearcher extends AbstractSearcher {
 						if (SubSequencesComparer.getScoreFromIntRepresentation(similarSubSequences[i]) < threshould) {
 							break;
 						}
-
+						
 						int similarSubSequence = SubSequencesComparer.getSequenceFromIntRepresentation(similarSubSequences[i]) & 0xFFFF;
 						lookup.addPosition(similarSubSequence & 0xFFFF, ss);
 						if (!subSequencesSearched.get(similarSubSequence)) {
@@ -395,7 +395,7 @@ public class DNASearcher extends AbstractSearcher {
 						querySubSequences.add(querySubSequence);
 					}
 
-					if ((match - previousMatch <= sp.getMaxDatabankSequenceSubSequencesDistance()) && checkContinuousInSequence(previousQuerySubSequence, querySubSequence, sp.getMaxQuerySequenceSubSequencesDistance(), lookup) && (match - beginArea >= sp.getMinMatchAreaLength())) {
+					if ((match - previousMatch <= sp.getMaxDatabankSequenceSubSequencesDistance()) && (match - beginArea >= sp.getMinMatchAreaLength() && checkContinuousInSequence(previousQuerySubSequence, querySubSequence, sp.getMaxQuerySequenceSubSequencesDistance(), lookup))) {
 						if (sequenceMatchAreas == null) {
 							sequenceMatchAreas = Lists.newLinkedList();
 						}

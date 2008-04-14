@@ -88,7 +88,9 @@ public class LongArray {
 		if (finalArray != null) {
 			size += finalArray.length;
 		}
-		size += (getBlocksArray().size() * blockSize);
+		if (blockArrays != null) {
+			size += (getBlocksArray().size() * blockSize);
+		}
 		size += actualBockPos;
 
 		long[] o = new long[size];
@@ -100,9 +102,11 @@ public class LongArray {
 			pos = finalArray.length;
 		}
 
-		for (long[] block : getBlocksArray()) {
-			System.arraycopy(block, 0, o, pos, blockSize);
-			pos += blockSize;
+		if (blockArrays != null) {
+			for (long[] block : getBlocksArray()) {
+				System.arraycopy(block, 0, o, pos, blockSize);
+				pos += blockSize;
+			}
 		}
 
 		System.arraycopy(actualBlock, 0, o, pos, actualBockPos);
@@ -140,7 +144,6 @@ public class LongArray {
 
 	public void reset() {
 		actualBockPos = 0;
-		actualBlock = null;
 		blockArrays = null;
 		finalArray = null;
 	}

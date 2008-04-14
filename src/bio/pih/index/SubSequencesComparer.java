@@ -58,11 +58,11 @@ public class SubSequencesComparer {
 	private final GenoogleNeedlemanWunsch aligner;
 	private final DNASequenceEncoderToShort encoder;
 
-	private static final int defaultThreshold = 1;
+	private static final int defaultThreshold = 3;
 	private static final int defaultMatch = -1;
-	private static final int defaultDismatch = 3;
-	private static final int defaultGapOpen = 2;
-	private static final int defaultGapExtend = 0;
+	private static final int defaultDismatch = 1;
+	private static final int defaultGapOpen = 0;
+	private static final int defaultGapExtend = 1;
 	private static final int defaultSubSequenceLength = 8;
 
 	private final int subSequenceLength;

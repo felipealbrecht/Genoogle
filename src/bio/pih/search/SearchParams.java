@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.biojava.bio.symbol.SymbolList;
 
+import bio.pih.io.ConfigurationXMLReader;
+
 /**
  * A class to hold parameters for a search. Now it is a bit useless, but when more parameters will be added, they should be stored here.
  * 
@@ -21,21 +23,20 @@ public class SearchParams implements Serializable {
 	private final int maxQuerySubSequencesDistance;
 	private final int minQuerySubSequence;
 	private final int sequencesExtendDropoff;
-	private final long code;
 
-	public static final int DEFAULT_MIN_SIMILARITY = 8;
-	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = 9; // 23
-	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = 24; // 24
-	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = 8; // 23
-	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = 24; // 16
-	public static final int SEQUENCES_EXTEND_DROPOFF = 5;
+	public static final int DEFAULT_MIN_SIMILARITY = ConfigurationXMLReader.getSubSequenceMinSimilarity();
+	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getDataBankMaxSubSequenceDistance();
+	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = ConfigurationXMLReader.getDataBankMinMatchAreaLength();
+	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getQueryMaxSubSequenceDistance();
+	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = ConfigurationXMLReader.getQueryMinSubSequenceLength();
+	public static final int SEQUENCES_EXTEND_DROPOFF = ConfigurationXMLReader.getExtendDropoff();
 
 	/**
 	 * @param query
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE, SEQUENCES_EXTEND_DROPOFF, -1);
+		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE, SEQUENCES_EXTEND_DROPOFF);
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class SearchParams implements Serializable {
 	 * @param maxQuerySequenceSubSequencesDistance
 	 * @param minQuerySequenceSubSequence
 	 */
-	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence, int sequencesExtendDropoff, long code) {
+	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence, int sequencesExtendDropoff) {
 		this.query = query;
 		this.databankName = databankName;
 		this.minSimilarity = minSimilarity;
@@ -56,7 +57,6 @@ public class SearchParams implements Serializable {
 		this.maxQuerySubSequencesDistance = maxQuerySequenceSubSequencesDistance;
 		this.minQuerySubSequence = minQuerySequenceSubSequence;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
-		this.code = code;
 	}
 
 	/**
@@ -96,9 +96,4 @@ public class SearchParams implements Serializable {
 	public int getSequencesExtendDropoff() {
 		return sequencesExtendDropoff;
 	}
-
-	public long getCode() {
-		return code;
-	}
-
 }

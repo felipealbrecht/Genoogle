@@ -64,9 +64,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
         // todo: passar length para ver se a ultima subsequencia nao é parcial
         // tentar executar com 300 megas
 	public void addSequence(int sequenceId, short[] encodedSequence) {
-		if (sequenceId > 65535) {
-			return;
-		}
+		assert sequenceId <= 65535;
 		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
 
 		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {			
@@ -90,7 +88,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		int indexPos = subSequenceEncoded & 0xFFFF;
 		IntArray indexBucket = index[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new IntArray();
+			indexBucket = new IntArray(100);
 			index[indexPos] = indexBucket;
 		}
 		indexBucket.add(subSequenceInfoEncoded);

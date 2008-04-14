@@ -21,8 +21,8 @@ public class Output {
 
 	private static String copyRightNotice = "Genoogle by Albrecht, Justel and Pinto. 2008.";
 
-	public static Document genoogleOutputToXML(SearchResults searchResult) {
-		assert searchResult != null;
+	public static Document genoogleOutputToXML(List<SearchResults> searchResults) {
+		assert searchResults != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Document doc = factory.createDocument();
@@ -30,7 +30,12 @@ public class Output {
 
 		Element output = doc.addElement("GenoogleOutput");
 		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
-		output.add(searchResultToXML(searchResult));
+		Element iterationsElement = output.addElement("iterations");
+		
+		for (int i = 0; i < searchResults.size(); i++) {
+			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number", String.valueOf(i));
+			iterationElement.add(searchResultToXML(searchResults.get(i)));
+		}
 
 		return doc;
 	}

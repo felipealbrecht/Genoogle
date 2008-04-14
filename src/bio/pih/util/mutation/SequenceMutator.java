@@ -18,37 +18,37 @@ public class SequenceMutator {
 	/**
 	 * Default probability for a base mutation occurs.
 	 */
-	public static final double DEFAULT_MUTATE_BASE_RATION = 0.003;
-	
-	/**
-	 * Default probability for a sub-sequence be deleted occurs.
-	 */
-	public static final double DEFAULT_DELETION_RATIO = 0.05;
-	
+	public static final double DEFAULT_MUTATE_BASE_RATION = 0.25;
+		
 	/**
 	 * Default probability for a sub-sequence be inserted occurs.
 	 */
-	public static final double DEFAULT_INSERTION_RATIO = 0.04;
+	public static final double DEFAULT_INSERTION_RATIO = 0.005;
+	
+	/**
+	 * Default probability for a sub-sequence be removed occurs.
+	 */
+	public static final double DEFAULT_REMOTION_RATIO = 0.01;
 	
 	/**
 	 * Default probability for a sub-sequence be duplicated occurs.
 	 */
-	public static final double DEFAULT_DUPLICATION_RATIO = 0.01;
+	public static final double DEFAULT_DUPLICATION_RATIO = 0.005;
 	
 	/**
 	 * Default probability for a sub-sequence be dislocated occurs.
 	 */
-	public static final double DEFAULT_DISLOCATION_RATIO = 0.01;
+	public static final double DEFAULT_DISLOCATION_RATIO = 0.005;
 	
 	/**
 	 * Default probability for a sub-sequence be inverted occurs.
 	 */
-	public static final double DEFAULT_INVERSION_RATIO = 0.01;
+	public static final double DEFAULT_INVERSION_RATIO = 0.005;
 
 	/**
 	 * Default probability for a sub-sequence be inverted occurs.
 	 */
-	public static final double DEFAULT_DISLOCATION_INVERSION_RATIO = 0.01;
+	public static final double DEFAULT_DISLOCATION_INVERSION_RATIO = 0.005;
 
 	/**
 	 * Proportional size related with sequence that will be modified.
@@ -58,17 +58,18 @@ public class SequenceMutator {
 	public static final int DEFAULT_PROPORTION_SIZE = 4;
 
 	private final static int PROBABILITIES_VECTOR_SIZE = 10000;
-	private static final int[] DEFAULT_PROBABILITY_VECTOR = createProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION, DEFAULT_DELETION_RATIO, DEFAULT_INSERTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DISLOCATION_RATIO, DEFAULT_INVERSION_RATIO, DEFAULT_DISLOCATION_INVERSION_RATIO);
+	private static final int[] DEFAULT_PROBABILITY_VECTOR = createProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION, DEFAULT_INSERTION_RATIO, DEFAULT_REMOTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DISLOCATION_RATIO, DEFAULT_INVERSION_RATIO, DEFAULT_DISLOCATION_INVERSION_RATIO);
 
 	// Informations to fill the probabilities vector.
 	static final int NOTHING = 0;
 	static final int MUTATE_BASE = 1;
 	static final int DELETION = 2;
 	static final int INSERTION = 3;
-	static final int DUPLICATION = 4;
-	static final int DISLOCATION = 5;
-	static final int INVERSION = 6;
-	static final int DISLOCATION_INVERSION = 7;
+	static final int REMOTION = 4;
+	static final int DUPLICATION = 5;
+	static final int DISLOCATION = 6;
+	static final int INVERSION = 7;
+	static final int DISLOCATION_INVERSION = 8;
 
 	/**
 	 * Create a probabilities vector with the given probabilities.
@@ -77,6 +78,7 @@ public class SequenceMutator {
 	 * @param mutateBase
 	 * @param deletion
 	 * @param insertion
+	 * @param remotion 
 	 * @param duplication
 	 * @param dislocation
 	 * @param inversion
@@ -338,7 +340,7 @@ public class SequenceMutator {
 
 		return new String(charArray);
 	}
-
+	
 	/**
 	 * Invert a random sub-sequence.
 	 * 

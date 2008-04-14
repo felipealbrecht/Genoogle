@@ -2,15 +2,24 @@
 
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
-  <genoogle:databanks>  
-   <genoogle:databank-collection name="RefSeq" path="files/fasta">
-     <genoogle:databank name="Cow"       path="cow.rna.fna" />
-     <genoogle:databank name="Frog"      path="frog.rna.fna" />
-     <genoogle:databank name="Human"     path="human.rna.fna" />
-     <genoogle:databank name="Mouse"     path="mouse.rna.fna" />
-     <genoogle:databank name="Rat"       path="rat.rna.fna" />
-     <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" />   
-   </genoogle:databank-collection>  
+  <genoogle:search-parameters>
+    <genoogle:sub-sequence-min-similarity        value="6"/>
+    <genoogle:databank-max-sub-sequence-distance value="16"/>
+    <genoogle:databank-min-match-area-length     value="16"/>
+    <genoogle:query-max-sub-sequence-distance    value="16" />
+    <genoogle:query-min-sub-sequence-length      value="16" />
+    <genoogle:extend-dropoff                     value="5" />
+  </genoogle:search-parameters>
+
+  <genoogle:databanks>       
+    <genoogle:databank-collection name="RefSeq" path="files/fasta">
+       <genoogle:databank name="Cow"       path="cow.rna.fna" />
+       <genoogle:databank name="Frog"      path="frog.rna.fna" /> 
+       <genoogle:databank name="Human"     path="human.rna.fna" />
+       <genoogle:databank name="Mouse"     path="mouse.rna.fna" />
+       <genoogle:databank name="Rat"       path="rat.rna.fna" />
+       <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  />   
+     </genoogle:databank-collection> -->  
   </genoogle:databanks>
   
 </genoogle:conf>

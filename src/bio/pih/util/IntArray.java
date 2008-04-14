@@ -88,7 +88,10 @@ public class IntArray {
 		if (finalArray != null) {
 			size += finalArray.length;
 		}
-		size += (getBlocksArray().size() * blockSize);
+
+		if (blockArrays != null) {
+			size += (getBlocksArray().size() * blockSize);
+		}
 		size += actualBockPos;
 
 		int[] o = new int[size];
@@ -100,9 +103,11 @@ public class IntArray {
 			pos = finalArray.length;
 		}
 
-		for (int[] block : getBlocksArray()) {
-			System.arraycopy(block, 0, o, pos, blockSize);
-			pos += blockSize;
+		if (blockArrays != null) {
+			for (int[] block : getBlocksArray()) {
+				System.arraycopy(block, 0, o, pos, blockSize);
+				pos += blockSize;
+			}
 		}
 
 		System.arraycopy(actualBlock, 0, o, pos, actualBockPos);
@@ -114,7 +119,7 @@ public class IntArray {
 
 		return finalArray;
 	}
-	
+
 	/**
 	 * Sort the array
 	 */
@@ -124,26 +129,25 @@ public class IntArray {
 			Arrays.sort(finalArray);
 		}
 	}
-	
+
 	/**
 	 * @return the length of the data
 	 */
 	public int length() {
 		return getArray().length;
 	}
-	
+
 	@Override
 	public String toString() {
 		getArray();
 		return Arrays.toString(finalArray);
 	}
-        
-        public void reset() {
-                actualBockPos = 0;
-		actualBlock = null;
+
+	public void reset() {
+		actualBockPos = 0;
 		blockArrays = null;
-                finalArray = null;
-        }
+		finalArray = null;
+	}
 
 	/**
 	 * Test
