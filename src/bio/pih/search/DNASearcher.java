@@ -32,6 +32,7 @@ import bio.pih.util.LongArray;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
+import com.google.common.collect.Constraints;
 import com.google.common.collect.Lists;
 
 /**
@@ -40,8 +41,6 @@ import com.google.common.collect.Lists;
  * @author albrecht
  */
 public class DNASearcher extends AbstractSearcher {
-
-	IndexedDatabankSimilarSearcher ss;
 
 	public DNASearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
 		super(sp, bank, parent);
@@ -116,7 +115,7 @@ public class DNASearcher extends AbstractSearcher {
 						if (SubSequencesComparer.getScoreFromIntRepresentation(similarSubSequences[i]) < threshould) {
 							break;
 						}
-						
+
 						int similarSubSequence = SubSequencesComparer.getSequenceFromIntRepresentation(similarSubSequences[i]) & 0xFFFF;
 						lookup.addPosition(similarSubSequence & 0xFFFF, ss);
 						if (!subSequencesSearched.get(similarSubSequence)) {
@@ -157,6 +156,8 @@ public class DNASearcher extends AbstractSearcher {
 
 				SequenceInformation sequenceInformation = null;
 
+				List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
+
 				for (MatchArea matchZone : matchAreas) {
 					int sequenceId = matchZone.getSequenceId();
 					if (hit == null) {
@@ -164,18 +165,8 @@ public class DNASearcher extends AbstractSearcher {
 							sequenceInformation = databank.getSequenceInformationFromId(sequenceId);
 							hitSequence = DNASequenceEncoderToShort.getDefaultEncoder().decodeShortArrayToSymbolList(sequenceInformation.getEncodedSequence());
 							hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation.getAccession(), sequenceInformation.getDescription(), hitSequence.length(), databank.getName());
-						} catch (IllegalSymbolException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (MultipleSequencesFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (BioException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch (Exception e) {
+							logger.fatal("Fatar error while loading sequence " + sequenceId + " from datatabank " + databank.getName() + ".", e);
 						}
 					}
 
@@ -197,23 +188,27 @@ public class DNASearcher extends AbstractSearcher {
 							continue;
 						}
 
-						ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, sp.getSequencesExtendDropoff());
-
-						if (extensionResult.getQuerySequenceExtended().length() <= sp.getMinQuerySequenceSubSequence() || extensionResult.getTargetSequenceExtended().length() <= sp.getMinMatchAreaLength()) {
+						ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, sp.getSequencesExtendDropoff(), beginQuerySegment, sequenceAreaBegin);
+						
+						if (extendedSequencesList.contains(extensionResult)) {
 							continue;
 						}
+						
+						if (extensionResult.getQuerySequenceExtended().length() > sp.getMinQuerySequenceSubSequence() && extensionResult.getTargetSequenceExtended().length() > sp.getMinMatchAreaLength()) {
+							extendedSequencesList.add(extensionResult);
+						}
 
-						SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
-						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2, substitutionMatrix);
-						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(), extensionResult.getTargetSequenceExtended());
-
-						int queryOffset = beginQuerySegment - extensionResult.getQueryLeftExtended();
-						int targetOffset = sequenceAreaBegin - extensionResult.getTargetLeftExtender();
-
-						hit.addHSP(new HSP(hspNum++, smithWaterman, queryOffset, targetOffset));
 					}
 				}
-				if (hit.getHSPs().size() > 0) {
+
+				for (ExtendSequences extensionResult : extendedSequencesList) {
+					SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
+					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2, substitutionMatrix);
+					double score = smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(), extensionResult.getTargetSequenceExtended());					
+					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(), extensionResult.getTargetOffset()));					
+				}
+
+				if (hit.getHSPs().size() > 0) {					
 					sr.addHit(hit);
 				}
 			}

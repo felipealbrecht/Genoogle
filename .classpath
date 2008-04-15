@@ -3,10 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/google-collect-snapshot-20071022.jar" sourcepath="/home/albrecht/Desktop/google-collect-snapshot-20071022/src-snapshot-20071022.zip"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/biojava-svn"/>
+	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/biojava-svn/src/org/biojava/bio/seq"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080321.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

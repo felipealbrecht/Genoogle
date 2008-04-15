@@ -142,6 +142,9 @@ public class LongArray {
 		return getArray().length;
 	}
 
+	/**
+	 * Saving space. Do not create a new LongArray neither a new actualBlock. 
+	 */
 	public void reset() {
 		actualBockPos = 0;
 		blockArrays = null;

@@ -143,6 +143,9 @@ public class IntArray {
 		return Arrays.toString(finalArray);
 	}
 
+	/**
+	 * Saving space. Do not create a new IntArray neither a new actualBlock. 
+	 */
 	public void reset() {
 		actualBockPos = 0;
 		blockArrays = null;

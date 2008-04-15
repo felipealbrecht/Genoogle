@@ -11,15 +11,14 @@
     <genoogle:extend-dropoff                     value="5" />
   </genoogle:search-parameters>
 
-  <genoogle:databanks>       
+  <genoogle:databanks>
     <genoogle:databank-collection name="RefSeq" path="files/fasta">
-       <genoogle:databank name="Cow"       path="cow.rna.fna" />
        <genoogle:databank name="Frog"      path="frog.rna.fna" /> 
        <genoogle:databank name="Human"     path="human.rna.fna" />
        <genoogle:databank name="Mouse"     path="mouse.rna.fna" />
        <genoogle:databank name="Rat"       path="rat.rna.fna" />
        <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  />   
-     </genoogle:databank-collection> -->  
+     </genoogle:databank-collection>  
   </genoogle:databanks>
   
 </genoogle:conf>

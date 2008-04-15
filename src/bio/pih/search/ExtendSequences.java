@@ -4,12 +4,15 @@ import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 public class ExtendSequences {
-	SymbolList querySequenceExtended;
-	SymbolList targetSequenceExtended;
+	private SymbolList querySequenceExtended;
+	private SymbolList targetSequenceExtended;
 
-	int queryLeftExtended, queryRightExtended, targetLeftExtended, targetRightExtended;
+	private int queryLeftExtended, queryRightExtended, targetLeftExtended, targetRightExtended;
 
-	public ExtendSequences(SymbolList querySequenceExtended, SymbolList targetSequenceExtended, int queryLeftExtended, int queryRightExtended, int targetLeftExtended, int targetRightExtended) {
+	private final int beginTargetSegment;
+	private final int beginQuerySegment;
+
+	private ExtendSequences(SymbolList querySequenceExtended, SymbolList targetSequenceExtended, int queryLeftExtended, int queryRightExtended, int targetLeftExtended, int targetRightExtended, int beginTargetSegment, int beginQuerySegment) {
 		this.querySequenceExtended = querySequenceExtended;
 		this.targetSequenceExtended = targetSequenceExtended;
 
@@ -17,6 +20,9 @@ public class ExtendSequences {
 		this.targetLeftExtended = targetLeftExtended;
 		this.queryRightExtended = queryRightExtended;
 		this.targetRightExtended = targetRightExtended;
+		this.beginTargetSegment = beginTargetSegment;
+		this.beginQuerySegment = beginQuerySegment;
+		
 	}
 
 	public SymbolList getQuerySequenceExtended() {
@@ -31,7 +37,7 @@ public class ExtendSequences {
 		return queryLeftExtended;
 	}
 
-	public int getTargetLeftExtender() {
+	public int getTargetLeftExtended() {
 		return targetLeftExtended;
 	}
 
@@ -39,11 +45,19 @@ public class ExtendSequences {
 		return queryRightExtended;
 	}
 
-	public int getTargetRightExtender() {
+	public int getTargetRightExtended() {
 		return targetRightExtended;
 	}
 	
-	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
+	public int getQueryOffset() {
+		return beginQuerySegment - this.getQueryLeftExtended();
+	}
+	
+	public int getTargetOffset() {
+		return beginTargetSegment - this.getTargetLeftExtended();
+	}
+	
+	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int beginQuerySequence, int beginTargetSequence) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -58,12 +72,12 @@ public class ExtendSequences {
 		queryPos = endQuerySegment;
 		databankPos = endDatabankSequenceSegment;
 
-		while (queryPos < querySequence.length() && databankPos < databankSequence.length()) {
+		while (queryPos <= querySequence.length() && databankPos <= databankSequence.length()) {
 			Symbol symbolAtQuery = querySequence.symbolAt(queryPos);
 			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos);
 			if (symbolAtQuery == symbolAtDatabank) {
 				score++;
-				if (score > bestScore) {
+				if (score >= bestScore) {
 					bestScore = score;
 					bestQueryPos = queryPos;
 					bestDatabankPos = databankPos;
@@ -77,7 +91,7 @@ public class ExtendSequences {
 			queryPos++;
 			databankPos++;
 		}
-
+		
 		int rightBestQueryPos = bestQueryPos;
 		int rightBestDatabankPos = bestDatabankPos;
 
@@ -91,12 +105,12 @@ public class ExtendSequences {
 		queryPos = beginQuerySegment;
 		databankPos = beginDatabankSequenceSegment;
 
-		while (queryPos > 0 && databankPos > 0) {
+		while (queryPos >= 0 && databankPos >= 0) {
 			Symbol symbolAtQuery = querySequence.symbolAt(queryPos + 1);
 			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos + 1);
 			if (symbolAtQuery == symbolAtDatabank) {
 				score++;
-				if (score > bestScore) {
+				if (score >= bestScore) {
 					bestScore = score;
 					bestQueryPos = queryPos;
 					bestDatabankPos = databankPos;
@@ -119,6 +133,44 @@ public class ExtendSequences {
 		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
 		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
 
-		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended);
+		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginTargetSequence);
 	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object anObject) {
+		if (super.equals(anObject)) {
+			return true;
+		}
+		
+		if (!(anObject instanceof ExtendSequences)) {
+			return false;
+		}
+		
+		ExtendSequences other = (ExtendSequences) anObject;
+		
+		if (this.getQueryOffset() != other.getQueryOffset()) {
+			return false;
+		}
+		
+		if (this.getTargetOffset() != other.getTargetOffset()) {
+			return false;
+		}
+		
+		if (!(this.querySequenceExtended.seqString().equals(other.querySequenceExtended.seqString()))) {
+			return false;
+		}
+		
+		if (!(this.targetSequenceExtended.seqString().equals(other.targetSequenceExtended.seqString()))) {
+			return false;
+		}
+				
+		return true;
+	}
+	
+	
 }

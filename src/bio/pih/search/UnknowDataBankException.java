@@ -11,5 +11,10 @@ public class UnknowDataBankException extends Exception {
 		this.searchManager = searchManager;
 		this.databank = databank;
 	}
+	
+	@Override
+	public String toString() {
+		return "Unknow databank " + databank + " at " + searchManager;
+	}
 
 }
