@@ -13,6 +13,7 @@
 
   <genoogle:databanks>
     <genoogle:databank-collection name="RefSeq" path="files/fasta">
+       <genoogle:databank name="Cow"       path="cow.rna.fna" />
        <genoogle:databank name="Frog"      path="frog.rna.fna" /> 
        <genoogle:databank name="Human"     path="human.rna.fna" />
        <genoogle:databank name="Mouse"     path="mouse.rna.fna" />

@@ -140,8 +140,17 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		return path;
 	}
 	
-	public SequenceInformation getSequenceInformationFromId(String databank, int sequenceId) throws IllegalSymbolException, IOException, MultipleSequencesFoundException {
-		T t = collection.get(databank);
+	/**
+	 * Load a {@link SequenceInformation} from a specified {@link SequenceDataBank}.
+	 * @param databankName 
+	 * @param sequenceId
+	 * @return SequenceInformation from the given sequenceId or <code>null</code> if this sequenceId was not found.
+	 * @throws IllegalSymbolException
+	 * @throws IOException
+	 * @throws MultipleSequencesFoundException
+	 */
+	public SequenceInformation getSequenceInformationFromId(String databankName, int sequenceId) throws IllegalSymbolException, IOException, MultipleSequencesFoundException {
+		T t = collection.get(databankName);
 		if (t == null) {
 			return null;
 		}
@@ -181,7 +190,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void loadInformations() throws IOException, IllegalSymbolException {
+	public void loadInformations() throws IOException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
@@ -243,10 +252,25 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
-		while (iterator.hasNext()) {
-			iterator.next().encodeSequences();
+		while (iterator.hasNext()) {			
+			T next = iterator.next();
+			if (!next.check()) {
+				next.encodeSequences();
+			}
 		}
 		logger.info("Databanks encoded in " + (System.currentTimeMillis() - time));		
+	}
+	
+	@Override
+	public boolean check() {
+		Iterator<T> iterator = this.collection.values().iterator();
+		while (iterator.hasNext()) {			
+			T next = iterator.next();
+			if (!next.check()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

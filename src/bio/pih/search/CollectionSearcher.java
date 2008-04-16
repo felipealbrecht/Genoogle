@@ -28,7 +28,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	@Override
 	public synchronized boolean setFinished(SearchStatus searchStatus) {
-		assert searchStatus.getActualStep() == SearchStep.FINISHED;
+		assert searchStatus.getActualStep() == SearchStep.FINISHED || searchStatus.getActualStep() == SearchStep.FATAL_ERROR;
 
 		sr.addAllHits(searchStatus.getResults().getHits());
 		boolean b = innerDataBanksStatus.remove(searchStatus);

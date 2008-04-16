@@ -16,7 +16,7 @@
 
 		<property name="docs.dir"  location="./doc/javadoc" />
 		<property name="src.dir"   location="./src" />
-		<property name="classpath" location="./lib/biojava-genoogle.jar:lib/google-collect-snapshot-20071022.jar:lib/log4j-1.2.15.jar:lib/dom4j-1.6.1.jar"/>
+		<property name="classpath" location="./lib/biojava-genoogle.jar:lib/google-collect-snapshot-20080321.jar:lib/log4j-1.2.15.jar:lib/dom4j-1.6.1.jar"/>
 
 		<!-- Main build directory -->
 		<property name="build.dir"         location="./ant-build" />

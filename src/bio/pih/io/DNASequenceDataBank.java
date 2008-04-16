@@ -46,7 +46,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	protected final boolean readOnly;
 	private File dataBankFile = null;
-	
 
 	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
@@ -61,7 +60,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * Default constructor for all DNASequenceDataBank.
 	 * 
 	 * @param name
-	 *            the name of the data bank. 
+	 *            the name of the data bank.
 	 * @param path
 	 *            the path where will be stored.
 	 * @param readOnly
@@ -77,7 +76,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	public synchronized void loadInformations() throws IOException {
-		
+
 		checkFile(getDataBankFile(), readOnly);
 		if (readOnly) {
 			if (!dataBankFile.setReadOnly()) {
@@ -86,8 +85,13 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 
 		logger.info("Loading databank from " + getDataBankFile());
-		
+
 		long begin = System.currentTimeMillis();
+		if (!getDataBankFile().exists()) {
+			logger.fatal("Databank " + this.getName() + " is not encoded. Please encode it.");
+			return;
+		}
+		
 		FileChannel dataBankFileChannel = new FileInputStream(getDataBankFile()).getChannel();
 		MappedByteBuffer mappedIndexFile = dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 
@@ -113,31 +117,32 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	public synchronized SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
-		
-		//FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
-		MappedByteBuffer mappedIndexFile = getMappedIndexFile();//channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
+
+		// FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
+		MappedByteBuffer mappedIndexFile = getMappedIndexFile();// channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
 		mappedIndexFile.position(position);
 
 		return SequenceInformation.informationFromByteBuffer(mappedIndexFile, mappedIndexFile.getInt());
 	}
-	
+
 	WeakReference<MappedByteBuffer> mappedIndexFile = new WeakReference<MappedByteBuffer>(null);
+
 	private MappedByteBuffer getMappedIndexFile() throws IOException {
 		if (mappedIndexFile.get() == null) {
-			FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();			
+			FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
 			mappedIndexFile = new WeakReference<MappedByteBuffer>(channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length()));
 		}
 		return mappedIndexFile.get();
 	}
-	
+
 	/**
 	 * @throws IOException
-	 * @throws BioException 
-	 * @throws NoSuchElementException 
+	 * @throws BioException
+	 * @throws NoSuchElementException
 	 */
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException {
 		if (getDataBankFile().exists()) {
-			throw new IOException("File " + getDataBankFile() + " already exists. Please remove it before creating another file.");			
+			throw new IOException("File " + getDataBankFile() + " already exists. Please remove it before creating another file.");
 		}
 		addFastaFile(getFullPath());
 	}
@@ -167,7 +172,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		int sequenceId = addSequence(s, dataBankFileChannel);
 		dataBankFileChannel.close();
 		logger.info(s.getName() + " added.");
-		
+
 		return sequenceId;
 	}
 
@@ -208,10 +213,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			}
 		} else if (readOnly) {
 			throw new IOException("File " + file.getCanonicalPath() + " does not exist and can not be marked as read-only");
-		} else {
-			if (!file.createNewFile()) {
-				throw new IOException("Can not create" + file + " file");
-			}
 		}
 	}
 
@@ -265,7 +266,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return fullPath;
 	}
 
-	private synchronized  File getDataBankFile() {	
+	protected synchronized File getDataBankFile() {
 		if (dataBankFile == null) {
 			dataBankFile = new File(getFullPath() + ".dsdb");
 		}
@@ -279,11 +280,19 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	@Override
 	public void setParent(SequenceDataBank parent) {
-		this.parent = parent;		
+		this.parent = parent;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.name + "@" + this.getFullPath();
 	}
+	
+	public boolean check() {
+		if (getDataBankFile().exists()) {
+			return true;
+		}
+		return false;
+	}
+	
 }

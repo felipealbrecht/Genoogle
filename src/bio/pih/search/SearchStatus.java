@@ -61,18 +61,12 @@ public class SearchStatus {
 		 * The search finalized.
 		 */
 		FINISHED,
-		
-			
-		/**
-		 * The search was canceled and stopped.
-		 */
-		CANCELED,
-		
+
 		
 		/**
-		 * 
+		 * When occurs a fatal error and the search process was not completed.
 		 */
-		ERASED;
+		FATAL_ERROR;
 	}
 	
 	protected final long timeBegin;
@@ -122,6 +116,14 @@ public class SearchStatus {
 		if (step == SearchStep.FINISHED) {
 			this.timeEnd = System.currentTimeMillis();
 			if (parent != null) {				
+				parent.setFinished(this);
+			}
+		}
+		
+		if (step == SearchStep.FATAL_ERROR) {
+			this.timeEnd = System.currentTimeMillis();
+			if (parent != null) {
+				// TODO: Set fatal error at the parent.
 				parent.setFinished(this);
 			}
 		}

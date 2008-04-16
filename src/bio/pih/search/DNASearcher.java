@@ -1,6 +1,5 @@
 package bio.pih.search;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
@@ -8,19 +7,14 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToShort;
-import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.SubSequencesComparer;
-import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
-import bio.pih.io.MultipleSequencesFoundException;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.io.SequenceInformation;
 import bio.pih.search.SearchStatus.SearchStep;
@@ -32,7 +26,6 @@ import bio.pih.util.LongArray;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
-import com.google.common.collect.Constraints;
 import com.google.common.collect.Lists;
 
 /**
@@ -72,11 +65,11 @@ public class DNASearcher extends AbstractSearcher {
 
 		@Override
 		public void run() {
+			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
+
 			SymbolList querySequence = sp.getQuery();
 
 			status.setActualStep(SearchStep.INITIALIZED);
-			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
-			// logger.setLevel(Level.ERROR);
 			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory().newSymbolListWindowIterator(querySequence, 8);
 
 			BitSet subSequencesSearched = new BitSet(65536);
@@ -128,19 +121,14 @@ public class DNASearcher extends AbstractSearcher {
 					}
 
 				}
-			} catch (ValueOutOfBoundsException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidHeaderData e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.fatal("Fatar error while searching at index of the datatabank " + databank.getName() + ".", e);
+				status.setActualStep(SearchStep.FATAL_ERROR);
+				return;
 			}
 
 			lookup.end();
 
-			// logger.info("Search total time:" + (System.currentTimeMillis() - init) + " and found " + retrievedData.getTotal() + " possible seeds");
 			logger.info("Search total time:" + (System.currentTimeMillis() - init));
 			status.setActualStep(SearchStep.COMPUTING_MATCHS);
 			List<List<MatchArea>> sequencesMatchAreas = retrievedData.getMatchAreas();
@@ -150,23 +138,22 @@ public class DNASearcher extends AbstractSearcher {
 
 			int hitNum = 0;
 			for (List<MatchArea> matchAreas : sequencesMatchAreas) {
-				Hit hit = null;
 				SymbolList hitSequence = null;
 				int hspNum = 0;
 
-				SequenceInformation sequenceInformation = null;
-
 				List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
-
+				SequenceInformation sequenceInformation = null;
+				
 				for (MatchArea matchZone : matchAreas) {
-					int sequenceId = matchZone.getSequenceId();
-					if (hit == null) {
+					if (sequenceInformation == null) {
+						int sequenceId = matchZone.getSequenceId();
 						try {
 							sequenceInformation = databank.getSequenceInformationFromId(sequenceId);
 							hitSequence = DNASequenceEncoderToShort.getDefaultEncoder().decodeShortArrayToSymbolList(sequenceInformation.getEncodedSequence());
-							hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation.getAccession(), sequenceInformation.getDescription(), hitSequence.length(), databank.getName());
 						} catch (Exception e) {
 							logger.fatal("Fatar error while loading sequence " + sequenceId + " from datatabank " + databank.getName() + ".", e);
+							status.setActualStep(SearchStep.FATAL_ERROR);
+							return;
 						}
 					}
 
@@ -189,11 +176,11 @@ public class DNASearcher extends AbstractSearcher {
 						}
 
 						ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence, beginQuerySegment, beginQuerySegment + querySegmentLength, hitSequence, sequenceAreaBegin, sequenceAreaBegin + sequenceAreaLength, sp.getSequencesExtendDropoff(), beginQuerySegment, sequenceAreaBegin);
-						
+
 						if (extendedSequencesList.contains(extensionResult)) {
 							continue;
 						}
-						
+
 						if (extensionResult.getQuerySequenceExtended().length() > sp.getMinQuerySequenceSubSequence() && extensionResult.getTargetSequenceExtended().length() > sp.getMinMatchAreaLength()) {
 							extendedSequencesList.add(extensionResult);
 						}
@@ -201,14 +188,14 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 
-				for (ExtendSequences extensionResult : extendedSequencesList) {
-					SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1); // values
-					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2, substitutionMatrix);
-					double score = smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(), extensionResult.getTargetSequenceExtended());					
-					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(), extensionResult.getTargetOffset()));					
-				}
-
-				if (hit.getHSPs().size() > 0) {					
+				if (sequenceInformation != null && hitSequence != null && extendedSequencesList.size() > 0) {
+					Hit hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation.getAccession(), sequenceInformation.getDescription(), hitSequence.length(), databank.getName());
+					for (ExtendSequences extensionResult : extendedSequencesList) {
+						SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(), 1, -1);
+						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2, substitutionMatrix);
+						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(), extensionResult.getTargetSequenceExtended());
+						hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(), extensionResult.getTargetOffset()));
+					}
 					sr.addHit(hit);
 				}
 			}
@@ -347,7 +334,8 @@ public class DNASearcher extends AbstractSearcher {
 				// lazy creation for memory economy propose.
 				List<MatchArea> sequenceMatchAreas = null;
 				sequenceMatchs = sequencesResultArrays[sequenceNumber].getArray();
-
+				//sequencesResultArrays[sequenceNumber] = null; // no more this data.
+				
 				if (sequenceMatchs.length >= sp.getMinMatchAreaLength() / 8) {
 					Arrays.sort(sequenceMatchs);
 

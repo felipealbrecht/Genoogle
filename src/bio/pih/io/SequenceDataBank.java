@@ -44,7 +44,7 @@ public interface SequenceDataBank {
 	 * @return the file name and directory where is this SequenceDataBank considering its parent.
 	 */
 	File getFullPath();
-
+	
 	/**
 	 * @param directory
 	 *            where is this SequenceBank.
@@ -84,8 +84,10 @@ public interface SequenceDataBank {
 	 * 
 	 * @throws IOException
 	 * @throws IllegalSymbolException
+	 * @throws BioException 
+	 * @throws NoSuchElementException 
 	 */
-	void loadInformations() throws IOException, IllegalSymbolException;
+	void loadInformations() throws IOException;	
 	
 	/**
 	 * Encode the sequences into a computer legible mode 
@@ -117,7 +119,6 @@ public interface SequenceDataBank {
 	 */
 	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
 	
-	
 	/**
 	 * Set the parent.
 	 * @param parent
@@ -128,4 +129,9 @@ public interface SequenceDataBank {
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 
 	 */
 	public SequenceDataBank getParent();
+	
+	/**
+	 * @return <code>true</code> if the data bank files and its data are okay. This method do <b>not</b> check file consistency. 
+	 */
+	boolean check();
 }
