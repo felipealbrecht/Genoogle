@@ -1,6 +1,6 @@
 package bio.pih.index;
 
-import java.util.List;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
@@ -16,9 +16,9 @@ import bio.pih.util.IntArray;
 /**
  * @author albrecht
  */
-public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
+public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedIndex {
 
-	private IntArray index[];
+	protected IntArray index[];
 
 	private final int subSequenceLength;
 	private final int indexSize;
@@ -36,7 +36,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 	 * @param alphabet
 	 * @throws ValueOutOfBoundsException
 	 */
-	public SubSequencesArrayIndex(int subSequenceLength, FiniteAlphabet alphabet) throws ValueOutOfBoundsException {
+	public MemorySubSequencesInvertedIndex(int subSequenceLength, FiniteAlphabet alphabet) throws ValueOutOfBoundsException {
 		assert (alphabet != null);
 		assert (subSequenceLength > 0);
 
@@ -68,7 +68,7 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
 
 		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {			
-			addSubSequenceInfoEncoded(encodedSequence[pos], SubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength));
+			addSubSequenceInfoEncoded(encodedSequence[pos], EncoderSubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength));
 		}
 	}
 
@@ -121,22 +121,18 @@ public class SubSequencesArrayIndex implements EncodedSubSequencesIndex {
 			if (bucket != null) {
 				for (long subSequenceInfoEncoded : bucket.getArray()) {
 					sb.append("\t");
-					sb.append(SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
+					sb.append(EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
 					sb.append(": ");
-					sb.append(SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
+					sb.append(EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
 					sb.append("\n");
 				}
 			}
 		}
 		return sb.toString();
 	}
-
-	/**
-	 * @param subSymbolList
-	 * @return
-	 */
-	List<SubSequenceIndexInfo> retrievePosition(SymbolList subSymbolList) {
-		return null;
+	
+	@Override
+	public void write() throws IOException {
+		throw new UnsupportedOperationException(this.getClass().getName() + " does not suport write operation.");
 	}
-
 }

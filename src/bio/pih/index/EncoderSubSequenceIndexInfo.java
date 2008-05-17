@@ -7,7 +7,7 @@ package bio.pih.index;
  * Also provides methods to encoded these informations, sequence and position, into a integer.
  * @author albrecht
  */
-public class SubSequenceIndexInfo {
+public class EncoderSubSequenceIndexInfo {
 	
 	/**
 	 * @param sequenceId 

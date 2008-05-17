@@ -190,12 +190,12 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void loadInformations() throws IOException {
+	public void load() throws IOException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
 		while (iterator.hasNext()) {
-			iterator.next().loadInformations();
+			iterator.next().load();
 		}
 		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time));
 	}

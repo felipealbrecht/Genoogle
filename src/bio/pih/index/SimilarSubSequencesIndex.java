@@ -53,7 +53,7 @@ import bio.pih.seq.LightweightSymbolList;
  * 
  * TODO: Remove the default values from hardcoded class and put in a configuration file.
  */
-public class SubSequencesComparer {
+public class SimilarSubSequencesIndex {
 
 	private final GenoogleNeedlemanWunsch aligner;
 	private final DNASequenceEncoderToShort encoder;
@@ -82,18 +82,18 @@ public class SubSequencesComparer {
 	
 	private boolean isLoad = false;
 
-	private static SubSequencesComparer defaultInstance = null;
+	private static SimilarSubSequencesIndex defaultInstance = null;
 
 	static Logger logger = Logger.getLogger("bio.pih.index.SubSequencesComparer");
 
 	/**
-	 * @return the default instance of {@link SubSequencesComparer}
+	 * @return the default instance of {@link SimilarSubSequencesIndex}
 	 * @throws ValueOutOfBoundsException
 	 */
-	public static SubSequencesComparer getDefaultInstance() {
+	public static SimilarSubSequencesIndex getDefaultInstance() {
 		if (defaultInstance == null) {
 			try {
-				defaultInstance = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
+				defaultInstance = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
 			} catch (ValueOutOfBoundsException e) {
 				logger.fatal("Fatar error in loading the default SubSequenceComparer. Probably related with subSequenceLength", e);
 			}
@@ -124,7 +124,7 @@ public class SubSequencesComparer {
 	 * @param threshold
 	 * @throws ValueOutOfBoundsException
 	 */
-	public SubSequencesComparer(FiniteAlphabet alphabet, int subSequenceLength, int match, int dismatch, int gapOpen, int gapExtend, int threshold) throws ValueOutOfBoundsException {
+	public SimilarSubSequencesIndex(FiniteAlphabet alphabet, int subSequenceLength, int match, int dismatch, int gapOpen, int gapExtend, int threshold) throws ValueOutOfBoundsException {
 		this.subSequenceLength = subSequenceLength;
 		this.match = match;
 		this.dismatch = dismatch;
@@ -148,7 +148,7 @@ public class SubSequencesComparer {
 	private String indexFileName = null;
 
 	/**
-	 * @return name of the file containing the index of the data of this {@link SubSequencesComparer} score scheme.
+	 * @return name of the file containing the index of the data of this {@link SimilarSubSequencesIndex} score scheme.
 	 */
 	public String getIndexFileName() {
 		if (this.indexFileName == null) {
@@ -174,7 +174,7 @@ public class SubSequencesComparer {
 	private String dataFileName = null;
 
 	/**
-	 * @return name of the file containing the the data of this {@link SubSequencesComparer} score scheme.
+	 * @return name of the file containing the the data of this {@link SimilarSubSequencesIndex} score scheme.
 	 */
 	public String getDataFileName() {
 		if (this.dataFileName == null) {

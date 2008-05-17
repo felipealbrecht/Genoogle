@@ -18,7 +18,7 @@ public class SimpleSubSequencesIndex implements Serializable {
 	
 	Alphabet alphabet;
 	int subSequenceLength;
-	Hashtable<SymbolList, List<SubSequenceIndexInfo>> index;
+	Hashtable<SymbolList, List<EncoderSubSequenceIndexInfo>> index;
 	int total; // just statistical information
 	int subSymbolTotal; // just statistical information 
 	
@@ -31,7 +31,7 @@ public class SimpleSubSequencesIndex implements Serializable {
 		this.subSequenceLength = subSequenceLength;
 		this.total = 0;
 		this.subSymbolTotal = 0;
-		this.index = new Hashtable<SymbolList, List<SubSequenceIndexInfo>>();
+		this.index = new Hashtable<SymbolList, List<EncoderSubSequenceIndexInfo>>();
 	}
 	
 	/**
@@ -39,10 +39,10 @@ public class SimpleSubSequencesIndex implements Serializable {
 	 * @param subSymbolList
 	 * @param info
 	 */
-	public void addSubSequence(SymbolList subSymbolList, SubSequenceIndexInfo info) {
-		List<SubSequenceIndexInfo> infos = index.get(subSymbolList);
+	public void addSubSequence(SymbolList subSymbolList, EncoderSubSequenceIndexInfo info) {
+		List<EncoderSubSequenceIndexInfo> infos = index.get(subSymbolList);
 		if (infos == null) {
-			infos = new LinkedList<SubSequenceIndexInfo>();
+			infos = new LinkedList<EncoderSubSequenceIndexInfo>();
 			index.put(subSymbolList, infos);
 			this.subSymbolTotal++;
 		}
@@ -54,7 +54,7 @@ public class SimpleSubSequencesIndex implements Serializable {
 	 * @param subSymbolList
 	 * @return all subsequences that match exactly with the subSymbolList 
 	 */
-	public List<SubSequenceIndexInfo> retrievePosition(SymbolList subSymbolList) {
+	public List<EncoderSubSequenceIndexInfo> retrievePosition(SymbolList subSymbolList) {
 		return index.get(subSymbolList);
 	}
 	

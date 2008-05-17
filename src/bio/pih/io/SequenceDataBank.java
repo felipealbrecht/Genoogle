@@ -87,7 +87,7 @@ public interface SequenceDataBank {
 	 * @throws BioException 
 	 * @throws NoSuchElementException 
 	 */
-	void loadInformations() throws IOException;	
+	void load() throws IOException;	
 	
 	/**
 	 * Encode the sequences into a computer legible mode 

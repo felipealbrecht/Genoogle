@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.SubSequencesComparer;
+import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.scheduler.Scheduler;
 import bio.pih.scheduler.interfaces.CommandLine;
@@ -61,7 +61,7 @@ public class Genoogle {
 			//worker.start();
 			
 		} else if (args[0].equals("-g")) {
-			SubSequencesComparer.getDefaultInstance().generateData(true);
+			SimilarSubSequencesIndex.getDefaultInstance().generateData(true);
 			
 		} else {
 			System.out.println("-s para scheduler ou -w [port] para worker ou -g para gerar dados necess�rios.");

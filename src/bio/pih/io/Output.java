@@ -21,6 +21,11 @@ public class Output {
 
 	private static String copyRightNotice = "Genoogle by Albrecht, Justel and Pinto. 2008.";
 
+	/**
+	 * @param searchResults
+	 * 
+	 * @return {@link Document} containing the {@link SearchResults} in XML form.
+	 */
 	public static Document genoogleOutputToXML(List<SearchResults> searchResults) {
 		assert searchResults != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -31,7 +36,7 @@ public class Output {
 		Element output = doc.addElement("GenoogleOutput");
 		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
 		Element iterationsElement = output.addElement("iterations");
-		
+
 		for (int i = 0; i < searchResults.size(); i++) {
 			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number", String.valueOf(i));
 			iterationElement.add(searchResultToXML(searchResults.get(i)));
@@ -40,6 +45,10 @@ public class Output {
 		return doc;
 	}
 
+	/**
+	 * @param searchResult
+	 * @return {@link Element} containing the {@link SearchResults} at XML form.
+	 */
 	public static Element searchResultToXML(SearchResults searchResult) {
 		assert searchResult != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -50,6 +59,10 @@ public class Output {
 		return resultsElement;
 	}
 
+	/**
+	 * @param params
+	 * @return {@link Element} containing the {@link SearchParams} at XML form.
+	 */
 	public static Element paramsToXML(SearchParams params) {
 		assert params != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -67,6 +80,10 @@ public class Output {
 		return paramsElement;
 	}
 
+	/**
+	 * @param hits
+	 * @return {@link Element} containing the {@link List} of  {@link Hit} at XML form.
+	 */
 	public static Element hitsToXML(List<Hit> hits) {
 		assert hits != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -79,6 +96,10 @@ public class Output {
 		return hitsElement;
 	}
 
+	/**
+	 * @param hit
+	 * @return {@link Element} containing the {@link Hit} at XML form.
+	 */
 	public static Element hitToXML(Hit hit) {
 		assert hit != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -95,6 +116,10 @@ public class Output {
 		return hitElement;
 	}
 
+	/**
+	 * @param hsps
+	 * @return {@link Element} containing the {@link List} of {@link HSP} at XML form.
+	 */
 	public static Element hspsToXML(List<HSP> hsps) {
 		assert hsps != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
@@ -107,6 +132,10 @@ public class Output {
 		return hspsElement;
 	}
 
+	/**
+	 * @param hsp
+	 * @return {@link Element} containing the {@link HSP} at XML form.
+	 */
 	public static Element hspToXML(HSP hsp) {
 		assert hsp != null;
 		DocumentFactory factory = DocumentFactory.getInstance();

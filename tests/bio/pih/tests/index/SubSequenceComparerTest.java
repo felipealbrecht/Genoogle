@@ -15,9 +15,9 @@ import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.SubSequencesComparer;
+import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.index.SubSequencesComparer.ComparationResult;
+import bio.pih.index.SimilarSubSequencesIndex.ComparationResult;
 
 /**
  * @author albrecht
@@ -47,12 +47,12 @@ public class SubSequenceComparerTest extends TestCase {
 		int defaultGapExtend = 0;
 		int defaultSubSequenceLength = 4;
 
-		SubSequencesComparer subSequenceComparer = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		SimilarSubSequencesIndex subSequenceComparer = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
 		subSequenceComparer.deleteData();
 		subSequenceComparer.generateData();
 		subSequenceComparer = null;
 
-		SubSequencesComparer subSequencesReader = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		SimilarSubSequencesIndex subSequencesReader = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
 		assertTrue(subSequencesReader.hasDataFile());
 		assertTrue(subSequencesReader.hasIndexFile());
 
@@ -62,11 +62,11 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < subSequencesReader.getMaxEncodedSequenceValue(); i++) {
 			similarSequences = subSequencesReader.getSimilarSequences((short) (i & 0xFFFF));
-			assertEquals(i, SubSequencesComparer.getSequenceFromIntRepresentation(similarSequences[0]));
-			assertEquals(4, SubSequencesComparer.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]));
+			assertEquals(4, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
 
 			for (int intRepresentation : similarSequences) {
-				if (SubSequencesComparer.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
+				if (SimilarSubSequencesIndex.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
 					fail("subsequence alinhada possui score inferior ao limite");
 				}
 			}
@@ -96,12 +96,12 @@ public class SubSequenceComparerTest extends TestCase {
 		int defaultGapExtend = 0;
 		int defaultSubSequenceLength = 5;
 
-		SubSequencesComparer subSequenceComparer = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		SimilarSubSequencesIndex subSequenceComparer = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
 		subSequenceComparer.deleteData();
 		subSequenceComparer.generateData();
 		subSequenceComparer = null;
 
-		SubSequencesComparer subSequencesReader = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		SimilarSubSequencesIndex subSequencesReader = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
 		assertTrue(subSequencesReader.hasDataFile());
 		assertTrue(subSequencesReader.hasIndexFile());
 
@@ -112,11 +112,11 @@ public class SubSequenceComparerTest extends TestCase {
 		for (int i = 0; i < subSequencesReader.getMaxEncodedSequenceValue(); i++) {
 			similarSequences = subSequencesReader.getSimilarSequences((short) i);
 			assertEquals(1, similarSequences.length);
-			assertEquals(i, SubSequencesComparer.getSequenceFromIntRepresentation(similarSequences[0]));
-			assertEquals(5, SubSequencesComparer.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]));
+			assertEquals(5, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
 
 			for (int intRepresentation : similarSequences) {
-				if (SubSequencesComparer.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
+				if (SimilarSubSequencesIndex.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
 					fail("subsequence alinhada possui score inferior ao limite");
 				}
 			}
@@ -139,7 +139,7 @@ public class SubSequenceComparerTest extends TestCase {
 		int defaultGapExtend = 20;
 		int defaultSubSequenceLength = 40;
 				
-		SubSequencesComparer subSequencesReader = new SubSequencesComparer(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
+		SimilarSubSequencesIndex subSequencesReader = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultTreadshould);
 		assertFalse(subSequencesReader.hasDataFile());
 		assertFalse(subSequencesReader.hasIndexFile());
 
@@ -164,7 +164,7 @@ public class SubSequenceComparerTest extends TestCase {
 	 */
 	@Test
 	public void testDefaultDataNoCheck() throws IllegalSymbolException, BioException, Exception {				
-		SubSequencesComparer defaultInstance = SubSequencesComparer.getDefaultInstance();
+		SimilarSubSequencesIndex defaultInstance = SimilarSubSequencesIndex.getDefaultInstance();
 		
 		// DISCOMENT IT ONLY IF YOU DONT WANT TO DOWNLOAD THE DATA
 		//defaultInstance.generateData()
@@ -186,8 +186,8 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < defaultInstance.getMaxEncodedSequenceValue(); i += 21771) {
 			similarSequences = defaultInstance.getSimilarSequences((short) i);
-			assertEquals(i, SubSequencesComparer.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
-			assertEquals(8, SubSequencesComparer.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
+			assertEquals(8, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {
@@ -199,7 +199,7 @@ public class SubSequenceComparerTest extends TestCase {
 				assertEquals((short) defaultInstance.compareCompactedSequences((short)i, (short) encodedSequence), score);
 														
 				ar = new ComparationResult((short) score, (short) encodedSequence);
-				if (score >= SubSequencesComparer.getDefaultTreadshould()) {
+				if (score >= SimilarSubSequencesIndex.getDefaultTreadshould()) {
 					results.add(ar);
 				}							
 			}
@@ -220,7 +220,7 @@ public class SubSequenceComparerTest extends TestCase {
 	 */
 	@Test
 	public void testDefaultDataCheckConsistency() throws IllegalSymbolException, BioException, Exception {				
-		SubSequencesComparer defaultInstance = SubSequencesComparer.getDefaultInstance();
+		SimilarSubSequencesIndex defaultInstance = SimilarSubSequencesIndex.getDefaultInstance();
 		
 		// DISCOMENT IT ONLY IF YOU DONT WANT TO DOWNLOAD THE DATA
 		//defaultInstance.generateData()
@@ -242,8 +242,8 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < defaultInstance.getMaxEncodedSequenceValue(); i += 21771) {
 			similarSequences = defaultInstance.getSimilarSequences((short) i);
-			assertEquals(i, SubSequencesComparer.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
-			assertEquals(8, SubSequencesComparer.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
+			assertEquals(8, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {							
@@ -255,7 +255,7 @@ public class SubSequenceComparerTest extends TestCase {
 				assertEquals((int) defaultInstance.compareCompactedSequences((short)i, (short)encodedSequence), score);
 														
 				ar = new ComparationResult((short) score, (short) encodedSequence);
-				if (score >= SubSequencesComparer.getDefaultTreadshould()) {
+				if (score >= SimilarSubSequencesIndex.getDefaultTreadshould()) {
 					results.add(ar);
 				}							
 			}

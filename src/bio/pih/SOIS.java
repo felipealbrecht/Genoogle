@@ -30,6 +30,12 @@ import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Genoogle non distributed and no server implementation.
+ * For tests and validation propose.
+ * 
+ * @author albrecht
+ */
 public class SOIS {
 
 	/**
@@ -43,7 +49,7 @@ public class SOIS {
 	 * @throws UnknowDataBankException
 	 * @throws DocumentException
 	 */
-	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, UnknowDataBankException, DocumentException {
+	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, UnknowDataBankException {
 		System.out.println("SOIS - Search Over Indexed Sequences.");
 		System.out.println("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
 		System.out.println("Contact at felioe.albrecht@gmail.com");
@@ -78,7 +84,7 @@ public class SOIS {
 			SearchManager sm = new SearchManager();
 			
 			for (SequenceDataBank dataBank : dataBanks) {
-				dataBank.loadInformations();
+				dataBank.load();
 				sm.addDatabank(dataBank);
 			}
 			String inputFile = args[1];

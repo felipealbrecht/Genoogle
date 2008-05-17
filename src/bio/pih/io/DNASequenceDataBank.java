@@ -75,7 +75,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.totalSequences = 0;
 	}
 
-	public synchronized void loadInformations() throws IOException {
+	public synchronized void load() throws IOException {
 
 		checkFile(getDataBankFile(), readOnly);
 		if (readOnly) {

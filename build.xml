@@ -31,8 +31,8 @@
 		<property name="javac.depend"      value="false" />
 		<property name="javac.debug"       value="true" />
 		<property name="javac.deprecation" value="false" />
-		<property name="javac.source"      value="5" />
-		<property name="javac.target"      value="5" />
+		<property name="javac.source"      value="6" />
+		<property name="javac.target"      value="6" />
 
 		<!-- Javadoc properties -->
 		<property name="build.docs" location="${build.dir}/docs" />

@@ -7,8 +7,9 @@ import org.apache.log4j.Logger;
 import org.biojava.bio.seq.DNATools;
 
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.SubSequencesArrayIndex;
-import bio.pih.index.SubSequencesComparer;
+import bio.pih.index.MemorySubSequencesInvertedIndex;
+import bio.pih.index.PersistentSubSequencesInvertedIndex;
+import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 
 /**
@@ -21,11 +22,13 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 
 	private static Logger logger = Logger.getLogger("pih.bio.io.IndexedDNASequenceDataBank");
 
-	private final SubSequencesArrayIndex index;
-	private static final SubSequencesComparer subSequenceComparer;
+	private final MemorySubSequencesInvertedIndex index;
+	private static final SimilarSubSequencesIndex subSequenceComparer;
+
+	private final StorageKind storageKind;
 
 	static {
-		subSequenceComparer = SubSequencesComparer.getDefaultInstance();
+		subSequenceComparer = SimilarSubSequencesIndex.getDefaultInstance();
 		try {
 			subSequenceComparer.load();
 		} catch (Exception e) {
@@ -38,12 +41,11 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * 
 	 * @param name
 	 * @param path
+	 * @param storageKind 
 	 * @throws ValueOutOfBoundsException
-	 * @throws IOException
-	 * @throws InvalidHeaderData
 	 */
-	public IndexedDNASequenceDataBank(String name, File path) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		this(name, path, false);
+	public IndexedDNASequenceDataBank(String name, File path, StorageKind storageKind) throws ValueOutOfBoundsException {
+		this(name, path, storageKind, false);
 	}
 
 	/**
@@ -53,13 +55,20 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @param path
 	 *            the path where the data bank is/will be stored
 	 * @param isReadOnly
-	 * @throws IOException
+	 * @param storageKind  
 	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, boolean isReadOnly) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	public IndexedDNASequenceDataBank(String name, File path, StorageKind storageKind, boolean isReadOnly) throws ValueOutOfBoundsException {
 		super(name, path, isReadOnly);
-		index = new SubSequencesArrayIndex(8, DNATools.getDNA());
+		this.storageKind = storageKind;
+		
+		// TODO: Put it into a factory.
+		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
+			index = new MemorySubSequencesInvertedIndex(8, DNATools.getDNA());
+			
+		} else { //if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
+			index = new PersistentSubSequencesInvertedIndex(8, DNATools.getDNA());
+		} 
 	}
 
 	@Override
@@ -78,6 +87,16 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 
 	public int[] getSimilarSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		return subSequenceComparer.getSimilarSequences(encodedSubSequence);
+	}
+
+	@Override
+	public StorageKind getStorageKind() {
+		return storageKind;
+	}
+	
+	@Override
+	public void write() throws IOException {
+		index.write();
 	}
 
 }

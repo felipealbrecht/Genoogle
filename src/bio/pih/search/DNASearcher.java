@@ -12,8 +12,8 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToShort;
-import bio.pih.index.SubSequenceIndexInfo;
-import bio.pih.index.SubSequencesComparer;
+import bio.pih.index.EncoderSubSequenceIndexInfo;
+import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.io.SequenceInformation;
@@ -105,11 +105,11 @@ public class DNASearcher extends AbstractSearcher {
 					similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 
 					for (int i = 0; i < similarSubSequences.length; i++) {
-						if (SubSequencesComparer.getScoreFromIntRepresentation(similarSubSequences[i]) < threshould) {
+						if (SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSubSequences[i]) < threshould) {
 							break;
 						}
 
-						int similarSubSequence = SubSequencesComparer.getSequenceFromIntRepresentation(similarSubSequences[i]) & 0xFFFF;
+						int similarSubSequence = SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSubSequences[i]) & 0xFFFF;
 						lookup.addPosition(similarSubSequence & 0xFFFF, ss);
 						if (!subSequencesSearched.get(similarSubSequence)) {
 							indexPositions = databank.getMachingSubSequence((short) similarSubSequence);
@@ -316,8 +316,8 @@ public class DNASearcher extends AbstractSearcher {
 		}
 
 		void addSubSequenceInfoIntRepresention(int subSequence, long subSequenceInfoIntRepresention) {
-			int start = SubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
-			int sequenceId = SubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
+			int start = EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
+			int sequenceId = EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoIntRepresention);
 
 			long subSequenceAndPos = encodeSubSequenceAndPos(subSequence, start);
 
