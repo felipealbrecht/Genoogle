@@ -40,6 +40,9 @@ public class SearchManager {
 		if (searchStatus == null) {
 			return false;
 		}
+		if (searchStatus.getActualStep() == SearchStep.FATAL_ERROR) {
+			return true;
+		}
 		if (searchStatus.getActualStep() == SearchStep.FINISHED) {
 			return true;
 		}

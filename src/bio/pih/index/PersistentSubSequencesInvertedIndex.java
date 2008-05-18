@@ -1,11 +1,16 @@
 package bio.pih.index;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
 import org.biojava.bio.symbol.SymbolList;
 
@@ -56,23 +61,21 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 		}
 		return indexIndexFile;
 	}
-	
+
 	@Override
 	public void load() throws IOException {
 		this.indexOffsets = new long[TOTAL_SUB_SEQUENCES];
 		this.indexQtd = new int[TOTAL_SUB_SEQUENCES];
 		
-		RandomAccessFile indexRAF = new RandomAccessFile(getIndexIndexFile(), "r");
+		MappedByteBuffer mappedIndexIndexFile = new FileInputStream(getIndexIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexIndexFile().length());
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			assert indexRAF.readInt() == i;
-			indexQtd[i] = indexRAF.readInt();
-			indexOffsets[i] = indexRAF.readLong();
+			assert mappedIndexIndexFile.getInt() == i;
+			indexQtd[i] = mappedIndexIndexFile.getInt();
+			indexOffsets[i] = mappedIndexIndexFile.getLong();
 		}
 		loaded = true;
-		indexDataRAF = new RandomAccessFile(getIndexDataFile(), "r");
 	}
-
 
 	@Override
 	public void check() throws IOException {
@@ -127,7 +130,8 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 	
 	
 	private boolean existsChecked = false;
-	private boolean exists = false; 
+	private boolean exists = false;
+	private FileChannel indexDataFileChannel; 
 	
 	@Override
 	public boolean exists() {
@@ -183,21 +187,28 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 	@Override
 	public int[] getMachingSubSequence(short encodedSubSequence) throws IOException {
 		int encodedSubSequenceInt = encodedSubSequence & 0xFFFF;
-		int qtd = indexQtd[encodedSubSequenceInt];
+		int quantity = indexQtd[encodedSubSequenceInt];
 		long offset = indexOffsets[encodedSubSequenceInt];
+		
+		int resultsInByte = quantity * 4;
+		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 4 + 4 + resultsInByte);
 
-		indexDataRAF.seek(offset);
+		IntBuffer buffer = map.asIntBuffer();
+		assert buffer.get() == encodedSubSequenceInt;
+		assert buffer.get() == quantity;
 		
-		assert indexDataRAF.readInt() == encodedSubSequenceInt;
-		assert indexDataRAF.readInt() == qtd;
-		
-		int[] bucket = new int[qtd];
-		for (int i = 0; i < qtd; i++) {
-			bucket[i] = indexDataRAF.readInt();
-		}
-		
-		return bucket;		
+		int bucket[] = new int[quantity];
+		buffer.get(bucket);
+		return bucket;	
 	}
+
+	private FileChannel getDataFileChannel() throws FileNotFoundException {
+		if (indexDataFileChannel == null) {
+			indexDataFileChannel = new FileInputStream(getIndexDataFile()).getChannel();
+		}
+		return indexDataFileChannel;
+	}
+	
 
 	@Override
 	public String indexStatus() {

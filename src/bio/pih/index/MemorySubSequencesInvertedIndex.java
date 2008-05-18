@@ -47,7 +47,10 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 
 	@Override
 	public void addSequence(int sequenceId, short[] encodedSequence) {
-		assert sequenceId <= 65535;
+		//assert sequenceId <= 65535;
+		if (sequenceId > 65535) {
+			return;
+		}
 		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
 
 		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {			
