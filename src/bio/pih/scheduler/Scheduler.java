@@ -3,7 +3,6 @@ package bio.pih.scheduler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,6 @@ import bio.pih.scheduler.communicator.Communicator;
 import bio.pih.scheduler.communicator.SchedulerCommunicator;
 import bio.pih.scheduler.communicator.WorkerInfo;
 import bio.pih.scheduler.communicator.message.Message;
-import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.ResultMessage;
 import bio.pih.search.results.HSP;
 
@@ -132,7 +130,7 @@ public class Scheduler {
 	 * @return the identifier of the result;
 	 * @throws IOException
 	 */
-	public Searching doSearch(String database, String query) throws IOException {
+	public Searching doSearch(String database, String query) {
 		totalSearchs++;
 		Searching searching = new Searching(totalSearchs, database, query, getWorkers().size());
 		getSearches().put(totalSearchs, searching);

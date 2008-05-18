@@ -61,7 +61,6 @@ public class DNASearcher extends AbstractSearcher {
 		 * 
 		 * @param sp
 		 * @param databank
-		 * @param status
 		 */
 		public IndexedDatabankSimilarSearcher(SearchParams sp, IndexedSequenceDataBank databank) {
 			this.sp = sp;
@@ -381,7 +380,7 @@ public class DNASearcher extends AbstractSearcher {
 							querySubSequences.reset();
 							beginArea = match;
 						}
-						// add the
+
 						querySubSequences.add(querySubSequence);
 					}
 

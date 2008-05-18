@@ -42,6 +42,8 @@ import org.biojava.bio.symbol.SymbolList;
  */
 public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
+	private static final long serialVersionUID = 2884980510887845616L;
+	
 	private double match;
 	private double replace;
 	private double insert;
@@ -131,7 +133,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * A simpler version of pairwiseAlignment that align {@link SymbolList} and return its score.
+	 * A simpler version of pairwiseAlignment that align SymbolList and return its score.
 	 */
 	@Override
 	public double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
@@ -200,11 +202,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
 
-	/**
-	 * Overrides the method inherited from the NeedlemanWunsch and performs only a local alignment. It finds only the longest common subsequence. This is good for the beginning, but it might be better to have a system to find more than only one hit within the score matrix. Therfore one should only define the k-th best hit, where k is somehow related to the number of hits.
-	 * 
-	 * @see GenoogleSequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence, org.biojava.bio.seq.Sequence)
-	 */
 	@Override
 	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {

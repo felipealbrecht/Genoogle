@@ -8,7 +8,6 @@ import bio.pih.search.SearchParams;
  * A message that is send by the Server to the Worker for him to execute a query.
  * 
  * @author albrecht
- * @date 02/12/2007
  */
 public class RequestMessage extends Message {
 	private static final long serialVersionUID = 7129366659656051697L;
@@ -44,7 +43,7 @@ public class RequestMessage extends Message {
 	/**
 	 * Get the database where will be performed the search.
 	 * 
-	 * @return
+	 * @return data bank name.
 	 */
 	public String getDatabase() {
 		return sp.getDatabank();
@@ -58,12 +57,15 @@ public class RequestMessage extends Message {
 	}
 
 	/**
-	 * @return
+	 * @return code of this request.
 	 */
 	public long getCode() {
 		return code;
 	}
 	
+	/**
+	 * @return {@link SearchParams} of this request.
+	 */
 	public SearchParams getSearchParams() {
 		return sp;
 	}

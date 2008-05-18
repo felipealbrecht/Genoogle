@@ -19,7 +19,7 @@ public class DuplicateDatabankException extends Exception {
 	}
 	
 	/**
-	 * @return
+	 * @return data bank collection where have two data banks with the same name. 
 	 */
 	public String getDatabankCollection() {
 		return databankCollection;
@@ -27,7 +27,7 @@ public class DuplicateDatabankException extends Exception {
 	
 	
 	/**
-	 * @return
+	 * @return name of the duplicate data bank.
 	 */
 	public String getDatabankName() {
 		return databankName;

@@ -24,9 +24,8 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	protected boolean loaded;
 	
 	/**
-	 * @param databank 
+	 * @param databank
 	 * @param subSequenceLength
-	 * @param alphabet
 	 * @throws ValueOutOfBoundsException
 	 */
 	public AbstractSubSequencesInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {

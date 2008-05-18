@@ -13,8 +13,8 @@ import bio.pih.scheduler.communicator.WorkerCommunicator;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 import bio.pih.scheduler.communicator.message.ResultMessage;
-import bio.pih.search.SearchStatus;
 import bio.pih.search.SearchParams;
+import bio.pih.search.SearchStatus;
 import bio.pih.search.results.HSP;
 
 /**
@@ -112,7 +112,7 @@ public abstract class AbstractWorker {
 	 * <p>
 	 * This is a asynchronous call. When the search finish, the result will be sent to the scheduler.
 	 * 
-	 * @param params
+	 * @param sp
 	 * 
 	 * TODO: move code into a search manager
 	 */

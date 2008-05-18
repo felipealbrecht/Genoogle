@@ -78,7 +78,6 @@ public class SequenceMutator {
 	 * @param mutateBase
 	 * @param deletion
 	 * @param insertion
-	 * @param remotion 
 	 * @param duplication
 	 * @param dislocation
 	 * @param inversion
@@ -133,7 +132,7 @@ public class SequenceMutator {
 	 * @param sequence
 	 * @param generations
 	 * @param proporsionSize
-	 * @return
+	 * @return sequence with mutations.
 	 */
 	public static String mutateSequence(String sequence, int generations, int proporsionSize) {
 		return mutateSequence(sequence, generations, proporsionSize, DEFAULT_PROBABILITY_VECTOR);
@@ -345,8 +344,6 @@ public class SequenceMutator {
 	 * Invert a random sub-sequence.
 	 * 
 	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be inverted.
-	 * 
 	 * @return a new sequence with the mutation.
 	 */
 	public static String mutateInvertation(String sequence) {

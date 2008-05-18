@@ -6,7 +6,6 @@ import java.io.Serializable;
  * The <code>Message</code> that will be send by server and workers.
  * 
  * @author albrecht (felipe.albrecht@gmail.com)
- * @date 30/11/2007
  */
 public abstract class Message implements Serializable {
 

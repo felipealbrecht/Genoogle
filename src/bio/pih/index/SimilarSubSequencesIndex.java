@@ -297,7 +297,7 @@ public class SimilarSubSequencesIndex {
 	 * Same <code>getSimilarSequences(encodedSubSequence & 0xFFFF);</code>
 	 * 
 	 * @param encodedSubSequence
-	 * @return
+	 * @return a array containing all sub-sequences that are similar with the given encodedSubSequence.  
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */

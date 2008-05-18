@@ -2,6 +2,7 @@ package bio.pih.seq.op;
 
 import java.io.BufferedReader;
 
+import org.biojava.bio.seq.io.StreamReader;
 import org.biojavax.Namespace;
 
 
@@ -14,7 +15,7 @@ public class LightweightIOTools {
     /**
      * @param br
      * @param ns
-     * @return
+     * @return {@link StreamReader} of the DNA FASTA files. 
      */
     public static LightweightStreamReader readFastaDNA(BufferedReader br, Namespace ns) {
         return new LightweightStreamReader(br,

@@ -33,9 +33,8 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	/**
 	 * Construct a new {@link LightweightSymbolList} from a seqString
 	 * @param alphabet
-	 * @param parser
 	 * @param seqString
-	 * @return a LightweightSymbolList
+	 * @return {@link LightweightSymbolList} of the given seqString.
 	 * @throws IllegalSymbolException
 	 */
 	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
@@ -43,10 +42,9 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 	/**
 	 * @param alphabet
-	 * @param parser
 	 * @param seqString
 	 * @param cacheResult 
-	 * @return
+	 * @return {@link LightweightSymbolList} related with the given seqString.
 	 * @throws IllegalSymbolException
 	 */
 	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString, boolean cacheResult) throws IllegalSymbolException {
@@ -157,7 +155,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 
 	/**
 	 * @param dna
-	 * @return
+	 * @return SymbolList of the given dna sequence string. 
 	 * @throws IllegalSymbolException
 	 * 
 	 */

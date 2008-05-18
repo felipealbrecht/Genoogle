@@ -103,7 +103,7 @@ public class SequenceInformation {
 	/**
 	 * Read a SequenceInformation from a {@link ByteBuffer} without knowing its variable length
 	 * @param buffer
-	 * @return
+	 * @return {@link SequenceInformation} stored at the given buffer.
 	 * @throws UnsupportedEncodingException 
 	 */
 	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer) {
@@ -114,7 +114,7 @@ public class SequenceInformation {
 	 * Read a SequenceInformation from a {@link ByteBuffer} knowing its variable length
 	 * @param buffer
 	 * @param variableCapacity 
-	 * @return the {@link SequenceInformation} stored
+	 * @return {@link SequenceInformation} stored at the given buffer.
 	 * @throws UnsupportedEncodingException 
 	 */
 	public static SequenceInformation informationFromByteBuffer(ByteBuffer buffer, int variableCapacity) {

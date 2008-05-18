@@ -14,9 +14,6 @@ public interface Searcher {
 		
 	/**
 	 * Search similar sequences against the bank.
-	 * @param sp 
-	 * @param databank 
-         * @param parent
 	 * @return an unique identification of this search process.
 	 */
 	SearchStatus doSearch();

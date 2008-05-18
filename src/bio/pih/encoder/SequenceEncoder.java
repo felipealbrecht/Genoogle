@@ -7,7 +7,7 @@ import bio.pih.index.ValueOutOfBoundsException;
 
 /**
  * @author albrecht
- *
+ * 
  */
 public abstract class SequenceEncoder {
 	private static int POSITION_LENGTH = 0;
@@ -18,7 +18,7 @@ public abstract class SequenceEncoder {
 	protected final FiniteAlphabet alphabet;
 	protected final int subSequenceLength;
 	protected final int bitsByAlphabetSize;
-	
+
 	/**
 	 * @param alphabet
 	 * @param subSequenceLength
@@ -33,7 +33,7 @@ public abstract class SequenceEncoder {
 	/**
 	 * @param alphabetSize
 	 *            must be equal or higher than 1 and equals or lower than 256
-	 * @return
+	 * @return how many bits is necessary to store each character of the given alphabet size.
 	 * @throws ValueOutOfBoundsException
 	 *             is size is between from 1 to 64
 	 */
@@ -54,27 +54,27 @@ public abstract class SequenceEncoder {
 		while ((maxValue & (1 << bits)) == 0) {
 			bits--;
 		}
-		// the "one" that was used above must be added.
+		// the "one" that was used above should be added.
 		return bits + 1;
 	}
-	
-	
+
 	/**
 	 * @return Position in integer vector that is the information of the {@link SymbolList} length
 	 */
 	public static int getPositionLength() {
 		return POSITION_LENGTH;
 	}
-	
+
 	/**
-	 * @return Position that the bit vector itself begin 
+	 * @return Position that the bit vector itself begin
 	 */
 	public static int getPositionBeginBitsVector() {
 		return POSITION_BEGIN_BITS_VECTOR;
 	}
-	
+
 	/**
 	 * Return the length in bytes that is required to store an encoded sequence
+	 * 
 	 * @param sequenceLength
 	 * @return the space in bytes
 	 */
@@ -83,8 +83,7 @@ public abstract class SequenceEncoder {
 	/**
 	 * 
 	 * @param size
-	 * @return the integer Class that is need to store the value passed in size
-	 *         parameter.
+	 * @return the integer Class that is need to store the value passed in size parameter.
 	 * @throws ValueOutOfBoundsException
 	 */
 	@SuppressWarnings("unchecked")

@@ -25,7 +25,6 @@ public class RandomSequenceGenerator {
 	 * @param alphabet
 	 * @param lengthFrom 
 	 * @param lengthTo 
-	 * @param length
 	 */
 	public RandomSequenceGenerator(FiniteAlphabet alphabet, int lengthFrom, int lengthTo) {
 		this.lengthFrom = lengthFrom;

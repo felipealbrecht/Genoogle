@@ -43,12 +43,16 @@ import org.biojava.bio.symbol.SymbolList;
  * 
  * Some changes by Felipe Albrecht for faster alignment methods
  * 
+ * TODO: Split this class in two: one for Alignment itself and other to store the results.
+ * 
  * @author Andreas Dr&auml;ger
  * @author Gero Greiner
  * @since 1.5
  */
 
 public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
+
+	private static final long serialVersionUID = 2350726346461936144L;
 
 	/**
 	 * A matrix with the size length(sequence1) times length(sequence2)
@@ -58,12 +62,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	/**
 	 * A matrix with the size length(alphabet) times length(alphabet)
 	 */
-	protected SubstitutionMatrix subMatrix;
-
-	/**
-	 * The result of a successfull alignment
-	 */
-	protected Alignment pairalign;
+	protected transient SubstitutionMatrix subMatrix;
 
 	/**
 	 * The result of a successfull alignment as a simple String.
@@ -258,26 +257,9 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		return output;
 	}
 
-	/**
-	 * prints the alignment String on the screen (standard output).
-	 * 
-	 * @param align
-	 *            The parameter is typically given by the {@link #getAlignmentString() getAlignmentString()} method.
-	 */
-	public static void printAlignment(String align) {
-		System.out.print(align);
-	}
-
-	/**
-	 * This method is good if one wants to reuse the alignment calculated by this class in another BioJava class. It just performs {@link #pairwiseAlignment(Sequence, Sequence) pairwiseAlignment} and returns an <code>Alignment</code> instance containing the two aligned sequences.
-	 * 
-	 * @return Alignment object containing the two gapped sequences constructed from query and target.
-	 * @throws Exception
-	 */
 	@Override
 	public Alignment getAlignment(SymbolList query, SymbolList subject) throws Exception {
-		pairwiseAlignment(query, subject);
-		return pairalign;
+		throw new UnsupportedOperationException("This class does not suport this method. Use pairwiseAlignment(query, subject) directly.");
 	}
 
 	/**
@@ -334,7 +316,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	}
 
 	/**
-	 * A simpler version of pairwiseAlignment that align two {@link SymbolList} and return its score.
+	 * A simpler version of pairwiseAlignment that align two SymbolList and return its score.
 	 */
 	@Override
 	public double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {

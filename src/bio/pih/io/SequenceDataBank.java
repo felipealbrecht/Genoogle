@@ -102,7 +102,6 @@ public interface SequenceDataBank {
 	 * Add a new sequence into the sequence bank
 	 * 
 	 * @param s
-	 * @param sequence
 	 * @return the added sequence id
 	 * @throws BioException
 	 * @throws IOException

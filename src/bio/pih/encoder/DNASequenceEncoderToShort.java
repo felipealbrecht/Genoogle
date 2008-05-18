@@ -95,7 +95,7 @@ public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 
 	/**
 	 * @param encoded
-	 * @return
+	 * @return {@link LightweightSymbolList} of the given encoded sub-sequence.
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */

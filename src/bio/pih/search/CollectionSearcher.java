@@ -45,7 +45,9 @@ public class CollectionSearcher extends AbstractSearcher {
 			Thread.yield();
 		}
 		
-		sr.addAllHits(searchStatus.getResults().getHits());
+		if (searchStatus.getResults().getHits() != null) {
+			sr.addAllHits(searchStatus.getResults().getHits());
+		}
 		
 		boolean b = innerDataBanksStatus.remove(searchStatus);
 		if (innerDataBanksStatus.size() == 0) {
@@ -82,8 +84,7 @@ public class CollectionSearcher extends AbstractSearcher {
 				SequenceDataBank innerBank = it.next();
 				Searcher searcher = SearcherFactory.getSearcher(sp, innerBank, CollectionSearcher.this);
 				innerDataBanksStatus.add(searcher.doSearch());
-			}
-		
+			}		
 			acceptingResults = true;
 
 			try {

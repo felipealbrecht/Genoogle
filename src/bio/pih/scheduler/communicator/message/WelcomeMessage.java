@@ -25,7 +25,7 @@ public class WelcomeMessage extends Message {
 	}
 	
 	/**
-	 * @return
+	 * @return id of the receiver. 
 	 */
 	public int getId() {
 		return id;

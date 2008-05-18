@@ -40,10 +40,11 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param path
 	 * @param parent 
 	 */
-	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent) {
+	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent) {		
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
+		this.parent = parent;
 		this.collection = new LinkedHashMap<String, T>();
 	}
 

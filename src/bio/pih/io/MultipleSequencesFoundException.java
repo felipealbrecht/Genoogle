@@ -17,21 +17,21 @@ public class MultipleSequencesFoundException extends Exception {
 	}
 	
 	/**
-	 * @return
+	 * @return sequence id.
 	 */
 	public int getSequenceId() {
 		return sequenceId;
 	}
 	
 	/**
-	 * @return
+	 * @return one data bank where the sequence was found. 
 	 */
 	public String getDatabank1() {
 		return databank1;
 	}
 	
 	/**
-	 * @return
+	 * @return other data bank where the sequence was found.
 	 */
 	public String getDatabank2() {
 		return databank2;

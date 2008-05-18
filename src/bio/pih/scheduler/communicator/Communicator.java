@@ -9,7 +9,6 @@ import bio.pih.scheduler.communicator.message.Message;
  * 
  * <p> If the sender is the server, the receiver is the client and otherwise is true.
  * @author albrecht
- * @date 02/12/2007
  */
 public interface Communicator {
 

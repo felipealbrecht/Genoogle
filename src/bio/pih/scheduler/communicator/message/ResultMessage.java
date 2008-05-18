@@ -10,10 +10,10 @@ import bio.pih.search.results.HSP;
 public class ResultMessage extends Message {
 
 	private static final long serialVersionUID = -5762601490806905960L;
-	String db;
-	String query;
-	long code;
-	HSP[] alignments;
+	private String db;
+	private String query;
+	private long code;
+	private HSP[] alignments;
 	
 	/**
 	 * @param db 
@@ -37,7 +37,7 @@ public class ResultMessage extends Message {
 	}
 	
 	/**
-	 * @return
+	 * @return Data bank name.
 	 */
 	public String getDb() {
 		return db;
@@ -51,7 +51,7 @@ public class ResultMessage extends Message {
 	}
 	
 	/**
-	 * @return
+	 * @return query.
 	 */
 	public String getQuery() {
 		return query;
@@ -66,7 +66,7 @@ public class ResultMessage extends Message {
 	}
 	
 	/**
-	 * @return
+	 * @return code of this result.
 	 */
 	public long getCode() {
 		return code;
@@ -80,7 +80,7 @@ public class ResultMessage extends Message {
 	}
 	
 	/**
-	 * @return
+	 * @return alignments made.
 	 */
 	public HSP[] getAlignments() {
 		return alignments.clone();

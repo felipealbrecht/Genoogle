@@ -24,11 +24,35 @@ public class SearchParams implements Serializable {
 	private final int minQuerySubSequence;
 	private final int sequencesExtendDropoff;
 
+	/**
+	 * Default similarity threshold at the similar sub-sequences index. 
+	 */
 	public static final int DEFAULT_MIN_SIMILARITY = ConfigurationXMLReader.getSubSequenceMinSimilarity();
+	
+	/**
+	 * Default maximum distance between two sub-sequences of a sequence at data bank to be considered at same area.
+	 */
 	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getDataBankMaxSubSequenceDistance();
+	
+	/**
+	 * Default minimum data bank sequence area length.
+	 */
 	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = ConfigurationXMLReader.getDataBankMinMatchAreaLength();
+	
+	/**
+	 * Default maximum distance between two sub-sequences of a query sequence to be considered at same area.
+	 */
 	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getQueryMaxSubSequenceDistance();
+	
+	/**
+	 * Default minimum query sequence area length.
+	 */
 	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = ConfigurationXMLReader.getQueryMinSubSequenceLength();
+	
+	
+	/**
+	 * Drop off for sequences extension.
+	 */
 	public static final int SEQUENCES_EXTEND_DROPOFF = ConfigurationXMLReader.getExtendDropoff();
 
 	/**
@@ -47,6 +71,7 @@ public class SearchParams implements Serializable {
 	 * @param minMatchAreaLength
 	 * @param maxQuerySequenceSubSequencesDistance
 	 * @param minQuerySequenceSubSequence
+	 * @param sequencesExtendDropoff 
 	 */
 	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence, int sequencesExtendDropoff) {
 		this.query = query;
@@ -73,26 +98,45 @@ public class SearchParams implements Serializable {
 		return databankName;
 	}
 
+	/**
+	 * @return similarity threshold at the similar sub-sequences index. 
+	 */
 	public int getMinSimilarity() {
 		return minSimilarity;
 	}
 
+	/**
+	 * @return maximum distance between two sub-sequences of a sequence at data bank to be considered at same area.
+	 */
 	public int getMaxDatabankSequenceSubSequencesDistance() {
 		return maxDatabankSubSequencesDistance;
 	}
 
+	/**
+	 * @return minimum data bank sequence area length.
+	 */
 	public int getMinMatchAreaLength() {
 		return minMatchAreaLength;
 	}
 
+	/**
+	 * @return maximum distance between two sub-sequences of a query sequence to be considered at same area.
+	 */
 	public int getMaxQuerySequenceSubSequencesDistance() {
 		return maxQuerySubSequencesDistance;
 	}
-
+	
+	/**
+	 * 
+	 * @return minimum query sequence area length.
+	 */
 	public int getMinQuerySequenceSubSequence() {
 		return minQuerySubSequence;
 	}
 
+	/**
+	 * @return drop off for sequences extension.
+	 */
 	public int getSequencesExtendDropoff() {
 		return sequencesExtendDropoff;
 	}

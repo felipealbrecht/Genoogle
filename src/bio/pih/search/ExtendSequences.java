@@ -98,7 +98,7 @@ public class ExtendSequences {
 	 * @param dropoff
 	 * @param beginQuerySequence
 	 * @param beginTargetSequence
-	 * @return
+	 * @return {@link ExtendSequences} containing the extended query and target sequences.
 	 */
 	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int beginQuerySequence, int beginTargetSequence) {
 		int score = 0;

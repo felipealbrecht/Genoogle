@@ -17,17 +17,17 @@ public interface SymbolListWindowIterator extends Iterator<SymbolList>{
 	void setWindowSize(int size);	
 	
 	/**
-	 * @return
+	 * @return window size.
 	 */
 	int getWindowSize();
 	
 	/**
-	 * @return
+	 * @return actual position in the symbol list.
 	 */
 	int getActualPos();
 		
 	/**
-	 * @return
+	 * @return symbol list.
 	 */
 	SymbolList getSymbolList();
 }

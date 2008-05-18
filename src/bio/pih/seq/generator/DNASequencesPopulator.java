@@ -27,7 +27,6 @@ public class DNASequencesPopulator {
 	 * @param sequenceQuantity
 	 * @param sizeFrom
 	 * @param sizeTo
-	 * @param path
 	 * @return a {@link List} containing random sequences
 	 */
 	public static List<Sequence> populateSequences(int sequenceQuantity, int sizeFrom, int sizeTo) {

@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.biojava.bio.dist.Distribution;
-import org.biojava.bio.dist.DistributionTools;
 import org.biojava.bio.dist.UniformDistribution;
 import org.biojava.bio.seq.DNATools;
 

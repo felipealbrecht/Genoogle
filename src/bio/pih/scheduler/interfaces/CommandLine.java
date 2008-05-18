@@ -56,7 +56,7 @@ public class CommandLine implements Runnable {
 			while ((line = lineReader.readLine()) != null) {
 				line = line.trim();
 				if (line.trim().equals("")) {
-				//if (line.isEmpty()) { Java 6
+					// if (line.isEmpty()) { Java 6
 					continue;
 				}
 
@@ -83,12 +83,8 @@ public class CommandLine implements Runnable {
 				if (commands[0].equals(SEARCH) && commands.length == 3) {
 					String db = commands[1];
 					String query = commands[1];
-					try {
-						Searching doSearch = scheduler.doSearch(db, query);
-						System.out.println("Search: " + doSearch.getCode());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					Searching doSearch = scheduler.doSearch(db, query);
+					System.out.println("Search: " + doSearch.getCode());
 
 				} else if (commands[0].equals(CHECK) && commands.length == 2) {
 					int code = Integer.parseInt(commands[1]);
