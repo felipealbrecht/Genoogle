@@ -35,6 +35,11 @@ import com.google.common.collect.Lists;
  */
 public class DNASearcher extends AbstractSearcher {
 
+	/**
+	 * @param sp
+	 * @param bank
+	 * @param parent
+	 */
 	public DNASearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
 		super(sp, bank, parent);
 		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
@@ -305,6 +310,8 @@ public class DNASearcher extends AbstractSearcher {
 		 * @param size
 		 *            the qtd of lists
 		 * @param initialSize
+		 * @param lookup 
+		 * @param sp 
 		 */
 		public IndexRetrievedData(int size, int initialSize, LookupTable lookup, SearchParams sp) {
 			this.lookup = lookup;

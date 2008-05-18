@@ -11,6 +11,9 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.biojavax.bio.seq.RichSequence;
 
+import bio.pih.encoder.SequenceEncoder;
+import bio.pih.index.ValueOutOfBoundsException;
+
 /**
  * This interface specifies the ways to access a sequence bank.
  * <p>
@@ -37,7 +40,7 @@ public interface SequenceDataBank {
 	/**
 	 * @return the file name and directory where is this SequenceDataBank.
 	 */
-	File getPath();
+	File getFilePath();
 	
 	
 	/**
@@ -83,11 +86,9 @@ public interface SequenceDataBank {
 	 * Load this sequence bank
 	 * 
 	 * @throws IOException
-	 * @throws IllegalSymbolException
-	 * @throws BioException 
-	 * @throws NoSuchElementException 
+	 * @throws ValueOutOfBoundsException  
 	 */
-	void load() throws IOException;	
+	void load() throws IOException, ValueOutOfBoundsException;	
 	
 	/**
 	 * Encode the sequences into a computer legible mode 
@@ -120,12 +121,6 @@ public interface SequenceDataBank {
 	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
 	
 	/**
-	 * Set the parent.
-	 * @param parent
-	 */
-	void setParent(SequenceDataBank parent);
-	
-	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 
 	 */
 	public SequenceDataBank getParent();
@@ -134,4 +129,9 @@ public interface SequenceDataBank {
 	 * @return <code>true</code> if the data bank files and its data are okay. This method do <b>not</b> check file consistency. 
 	 */
 	boolean check();
+	
+	/**
+	 * @return {@link SequenceDataBank} witch is responsible to encode the sequences in this data bank.
+	 */
+	public SequenceEncoder getEncoder(); 
 }

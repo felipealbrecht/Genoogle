@@ -12,7 +12,7 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
 
 /**
  * @author albrecht
- * 
+ *  TODO: abstract class witch encoded to short.
  */
 public class DNASequenceEncoderToShort extends DNASequenceEncoder {
 

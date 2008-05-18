@@ -3,6 +3,11 @@ package bio.pih.search;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
+/**
+ * Extend sequences by its similarity to the right and to the left.
+ * 
+ * @author albrecht
+ */
 public class ExtendSequences {
 	private SymbolList querySequenceExtended;
 	private SymbolList targetSequenceExtended;
@@ -25,45 +30,83 @@ public class ExtendSequences {
 		
 	}
 
+	/**
+	 * @return extended query.
+	 */
 	public SymbolList getQuerySequenceExtended() {
 		return querySequenceExtended;
 	}
 
+	/**
+	 * @return extended target.
+	 */
 	public SymbolList getTargetSequenceExtended() {
 		return targetSequenceExtended;
 	}
 
+	/**
+	 * @return how many bases the query was extended to left.
+	 */
 	public int getQueryLeftExtended() {
 		return queryLeftExtended;
 	}
 
+	/**
+	 * @return how many bases the target was extended to left.
+	 */
 	public int getTargetLeftExtended() {
 		return targetLeftExtended;
 	}
 
+	/**
+	 * @return how many bases the query was extended to right.
+	 */
 	public int getQueryRightExtended() {
 		return queryRightExtended;
 	}
 
+	/**
+	 * @return how many bases the target was extended to right.
+	 */
 	public int getTargetRightExtended() {
 		return targetRightExtended;
 	}
 	
+	/**
+	 * @return difference between the query segment and the extended.
+	 */
 	public int getQueryOffset() {
 		return beginQuerySegment - this.getQueryLeftExtended();
 	}
-	
+
+	/**
+	 * @return difference between the target segment and the extended.
+	 */
 	public int getTargetOffset() {
 		return beginTargetSegment - this.getTargetLeftExtended();
 	}
 	
+	/**
+	 * Do the extension of the query and target.
+	 * 
+	 * @param querySequence
+	 * @param beginQuerySegment
+	 * @param endQuerySegment
+	 * @param databankSequence
+	 * @param beginDatabankSequenceSegment
+	 * @param endDatabankSequenceSegment
+	 * @param dropoff
+	 * @param beginQuerySequence
+	 * @param beginTargetSequence
+	 * @return
+	 */
 	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int beginQuerySequence, int beginTargetSequence) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
 		int queryPos, databankPos;
 
-		// Atention: biojava sequence symbols is from 1 to sequenceLength. It means that the first position is one and not zero!
+		// Attention: biojava sequence symbols is from 1 to sequenceLength. It means that the first position is one and not zero!
 
 		// right extend
 		bestQueryPos = endQuerySegment;

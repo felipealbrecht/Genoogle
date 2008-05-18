@@ -1,7 +1,5 @@
 package bio.pih.search;
 
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
 
@@ -17,6 +15,11 @@ public abstract class AbstractSearcher implements Searcher {
 	protected Searcher parent;
 	protected Thread ss;
 	
+	/**
+	 * @param sp Parameter of the search
+	 * @param bank Sequence data bank where the search will be performed.
+	 * @param parent The parent of this search.
+	 */
 	public AbstractSearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
 		status = new SearchStatus(sp, bank, parent);
 		status.setActualStep(SearchStep.NOT_INITIALIZED);

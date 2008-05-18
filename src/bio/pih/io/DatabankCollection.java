@@ -13,6 +13,9 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
+import bio.pih.encoder.SequenceEncoder;
+import bio.pih.index.ValueOutOfBoundsException;
+
 /**
  * @author albrecht
  * 
@@ -35,8 +38,9 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param name
 	 * @param alphabet
 	 * @param path
+	 * @param parent 
 	 */
-	public DatabankCollection(String name, FiniteAlphabet alphabet, File path) {
+	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
@@ -53,7 +57,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		if (this.collection.containsKey(databank.getName())) {
 			throw new DuplicateDatabankException(databank.getName(), this.getName());
 		}
-		databank.setParent(this);
 		this.collection.put(databank.getName(), databank);
 	}
 
@@ -136,7 +139,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public File getPath() {
+	public File getFilePath() {
 		return path;
 	}
 	
@@ -190,7 +193,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void load() throws IOException {
+	public void load() throws IOException, ValueOutOfBoundsException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
@@ -232,19 +235,23 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		return sb.toString();
 	}
 
+	File fullPath = null;
+	
 	@Override
 	public File getFullPath() {
-		return this.getPath();
+		if (fullPath == null) {
+			if (getParent() == null) {
+				fullPath = getFilePath();
+			} else {
+				fullPath = new File(getParent().getFullPath(), this.getFilePath().getPath());
+			}
+		}
+		return fullPath;
 	}
 
 	@Override
 	public SequenceDataBank getParent() {
 		return parent;
-	}
-	
-	@Override
-	public void setParent(SequenceDataBank parent) {
-		this.parent = parent;
 	}
 
 	@Override
@@ -271,6 +278,11 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public SequenceEncoder getEncoder() {
+		throw new UnsupportedOperationException("Each sub-data bank has its own encoder.");
 	}
 
 }

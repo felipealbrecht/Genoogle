@@ -22,6 +22,8 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.SequenceEncoder;
+import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
 
@@ -37,8 +39,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	private final FiniteAlphabet alphabet = DNATools.getDNA();
 	private final String name;
-	private final File path;
-	private SequenceDataBank parent;
+	private final File file;
+	private final DatabankCollection<? extends DNASequenceDataBank> parent;
 	private File fullPath = null;
 
 	private volatile int nextSequenceId;
@@ -63,19 +65,21 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 *            the name of the data bank.
 	 * @param path
 	 *            the path where will be stored.
+	 * @param parent 
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
 	 * @throws IOException
 	 */
-	public DNASequenceDataBank(String name, File path, boolean readOnly) {
+	public DNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, boolean readOnly) {
 		this.name = name;
-		this.path = path;
+		this.file = path;
+		this.parent = parent;
 		this.readOnly = readOnly;
 		this.nextSequenceId = 0;
 		this.totalSequences = 0;
 	}
 
-	public synchronized void load() throws IOException {
+	public synchronized void load() throws IOException, ValueOutOfBoundsException {
 
 		checkFile(getDataBankFile(), readOnly);
 		if (readOnly) {
@@ -89,12 +93,16 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		long begin = System.currentTimeMillis();
 		if (!getDataBankFile().exists()) {
 			logger.fatal("Databank " + this.getName() + " is not encoded. Please encode it.");
-			return;
+			throw new IOException("Databank " + this.getName() + " is not encoded. Please encode it.\n Check " + this.getFullPath());			
 		}
+
+		loadInformations();
 		
 		FileChannel dataBankFileChannel = new FileInputStream(getDataBankFile()).getChannel();
 		MappedByteBuffer mappedIndexFile = dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
+		
 
+		beginSequencesProcessing();
 		SequenceInformation sequenceInformation = null;
 		int variableLength = 0;
 		int sequenceInformationPosition;
@@ -107,13 +115,38 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			}
 			sequenceIdToSequenceInformationOffset.put(sequenceInformation.getId(), sequenceInformationPosition);
 			totalSequences++;
-			doSequenceLoadingProcessing(sequenceInformation);
+			doSequenceProcessing(sequenceInformation);
 		}
 		dataBankFileChannel.close();
+		finishSequencesProcessing();
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " + totalSequences + " sequences.");
 	}
 
-	abstract void doSequenceLoadingProcessing(SequenceInformation sequenceInformation);
+	/**
+	 * Load informations previously the data bank is loaded.  
+	 * @throws IOException
+	 */
+	abstract void loadInformations() throws IOException;
+	
+	/**
+	 * Inform that the sequences processing is beginning.
+	 * @throws IOException
+	 * @throws ValueOutOfBoundsException 
+	 */
+	abstract void beginSequencesProcessing() throws IOException, ValueOutOfBoundsException;
+	
+	/**
+	 * Process a {@link SequenceInformation}
+	 * @param sequenceInformation
+	 */
+	abstract void doSequenceProcessing(SequenceInformation sequenceInformation);
+	
+	/**
+	 * Finish the sequences processing. <br> 
+	 * After this point no more sequences can be added to the data bank.
+	 * @throws IOException
+	 */
+	abstract void finishSequencesProcessing() throws IOException;
 
 	public synchronized SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException {
 		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
@@ -250,17 +283,17 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		throw new UnsupportedOperationException("The path is imutable for a DataBank");
 	}
 
-	public File getPath() {
-		return path;
+	public File getFilePath() {
+		return file;
 	}
 
 	@Override
 	public File getFullPath() {
 		if (fullPath == null) {
 			if (getParent() == null) {
-				fullPath = getPath();
+				fullPath = getFilePath();
 			} else {
-				fullPath = new File(getParent().getPath(), this.getPath().getPath());
+				fullPath = new File(getParent().getFullPath(), this.getFilePath().getPath());
 			}
 		}
 		return fullPath;
@@ -279,20 +312,20 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	@Override
-	public void setParent(SequenceDataBank parent) {
-		this.parent = parent;
-	}
-
-	@Override
 	public String toString() {
 		return this.name + "@" + this.getFullPath();
 	}
-	
+
 	public boolean check() {
 		if (getDataBankFile().exists()) {
 			return true;
 		}
 		return false;
 	}
-	
+
+	@Override
+	public SequenceEncoder getEncoder() {
+		return encoder;
+	}
+
 }

@@ -12,12 +12,23 @@ import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Lists;
 
+/**
+ * A searcher that does search operation at each data bank of its collection. 
+ * @author albrecht
+ *
+ */
 public class CollectionSearcher extends AbstractSearcher {
 
 	private List<SearchStatus> innerDataBanksStatus = null;
 	private SearchResults sr;
-	private volatile boolean isWaitingChildren;
+	private volatile boolean acceptingResults;
 
+	/**
+	 * @param sp
+	 * @param bank
+	 * @param parent
+	 */
+	@SuppressWarnings("unchecked")
 	public CollectionSearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
 		super(sp, bank, parent);
 
@@ -30,10 +41,14 @@ public class CollectionSearcher extends AbstractSearcher {
 	public synchronized boolean setFinished(SearchStatus searchStatus) {
 		assert searchStatus.getActualStep() == SearchStep.FINISHED || searchStatus.getActualStep() == SearchStep.FATAL_ERROR;
 
+		while (!acceptingResults) {
+			Thread.yield();
+		}
+		
 		sr.addAllHits(searchStatus.getResults().getHits());
+		
 		boolean b = innerDataBanksStatus.remove(searchStatus);
 		if (innerDataBanksStatus.size() == 0) {
-			isWaitingChildren = false;
 			synchronized (ss) {
 				ss.notify();
 			}
@@ -46,6 +61,10 @@ public class CollectionSearcher extends AbstractSearcher {
 		private final SearchParams sp;
 		private final DatabankCollection<SequenceDataBank> databankCollection;
 
+		/**
+		 * @param sp
+		 * @param databankCollection
+		 */
 		public SimilarSearcherDelegate(SearchParams sp, DatabankCollection<SequenceDataBank> databankCollection) {
 			this.sp = sp;
 			this.databankCollection = databankCollection;
@@ -56,6 +75,7 @@ public class CollectionSearcher extends AbstractSearcher {
 			status.setActualStep(SearchStep.SEARCHING_INNER);
 			innerDataBanksStatus = Lists.newLinkedList();
 			innerDataBanksStatus = Collections.synchronizedList(innerDataBanksStatus);
+			acceptingResults = false;
 
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
@@ -63,14 +83,12 @@ public class CollectionSearcher extends AbstractSearcher {
 				Searcher searcher = SearcherFactory.getSearcher(sp, innerBank, CollectionSearcher.this);
 				innerDataBanksStatus.add(searcher.doSearch());
 			}
-
-			if (innerDataBanksStatus.size() > 0) {
-				isWaitingChildren = true;
-			}
+		
+			acceptingResults = true;
 
 			try {
 				synchronized (this) {
-					while (isWaitingChildren) {
+					while (innerDataBanksStatus.size() > 0) {
 						this.wait();
 					}
 				}

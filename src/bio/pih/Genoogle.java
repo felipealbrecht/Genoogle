@@ -29,7 +29,7 @@ public class Genoogle {
 	 * @throws InvalidHeaderData 
 	 * @throws ValueOutOfBoundsException 
 	 */
-	public static void main(String[] args) throws ValueOutOfBoundsException, Exception {
+	public static void main(String[] args) throws Exception {
 		if (args.length < 1) {
 			System.out.println("argumentos inválidos");
 			return;

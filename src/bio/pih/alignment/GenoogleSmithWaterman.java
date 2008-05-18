@@ -383,18 +383,22 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 		throw new BioRuntimeException("The alphabets of the sequences and the substitution matrix have to be equal.");
 	}
 
+	@Override
 	public int getQueryStart() {
 		return queryStart;
 	}
 
+	@Override
 	public int getQueryEnd() {
 		return maxI;
 	}
 
+	@Override
 	public int getTargetStart() {
 		return targetStart;
 	}
 
+	@Override
 	public int getTargetEnd() {
 		return maxJ;
 	}

@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 
 import com.google.common.collect.Lists;
 
@@ -38,6 +39,7 @@ public class ConfigurationXMLReader {
 	/**
 	 * @return {@link List} of {@link SequenceDataBank} that are configured in the XML file.
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<SequenceDataBank> getDataBanks() {
 		Element rootElement = doc.getRootElement();
 		Element databanks = rootElement.element("databanks");
@@ -49,7 +51,7 @@ public class ConfigurationXMLReader {
 		List<SequenceDataBank> sequenceDataBanks = Lists.newLinkedList();
 		Iterator databankIterator = databanks.elementIterator();
 		while (databankIterator.hasNext()) {
-			SequenceDataBank databank = getDatabank((Element) databankIterator.next());
+			SequenceDataBank databank = getDatabank((Element) databankIterator.next(), null);
 			if (databank == null) {
 				return null;
 			}
@@ -59,7 +61,8 @@ public class ConfigurationXMLReader {
 		return sequenceDataBanks;
 	}
 
-	private static SequenceDataBank getDatabank(Element e) {
+	@SuppressWarnings("unchecked")
+	private static SequenceDataBank getDatabank(Element e, DatabankCollection<? extends DNASequenceDataBank> parent) {
 		String name = e.attributeValue("name");
 		String path = e.attributeValue("path");
 		if (name == null) {
@@ -73,8 +76,15 @@ public class ConfigurationXMLReader {
 		}
 
 		if (e.getName().trim().equals("databank")) {
+			StorageKind storageKind = null;
+			String storage = e.attributeValue("storage");
+			if (storage == null || storage.equals("disk")) {
+				storageKind = StorageKind.DISK;
+			} else {
+				storageKind = StorageKind.MEMORY;
+			}
 			try {
-				return new IndexedDNASequenceDataBank(name, new File(path), IndexedSequenceDataBank.StorageKind.MEMORY);
+				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -83,11 +93,11 @@ public class ConfigurationXMLReader {
 		} else if (e.getName().trim().equals("databank-collection")) {
 
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection;
-			databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(name, DNATools.getDNA(), new File(path));
+			databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(name, DNATools.getDNA(), new File(path), parent);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
-					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank((Element) databankIterator.next());
+					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank((Element) databankIterator.next(), databankCollection);
 					if (databank == null) {
 						return null;
 					}

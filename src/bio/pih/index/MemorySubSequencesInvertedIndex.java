@@ -3,66 +3,49 @@ package bio.pih.index;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.encoder.SequenceEncoder;
-import bio.pih.seq.LightweightSymbolList;
+import bio.pih.io.SequenceDataBank;
 import bio.pih.util.IntArray;
 
 /**
+ * An inverted sub-sequences index stored in the memory.
+ * Faster than {@link PersistentSubSequencesInvertedIndex}, but requires much more memory.
+ *  
  * @author albrecht
  */
-public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedIndex {
+public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInvertedIndex {
 
-	protected IntArray index[];
-
-	private final int subSequenceLength;
-	private final int indexSize;
-	private final FiniteAlphabet alphabet;
-	private final int[] EMPTY_ARRAY = new int[0];
-	
-	// Okay, okay.. in some not so near future will be needed to create a
-	// factory and do not use this class directly.
-	private final DNASequenceEncoderToShort compressor;
+	protected IntArray index[] = null;	
 	
 	Logger logger = Logger.getLogger("bio.pih.index.SubSequencesArrayIndex");
 
 	/**
+	 * @param databank 
 	 * @param subSequenceLength
-	 * @param alphabet
 	 * @throws ValueOutOfBoundsException
 	 */
-	public MemorySubSequencesInvertedIndex(int subSequenceLength, FiniteAlphabet alphabet) throws ValueOutOfBoundsException {
-		assert (alphabet != null);
-		assert (subSequenceLength > 0);
-
-		this.subSequenceLength = subSequenceLength;
-		this.alphabet = alphabet;
-
-		this.compressor = new DNASequenceEncoderToShort(subSequenceLength);
-
-		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(alphabet.size());
-		this.indexSize = 1 << indexBitsSize;
-		// this.integerType = getClassFromSize(indexSize);
+	public MemorySubSequencesInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+		super(databank, subSequenceLength);
+	}
+		
+	@Override
+	public void constructIndex() {		
 		this.index = new IntArray[indexSize];
 	}
-
+	
+	@Override
 	public void addSequence(int sequenceId, SymbolList sequence) {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
 		}
 
-		short[] encodedSequence = compressor.encodeSymbolListToShortArray(sequence);
-
+		short[] encodedSequence = encoder.encodeSymbolListToShortArray(sequence);
 		addSequence(sequenceId, encodedSequence);
 	}
 
-        // todo: passar length para ver se a ultima subsequencia nao é parcial
-        // tentar executar com 300 megas
+	@Override
 	public void addSequence(int sequenceId, short[] encodedSequence) {
 		assert sequenceId <= 65535;
 		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
@@ -72,12 +55,14 @@ public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedInde
 		}
 	}
 
-	public void optimize() {
+	@Override
+	public void finishConstruction() throws IOException {
 		for (IntArray bucket : index) {
 			if (bucket != null) {
 				bucket.getArray();
 			}
 		}
+		loaded = true;
 	}
 
 	/**
@@ -94,19 +79,16 @@ public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedInde
 		indexBucket.add(subSequenceInfoEncoded);
 	}
 
-	public int[] getMatchingSubSequence(String subSequenceString) throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
-		LightweightSymbolList subSequence = LightweightSymbolList.constructLightweightSymbolList(alphabet, subSequenceString);
-		return getMachingSubSequence(subSequence);
-	}
-
+	@Override
 	public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
-		short encodedSubSequence = compressor.encodeSubSymbolListToShort(subSequence);
+		short encodedSubSequence = encoder.encodeSubSymbolListToShort(subSequence);
 		return getMachingSubSequence(encodedSubSequence);
 	}
 
+	@Override
 	public int[] getMachingSubSequence(short encodedSubSequence) {
 		IntArray bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
@@ -115,6 +97,7 @@ public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedInde
 		return EMPTY_ARRAY;
 	}
 
+	@Override
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
 		for (IntArray bucket : index) {
@@ -132,7 +115,18 @@ public class MemorySubSequencesInvertedIndex implements SubSequencesInvertedInde
 	}
 	
 	@Override
-	public void write() throws IOException {
-		throw new UnsupportedOperationException(this.getClass().getName() + " does not suport write operation.");
+	public void write() throws IOException { }
+	
+	@Override
+	public void load() throws IOException { }
+	
+	@Override
+	public void check() throws IOException { }
+	
+	@Override
+	// Index in memory should always be reloaded.
+	public boolean exists() {
+		return false;
 	}
+
 }

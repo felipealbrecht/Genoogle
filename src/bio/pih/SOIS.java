@@ -47,22 +47,22 @@ public class SOIS {
 	 * @throws InvalidHeaderData
 	 * @throws DuplicateDatabankException
 	 * @throws UnknowDataBankException
+	 * @throws ValueOutOfBoundsException 
 	 * @throws DocumentException
 	 */
-	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, UnknowDataBankException {
+	public static void main(String[] args) throws IOException, NoSuchElementException, BioException, UnknowDataBankException, ValueOutOfBoundsException {
 		System.out.println("SOIS - Search Over Indexed Sequences.");
 		System.out.println("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
 		System.out.println("Contact at felioe.albrecht@gmail.com");
 		
 		BasicConfigurator.configure();
 
-		
-		List<SequenceDataBank> dataBanks = ConfigurationXMLReader.getDataBanks();
-
 		if (args.length == 0) {
 			showHelp();
 			return;
 		}
+		
+		List<SequenceDataBank> dataBanks = ConfigurationXMLReader.getDataBanks();
 		
 		String option = args[0];
 		

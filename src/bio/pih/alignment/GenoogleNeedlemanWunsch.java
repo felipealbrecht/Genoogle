@@ -403,16 +403,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	int identitySize;
 	long time;
 
-	/**
-	 * Global pairwise sequence alginment of two BioJava-Sequence objects according to the Needleman-Wunsch-algorithm.
-	 * 
-	 * @param query
-	 * @param subject
-	 * @return the alignment score
-	 * @throws BioRuntimeException
-	 * 
-	 * @see org.biojava.bio.alignment.SequenceAlignment#fastPairwiseAlignment(org.biojava.bio.seq.Sequence, org.biojava.bio.seq.Sequence)
-	 */
+	@Override
 	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet()) && query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
@@ -593,42 +584,71 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
 	}
 
+	/**
+	 * @return {@link String} containing the representation of the query aligned.
+	 */
 	public String getQueryAligned() {
 		return align[0];
 	}
-
+	/**
+	 * @return {@link String} containing the representation of the target aligned.
+	 */
 	public String getTargetAligned() {
 		return align[1];
 	}
 
+	/**
+	 * @return {@link String} containing the representation of the alignment path.
+	 */
 	public String getPath() {
 		return path;
 	}
 
+	/**
+	 * @return position in the alignment where the query starts. 
+	 */
 	public int getQueryStart() {
 		return 0;
 	}
 
+	/**
+	 * @return position in the alignment where the target starts. 
+	 */
 	public int getTargetStart() {
 		return 0;
 	}
 
+	/**
+	 * @return position in the alignment where the query ends. 
+	 */
 	public int getQueryEnd() {
 		return costMatrix.length - 1;
 	}
 
+	/**
+	 * @return position in the alignment where the target ends. 
+	 */
 	public int getTargetEnd() {
 		return costMatrix[0].length - 1;
 	}
 
+	/**
+	 * @return total time of the alignment. 
+	 */
 	public long getTime() {
 		return time;
 	}
 	
+	/**
+	 * @return alignment score. 
+	 */
 	public double getScore() {
 		return score;
 	}	
 	
+	/**
+	 * @return the identity size of the alignment. 
+	 */
 	public int getIdentitySize() {
 		return identitySize;
 	}
