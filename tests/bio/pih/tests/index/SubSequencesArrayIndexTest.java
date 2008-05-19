@@ -8,17 +8,17 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.junit.Test;
 
-import bio.pih.index.SubSequencesInvertedIndex;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.MemorySubSequencesInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.IndexedDNASequenceDataBank;
+import bio.pih.io.SequenceDataBank;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.generator.DNASequencesPopulator;
 
@@ -29,11 +29,12 @@ import bio.pih.seq.generator.DNASequencesPopulator;
  */
 public class SubSequencesArrayIndexTest extends TestCase {
 
-	SubSequencesInvertedIndex index;
+	MemorySubSequencesInvertedIndex index;
 	
 	@Override
 	protected void setUp() throws Exception {
-		index = new MemorySubSequencesInvertedIndex(8, DNATools.getDNA());		
+		SequenceDataBank dataBank = new IndexedDNASequenceDataBank("dummy", null, null);
+		index = new MemorySubSequencesInvertedIndex (dataBank, 8);		
 	}
 	
 	@Override
@@ -41,7 +42,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		index = null;
 	}
 
-	private void populateNonSoRandomSequences(SubSequencesInvertedIndex index) throws IllegalSymbolException {			
+	private void populateNonSoRandomSequences(MemorySubSequencesInvertedIndex  index) throws IllegalSymbolException {			
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
 		SimpleSequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
@@ -112,7 +113,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException {
 		populateNonSoRandomSequences(index);
 		
-		int[] matchingSubSequence = index.getMatchingSubSequence("AAAAAAAA");
+		int[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("AAAAAAAA"));
 		
 		assertEquals(7, matchingSubSequence.length);
 		assertEquals(4, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
@@ -136,7 +137,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		assertEquals(4, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[6]));
 		assertEquals(48, EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[6]));
 		
-		matchingSubSequence = index.getMatchingSubSequence("GCATGCAT");
+		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("GCATGCAT"));
 		assertEquals(2, matchingSubSequence.length);
 		
 		assertEquals(1, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
@@ -165,7 +166,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 			code++;
 		}
 		
-		int[] matchingSubSequence = index.getMatchingSubSequence("TCTTGCCC");
+		int[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCTTGCCC"));
 		assertEquals(2, matchingSubSequence.length);
 		assertEquals(132, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		assertEquals(152, EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
@@ -173,12 +174,12 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		assertEquals(483, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
 		assertEquals(224, EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[1]));
 				
-		matchingSubSequence = index.getMatchingSubSequence("GAGAATAC");
+		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("GAGAATAC"));
 		assertEquals(1, matchingSubSequence.length);
 		assertEquals(0, EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		assertEquals(0, EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(matchingSubSequence[0]));
 		
-		matchingSubSequence = index.getMatchingSubSequence("TCTTGCCG");
+		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCTTGCCG"));
 		assertEquals(0, matchingSubSequence.length);	
 	}
 	

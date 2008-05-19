@@ -76,14 +76,14 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException 
 	 */
-	abstract public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException;
+	abstract public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException;
 
 	/**
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it.
 	 * @throws IOException 
 	 */
-	abstract public int[] getMachingSubSequence(short encodedSubSequence) throws IOException;
+	abstract public int[] getMatchingSubSequence(short encodedSubSequence) throws IOException;
 
 	/**
 	 * @return a string containing the status of the index.

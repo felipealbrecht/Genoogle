@@ -84,16 +84,16 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 	}
 
 	@Override
-	public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+	public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
 		short encodedSubSequence = encoder.encodeSubSymbolListToShort(subSequence);
-		return getMachingSubSequence(encodedSubSequence);
+		return getMatchingSubSequence(encodedSubSequence);
 	}
 
 	@Override
-	public int[] getMachingSubSequence(short encodedSubSequence) {
+	public int[] getMatchingSubSequence(short encodedSubSequence) {
 		IntArray bucket = index[encodedSubSequence & 0xFFFF];
 		if (bucket != null) {
 			return bucket.getArray();

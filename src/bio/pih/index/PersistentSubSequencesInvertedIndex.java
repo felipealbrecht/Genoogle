@@ -83,7 +83,7 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 		RandomAccessFile dataRAF = new RandomAccessFile(getIndexDataFile(), "r");
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMachingSubSequence((short)i);
+			int[] bucket = temporaryIndex.getMatchingSubSequence((short)i);
 
 			assert indexRAF.readInt() == i;
 			assert indexRAF.readInt() == bucket.length;
@@ -106,7 +106,7 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 		FileChannel dataChannel = new FileOutputStream(dataFile).getChannel();
 		
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMachingSubSequence((short)i);
+			int[] bucket = temporaryIndex.getMatchingSubSequence((short)i);
 
 			ByteBuffer buffer = ByteBuffer.allocate(16);
 			buffer.putInt(i);
@@ -175,17 +175,17 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 	}
 
 	@Override
-	public int[] getMachingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException {
+	public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
 		short encodedSubSequence = encoder.encodeSubSymbolListToShort(subSequence);
 		
-		return getMachingSubSequence(encodedSubSequence);
+		return getMatchingSubSequence(encodedSubSequence);
 	}
 
 	@Override
-	public int[] getMachingSubSequence(short encodedSubSequence) throws IOException {
+	public int[] getMatchingSubSequence(short encodedSubSequence) throws IOException {
 		int encodedSubSequenceInt = encodedSubSequence & 0xFFFF;
 		int quantity = indexQtd[encodedSubSequenceInt];
 		long offset = indexOffsets[encodedSubSequenceInt];

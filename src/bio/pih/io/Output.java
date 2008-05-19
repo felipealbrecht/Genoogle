@@ -44,6 +44,25 @@ public class Output {
 
 		return doc;
 	}
+	
+	/**
+	 * @param searchResult
+	 * 
+	 * @return {@link Document} containing the {@link SearchResults} in XML form.
+	 */
+	public static Document genoogleOutputToXML(SearchResults searchResult) {
+		assert searchResult != null;
+		DocumentFactory factory = DocumentFactory.getInstance();
+
+		Document doc = factory.createDocument();
+		doc.setName("Genoogle Output");
+
+		Element output = doc.addElement("GenoogleOutput");
+		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
+		output.add(searchResultToXML(searchResult));
+		
+		return doc;
+	}
 
 	/**
 	 * @param searchResult

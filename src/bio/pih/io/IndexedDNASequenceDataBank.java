@@ -122,7 +122,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	}
 
 	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException {
-		return index.getMachingSubSequence(encodedSubSequence);
+		return index.getMatchingSubSequence(encodedSubSequence);
 	}
 
 	public int[] getSimilarSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {

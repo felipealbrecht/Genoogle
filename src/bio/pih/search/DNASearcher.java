@@ -35,6 +35,8 @@ import com.google.common.collect.Lists;
  */
 public class DNASearcher extends AbstractSearcher {
 
+	Logger logger = Logger.getLogger(this.getClass().getName());
+	
 	/**
 	 * @param sp
 	 * @param bank
@@ -69,7 +71,6 @@ public class DNASearcher extends AbstractSearcher {
 
 		@Override
 		public void run() {
-			Logger logger = Logger.getLogger("pih.bio.search.DNASearcher.SimilarSearcher");
 
 			SymbolList querySequence = sp.getQuery();
 
