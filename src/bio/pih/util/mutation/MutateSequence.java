@@ -1,6 +1,5 @@
-package bio.pih;
+package bio.pih.util.mutation;
 
-import bio.pih.util.mutation.SequenceMutator;
 
 /**
  * Generate a list of mutate sequences based on a given seed.
