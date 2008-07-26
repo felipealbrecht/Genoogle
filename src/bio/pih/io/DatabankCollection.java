@@ -256,7 +256,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();

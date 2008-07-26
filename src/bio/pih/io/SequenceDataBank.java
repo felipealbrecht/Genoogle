@@ -95,8 +95,9 @@ public interface SequenceDataBank {
 	 * @throws IOException 
 	 * @throws BioException 
 	 * @throws NoSuchElementException 
+	 * @throws ValueOutOfBoundsException 
 	 */
-	void encodeSequences() throws IOException, NoSuchElementException, BioException;
+	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException;
 
 	/**
 	 * Add a new sequence into the sequence bank

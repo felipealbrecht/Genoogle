@@ -172,12 +172,15 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @throws IOException
 	 * @throws BioException
 	 * @throws NoSuchElementException
+	 * @throws ValueOutOfBoundsException 
 	 */
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
 		if (getDataBankFile().exists()) {
 			throw new IOException("File " + getDataBankFile() + " already exists. Please remove it before creating another file.");
 		}
+		beginSequencesProcessing();
 		addFastaFile(getFullPath());
+		finishSequencesProcessing();
 	}
 
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {

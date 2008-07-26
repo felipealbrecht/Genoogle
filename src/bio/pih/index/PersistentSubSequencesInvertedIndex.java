@@ -186,6 +186,8 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 
 	@Override
 	public int[] getMatchingSubSequence(short encodedSubSequence) throws IOException {
+		assert getDataFileChannel().size() > 0;
+		
 		int encodedSubSequenceInt = encodedSubSequence & 0xFFFF;
 		int quantity = indexQtd[encodedSubSequenceInt];
 		long offset = indexOffsets[encodedSubSequenceInt];
