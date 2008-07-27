@@ -12,9 +12,7 @@
   </genoogle:search-parameters>
 
   <genoogle:databanks>
-    
-    <genoogle:databank name="FullRefSeq"       path="files/fasta/full_rna.fna"   storage="disk" />
-    
+      
     <genoogle:databank-collection name="RefSeq" path="files/fasta" >
        <genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
        <genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 

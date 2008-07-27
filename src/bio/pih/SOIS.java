@@ -97,7 +97,7 @@ public class SOIS {
 
 	/**
 	 * @param code
-	 * @return
+	 * @return {@link Document} containing the results of the search.
 	 */
 	public Document getResult(long code) {
 		SearchResults result = sm.getResult(code);

@@ -11,32 +11,31 @@
 		<available classpath="${java.class.path}" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTest" property="junit.support" />
 
 
-		<property name="name"    value="Genoogle" />
+		<property name="name" value="Genoogle" />
 		<property name="version" value="0.01" />
 
-		<property name="docs.dir"  location="./doc/javadoc" />
-		<property name="src.dir"   location="./src" />
-		<property name="classpath" location="./lib/biojava-genoogle.jar:lib/google-collect-snapshot-20080321.jar:lib/log4j-1.2.15.jar:lib/dom4j-1.6.1.jar"/>
-
+		<property name="docs.dir" location="./doc/javadoc" />
+		<property name="src.dir" location="./src" />
+		
 		<!-- Main build directory -->
-		<property name="build.dir"         location="./ant-build" />
+		<property name="build.dir" location="./ant-build" />
 		<property name="build.classes.dir" location="${build.dir}/classes" />
 
 		<!-- Jar configuration -->
 		<property name="manifest.dir" location="./manifest" />
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
 
-                
+
 		<!-- Javac properties -->
-		<property name="javac.depend"      value="false" />
-		<property name="javac.debug"       value="true" />
+		<property name="javac.depend" value="false" />
+		<property name="javac.debug" value="true" />
 		<property name="javac.deprecation" value="false" />
-		<property name="javac.source"      value="6" />
-		<property name="javac.target"      value="6" />
+		<property name="javac.source" value="6" />
+		<property name="javac.target" value="6" />
 
 		<!-- Javadoc properties -->
 		<property name="build.docs" location="${build.dir}/docs" />
-		<property name="packages"   value="bio.pih.*" />
+		<property name="packages" value="bio.pih.*" />
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
@@ -58,7 +57,9 @@
 	<target name="compile" depends="prepare">
 		<javac encoding="ISO-8859-15" srcdir="${src.dir}" destdir="${build.classes.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}" debug="${javac.debug}">
 			<classpath>
-				<pathelement path="${classpath}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
 			</classpath>
 		</javac>
 	</target>
@@ -92,7 +93,9 @@
 			<arg value="files/workers" />
 			<classpath>
 				<pathelement location="${jar.genoogle}" />
-				<pathelement path="${classpath}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
 			</classpath>
 		</java>
 	</target>
@@ -103,16 +106,34 @@
 			<arg value="5000" />
 			<classpath>
 				<pathelement location="${jar.genoogle}" />
-				<pathelement path="${classpath}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
 			</classpath>
 		</java>
-		
+
 		<java classname="bio.pih.Genoogle" fork="true" spawn="true">
 			<arg value="-w" />
 			<arg value="5001" />
 			<classpath>
 				<pathelement location="${jar.genoogle}" />
-				<pathelement path="${classpath}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="start-web" depends="package">
+		<echo message="Starting web server" />
+
+		<java classname="bio.pih.web.WebServer" fork="true">
+			<arg value="/home/albrecht/genoogle/webapps" />
+			<classpath>
+				<pathelement location="${jar.genoogle}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
 			</classpath>
 		</java>
 	</target>
@@ -143,11 +164,11 @@
 			</batchtest>
 		</junit>
 	</target>
-	
-    <target name="clear" depends="init" description="clean">
-    	<echo message="Deleting ${build.dir}"/>
-        <delete dir="${build.dir}" />
-    </target>
+
+	<target name="clear" depends="init" description="clean">
+		<echo message="Deleting ${build.dir}" />
+		<delete dir="${build.dir}" />
+	</target>
 
 
 

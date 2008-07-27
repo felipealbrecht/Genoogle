@@ -5,8 +5,27 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/biojava-svn/src/org/biojava/bio/seq"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JVM 1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-6-sun-1.6.0.06"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080321.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/bin/bootstrap.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/bin/commons-daemon.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/bin/tomcat-juli.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/catalina.jar" sourcepath="/home/albrecht/Desktop/apache-tomcat-6.0.16-src/java"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/annotations-api.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/el-api.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/jasper.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/catalina-ha.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/catalina-tribes.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/jasper-el.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/jasper-jdt.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/tomcat-coyote.jar" sourcepath="/home/albrecht/Desktop/apache-tomcat-6.0.16-src/java"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/tomcat-dbcp.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/tomcat-i18n-es.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/tomcat-i18n-fr.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/Desktop/apache-tomcat-6.0.16/lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
