@@ -43,8 +43,9 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @return a list containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it. 
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException 
+	 * @throws InvalidHeaderData 
 	 */
-	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException;
+	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 	
 	
 

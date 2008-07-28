@@ -21,43 +21,44 @@ import bio.pih.io.SequenceDataBank;
  * 
  * @author albrecht
  */
-public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInvertedIndex {
+public class PersistentSubSequencesInvertedIndex extends
+		AbstractSubSequencesInvertedIndex {
 
 	private static final int TOTAL_SUB_SEQUENCES = (int) Math.pow(4, 8);
 	private String indexDataFileName = null;;
 	private String indexIndexFileName = null;
 	private File indexDataFile = null;
 	private File indexIndexFile = null;
-	
+
 	long[] indexOffsets = null;
 	int[] indexQtd = null;
-	
+
 	RandomAccessFile indexDataRAF = null;
-	
+
 	private MemorySubSequencesInvertedIndex temporaryIndex = null;
-	
+
 	/**
-	 * @param databank 
+	 * @param databank
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public PersistentSubSequencesInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
-		super(databank, subSequenceLength);		 		
-		indexDataFileName = databank.getFullPath()+".index.dat";
-		indexIndexFileName = databank.getFullPath()+".index.idx";
+	public PersistentSubSequencesInvertedIndex(SequenceDataBank databank,
+			int subSequenceLength) throws ValueOutOfBoundsException {
+		super(databank, subSequenceLength);
+		indexDataFileName = databank.getFullPath() + ".index.dat";
+		indexIndexFileName = databank.getFullPath() + ".index.idx";
 	}
 
-	
 	private File getIndexDataFile() {
 		if (indexDataFile == null) {
-			indexDataFile = new File(indexDataFileName); 
+			indexDataFile = new File(indexDataFileName);
 		}
 		return indexDataFile;
 	}
-	
+
 	private File getIndexIndexFile() {
 		if (indexIndexFile == null) {
-			indexIndexFile = new File(indexIndexFileName); 
+			indexIndexFile = new File(indexIndexFileName);
 		}
 		return indexIndexFile;
 	}
@@ -66,11 +67,14 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 	public void load() throws IOException {
 		this.indexOffsets = new long[TOTAL_SUB_SEQUENCES];
 		this.indexQtd = new int[TOTAL_SUB_SEQUENCES];
-		
-		MappedByteBuffer mappedIndexIndexFile = new FileInputStream(getIndexIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexIndexFile().length());
+
+		MappedByteBuffer mappedIndexIndexFile = new FileInputStream(
+				getIndexIndexFile()).getChannel().map(MapMode.READ_ONLY, 0,
+				getIndexIndexFile().length());
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			assert mappedIndexIndexFile.getInt() == i;
+			int idxPos = mappedIndexIndexFile.getInt();
+			assert idxPos == i;
 			indexQtd[i] = mappedIndexIndexFile.getInt();
 			indexOffsets[i] = mappedIndexIndexFile.getLong();
 		}
@@ -79,20 +83,28 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 
 	@Override
 	public void check() throws IOException {
-		RandomAccessFile indexRAF = new RandomAccessFile(getIndexIndexFile(), "r");
+		RandomAccessFile indexRAF = new RandomAccessFile(getIndexIndexFile(),
+				"r");
 		RandomAccessFile dataRAF = new RandomAccessFile(getIndexDataFile(), "r");
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMatchingSubSequence((short)i);
+			int[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
 
-			assert indexRAF.readInt() == i;
-			assert indexRAF.readInt() == bucket.length;
-			assert indexRAF.readLong() == dataRAF.getFilePointer();
+			int readI = indexRAF.readInt();
+			assert readI == i;
+			int length = indexRAF.readInt();
+			assert length == bucket.length;
+			long filePointerReaded = indexRAF.readLong();
+			long filePointer = dataRAF.getFilePointer();
+			assert filePointerReaded == filePointer;
 
-			assert dataRAF.readInt() == i;
-			assert dataRAF.readInt() == bucket.length;
+			readI = dataRAF.readInt();
+			assert readI == i;
+			length = dataRAF.readInt();
+			assert length == bucket.length;
 			for (int pos = 0; pos < bucket.length; pos++) {
-				assert bucket[pos] == dataRAF.readInt();
+				int bucketPos = dataRAF.readInt();
+				assert bucketPos == bucket[pos];
 			}
 		}
 	}
@@ -104,9 +116,9 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 
 		FileChannel indexChannel = new FileOutputStream(indexFile).getChannel();
 		FileChannel dataChannel = new FileOutputStream(dataFile).getChannel();
-		
+
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMatchingSubSequence((short)i);
+			int[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
 
 			ByteBuffer buffer = ByteBuffer.allocate(16);
 			buffer.putInt(i);
@@ -127,15 +139,14 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 		indexChannel.close();
 		dataChannel.close();
 	}
-	
-	
+
 	private boolean existsChecked = false;
 	private boolean exists = false;
-	private FileChannel indexDataFileChannel; 
-	
+	private FileChannel indexDataFileChannel;
+
 	@Override
 	public boolean exists() {
-		if (existsChecked == false) {			
+		if (existsChecked == false) {
 			if (getIndexDataFile().exists() && getIndexIndexFile().exists()) {
 				exists = true;
 			} else {
@@ -145,72 +156,85 @@ public class PersistentSubSequencesInvertedIndex extends AbstractSubSequencesInv
 		}
 		return exists;
 	}
-	
+
 	@Override
 	public void constructIndex() throws ValueOutOfBoundsException {
-		temporaryIndex = new MemorySubSequencesInvertedIndex(this.databank, this.subSequenceLength);
+		temporaryIndex = new MemorySubSequencesInvertedIndex(this.databank,
+				this.subSequenceLength);
 		temporaryIndex.constructIndex();
 	}
 
 	@Override
 	public void addSequence(int sequenceId, SymbolList sequence) {
 		if (temporaryIndex != null) {
-			temporaryIndex.addSequence(sequenceId, sequence);			
+			temporaryIndex.addSequence(sequenceId, sequence);
 		}
-		
+
 	}
 
 	@Override
 	public void addSequence(int sequenceId, short[] encodedSequence) {
 		if (temporaryIndex != null) {
-			temporaryIndex.addSequence(sequenceId, encodedSequence);			
-		}		
+			temporaryIndex.addSequence(sequenceId, encodedSequence);
+		}
 	}
 
 	@Override
-	public void finishConstruction() throws IOException {		
+	public void finishConstruction() throws IOException {
 		this.write();
 		this.temporaryIndex = null;
 		this.load();
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException {
+	public int[] getMatchingSubSequence(SymbolList subSequence)
+			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		if (subSequence.length() != subSequenceLength) {
-			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
+			throw new ValueOutOfBoundsException(
+					"The length ("
+							+ subSequence.length()
+							+ ") of the given sequence is different from the sub-sequence ("
+							+ subSequenceLength + ")");
 		}
-		short encodedSubSequence = encoder.encodeSubSymbolListToShort(subSequence);
-		
+		short encodedSubSequence = encoder
+				.encodeSubSymbolListToShort(subSequence);
+
 		return getMatchingSubSequence(encodedSubSequence);
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(short encodedSubSequence) throws IOException {
+	public int[] getMatchingSubSequence(short encodedSubSequence)
+			throws IOException, InvalidHeaderData {
 		assert getDataFileChannel().size() > 0;
-		
+
 		int encodedSubSequenceInt = encodedSubSequence & 0xFFFF;
 		int quantity = indexQtd[encodedSubSequenceInt];
 		long offset = indexOffsets[encodedSubSequenceInt];
-		
+
 		int resultsInByte = quantity * 4;
-		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 4 + 4 + resultsInByte);
+		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY,
+				offset, 4 + 4 + resultsInByte);
 
 		IntBuffer buffer = map.asIntBuffer();
-		assert buffer.get() == encodedSubSequenceInt;
-		assert buffer.get() == quantity;
-		
+		if ( buffer.get() != encodedSubSequenceInt) {
+			throw new InvalidHeaderData("encodedSubSequenceInt readen is wrong");
+		}
+		if  (buffer.get() != quantity) {
+			throw new InvalidHeaderData("quantity readen is wrong");
+		}
+
 		int bucket[] = new int[quantity];
 		buffer.get(bucket);
-		return bucket;	
+		return bucket;
 	}
 
 	private FileChannel getDataFileChannel() throws FileNotFoundException {
 		if (indexDataFileChannel == null) {
-			indexDataFileChannel = new FileInputStream(getIndexDataFile()).getChannel();
+			indexDataFileChannel = new FileInputStream(getIndexDataFile())
+					.getChannel();
 		}
 		return indexDataFileChannel;
 	}
-	
 
 	@Override
 	public String indexStatus() {

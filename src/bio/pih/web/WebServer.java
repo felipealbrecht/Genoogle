@@ -10,45 +10,43 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Embedded;
 
+import bio.pih.SOIS;
+
 public class WebServer {
 
 	private volatile boolean running = true;
 	Embedded embedded = null;
-	private final String path;
-	
+
 	public WebServer(String path) throws LifecycleException {
-		this.path = path;
-		System.out.println(path);
-		System.out.println(new File(".").getAbsoluteFile());
-		assert(new File(path).exists());
-		
+		assert (new File(path).exists());
+		System.out.println(SOIS.getInstance().getClass() + " loaded.");
 		System.setProperty("catalina.home", path);
-		
+
 		embedded = new Embedded();
-		
+
 		Engine engine = embedded.createEngine();
 		engine.setDefaultHost("localhost");
-		
-		Host host = embedded.createHost("localhost", path+"/");
+
+		Host host = embedded.createHost("localhost", path + "/");
 		engine.addChild(host);
 		engine.setName("genoogle httpd");
-		
-		Context context = embedded.createContext("", path+"/ROOT/");
+
+		Context context = embedded.createContext("", path + "/ROOT/");
 		host.addChild(context);
-		
+
 		embedded.addEngine(engine);
 		Connector connector = embedded.createConnector((InetAddress) null,
 				8080, false);
-		embedded.addConnector(connector);		
+		embedded.addConnector(connector);
 	}
-	
+
 	public void start() throws LifecycleException {
 		embedded.start();
 		while (running) {
 			Thread.yield();
 		}
 	}
-	
+
 	public void stop() throws LifecycleException {
 		embedded.stop();
 		running = false;
