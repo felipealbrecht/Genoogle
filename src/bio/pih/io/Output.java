@@ -31,9 +31,9 @@ public class Output {
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Document doc = factory.createDocument();
-		doc.setName("Genoogle Output");
+		doc.setName("genoogle");
 
-		Element output = doc.addElement("GenoogleOutput");
+		Element output = doc.addElement("genoogle").addAttribute("version", "1");
 		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
 		Element iterationsElement = output.addElement("iterations");
 
@@ -55,9 +55,9 @@ public class Output {
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Document doc = factory.createDocument();
-		doc.setName("Genoogle Output");
+		doc.setName("genoogle");
 
-		Element output = doc.addElement("GenoogleOutput");
+		Element output = doc.addElement("genoogle");
 		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
 		output.add(searchResultToXML(searchResult));
 		

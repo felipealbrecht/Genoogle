@@ -1,12 +1,19 @@
 package bio.pih;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -15,6 +22,8 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.io.DocumentResult;
+import org.dom4j.io.DocumentSource;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -137,11 +146,12 @@ public class SOIS {
 	 * @throws DuplicateDatabankException
 	 * @throws UnknowDataBankException
 	 * @throws ValueOutOfBoundsException
+	 * @throws TransformerException 
 	 * @throws DocumentException
 	 */
 	public static void main(String[] args) throws IOException,
 			NoSuchElementException, BioException, UnknowDataBankException,
-			ValueOutOfBoundsException {
+			ValueOutOfBoundsException, TransformerException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 
 		logger.info("SOIS - Search Over Indexed Sequences.");
@@ -176,7 +186,7 @@ public class SOIS {
 
 		else if (option.equals("-s")) {
 			logger.info("Initalizing SOIS for searchs.");
-			
+
 			String inputFile = args[1];
 			String databank = args[2];
 
@@ -202,12 +212,26 @@ public class SOIS {
 					+ (System.currentTimeMillis() - beginTime));
 
 			Document document = Output.genoogleOutputToXML(results);
+//			OutputFormat outformat = OutputFormat.createPrettyPrint();
+//			outformat.setEncoding("UTF-8");
+//			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(
+//					inputFile + "_results.xml")), outformat);
+//			writer.write(document);
+//			writer.flush();
+			
+			TransformerFactory factory = TransformerFactory.newInstance();
+			Transformer transformer = factory
+				.newTransformer(new StreamSource("/home/albrecht/genoogle/webapps/ROOT/results.xsl"));
+			DocumentSource source = new DocumentSource(document);
+			DocumentResult result = new DocumentResult();
+			transformer.transform(source, result);
+			Document resultDocument = result.getDocument();
 			OutputFormat outformat = OutputFormat.createPrettyPrint();
 			outformat.setEncoding("UTF-8");
-			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(
-					inputFile + "_results.xml")), outformat);
-			writer.write(document);
-			writer.flush();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			XMLWriter writer = new XMLWriter(outputStream, outformat);
+			writer.write(resultDocument);
+			System.out.print(outputStream);
 		} else {
 			showHelp();
 		}

@@ -127,7 +127,7 @@
 	<target name="start-web" depends="package">
 		<echo message="Starting web server" />
 
-		<java classname="bio.pih.web.WebServer" fork="true">
+		<java maxmemory="512m" classname="bio.pih.web.WebServer" fork="true">
 			<arg value="/home/albrecht/genoogle/webapps" />
 			<classpath>
 				<pathelement location="${jar.genoogle}" />
