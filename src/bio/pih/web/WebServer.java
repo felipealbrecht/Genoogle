@@ -17,7 +17,10 @@ public class WebServer {
 	private volatile boolean running = true;
 	Embedded embedded = null;
 
-	public WebServer(String path) throws LifecycleException {
+	public WebServer(String defaultHost, int port, String path) throws LifecycleException {
+		System.out.println(defaultHost);
+		System.out.println(path);
+		
 		assert (new File(path).exists());
 		System.out.println(SOIS.getInstance().getClass() + " loaded.");
 		System.setProperty("catalina.home", path);
@@ -25,18 +28,18 @@ public class WebServer {
 		embedded = new Embedded();
 
 		Engine engine = embedded.createEngine();
-		engine.setDefaultHost("localhost");
+		engine.setDefaultHost(defaultHost);
 
-		Host host = embedded.createHost("localhost", path + "/");
+		Host host = embedded.createHost(defaultHost, path + "/");
 		engine.addChild(host);
 		engine.setName("genoogle httpd");
 
-		Context context = embedded.createContext("", path + "/ROOT/");
+		Context context = embedded.createContext("", path + "/genoogle/");
 		host.addChild(context);
-
+	
 		embedded.addEngine(engine);
 		Connector connector = embedded.createConnector((InetAddress) null,
-				8080, false);
+				port, false);
 		embedded.addConnector(connector);
 	}
 
@@ -53,8 +56,11 @@ public class WebServer {
 	}
 
 	public static void main(String[] args) throws LifecycleException {
-		String path = args[0];
+		String defaultHost = args[0];
+		String path = args[1];
+		int port = Integer.parseInt(args[2]);
 
-		new WebServer(path).start();
+
+		new WebServer(defaultHost, port, path).start();
 	}
 }

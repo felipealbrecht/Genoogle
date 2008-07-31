@@ -16,7 +16,7 @@
 
 		<property name="docs.dir" location="./doc/javadoc" />
 		<property name="src.dir" location="./src" />
-		
+
 		<!-- Main build directory -->
 		<property name="build.dir" location="./ant-build" />
 		<property name="build.classes.dir" location="${build.dir}/classes" />
@@ -24,6 +24,7 @@
 		<!-- Jar configuration -->
 		<property name="manifest.dir" location="./manifest" />
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
+		<property name="jar.genoogle" location="${build.dir}/genoogle.war" />
 
 
 		<!-- Javac properties -->
@@ -65,6 +66,10 @@
 	</target>
 
 	<target name="package" depends="compile">
+<!--		<war destfile="${war.genoogle}">
+			<fileset dir="webapps"/>
+		</war>
+		-->
 		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
 			<fileset dir="${build.classes.dir}" />
 		</jar>
@@ -128,7 +133,9 @@
 		<echo message="Starting web server" />
 
 		<java maxmemory="512m" classname="bio.pih.web.WebServer" fork="true">
+			<arg value="localhost" />
 			<arg value="/home/albrecht/genoogle/webapps" />
+			<arg value="8080"/>
 			<classpath>
 				<pathelement location="${jar.genoogle}" />
 				<fileset dir="./lib">
