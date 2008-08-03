@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import bio.pih.scheduler.AbstractWorker;
-import bio.pih.scheduler.Scheduler;
+import bio.pih.scheduler.Dispatcher;
 import bio.pih.scheduler.communicator.Communicator;
 import bio.pih.scheduler.interfaces.CommandLine;
 
@@ -52,7 +52,7 @@ public class SchedulerTest extends TestCase {
 	public void testSchedulerStartUpAndFinalization() throws IOException, InterruptedException {				
 		String[] hosts = new String[] {};
 		
-		Scheduler s = new Scheduler(hosts);
+		Dispatcher s = new Dispatcher(hosts);
 		s.start();
 		while (!s.isReady() && !s.hasWorker()) {
 			Thread.sleep(100);
@@ -79,7 +79,7 @@ public class SchedulerTest extends TestCase {
 		
 		String[] hosts = new String[] {"localhost:50000", "localhost:50001"};
 		
-		Scheduler s = new Scheduler(hosts);
+		Dispatcher s = new Dispatcher(hosts);
 		s.start();
 		while (!s.isReady()) {
 			Thread.sleep(100);
@@ -121,7 +121,7 @@ public class SchedulerTest extends TestCase {
 		
 		String[] hosts = new String[] {"localhost:50000", "localhost:50001", "localhost:50002"};
 		
-		Scheduler s = new Scheduler(hosts);
+		Dispatcher s = new Dispatcher(hosts);
 		s.start();
 		while (!s.isReady()) {
 			Thread.sleep(100);
@@ -166,7 +166,7 @@ public class SchedulerTest extends TestCase {
 		
 		String[] hosts = new String[] {"localhost:50000", "localhost:50001", "localhost:50002"};
 		
-		Scheduler s = new Scheduler(hosts);
+		Dispatcher s = new Dispatcher(hosts);
 		s.start();
 		while (!s.isReady()) {
 			Thread.sleep(100);
@@ -218,7 +218,7 @@ public class SchedulerTest extends TestCase {
 		
 		String[] hosts = new String[] {"localhost:50000", "localhost:50001"};
 		
-		Scheduler s = new Scheduler(hosts);
+		Dispatcher s = new Dispatcher(hosts);
 		s.start();
 		while (!s.isReady()) {
 			Thread.sleep(100);

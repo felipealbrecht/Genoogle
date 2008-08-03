@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.io.ConfigurationXMLReader;
+import bio.pih.io.XMLConfigurationReader;
 
 /**
  * A class to hold parameters for a search. Now it is a bit useless, but when more parameters will be added, they should be stored here.
@@ -27,33 +27,33 @@ public class SearchParams implements Serializable {
 	/**
 	 * Default similarity threshold at the similar sub-sequences index. 
 	 */
-	public static final int DEFAULT_MIN_SIMILARITY = ConfigurationXMLReader.getSubSequenceMinSimilarity();
+	public static final int DEFAULT_MIN_SIMILARITY = XMLConfigurationReader.getSubSequenceMinSimilarity();
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence at data bank to be considered at same area.
 	 */
-	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getDataBankMaxSubSequenceDistance();
+	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getDataBankMaxSubSequenceDistance();
 	
 	/**
 	 * Default minimum data bank sequence area length.
 	 */
-	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = ConfigurationXMLReader.getDataBankMinMatchAreaLength();
+	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = XMLConfigurationReader.getDataBankMinMatchAreaLength();
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a query sequence to be considered at same area.
 	 */
-	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = ConfigurationXMLReader.getQueryMaxSubSequenceDistance();
+	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getQueryMaxSubSequenceDistance();
 	
 	/**
 	 * Default minimum query sequence area length.
 	 */
-	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = ConfigurationXMLReader.getQueryMinSubSequenceLength();
+	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = XMLConfigurationReader.getQueryMinSubSequenceLength();
 	
 	
 	/**
 	 * Drop off for sequences extension.
 	 */
-	public static final int SEQUENCES_EXTEND_DROPOFF = ConfigurationXMLReader.getExtendDropoff();
+	public static final int SEQUENCES_EXTEND_DROPOFF = XMLConfigurationReader.getExtendDropoff();
 
 	/**
 	 * @param query

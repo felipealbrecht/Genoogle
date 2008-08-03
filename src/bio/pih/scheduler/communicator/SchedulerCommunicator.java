@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import bio.pih.scheduler.Scheduler;
+import bio.pih.scheduler.Dispatcher;
 import bio.pih.scheduler.communicator.message.LoginMessage;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
@@ -19,7 +19,7 @@ import bio.pih.scheduler.communicator.message.WelcomeMessage;
  * 
  */
 public class SchedulerCommunicator implements Communicator {
-	private Scheduler scheduler;
+	private Dispatcher scheduler;
 	volatile boolean isReady;
 
 	/**
@@ -27,7 +27,7 @@ public class SchedulerCommunicator implements Communicator {
 	 * 
 	 * @param scheduler
 	 */
-	public SchedulerCommunicator(Scheduler scheduler) {
+	public SchedulerCommunicator(Dispatcher scheduler) {
 		this.isReady = false;
 		this.scheduler = scheduler;
 	}
@@ -94,9 +94,9 @@ public class SchedulerCommunicator implements Communicator {
 	}
 
 	/**
-	 * @return the {@link Scheduler} that this communicator is related
+	 * @return the {@link Dispatcher} that this communicator is related
 	 */
-	public Scheduler getScheduler() {
+	public Dispatcher getScheduler() {
 		return scheduler;
 	}
 

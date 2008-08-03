@@ -16,19 +16,20 @@ public abstract class AbstractSearcher implements Searcher {
 	protected Thread ss;
 	
 	/**
+	 * @param id 
 	 * @param sp Parameter of the search
 	 * @param bank Sequence data bank where the search will be performed.
+	 * @param sm 
 	 * @param parent The parent of this search.
 	 */
-	public AbstractSearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
-		status = new SearchStatus(sp, bank, parent);
+	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank bank, SearchManager sm, Searcher parent) {
+		status = new SearchStatus(id, sp, bank, sm, parent);
 		status.setActualStep(SearchStep.NOT_INITIALIZED);
 		
 	}
 	
-	public SearchStatus doSearch() {
-		ss.start();		
-		return status;		
+	public void doSearch() {
+		ss.start();				
 	}
 	
 	public SearchStatus getStatus() {

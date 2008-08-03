@@ -1,19 +1,15 @@
 package bio.pih;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -22,17 +18,15 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.io.DocumentResult;
-import org.dom4j.io.DocumentSource;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.ConfigurationXMLReader;
 import bio.pih.io.DuplicateDatabankException;
 import bio.pih.io.Output;
 import bio.pih.io.SequenceDataBank;
+import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 import bio.pih.search.SearchParams;
 import bio.pih.search.UnknowDataBankException;
@@ -49,8 +43,6 @@ import com.google.common.collect.Lists;
  * @author albrecht
  */
 public class SOIS {
-
-	List<SequenceDataBank> dataBanks = null;
 	SearchManager sm = null;
 
 	private static SOIS singleton = null;
@@ -81,13 +73,7 @@ public class SOIS {
 	 */
 	private SOIS() throws IOException, ValueOutOfBoundsException {
 		PropertyConfigurator.configure("conf/log4j.properties");
-		dataBanks = ConfigurationXMLReader.getDataBanks();
-		sm = new SearchManager();
-
-		for (SequenceDataBank dataBank : dataBanks) {
-			dataBank.load();
-			sm.addDatabank(dataBank);
-		}
+		sm = XMLConfigurationReader.getSearchManager();
 	}
 
 	/**
@@ -164,7 +150,7 @@ public class SOIS {
 			return;
 		}
 
-		List<SequenceDataBank> dataBanks = ConfigurationXMLReader
+		List<SequenceDataBank> dataBanks = XMLConfigurationReader
 				.getDataBanks();
 
 		String option = args[0];
@@ -197,41 +183,36 @@ public class SOIS {
 
 			List<SearchResults> results = Lists.newLinkedList();
 
+			List<Long> codes = Lists.newLinkedList();
 			long beginTime = System.currentTimeMillis();
+			
 			while (in.ready()) {
 				String seqString = in.readLine();
-				logger.info("Searching " + seqString + " in " + databank);
 				long code = sois.doSearch(seqString, databank);
-				while (!sois.checkStatus(code)) {
-					Thread.yield();
-				}
-
+				codes.add(code);
+			}
+			
+			while (sois.sm.hasPeding()) {
+				Thread.yield();
+			}
+			
+			Collections.sort(codes);
+			for (Long code: codes) {
 				results.add(sois.getResult(code));
 			}
+			
 			logger.info("total time: "
 					+ (System.currentTimeMillis() - beginTime));
 
 			Document document = Output.genoogleOutputToXML(results);
-//			OutputFormat outformat = OutputFormat.createPrettyPrint();
-//			outformat.setEncoding("UTF-8");
-//			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(
-//					inputFile + "_results.xml")), outformat);
-//			writer.write(document);
-//			writer.flush();
-			
-			TransformerFactory factory = TransformerFactory.newInstance();
-			Transformer transformer = factory
-				.newTransformer(new StreamSource("/home/albrecht/genoogle/webapps/ROOT/results.xsl"));
-			DocumentSource source = new DocumentSource(document);
-			DocumentResult result = new DocumentResult();
-			transformer.transform(source, result);
-			Document resultDocument = result.getDocument();
-			OutputFormat outformat = OutputFormat.createPrettyPrint();
+			 OutputFormat outformat = OutputFormat.createPrettyPrint();
 			outformat.setEncoding("UTF-8");
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			XMLWriter writer = new XMLWriter(outputStream, outformat);
-			writer.write(resultDocument);
-			System.out.print(outputStream);
+			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(inputFile
+					+ "_results.xml")), outformat);
+			writer.write(document);
+			writer.flush();
+			
+	
 		} else {
 			showHelp();
 		}

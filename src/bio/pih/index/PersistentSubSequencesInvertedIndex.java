@@ -219,7 +219,7 @@ public class PersistentSubSequencesInvertedIndex extends
 		if ( buffer.get() != encodedSubSequenceInt) {
 			throw new InvalidHeaderData("encodedSubSequenceInt readen is wrong");
 		}
-		if  (buffer.get() != quantity) {
+		if (buffer.get() != quantity) {
 			throw new InvalidHeaderData("quantity readen is wrong");
 		}
 

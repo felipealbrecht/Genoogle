@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import bio.pih.scheduler.Scheduler;
+import bio.pih.scheduler.Dispatcher;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.RequestMessage;
 
@@ -17,7 +17,7 @@ import bio.pih.scheduler.communicator.message.RequestMessage;
  */
 public class WorkerInfo implements Communicator {
 	volatile boolean running;
-	Scheduler scheduler;
+	Dispatcher scheduler;
 	int identifier;
 	ObjectInputStream ois;
 	ObjectOutputStream oos;
@@ -33,7 +33,7 @@ public class WorkerInfo implements Communicator {
 	 * @param output
 	 * @param socket
 	 */
-	public WorkerInfo(Scheduler scheduler, int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
+	public WorkerInfo(Dispatcher scheduler, int identifier, int availableProcessors, ObjectInputStream input, ObjectOutputStream output, Socket socket) {
 		this.scheduler = scheduler;
 		this.identifier = identifier;
 		this.ois = input;

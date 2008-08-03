@@ -2,6 +2,10 @@
 
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
+  <genoogle:search-manager>
+    <genoogle:max-simultaneous-searchs    value="3"/>     
+  </genoogle:search-manager>
+
   <genoogle:search-parameters>
     <genoogle:sub-sequence-min-similarity        value="6"/>
     <genoogle:databank-max-sub-sequence-distance value="16"/>
@@ -11,8 +15,7 @@
     <genoogle:extend-dropoff                     value="5" />
   </genoogle:search-parameters>
 
-  <genoogle:databanks>
-      
+  <genoogle:databanks>      
     <genoogle:databank-collection name="RefSeq" path="files/fasta" >
        <genoogle:databank name="Cow"       path="cow.rna.fna"   storage="disk" />
 	   <!--<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="disk" /> 

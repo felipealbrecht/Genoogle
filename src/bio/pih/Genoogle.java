@@ -9,7 +9,7 @@ import java.util.List;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.scheduler.Scheduler;
+import bio.pih.scheduler.Dispatcher;
 import bio.pih.scheduler.interfaces.CommandLine;
 
 /**
@@ -45,7 +45,7 @@ public class Genoogle {
 			while ((line = br.readLine()) != null) {
 				workers.add(line);
 			}
-			Scheduler s = new Scheduler(workers.toArray(new String[workers.size()]));
+			Dispatcher s = new Dispatcher(workers.toArray(new String[workers.size()]));
 			s.start();
 			CommandLine commandLine = new CommandLine(s, System.in);
 			new Thread(commandLine, "Command Line").start();

@@ -1,7 +1,10 @@
 package bio.pih.search;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
@@ -17,14 +20,25 @@ import com.google.common.collect.Maps;
 public class SearchManager {
 
 	Map<String, SequenceDataBank> databanks;
-	Map<Long, SearchStatus> searchs;
+
+	private Map<Long, Searcher> waitingQueue;
+	private Map<Long, Searcher> runningQueue;
+	private Map<Long, Searcher> finishedQueue;
+	private final int maxSimulaneousSearchs;
 
 	/**
+	 * @param maxSimulaneousSearchs
 	 * 
 	 */
-	public SearchManager() {
+	public SearchManager(int maxSimulaneousSearchs) {
+		this.maxSimulaneousSearchs = maxSimulaneousSearchs;
 		databanks = Maps.newHashMap();
-		searchs = Maps.newHashMap();
+		waitingQueue = Maps.newLinkedHashMap();
+		waitingQueue = Collections.synchronizedMap(waitingQueue);
+		runningQueue = Maps.newHashMap();
+		runningQueue = Collections.synchronizedMap(runningQueue);
+		finishedQueue = Maps.newHashMap();
+		finishedQueue = Collections.synchronizedMap(finishedQueue);
 	}
 
 	/**
@@ -39,59 +53,81 @@ public class SearchManager {
 	 * @return unique identifier of the solicited search.
 	 * @throws UnknowDataBankException
 	 */
-	public long doSearch(SearchParams sp) throws UnknowDataBankException {
+	public synchronized long doSearch(SearchParams sp) throws UnknowDataBankException {
 		SequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
-			throw new UnknowDataBankException(this, sp.getDatabank()); 
+			throw new UnknowDataBankException(this, sp.getDatabank());
 		}
-		SearchStatus search = SearcherFactory.getSearcher(sp, databank, null).doSearch();
+
 		long id = getNextSearchId();
-		searchs.put(id, search);
-		
+
+		Searcher searcher = SearcherFactory.getSearcher(id, sp, databank, this, null);
+
+		if (runningQueue.size() < maxSimulaneousSearchs) {
+			runningQueue.put(id, searcher);
+			searcher.doSearch();
+		} else {
+			waitingQueue.put(id, searcher);
+			System.out.println("Inserting one search in the waiting queue, has "
+					+ waitingQueue.size() + " searches waiting..");
+		}
+
 		return id;
 	}
 
-	/**
+	public synchronized void setFinished(long finishedId) {
+		Searcher finishedSearcher = runningQueue.remove(finishedId);
+		finishedQueue.put(finishedId, finishedSearcher);
+
+		Iterator<Entry<Long, Searcher>> iterator = waitingQueue.entrySet().iterator();
+		if (iterator.hasNext()) {
+			System.out.println("Removing one search in the waiting queue, has "
+					+ waitingQueue.size() + " searches waiting..");
+			Entry<Long, Searcher> next = iterator.next();
+			Searcher nextSearcher = next.getValue();
+			Long id = next.getKey();
+			runningQueue.put(id, nextSearcher);
+			waitingQueue.remove(id);
+			nextSearcher.doSearch();
+		}
+	}
+
+	public synchronized boolean hasPeding() {
+		return ((waitingQueue.size() > 0) || (runningQueue.size() > 0));
+	}
+
+	/*
 	 * @param code
 	 * 
 	 * @return <code>true</code> if the search is completed.
 	 */
 	public boolean checkSearch(long code) {
-		SearchStatus searchStatus = searchs.get(code);
-		if (searchStatus == null) {
-			return false;
-		}
-		if (searchStatus.getActualStep() == SearchStep.FATAL_ERROR) {
-			return true;
-		}
-		if (searchStatus.getActualStep() == SearchStep.FINISHED) {
-			return true;
-		}
-		return false;
+		return finishedQueue.containsKey(code);
 	}
 
 	/**
 	 * @param code
 	 * @return {@link SearchResults} of the related search.
 	 */
-	public SearchResults  getResult(long code) {
-		SearchStatus searchStatus = searchs.get(code);
-		if (searchStatus == null) {
+	public SearchResults getResult(long code) {
+		Searcher searcher = finishedQueue.get(code);
+		if (searcher == null) {
 			return null;
 		}
-		return searchStatus.getResults();
-
+		return searcher.getStatus().getResults();
 	}
 
 	/**
-	 * @return {@link Collection} of all {@link SequenceDataBank} that this {@link SearchResults} is managing. 
+	 * @return {@link Collection} of all {@link SequenceDataBank} that this {@link SearchResults} is
+	 *         managing.
 	 */
 	public Collection<SequenceDataBank> getDatabanks() {
 		return databanks.values();
 	}
-	
-	private static long searchId = 0; 
-	private  synchronized long getNextSearchId() {
+
+	private long searchId = 0;
+
+	private synchronized long getNextSearchId() {
 		long id = searchId;
 		searchId++;
 		return id;

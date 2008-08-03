@@ -20,7 +20,7 @@ import bio.pih.search.results.HSP;
  * 
  * @author albrecht
  */
-public class Scheduler {
+public class Dispatcher {
 	private volatile long totalSearchs;
 	private List<WorkerInfo> workers;
 	private final String[] workerAddress;
@@ -32,7 +32,7 @@ public class Scheduler {
 	 * @param workerAddress
 	 *            a array of String in the "address:port" format.
 	 */
-	public Scheduler(String[] workerAddress) {
+	public Dispatcher(String[] workerAddress) {
 		this.workerAddress = workerAddress.clone(); 
 		communicator = new SchedulerCommunicator(this);
 		this.workers = Collections.synchronizedList(new LinkedList<WorkerInfo>());
@@ -193,6 +193,7 @@ public class Scheduler {
 
 	/**
 	 * @author albrecht 
+	 * TODO: subtitute by the SearchStatus
 	 */
 	public static class Searching {
 		volatile int remainsResult;

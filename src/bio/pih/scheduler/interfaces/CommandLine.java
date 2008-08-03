@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import bio.pih.scheduler.Scheduler;
-import bio.pih.scheduler.Scheduler.Searching;
+import bio.pih.scheduler.Dispatcher;
+import bio.pih.scheduler.Dispatcher.Searching;
 import bio.pih.search.results.HSP;
 
 /**
@@ -23,7 +23,7 @@ public class CommandLine implements Runnable {
 	static String READ = "read";
 	static String EXIT = "exit";
 
-	private final Scheduler scheduler;
+	private final Dispatcher scheduler;
 	private final InputStream is;
 	private final boolean echo;
 
@@ -31,7 +31,7 @@ public class CommandLine implements Runnable {
 	 * @param scheduler
 	 * @param is
 	 */
-	public CommandLine(Scheduler scheduler, InputStream is) {
+	public CommandLine(Dispatcher scheduler, InputStream is) {
 		this(scheduler, is, false);
 	}
 
@@ -40,7 +40,7 @@ public class CommandLine implements Runnable {
 	 * @param is
 	 * @param echo
 	 */
-	public CommandLine(Scheduler scheduler, InputStream is, boolean echo) {
+	public CommandLine(Dispatcher scheduler, InputStream is, boolean echo) {
 		this.scheduler = scheduler;
 		this.is = is;
 		this.echo = echo;

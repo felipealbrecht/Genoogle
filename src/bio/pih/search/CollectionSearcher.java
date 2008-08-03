@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
@@ -19,18 +21,22 @@ import com.google.common.collect.Lists;
  */
 public class CollectionSearcher extends AbstractSearcher {
 
+	static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
+	
 	private List<SearchStatus> innerDataBanksStatus = null;
 	private SearchResults sr;
 	private volatile boolean acceptingResults;
 
 	/**
+	 * @param code 
 	 * @param sp
 	 * @param bank
+	 * @param sm 
 	 * @param parent
 	 */
 	@SuppressWarnings("unchecked")
-	public CollectionSearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
-		super(sp, bank, parent);
+	public CollectionSearcher(long code, SearchParams sp, SequenceDataBank bank, SearchManager sm, Searcher parent) {
+		super(code, sp, bank, sm, parent);
 
 		ss = new SimilarSearcherDelegate(sp, (DatabankCollection<SequenceDataBank>) bank);
 		ss.setName("CollectionSearcher on " + bank.getName());
@@ -39,8 +45,6 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	@Override
 	public synchronized boolean setFinished(SearchStatus searchStatus) {
-		assert searchStatus.getActualStep() == SearchStep.FINISHED || searchStatus.getActualStep() == SearchStep.FATAL_ERROR;
-
 		while (!acceptingResults) {
 			Thread.yield();
 		}
@@ -82,8 +86,9 @@ public class CollectionSearcher extends AbstractSearcher {
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				Searcher searcher = SearcherFactory.getSearcher(sp, innerBank, CollectionSearcher.this);
-				innerDataBanksStatus.add(searcher.doSearch());
+				Searcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, null, CollectionSearcher.this);
+				innerDataBanksStatus.add(searcher.getStatus());
+				searcher.doSearch();
 			}		
 			acceptingResults = true;
 
@@ -94,8 +99,9 @@ public class CollectionSearcher extends AbstractSearcher {
 					}
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.fatal(e.getMessage(), e);
+				status.setActualStep(SearchStep.FATAL_ERROR);
+				return;
 			}
 
 			status.setActualStep(SearchStep.SELECTING);

@@ -38,20 +38,21 @@ public class DNASearcher extends AbstractSearcher {
 	Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	/**
+	 * @param id 
 	 * @param sp
 	 * @param bank
+	 * @param sm 
 	 * @param parent
 	 */
-	public DNASearcher(SearchParams sp, SequenceDataBank bank, Searcher parent) {
-		super(sp, bank, parent);
+	public DNASearcher(long id, SearchParams sp, SequenceDataBank bank, SearchManager sm, Searcher parent) {
+		super(id, sp, bank, sm, parent);
 		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
 		ss.setName("DNASearcher on " + bank.getName());
 	}
 
 	@Override
-	public SearchStatus doSearch() {
+	public void doSearch() {
 		ss.start();
-		return status;
 	}
 
 	protected class IndexedDatabankSimilarSearcher extends Thread {

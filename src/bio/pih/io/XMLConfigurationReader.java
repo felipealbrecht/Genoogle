@@ -1,6 +1,7 @@
 package bio.pih.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.dom4j.io.SAXReader;
 
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank.StorageKind;
+import bio.pih.search.SearchManager;
 
 import com.google.common.collect.Lists;
 
@@ -21,7 +23,7 @@ import com.google.common.collect.Lists;
  * 
  * @author albrecht
  */
-public class ConfigurationXMLReader {
+public class XMLConfigurationReader {
 
 	private static Logger logger = Logger
 			.getLogger("pih.bio.io.ConfigurationXMLReader");
@@ -36,6 +38,39 @@ public class ConfigurationXMLReader {
 		} catch (DocumentException e) {
 			logger.fatal("Error reading the configuration at " + path + ".", e);
 		}
+	}
+
+	/**
+	 * @return a brand new {@link SearchManager} with the parameters read from
+	 *         genoogle.xml and with its data banks.
+	 * @throws ValueOutOfBoundsException
+	 * @throws IOException
+	 */
+	public static SearchManager getSearchManager() throws IOException,
+			ValueOutOfBoundsException {
+		Element rootElement = doc.getRootElement();
+		Element searchManagerElement = rootElement.element("search-manager");
+		SearchManager searchManager = new SearchManager(
+				getMaxSimultaneousSearchs(searchManagerElement));
+
+		List<SequenceDataBank> dataBanks = XMLConfigurationReader
+				.getDataBanks();
+		for (SequenceDataBank dataBank : dataBanks) {
+			dataBank.load();
+			searchManager.addDatabank(dataBank);
+		}
+
+		return searchManager;
+	}
+
+	/**
+	 * @return how many simultaneous searchs a searchManager can handle.
+	 */
+	private static int getMaxSimultaneousSearchs(Element searchManager) {
+		Element maxSimultaneousSearchs = searchManager
+				.element("max-simultaneous-searchs");
+		String value = maxSimultaneousSearchs.attributeValue("value");
+		return Integer.parseInt(value);
 	}
 
 	/**

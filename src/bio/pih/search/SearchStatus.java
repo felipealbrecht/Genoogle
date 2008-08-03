@@ -68,23 +68,28 @@ public class SearchStatus {
 		FATAL_ERROR;
 	}
 
+	protected final long code;
 	protected final long timeBegin;
 	protected long timeEnd;
 	protected final SequenceDataBank db;
 	protected final SearchParams sp;
 	protected SearchResults results;
 	protected SearchStep actualStep;
+	protected SearchManager sm;
 	private final Searcher parent;
 
 	/**
 	 * @param sp
 	 * @param db
+	 * @param sm 
 	 * @param parent
 	 */
-	public SearchStatus(SearchParams sp, SequenceDataBank db, Searcher parent) {
+	public SearchStatus(long code, SearchParams sp, SequenceDataBank db, SearchManager sm, Searcher parent) {
+		this.code = code;
 		this.timeBegin = System.currentTimeMillis();
 		this.sp = sp;
 		this.db = db;
+		this.sm = sm;
 		this.parent = parent;
 		this.actualStep = SearchStep.NOT_INITIALIZED;
 		this.results = null;
@@ -109,19 +114,15 @@ public class SearchStatus {
 	 */
 	public void setActualStep(SearchStep step) {
 		this.actualStep = step;
-		if (step == SearchStep.FINISHED) {
+		if ((step == SearchStep.FINISHED) || (step == SearchStep.FATAL_ERROR)) {
 			this.timeEnd = System.currentTimeMillis();
 			if (parent != null) {
 				parent.setFinished(this);
 			}
-		}
-
-		if (step == SearchStep.FATAL_ERROR) {
-			this.timeEnd = System.currentTimeMillis();
-			if (parent != null) {
-				parent.setFinished(this);
+			if (sm != null) {
+				sm.setFinished(code);
 			}
-		}
+		} 
 	}
 
 	@Override
