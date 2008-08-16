@@ -340,18 +340,20 @@ public class SimilarSubSequencesIndex {
 	}
 
 	/**
+	 * Get the score from the int representation of similar sub sequence.
 	 * @param alignmentIntRepresentation
 	 * @return the score from short (16 bits) representation
 	 */
-	public static short getScoreFromIntRepresentation(int alignmentIntRepresentation) {
+	public static int getScore(int alignmentIntRepresentation) {
 		return ComparationResult.getScoreFromRepresentation(alignmentIntRepresentation);
 	}
 
 	/**
+	 * Get the sequence from the int representation of similar sub sequence.
 	 * @param alignmentIntRepresentation
 	 * @return the sequence from short (16 bits) representation
 	 */
-	public static short getSequenceFromIntRepresentation(int alignmentIntRepresentation) {
+	public static int getSequence(int alignmentIntRepresentation) {
 		return ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation);
 	}
 
@@ -595,16 +597,16 @@ public class SimilarSubSequencesIndex {
 		 * @param alignmentIntRepresentation
 		 * @return the score
 		 */
-		public static short getScoreFromRepresentation(int alignmentIntRepresentation) {
-			return (short) (alignmentIntRepresentation & 0xFFFF);
+		public static int getScoreFromRepresentation(int alignmentIntRepresentation) {
+			return alignmentIntRepresentation;
 		}
 
 		/**
 		 * @param alignmentIntRepresentation
 		 * @return the sequence
 		 */
-		public static short getSequenceFromRepresentation(int alignmentIntRepresentation) {
-			return (short) ((alignmentIntRepresentation >> 16) & 0xFFFF);
+		public static int getSequenceFromRepresentation(int alignmentIntRepresentation) {
+			return (alignmentIntRepresentation >> 16) & 0xFFFF;
 		}
 
 		@Override

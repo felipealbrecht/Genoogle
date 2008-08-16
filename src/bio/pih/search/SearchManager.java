@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
+import bio.pih.SOIS;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.SearchResults;
@@ -19,6 +22,8 @@ import com.google.common.collect.Maps;
  */
 public class SearchManager {
 
+	static Logger logger = Logger.getLogger(SearchManager.class.getName());
+	
 	Map<String, SequenceDataBank> databanks;
 
 	private Map<Long, Searcher> waitingQueue;
@@ -54,6 +59,7 @@ public class SearchManager {
 	 * @throws UnknowDataBankException
 	 */
 	public synchronized long doSearch(SearchParams sp) throws UnknowDataBankException {
+		logger.info("doSearch on " + sp);
 		SequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
 			throw new UnknowDataBankException(this, sp.getDatabank());
@@ -64,12 +70,12 @@ public class SearchManager {
 		Searcher searcher = SearcherFactory.getSearcher(id, sp, databank, this, null);
 
 		if (runningQueue.size() < maxSimulaneousSearchs) {
+			logger.info("Has space in the queue! Lets do the search");
 			runningQueue.put(id, searcher);
 			searcher.doSearch();
 		} else {
 			waitingQueue.put(id, searcher);
-			System.out.println("Inserting one search in the waiting queue, has "
-					+ waitingQueue.size() + " searches waiting..");
+			logger.info("No space in the queue, lets wait together with the others " + waitingQueue.size() + " tasks.");			
 		}
 
 		return id;

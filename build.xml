@@ -66,10 +66,6 @@
 	</target>
 
 	<target name="package" depends="compile">
-<!--		<war destfile="${war.genoogle}">
-			<fileset dir="webapps"/>
-		</war>
-		-->
 		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
 			<fileset dir="${build.classes.dir}" />
 		</jar>

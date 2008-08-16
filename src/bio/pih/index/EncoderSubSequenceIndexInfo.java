@@ -24,7 +24,7 @@ public class EncoderSubSequenceIndexInfo {
 	 * @param subSequenceInfoIntRepresention 
 	 * @return the start position
 	 */
-	public static int getStartFromSubSequenceInfoIntRepresentation(long subSequenceInfoIntRepresention) {
+	public static int getStart(long subSequenceInfoIntRepresention) {
 		return (int) (subSequenceInfoIntRepresention & 0xFFFF);
 	}
 
@@ -32,7 +32,7 @@ public class EncoderSubSequenceIndexInfo {
 	 * @param subSequenceInfoIntRepresention
 	 * @return the sequence id 
 	 */
-	public static int getSequenceIdFromSubSequenceInfoIntRepresentation(long subSequenceInfoIntRepresention) {
+	public static int getSequenceId(long subSequenceInfoIntRepresention) {
 		return (int) (subSequenceInfoIntRepresention >> 16) & 0xFFFF;
 	}
 }

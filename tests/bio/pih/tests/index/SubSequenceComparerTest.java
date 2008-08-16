@@ -62,11 +62,11 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < subSequencesReader.getMaxEncodedSequenceValue(); i++) {
 			similarSequences = subSequencesReader.getSimilarSequences((short) (i & 0xFFFF));
-			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]));
-			assertEquals(4, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequence(similarSequences[0]));
+			assertEquals(4, SimilarSubSequencesIndex.getScore(similarSequences[0]));
 
 			for (int intRepresentation : similarSequences) {
-				if (SimilarSubSequencesIndex.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
+				if (SimilarSubSequencesIndex.getScore(intRepresentation) < defaultTreadshould) {
 					fail("subsequence alinhada possui score inferior ao limite");
 				}
 			}
@@ -112,11 +112,11 @@ public class SubSequenceComparerTest extends TestCase {
 		for (int i = 0; i < subSequencesReader.getMaxEncodedSequenceValue(); i++) {
 			similarSequences = subSequencesReader.getSimilarSequences((short) i);
 			assertEquals(1, similarSequences.length);
-			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]));
-			assertEquals(5, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequence(similarSequences[0]));
+			assertEquals(5, SimilarSubSequencesIndex.getScore(similarSequences[0]));
 
 			for (int intRepresentation : similarSequences) {
-				if (SimilarSubSequencesIndex.getScoreFromIntRepresentation(intRepresentation) < defaultTreadshould) {
+				if (SimilarSubSequencesIndex.getScore(intRepresentation) < defaultTreadshould) {
 					fail("subsequence alinhada possui score inferior ao limite");
 				}
 			}
@@ -186,8 +186,8 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < defaultInstance.getMaxEncodedSequenceValue(); i += 21771) {
 			similarSequences = defaultInstance.getSimilarSequences((short) i);
-			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
-			assertEquals(8, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequence(similarSequences[0]) & 0xFFFF);
+			assertEquals(8, SimilarSubSequencesIndex.getScore(similarSequences[0]));
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {
@@ -242,8 +242,8 @@ public class SubSequenceComparerTest extends TestCase {
 
 		for (int i = 0; i < defaultInstance.getMaxEncodedSequenceValue(); i += 21771) {
 			similarSequences = defaultInstance.getSimilarSequences((short) i);
-			assertEquals(i, SimilarSubSequencesIndex.getSequenceFromIntRepresentation(similarSequences[0]) & 0xFFFF);
-			assertEquals(8, SimilarSubSequencesIndex.getScoreFromIntRepresentation(similarSequences[0]));
+			assertEquals(i, SimilarSubSequencesIndex.getSequence(similarSequences[0]) & 0xFFFF);
+			assertEquals(8, SimilarSubSequencesIndex.getScore(similarSequences[0]));
 			results = new LinkedList<ComparationResult>();
 			
 			for (int encodedSequence = 0; encodedSequence <= defaultInstance.getMaxEncodedSequenceValue(); encodedSequence++) {							

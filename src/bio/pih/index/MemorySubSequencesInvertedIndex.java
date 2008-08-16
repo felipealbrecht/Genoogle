@@ -108,9 +108,9 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 			if (bucket != null) {
 				for (long subSequenceInfoEncoded : bucket.getArray()) {
 					sb.append("\t");
-					sb.append(EncoderSubSequenceIndexInfo.getSequenceIdFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
+					sb.append(EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoEncoded));
 					sb.append(": ");
-					sb.append(EncoderSubSequenceIndexInfo.getStartFromSubSequenceInfoIntRepresentation(subSequenceInfoEncoded));
+					sb.append(EncoderSubSequenceIndexInfo.getStart(subSequenceInfoEncoded));
 					sb.append("\n");
 				}
 			}
