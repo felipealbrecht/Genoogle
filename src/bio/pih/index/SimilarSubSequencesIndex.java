@@ -557,7 +557,7 @@ public class SimilarSubSequencesIndex {
 
 	/**
 	 * Stores an sequences and its scores. Used to represent these informations into a int
-	 * 
+	 * TODO: do junits!
 	 */
 	public static class ComparationResult {
 		short score;
@@ -598,7 +598,7 @@ public class SimilarSubSequencesIndex {
 		 * @return the score
 		 */
 		public static int getScoreFromRepresentation(int alignmentIntRepresentation) {
-			return alignmentIntRepresentation;
+			return alignmentIntRepresentation & 0xFFFF;
 		}
 
 		/**

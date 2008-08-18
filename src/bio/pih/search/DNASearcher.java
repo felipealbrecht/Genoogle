@@ -87,16 +87,18 @@ public class DNASearcher extends AbstractSearcher {
 			long init = System.currentTimeMillis();
 			IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
 
-			logger.info("Search total time:" + (System.currentTimeMillis() - init));
+			logger.info("Index search time:" + (System.currentTimeMillis() - init));
 			status.setActualStep(SearchStep.COMPUTING_MATCHS);
 			Stack<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
-			logger.info("sequencesHits: " + sequencesRetrievedAreas.length);
 
 			SearchResults sr = new SearchResults(sp);
 
 			int hitNum = 0;
 			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
 				Stack<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
+				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
+					continue;
+				}
 				SequenceInformation sequenceInformation = null;
 				SymbolList hitSequence = null;
 
@@ -116,6 +118,7 @@ public class DNASearcher extends AbstractSearcher {
 
 				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 					status.setActualStep(SearchStep.SEEDS);
+					// System.out.println(retrievedArea);
 
 					int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 					int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
@@ -167,6 +170,7 @@ public class DNASearcher extends AbstractSearcher {
 			Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
 			status.setResults(sr);
+			logger.info("Search time:" + (System.currentTimeMillis() - init));
 			status.setActualStep(SearchStep.FINISHED);
 		}
 
@@ -199,7 +203,8 @@ public class DNASearcher extends AbstractSearcher {
 				if (SimilarSubSequencesIndex.getScore(similarSubSequences[i]) < threshould) {
 					break;
 				}
-				int[] indexPositions = databank.getMachingSubSequence((short) similarSubSequences[i]);
+				int sequence = SimilarSubSequencesIndex.getSequence(similarSubSequences[i]);
+				int[] indexPositions = databank.getMachingSubSequence((short) sequence);
 				for (long subSequenceIndexInfo : indexPositions) {
 					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 				}
@@ -246,18 +251,44 @@ public class DNASearcher extends AbstractSearcher {
 				Stack<RetrievedArea> stack = new Stack<RetrievedArea>();
 				stack.push(retrievedArea);
 				retrievedAreas[sequenceId] = stack;
+			} else if (sequenceRetrievedAreas.size() == 0) {
+				RetrievedArea retrievedArea = new RetrievedArea(queryPos, queryPos + 7, start, start + 7);
+				sequenceRetrievedAreas.push(retrievedArea);
 			} else {
 				RetrievedArea topElement = sequenceRetrievedAreas.firstElement();
 				if (!topElement.setTestAndSet(queryPos, sp.getMaxQuerySequenceSubSequencesDistance(),
 						start, sp.getMaxQuerySequenceSubSequencesDistance())) {
 					if (topElement.length() < sp.getMinMatchAreaLength()) {
-						sequenceRetrievedAreas.pop();
+						if (queryPos - topElement.queryAreaEnd > sp.getMaxQuerySequenceSubSequencesDistance()) {
+							sequenceRetrievedAreas.pop();
+						}
 					}
 				}
 			}
 		}
 
 		public Stack<RetrievedArea>[] getRetrievedAreas() {
+			for (int i = 0; i < retrievedAreas.length; i++) {
+				Stack<RetrievedArea> stack = retrievedAreas[i];
+				if (stack != null && stack.size() > 0) {
+					RetrievedArea element = stack.firstElement();
+					if (element.length() < sp.getMinMatchAreaLength()) {
+						stack.pop();
+					}
+				}
+			}
+			
+			int totalNotZero = 0;
+			for (int i = 0; i < retrievedAreas.length; i++) {
+				if (retrievedAreas[i] != null) {
+					if (retrievedAreas[i].size() > 0) {
+						totalNotZero++;
+					}
+				}
+			}
+			
+			System.out.println(totalNotZero);
+
 			return retrievedAreas;
 		}
 	}
@@ -283,11 +314,11 @@ public class DNASearcher extends AbstractSearcher {
 		public boolean setTestAndSet(int newQueryAreaBegin, int maxQueryAreaDistance,
 				int newSequenceAreaBegin, int maxSequenceAreaDistance) {
 			int queryAreaEndOffset = newQueryAreaBegin - queryAreaEnd;
-			if ((newQueryAreaBegin >= queryAreaBegin && newQueryAreaBegin <= queryAreaEnd)
+			if ((newQueryAreaBegin > queryAreaBegin && newQueryAreaBegin <= queryAreaEnd && newQueryAreaBegin + 7 > queryAreaEnd)
 					|| (queryAreaEndOffset > 0 && queryAreaEndOffset <= maxQueryAreaDistance)) {
 
 				int sequenceAreaEndOffset = newSequenceAreaBegin - sequenceAreaEnd;
-				if ((newSequenceAreaBegin >= sequenceAreaBegin && newSequenceAreaBegin <= sequenceAreaBegin)
+				if ((newSequenceAreaBegin > sequenceAreaBegin && newSequenceAreaBegin <= sequenceAreaEnd && newSequenceAreaBegin + 7 > sequenceAreaEnd)
 						|| (sequenceAreaEndOffset > 0 && sequenceAreaEndOffset <= maxSequenceAreaDistance)) {
 
 					this.queryAreaEnd = newQueryAreaBegin + 7;
@@ -296,6 +327,23 @@ public class DNASearcher extends AbstractSearcher {
 				}
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append("([");
+			sb.append(queryAreaBegin);
+			sb.append(",");
+			sb.append(queryAreaEnd);
+			sb.append("]");
+			sb.append("[");
+			sb.append(sequenceAreaBegin);
+			sb.append(",");
+			sb.append(sequenceAreaEnd);
+			sb.append("])");
+
+			return sb.toString();
 		}
 	}
 }

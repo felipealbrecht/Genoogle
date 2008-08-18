@@ -38,7 +38,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	
 	/**
 	 * Receive an encodedSubSequence, that is a sub-sequence 8 bases length encoded into a short, 
-	 * and return a List of integer containing the sequence and position that is <b>exactly equals</b> the subsequence.
+	 * and return an Array of integer containing the sequence and position that is <b>exactly equals</b> the subsequence.
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it. 
 	 * @throws ValueOutOfBoundsException
