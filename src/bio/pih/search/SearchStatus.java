@@ -33,14 +33,9 @@ public class SearchStatus {
 		INDEX_SEARCH,
 
 		/**
-		 * Computing the match areas found.
+		 * Extending the matchs found.
 		 */
-		COMPUTING_MATCHS,
-
-		/**
-		 * Searching and creating the seeds.
-		 */
-		SEEDS,
+		EXTENDING,
 
 		/**
 		 * Doing the alignments.
@@ -78,7 +73,8 @@ public class SearchStatus {
 	protected SearchManager sm;
 	private final Searcher parent;
 
-	/**
+	/** 
+	 * @param code 
 	 * @param sp
 	 * @param db
 	 * @param sm 

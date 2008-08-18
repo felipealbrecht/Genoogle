@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.alignment.SubstitutionMatrix;
+import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
@@ -36,6 +37,9 @@ import com.google.common.collect.Lists;
 public class DNASearcher extends AbstractSearcher {
 
 	Logger logger = Logger.getLogger(this.getClass().getName());
+
+	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(DNATools.getDNA(),
+			1, -1);
 
 	/**
 	 * @param id
@@ -88,11 +92,12 @@ public class DNASearcher extends AbstractSearcher {
 			IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
 
 			logger.info("Index search time:" + (System.currentTimeMillis() - init));
-			status.setActualStep(SearchStep.COMPUTING_MATCHS);
+			status.setActualStep(SearchStep.INDEX_SEARCH);
 			Stack<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
 
 			SearchResults sr = new SearchResults(sp);
 
+			status.setActualStep(SearchStep.EXTENDING);
 			int hitNum = 0;
 			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
 				Stack<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
@@ -112,25 +117,15 @@ public class DNASearcher extends AbstractSearcher {
 					status.setActualStep(SearchStep.FATAL_ERROR);
 					return;
 				}
-
+				
 				int hspNum = 0;
 				List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
-
 				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
-					status.setActualStep(SearchStep.SEEDS);
-					// System.out.println(retrievedArea);
-
+					
 					int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 					int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
 					int queryAreaBegin = retrievedArea.queryAreaBegin;
 					int queryAreaEnd = retrievedArea.queryAreaEnd;
-					int querySegmentLength = queryAreaEnd - queryAreaBegin;
-
-					status.setActualStep(SearchStep.ALIGNMENT);
-
-					if (querySegmentLength <= sp.getMinQuerySequenceSubSequence()) {
-						continue;
-					}
 
 					ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence,
 							queryAreaBegin, queryAreaEnd, hitSequence, sequenceAreaBegin, sequenceAreaEnd, sp
@@ -147,14 +142,14 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 
+				status.setActualStep(SearchStep.ALIGNMENT);
 				if (hitSequence != null && extendedSequencesList.size() > 0) {
 					Hit hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation
 							.getAccession(), sequenceInformation.getDescription(), hitSequence.length(), databank
 							.getName());
 					for (ExtendSequences extensionResult : extendedSequencesList) {
-						SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(databank.getAlphabet(),
-								1, -1);
-						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 2.5, 2.5, 2,
+
+						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3, 3, 1,
 								substitutionMatrix);
 						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 								extensionResult.getTargetSequenceExtended());
@@ -277,7 +272,7 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 			}
-			
+
 			int totalNotZero = 0;
 			for (int i = 0; i < retrievedAreas.length; i++) {
 				if (retrievedAreas[i] != null) {
@@ -286,7 +281,7 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 			}
-			
+
 			System.out.println(totalNotZero);
 
 			return retrievedAreas;
