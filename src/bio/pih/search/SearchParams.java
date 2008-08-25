@@ -11,7 +11,7 @@ import bio.pih.io.XMLConfigurationReader;
  * 
  * @author albrecht
  */
-public class SearchParams implements Serializable {
+public final class SearchParams implements Serializable {
 
 	private static final long serialVersionUID = 6773155953856917786L;
 
