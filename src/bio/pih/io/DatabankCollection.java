@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.proto.Io.StoredSequence;
 
 /**
  * @author albrecht
@@ -135,11 +135,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public int addSequence(RichSequence s) throws BioException, IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public File getFilePath() {
 		return path;
 	}
@@ -153,7 +148,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @throws IOException
 	 * @throws MultipleSequencesFoundException
 	 */
-	public SequenceInformation getSequenceInformationFromId(String databankName, int sequenceId) throws IllegalSymbolException, IOException, MultipleSequencesFoundException {
+	public StoredSequence getSequenceInformationFromId(String databankName, int sequenceId) throws IllegalSymbolException, IOException, MultipleSequencesFoundException {
 		T t = collection.get(databankName);
 		if (t == null) {
 			return null;
@@ -162,14 +157,14 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException {
-		SequenceInformation foundSi = null;
+	public StoredSequence getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException {
+		StoredSequence foundSi = null;
 		String databankFound = null;
 
 		Iterator<T> iterator = this.collection.values().iterator();
 		while (iterator.hasNext()) {
 			T next = iterator.next();
-			SequenceInformation si = next.getSequenceInformationFromId(sequenceId);
+			StoredSequence si = next.getSequenceInformationFromId(sequenceId);
 
 			if (si != null) {
 				if (foundSi != null) {

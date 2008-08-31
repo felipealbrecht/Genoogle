@@ -9,10 +9,10 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
-import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.proto.Io.StoredSequence;
 
 /**
  * This interface specifies the ways to access a sequence bank.
@@ -100,16 +100,6 @@ public interface SequenceDataBank {
 	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException;
 
 	/**
-	 * Add a new sequence into the sequence bank
-	 * 
-	 * @param s
-	 * @return the added sequence id
-	 * @throws BioException
-	 * @throws IOException
-	 */
-	public int addSequence(RichSequence s) throws BioException, IOException;
-
-	/**
 	 * Get a {@link SymbolList} sequence from an internal id
 	 * 
 	 * @param sequenceId
@@ -118,7 +108,7 @@ public interface SequenceDataBank {
 	 * @throws IllegalSymbolException
 	 * @throws MultipleSequencesFoundException 
 	 */
-	SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
+	StoredSequence getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
 	
 	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 

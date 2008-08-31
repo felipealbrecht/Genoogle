@@ -1,0 +1,34 @@
+package proto;
+
+option java_package = "bio.pih.io.proto";
+option java_outer_classname = "Io";
+
+message StoredDatabank {
+  enum SequenceType {
+  	DNA = 0;
+  	RNA = 1;
+  	PROTEIN = 2;
+  }
+  
+  optional SequenceType type = 1;
+  optional int32 qtdSequences = 2;
+  optional int64 qtdBases = 3;
+  repeated StoredSequenceInfo sequencesInfo = 4;  
+}
+
+message StoredSequenceInfo {
+	optional int32 id = 1;
+	optional int32 offset = 2;
+	optional int32 length = 3;
+}		
+					
+message StoredSequence {
+  optional int32 id = 1;
+  optional string gi = 2;
+  optional string name = 3;
+  optional string accession = 4;
+  optional string description = 5;
+  optional int32 version = 6;
+  optional bytes encodedSequence = 7;
+  optional string sequence = 8;
+}

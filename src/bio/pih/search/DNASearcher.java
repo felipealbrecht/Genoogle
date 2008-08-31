@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.alignment.SubstitutionMatrix;
@@ -19,11 +18,12 @@ import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.io.SequenceDataBank;
-import bio.pih.io.SequenceInformation;
+import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
+import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
@@ -105,13 +105,12 @@ public class DNASearcher extends AbstractSearcher {
 				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
 					continue;
 				}
-				SequenceInformation sequenceInformation = null;
+				StoredSequence storedSequence = null;
 				SymbolList hitSequence = null;
 
 				try {
-					sequenceInformation = databank.getSequenceInformationFromId(sequenceId);
-					hitSequence = DNASequenceEncoderToShort.getDefaultEncoder()
-							.decodeShortArrayToSymbolList(sequenceInformation.getEncodedSequence());
+					storedSequence = databank.getSequenceInformationFromId(sequenceId);
+					hitSequence = LightweightSymbolList.createDNA(storedSequence.getSequence());
 				} catch (Exception e) {
 					logger.fatal("Fatar error while loading sequence " + sequenceId
 							+ " from datatabank " + databank.getName() + ".", e);
@@ -146,8 +145,8 @@ public class DNASearcher extends AbstractSearcher {
 
 				status.setActualStep(SearchStep.ALIGNMENT);
 				if (hitSequence != null && extendedSequencesList.size() > 0) {
-					Hit hit = new Hit(hitNum++, sequenceInformation.getName(), sequenceInformation
-							.getAccession(), sequenceInformation.getDescription(), hitSequence
+					Hit hit = new Hit(hitNum++, storedSequence.getName(), storedSequence
+							.getAccession(), storedSequence.getDescription(), hitSequence
 							.length(), databank.getName());
 					for (ExtendSequences extensionResult : extendedSequencesList) {
 
@@ -262,8 +261,10 @@ public class DNASearcher extends AbstractSearcher {
 								.getMaxDatabankSequenceSubSequencesDistance())) {
 					merged = true;
 
+				// Check if the area end is away from the actual sequence pos.
 				} else if (queryPos - openedArea.queryAreaEnd > sp
 						.getMaxQuerySequenceSubSequencesDistance()) {
+					// Mark the areas to remove.
 					if (fromIndex == -1) {
 						fromIndex = pos;
 						toIndex = pos;
@@ -376,6 +377,8 @@ public class DNASearcher extends AbstractSearcher {
 	}
 	
 	private static class FuckingArrayList<E> extends ArrayList<E> {
+		private static final long serialVersionUID = -7142636234255880892L;
+
 		@Override
 		public void removeRange(int fromIndex, int toIndex) {
 			super.removeRange(fromIndex, toIndex);

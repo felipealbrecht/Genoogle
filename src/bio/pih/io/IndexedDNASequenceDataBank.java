@@ -2,8 +2,11 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
+
+import com.google.protobuf.ByteString;
 
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
@@ -11,6 +14,7 @@ import bio.pih.index.MemorySubSequencesInvertedIndex;
 import bio.pih.index.PersistentSubSequencesInvertedIndex;
 import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.proto.Io.StoredSequence;
 
 /**
  * A data bank witch index its sequences and uses similar subsequences index.
@@ -86,8 +90,17 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	}
 
 	@Override
-	void doSequenceAddingProcessing(SequenceInformation sequenceInformation) {
-		index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
+	void doSequenceAddingProcessing(StoredSequence storedSequence) {
+		final short[] ret = getShortBuffer(storedSequence);
+		index.addSequence(storedSequence.getId(), ret);
+	}
+
+	private short[] getShortBuffer(StoredSequence storedSequence) {
+		ByteString encodedSequence = storedSequence.getEncodedSequence();
+		byte[] byteArray = encodedSequence.toByteArray();
+		final short[] ret = new short[byteArray.length/2];
+		ByteBuffer.wrap(byteArray).asShortBuffer().get(ret);
+		return ret;
 	}
 	
 	@Override
@@ -108,9 +121,10 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	}
 
 	@Override
-	void doSequenceProcessing(SequenceInformation sequenceInformation) {
+	void doSequenceProcessing(StoredSequence storedSequence) {
 		if (!index.exists()) {
-			index.addSequence(sequenceInformation.getId(), sequenceInformation.getEncodedSequence());
+			final short[] ret = getShortBuffer(storedSequence);
+			index.addSequence(storedSequence.getId(), ret);
 		}
 	}
 	

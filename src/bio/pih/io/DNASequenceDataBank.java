@@ -11,23 +11,26 @@ import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.DNASequenceEncoderToShort;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.proto.Io.StoredDatabank;
+import bio.pih.io.proto.Io.StoredSequence;
+import bio.pih.io.proto.Io.StoredSequenceInfo;
+import bio.pih.io.proto.Io.StoredDatabank.SequenceType;
+import bio.pih.io.proto.Io.StoredSequence.Builder;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
 
-import com.google.common.collect.Maps;
+import com.google.protobuf.ByteString;
 
 /**
  * An abstract class for Sequence Banks that uses DNA sequences
@@ -45,18 +48,17 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	private volatile int nextSequenceId;
 	private int totalSequences;
+	private long totalBases;
 
 	protected final boolean readOnly;
-	private File dataBankFile = null;
+	protected StoredDatabank storedDatabank;
 
-	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
+	private File dataBankFile = null;
+	private File storedDataBankInfoFile = null;
 
 	static DNASequenceEncoderToShort encoder = DNASequenceEncoderToShort.getDefaultEncoder();
 
-	private final String[] extensions = new String[] { "dsdb" }; // Dna Sequences Data Bank
-
-	// Map the sequence id to its position
-	HashMap<Integer, Integer> sequenceIdToSequenceInformationOffset = Maps.newHashMap();
+	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
 	/**
 	 * Default constructor for all DNASequenceDataBank.
@@ -65,22 +67,24 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 *            the name of the data bank.
 	 * @param path
 	 *            the path where will be stored.
-	 * @param parent 
+	 * @param parent
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
 	 * @throws IOException
 	 */
-	public DNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, boolean readOnly) {
+	public DNASequenceDataBank(String name, File path,
+			DatabankCollection<? extends DNASequenceDataBank> parent, boolean readOnly) {
 		this.name = name;
 		this.file = path;
 		this.parent = parent;
 		this.readOnly = readOnly;
 		this.nextSequenceId = 0;
 		this.totalSequences = 0;
+		this.totalBases = 0;
+		this.storedDatabank = null;
 	}
 
 	public synchronized void load() throws IOException, ValueOutOfBoundsException {
-
 		checkFile(getDataBankFile(), readOnly);
 		if (readOnly) {
 			if (!dataBankFile.setReadOnly()) {
@@ -91,71 +95,71 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		logger.info("Loading databank from " + getDataBankFile());
 
 		long begin = System.currentTimeMillis();
-		if (!getDataBankFile().exists()) {
+		if (!getDataBankFile().exists() || !getStoredDataBankInfoFile().exists()) {
 			logger.fatal("Databank " + this.getName() + " is not encoded. Please encode it.");
-			throw new IOException("Databank " + this.getName() + " is not encoded. Please encode it.\n Check " + this.getFullPath());			
+			throw new IOException("Databank " + this.getName()
+					+ " is not encoded. Please encode it.\n Check " + this.getFullPath());
 		}
 
 		loadInformations();
-		
+
 		FileChannel dataBankFileChannel = new FileInputStream(getDataBankFile()).getChannel();
-		MappedByteBuffer mappedIndexFile = dataBankFileChannel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
-		
+		this.storedDatabank = StoredDatabank.parseFrom(new FileInputStream(
+				getStoredDataBankInfoFile()));
 
 		beginSequencesProcessing();
-		SequenceInformation sequenceInformation = null;
-		int variableLength = 0;
-		int sequenceInformationPosition;
-		while (mappedIndexFile.position() + SequenceInformation.getUnvariableCapacity() < mappedIndexFile.capacity()) {
-			sequenceInformationPosition = mappedIndexFile.position();
-			variableLength = mappedIndexFile.getInt();
-			sequenceInformation = SequenceInformation.informationFromByteBuffer(mappedIndexFile, variableLength);
-			if (sequenceInformation.getId() > this.nextSequenceId) {
-				this.nextSequenceId = sequenceInformation.getId() + 1;
-			}
-			sequenceIdToSequenceInformationOffset.put(sequenceInformation.getId(), sequenceInformationPosition);
+		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
+			StoredSequence storedSequence = getSequenceInformationFromId(i);
 			totalSequences++;
-			doSequenceProcessing(sequenceInformation);
+			doSequenceProcessing(storedSequence);
 		}
 		dataBankFileChannel.close();
 		finishSequencesProcessing();
-		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " + totalSequences + " sequences.");
+		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with "
+				+ totalSequences + " sequences.");
 	}
 
 	/**
-	 * Load informations previously the data bank is loaded.  
+	 * Load informations previously the data bank is loaded.
+	 * 
 	 * @throws IOException
 	 */
 	abstract void loadInformations() throws IOException;
-	
+
 	/**
 	 * Inform that the sequences processing is beginning.
+	 * 
 	 * @throws IOException
-	 * @throws ValueOutOfBoundsException 
+	 * @throws ValueOutOfBoundsException
 	 */
 	abstract void beginSequencesProcessing() throws IOException, ValueOutOfBoundsException;
-	
+
 	/**
 	 * Process a {@link SequenceInformation}
+	 * 
 	 * @param sequenceInformation
 	 */
-	abstract void doSequenceProcessing(SequenceInformation sequenceInformation);
-	
+	abstract void doSequenceProcessing(StoredSequence sequenceInformation);
+
 	/**
-	 * Finish the sequences processing. <br> 
+	 * Finish the sequences processing. <br>
 	 * After this point no more sequences can be added to the data bank.
+	 * 
 	 * @throws IOException
 	 */
 	abstract void finishSequencesProcessing() throws IOException;
 
-	public synchronized SequenceInformation getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException {
-		int position = sequenceIdToSequenceInformationOffset.get(sequenceId);
+	public synchronized StoredSequence getSequenceInformationFromId(int sequenceId)
+			throws IOException {
+		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
+		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
+		totalBases += storedSequenceInfo.getLength();
 
-		// FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
-		MappedByteBuffer mappedIndexFile = getMappedIndexFile();// channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length());
-		mappedIndexFile.position(position);
+		byte[] data = new byte[storedSequenceInfo.getLength()];
+		mappedIndexFile.position(storedSequenceInfo.getOffset());
+		mappedIndexFile.get(data);
 
-		return SequenceInformation.informationFromByteBuffer(mappedIndexFile, mappedIndexFile.getInt());
+		return StoredSequence.parseFrom(data);
 	}
 
 	WeakReference<MappedByteBuffer> mappedIndexFile = new WeakReference<MappedByteBuffer>(null);
@@ -163,7 +167,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private MappedByteBuffer getMappedIndexFile() throws IOException {
 		if (mappedIndexFile.get() == null) {
 			FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
-			mappedIndexFile = new WeakReference<MappedByteBuffer>(channel.map(MapMode.READ_ONLY, 0, getDataBankFile().length()));
+			mappedIndexFile = new WeakReference<MappedByteBuffer>(channel.map(MapMode.READ_ONLY, 0,
+					getDataBankFile().length()));
 		}
 		return mappedIndexFile.get();
 	}
@@ -172,47 +177,51 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @throws IOException
 	 * @throws BioException
 	 * @throws NoSuchElementException
-	 * @throws ValueOutOfBoundsException 
+	 * @throws ValueOutOfBoundsException
 	 */
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
+			ValueOutOfBoundsException {
 		if (getDataBankFile().exists()) {
-			throw new IOException("File " + getDataBankFile() + " already exists. Please remove it before creating another file.");
+			throw new IOException("File " + getDataBankFile()
+					+ " already exists. Please remove it before creating another file.");
 		}
 		beginSequencesProcessing();
 		addFastaFile(getFullPath());
 		finishSequencesProcessing();
 	}
 
-	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
+	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException,
+			IOException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
+		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDataBankInfoFile(),
+				true).getChannel();
+		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-
 		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
-		RichSequence s;
 
 		while (readFastaDNA.hasNext()) {
-			s = readFastaDNA.nextRichSequence();
-			addSequence(s, dataBankFileChannel);
+			RichSequence s = readFastaDNA.nextRichSequence();
+			StoredSequenceInfo addSequence = addSequence(s, dataBankFileChannel);
+			storedDatabankBuilder.addSequencesInfo(addSequence);
 		}
+		
+		storedDatabankBuilder.setType(SequenceType.DNA);
+		storedDatabankBuilder.setQtdSequences(totalSequences);
+		storedDatabankBuilder.setQtdBases(totalBases);
+		
+		storedDatabank = storedDatabankBuilder.build();
+		storedSequenceInfoChannel.write(ByteBuffer.wrap(storedDatabank.toByteArray()));
 
+		storedSequenceInfoChannel.close();
 		dataBankFileChannel.close();
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	public synchronized int addSequence(RichSequence s) throws IOException, BioException {
-		logger.info("Adding sequence " + s.getName());
-		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
-		int sequenceId = addSequence(s, dataBankFileChannel);
-		dataBankFileChannel.close();
-		logger.info(s.getName() + " added.");
-
-		return sequenceId;
-	}
-
-	private synchronized int addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException, IOException {
+	private synchronized StoredSequenceInfo addSequence(RichSequence s,
+			FileChannel dataBankFileChannel) throws BioException, IOException {
 		if (readOnly) {
 			throw new IOException("The file " + getDataBankFile() + " is marked as read only");
 		}
@@ -222,33 +231,68 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 
 		if (s.length() < 8) {
-			System.out.println(s.getName() + "is too short (" + s.length() + ") and will not be stored in this data bank");
-			return -1;
+			System.out.println(s.getName() + "is too short (" + s.length()
+					+ ") and will not be stored in this data bank");
+			return null;
 		}
 
-		short[] encodedSequence = encoder.encodeSymbolListToShortArray(s);
-		SequenceInformation si = new SequenceInformation(getNextSequenceId(), s.getIdentifier(), s.getName(), s.getAccession(), (byte) s.getVersion(), s.getDescription(), encodedSequence);
-		ByteBuffer bb = si.toByteBuffer();
-		bb.rewind();
-		dataBankFileChannel.write(bb);
-		doSequenceAddingProcessing(si);
+		long offset = dataBankFileChannel.position();
+
+		final byte[] ret = shortArrayToByteArray(s);
+
+		int id = getNextSequenceId();
+		Builder builder = StoredSequence.newBuilder()
+				.setId(id)
+				.setGi(s.getIdentifier())
+				.setName(s.getName())
+				.setAccession(s.getAccession())
+				.setVersion(s.getVersion())
+				.setDescription(s.getDescription())
+				.setEncodedSequence(ByteString.copyFrom(ret))
+				.setSequence(s.seqString());
+
+		StoredSequence storedSequence = builder.build();
+
+		byte[] byteArray = storedSequence.toByteArray();
+		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
+
+		doSequenceAddingProcessing(storedSequence);
 		totalSequences++;
 
-		return si.getId();
+		if (offset > Integer.MAX_VALUE) {
+			throw new IOException("PUTA QUE PARIU!, o offset eh maior que o valor maximo");
+		}
+		
+		return StoredSequenceInfo.newBuilder().setId(id).setOffset((int) offset).setLength(
+				byteArray.length).build();
 	}
 
-	abstract void doSequenceAddingProcessing(SequenceInformation sequenceInformation);
+	private byte[] shortArrayToByteArray(RichSequence s) {
+		short[] encoded = encoder.encodeSymbolListToShortArray(s);
+
+		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 2);
+		for (int i = 0; i < encoded.length; i++) {
+			byteBuf.putShort(encoded[i]);
+		}
+
+		return byteBuf.array();
+	}
+
+	abstract void doSequenceAddingProcessing(StoredSequence sequenceInformation);
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {
 			if (!file.canRead()) {
-				throw new IOException("File " + file.getCanonicalPath() + " exists but is not readable");
+				throw new IOException("File " + file.getCanonicalPath()
+						+ " exists but is not readable");
 			}
 			if (!readOnly & !file.canWrite()) {
-				throw new IOException("File " + file.getCanonicalPath() + " exists but is not writable");
+				throw new IOException("File " + file.getCanonicalPath()
+						+ " exists but is not writable");
 			}
 		} else if (readOnly) {
-			throw new IOException("File " + file.getCanonicalPath() + " does not exist and can not be marked as read-only");
+			throw new IOException("File " + file.getCanonicalPath()
+					+ " does not exist and can not be marked as read-only");
 		}
 	}
 
@@ -268,10 +312,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	public FiniteAlphabet getAlphabet() {
 		return alphabet;
-	}
-
-	protected String[] getExtensions() {
-		return extensions;
 	}
 
 	public void setName(String name) {
@@ -307,6 +347,13 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			dataBankFile = new File(getFullPath() + ".dsdb");
 		}
 		return dataBankFile;
+	}
+
+	protected synchronized File getStoredDataBankInfoFile() {
+		if (storedDataBankInfoFile == null) {
+			storedDataBankInfoFile = new File(getFullPath() + ".ssdb");
+		}
+		return storedDataBankInfoFile;
 	}
 
 	@Override
