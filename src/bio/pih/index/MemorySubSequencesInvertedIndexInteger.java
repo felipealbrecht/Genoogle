@@ -7,7 +7,7 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.io.SequenceDataBank;
-import bio.pih.util.IntArray;
+import bio.pih.util.LongArray;
 
 /**
  * An inverted sub-sequences index stored in the memory.
@@ -15,9 +15,9 @@ import bio.pih.util.IntArray;
  *  
  * @author albrecht
  */
-public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInvertedIndex {
+public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequencesInvertedIndex {
 
-	protected IntArray index[] = null;	
+	protected LongArray index[] = null;	
 	
 	Logger logger = Logger.getLogger("bio.pih.index.SubSequencesArrayIndex");
 
@@ -26,42 +26,43 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public MemorySubSequencesInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public MemorySubSequencesInvertedIndexInteger(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
 		super(databank, subSequenceLength);
 	}
 		
 	@Override
 	public void constructIndex() {		
-		this.index = new IntArray[indexSize];
+		this.index = new LongArray[indexSize];
 	}
 	
 	@Override
+	// TODO: see if this method is called from where already has the encoded sequence.
 	public void addSequence(int sequenceId, SymbolList sequence) {
 		if (sequence == null) {
 			throw new NullPointerException("Sequence can not be null");
 		}
 
-		short[] encodedSequence = encoder.encodeSymbolListToShortArray(sequence);
-		addSequence(sequenceId, encodedSequence);
+		addSequence(sequenceId, encoder.encodeSymbolListToIntegerArray(sequence));
 	}
 
 	@Override
-	public void addSequence(int sequenceId, short[] encodedSequence) {
+	public void addSequence(int sequenceId, int[] encodedSequence) {
 		//assert sequenceId <= 65535;
 		if (sequenceId > 65535) {
 			logger.warn("Sequence id " + sequenceId);
 			return;
 		}
-		int length = encodedSequence[SequenceEncoder.getPositionLength()] / subSequenceLength;
+		int length = encodedSequence.length;
 
-		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < SequenceEncoder.getPositionBeginBitsVector() + length; pos++) {			
-			addSubSequenceInfoEncoded(encodedSequence[pos], EncoderSubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength));
+		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < length; pos++) {			
+			long subSequenceInfoIntRepresention = EncoderSubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength);
+			addSubSequenceInfoEncoded(encodedSequence[pos], subSequenceInfoIntRepresention);
 		}
 	}
 
 	@Override
 	public void finishConstruction() throws IOException {
-		for (IntArray bucket : index) {
+		for (LongArray bucket : index) {
 			if (bucket != null) {
 				bucket.getArray();
 			}
@@ -73,28 +74,28 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 	 * @param subSymbolList
 	 * @param subSequenceInfo
 	 */
-	private void addSubSequenceInfoEncoded(short subSequenceEncoded, int subSequenceInfoEncoded) {
-		int indexPos = subSequenceEncoded & 0xFFFF;
-		IntArray indexBucket = index[indexPos];
+	private void addSubSequenceInfoEncoded(int subSequenceEncoded, long subSequenceInfoEncoded) {
+		int indexPos = subSequenceEncoded;
+		LongArray indexBucket = index[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new IntArray(100);
+			indexBucket = new LongArray(100);
 			index[indexPos] = indexBucket;
 		}
 		indexBucket.add(subSequenceInfoEncoded);
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
+	public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
-		short encodedSubSequence = encoder.encodeSubSymbolListToShort(subSequence);
+		int encodedSubSequence = encoder.encodeSubSymbolListToInteger(subSequence);
 		return getMatchingSubSequence(encodedSubSequence);
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(short encodedSubSequence) {
-		IntArray bucket = index[encodedSubSequence & 0xFFFF];
+	public long[] getMatchingSubSequence(int encodedSubSequence) {
+		LongArray bucket = index[encodedSubSequence];
 		if (bucket != null) {
 			return bucket.getArray();
 		}
@@ -104,7 +105,7 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 	@Override
 	public String indexStatus() {
 		StringBuilder sb = new StringBuilder();
-		for (IntArray bucket : index) {
+		for (LongArray bucket : index) {
 			if (bucket != null) {
 				for (long subSequenceInfoEncoded : bucket.getArray()) {
 					sb.append("\t");
@@ -132,5 +133,4 @@ public class MemorySubSequencesInvertedIndex extends AbstractSubSequencesInverte
 	public boolean exists() {
 		return false;
 	}
-
 }

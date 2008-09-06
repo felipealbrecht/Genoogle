@@ -3,6 +3,10 @@ package proto;
 option java_package = "bio.pih.io.proto";
 option java_outer_classname = "Io";
 
+/////////////////////////////////////////////////////////////////////
+// Inverted Index Stuffs
+/////////////////////////////////////////////////////////////////////
+
 message StoredDatabank {
   enum SequenceType {
   	DNA = 0;
@@ -10,16 +14,16 @@ message StoredDatabank {
   	PROTEIN = 2;
   }
   
-  optional SequenceType type = 1;
+  required SequenceType type = 1;
   optional int32 qtdSequences = 2;
   optional int64 qtdBases = 3;
   repeated StoredSequenceInfo sequencesInfo = 4;  
 }
 
 message StoredSequenceInfo {
-	optional int32 id = 1;
-	optional int32 offset = 2;
-	optional int32 length = 3;
+	required int32 id = 1;
+	required int32 offset = 2;
+	required int32 length = 3;
 }		
 					
 message StoredSequence {
@@ -31,4 +35,24 @@ message StoredSequence {
   optional int32 version = 6;
   optional bytes encodedSequence = 7;
   optional string sequence = 8;
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// Similar SubSequences stuffs
+/////////////////////////////////////////////////////////////////////
+message StoredSimilarSubSequencesIndex {
+	// TODO: put params here
+	repeated StoredComparationResultInfo storedComparationResultInfos = 1;
+} 
+
+message StoredComparationResultInfo {
+	required int32 encodedSubSequence = 1;
+	required int32 length = 3;
+	required int64 offset = 2;
+}
+
+message StoredSimilarSubSequences {
+	required int32 encodedSequence = 1;
+	repeated int32 similarSequence = 2;
 }

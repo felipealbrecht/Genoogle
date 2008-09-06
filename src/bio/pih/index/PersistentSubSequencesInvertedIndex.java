@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -20,7 +20,9 @@ import bio.pih.io.SequenceDataBank;
  * An inverted index witch the inverted data is stored into disk.
  * 
  * @author albrecht
+ * @deprecated Should be converted to use Protocol Buffers
  */
+@Deprecated
 public class PersistentSubSequencesInvertedIndex extends
 		AbstractSubSequencesInvertedIndex {
 
@@ -35,7 +37,7 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	RandomAccessFile indexDataRAF = null;
 
-	private MemorySubSequencesInvertedIndex temporaryIndex = null;
+	private MemorySubSequencesInvertedIndexInteger temporaryIndex = null;
 
 	/**
 	 * @param databank
@@ -88,7 +90,7 @@ public class PersistentSubSequencesInvertedIndex extends
 		RandomAccessFile dataRAF = new RandomAccessFile(getIndexDataFile(), "r");
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
+			long[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
 
 			int readI = indexRAF.readInt();
 			assert readI == i;
@@ -118,7 +120,7 @@ public class PersistentSubSequencesInvertedIndex extends
 		FileChannel dataChannel = new FileOutputStream(dataFile).getChannel();
 
 		for (int i = 0; i < TOTAL_SUB_SEQUENCES; i++) {
-			int[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
+			long[] bucket = temporaryIndex.getMatchingSubSequence((short) i);
 
 			ByteBuffer buffer = ByteBuffer.allocate(16);
 			buffer.putInt(i);
@@ -131,7 +133,7 @@ public class PersistentSubSequencesInvertedIndex extends
 			buffer.putInt(i);
 			buffer.putInt(bucket.length);
 			for (int j = 0; j < bucket.length; j++) {
-				buffer.putInt(bucket[j]);
+				buffer.putLong(bucket[j]);
 			}
 			buffer.flip();
 			dataChannel.write(buffer);
@@ -159,7 +161,7 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	@Override
 	public void constructIndex() throws ValueOutOfBoundsException {
-		temporaryIndex = new MemorySubSequencesInvertedIndex(this.databank,
+		temporaryIndex = new MemorySubSequencesInvertedIndexInteger(this.databank,
 				this.subSequenceLength);
 		temporaryIndex.constructIndex();
 	}
@@ -173,7 +175,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public void addSequence(int sequenceId, short[] encodedSequence) {
+	public void addSequence(int sequenceId, int[] encodedSequence) {
 		if (temporaryIndex != null) {
 			temporaryIndex.addSequence(sequenceId, encodedSequence);
 		}
@@ -187,7 +189,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(SymbolList subSequence)
+	public long[] getMatchingSubSequence(SymbolList subSequence)
 			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException(
@@ -196,14 +198,14 @@ public class PersistentSubSequencesInvertedIndex extends
 							+ ") of the given sequence is different from the sub-sequence ("
 							+ subSequenceLength + ")");
 		}
-		short encodedSubSequence = encoder
-				.encodeSubSymbolListToShort(subSequence);
+		int encodedSubSequence = encoder
+				.encodeSubSymbolListToInteger(subSequence);
 
 		return getMatchingSubSequence(encodedSubSequence);
 	}
 
 	@Override
-	public int[] getMatchingSubSequence(short encodedSubSequence)
+	public long[] getMatchingSubSequence(int encodedSubSequence)
 			throws IOException, InvalidHeaderData {
 		assert getDataFileChannel().size() > 0;
 
@@ -215,7 +217,7 @@ public class PersistentSubSequencesInvertedIndex extends
 		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY,
 				offset, 4 + 4 + resultsInByte);
 
-		IntBuffer buffer = map.asIntBuffer();
+		LongBuffer buffer = map.asLongBuffer();
 		if ( buffer.get() != encodedSubSequenceInt) {
 			throw new InvalidHeaderData("encodedSubSequenceInt readen is wrong");
 		}
@@ -223,7 +225,7 @@ public class PersistentSubSequencesInvertedIndex extends
 			throw new InvalidHeaderData("quantity readen is wrong");
 		}
 
-		int bucket[] = new int[quantity];
+		long bucket[] = new long[quantity];
 		buffer.get(bucket);
 		return bucket;
 	}

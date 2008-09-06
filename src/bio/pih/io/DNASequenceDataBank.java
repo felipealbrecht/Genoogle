@@ -19,7 +19,7 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojavax.bio.seq.RichSequence;
 
-import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;
@@ -56,7 +56,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
 
-	static DNASequenceEncoderToShort encoder = DNASequenceEncoderToShort.getDefaultEncoder();
+	static DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
@@ -153,7 +153,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			throws IOException {
 		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
 		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
-		totalBases += storedSequenceInfo.getLength();
 
 		byte[] data = new byte[storedSequenceInfo.getLength()];
 		mappedIndexFile.position(storedSequenceInfo.getOffset());
@@ -207,11 +206,11 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			StoredSequenceInfo addSequence = addSequence(s, dataBankFileChannel);
 			storedDatabankBuilder.addSequencesInfo(addSequence);
 		}
-		
+
 		storedDatabankBuilder.setType(SequenceType.DNA);
 		storedDatabankBuilder.setQtdSequences(totalSequences);
 		storedDatabankBuilder.setQtdBases(totalBases);
-		
+
 		storedDatabank = storedDatabankBuilder.build();
 		storedSequenceInfoChannel.write(ByteBuffer.wrap(storedDatabank.toByteArray()));
 
@@ -238,7 +237,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		long offset = dataBankFileChannel.position();
 
-		final byte[] ret = shortArrayToByteArray(s);
+		final byte[] ret = intArrayToByteArray(s);
 
 		int id = getNextSequenceId();
 		Builder builder = StoredSequence.newBuilder()
@@ -262,20 +261,20 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		if (offset > Integer.MAX_VALUE) {
 			throw new IOException("PUTA QUE PARIU!, o offset eh maior que o valor maximo");
 		}
-		
+
 		return StoredSequenceInfo.newBuilder().setId(id).setOffset((int) offset).setLength(
 				byteArray.length).build();
 	}
 
-	private byte[] shortArrayToByteArray(RichSequence s) {
-		short[] encoded = encoder.encodeSymbolListToShortArray(s);
+	private byte[] intArrayToByteArray(RichSequence s) {
+		int[] encoded = encoder.encodeSymbolListToIntegerArray(s);
 
-		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 2);
+		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 4);
 		for (int i = 0; i < encoded.length; i++) {
-			byteBuf.putShort(encoded[i]);
+			byteBuf.putInt(encoded[i]);
 		}
-
-		return byteBuf.array();
+		
+		return byteBuf.array(); 
 	}
 
 	abstract void doSequenceAddingProcessing(StoredSequence sequenceInformation);

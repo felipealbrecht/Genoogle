@@ -15,17 +15,24 @@ public final class Io {
       buildDescriptor() {
     java.lang.String descriptorData =
       "\n\010io.proto\022\005proto\"\313\001\n\016StoredDatabank\0220\n\004" +
-      "type\030\001 \001(\0162\".proto.StoredDatabank.Sequen" +
+      "type\030\001 \002(\0162\".proto.StoredDatabank.Sequen" +
       "ceType\022\024\n\014qtdSequences\030\002 \001(\005\022\020\n\010qtdBases" +
       "\030\003 \001(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.St" +
       "oredSequenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020" +
       "\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenc" +
-      "eInfo\022\n\n\002id\030\001 \001(\005\022\016\n\006offset\030\002 \001(\005\022\016\n\006len" +
-      "gth\030\003 \001(\005\"\232\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
+      "eInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006len" +
+      "gth\030\003 \002(\005\"\232\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
       "\022\n\n\002gi\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\021\n\taccession\030" +
       "\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\017\n\007version\030\006 " +
       "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\022\020\n\010sequence" +
-      "\030\010 \001(\tB\026\n\020bio.pih.io.protoB\002Io";
+      "\030\010 \001(\t\"j\n\036StoredSimilarSubSequencesIndex" +
+      "\022H\n\034storedComparationResultInfos\030\001 \003(\0132\"" +
+      ".proto.StoredComparationResultInfo\"Y\n\033St" +
+      "oredComparationResultInfo\022\032\n\022encodedSubS" +
+      "equence\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n\006offset\030" +
+      "\002 \002(\003\"M\n\031StoredSimilarSubSequences\022\027\n\017en" +
+      "codedSequence\030\001 \002(\005\022\027\n\017similarSequence\030\002" +
+      " \003(\005B\026\n\020bio.pih.io.protoB\002Io";
     try {
       return com.google.protobuf.Descriptors.FileDescriptor
         .internalBuildGeneratedFileFrom(descriptorData,
@@ -112,7 +119,7 @@ public final class Io {
       }
     }
     
-    // optional .proto.StoredDatabank.SequenceType type = 1;
+    // required .proto.StoredDatabank.SequenceType type = 1;
     private boolean hasType;
     private bio.pih.io.proto.Io.StoredDatabank.SequenceType type_ = bio.pih.io.proto.Io.StoredDatabank.SequenceType.DNA;
     public boolean hasType() { return hasType; }
@@ -251,7 +258,7 @@ public final class Io {
       }
       
       
-      // optional .proto.StoredDatabank.SequenceType type = 1;
+      // required .proto.StoredDatabank.SequenceType type = 1;
       public boolean hasType() {
         return result.hasType();
       }
@@ -376,19 +383,19 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
     }
     
-    // optional int32 id = 1;
+    // required int32 id = 1;
     private boolean hasId;
     private int id_ = 0;
     public boolean hasId() { return hasId; }
     public int getId() { return id_; }
     
-    // optional int32 offset = 2;
+    // required int32 offset = 2;
     private boolean hasOffset;
     private int offset_ = 0;
     public boolean hasOffset() { return hasOffset; }
     public int getOffset() { return offset_; }
     
-    // optional int32 length = 3;
+    // required int32 length = 3;
     private boolean hasLength;
     private int length_ = 0;
     public boolean hasLength() { return hasLength; }
@@ -500,7 +507,7 @@ public final class Io {
       }
       
       
-      // optional int32 id = 1;
+      // required int32 id = 1;
       public boolean hasId() {
         return result.hasId();
       }
@@ -518,7 +525,7 @@ public final class Io {
         return this;
       }
       
-      // optional int32 offset = 2;
+      // required int32 offset = 2;
       public boolean hasOffset() {
         return result.hasOffset();
       }
@@ -536,7 +543,7 @@ public final class Io {
         return this;
       }
       
-      // optional int32 length = 3;
+      // required int32 length = 3;
       public boolean hasLength() {
         return result.hasLength();
       }
@@ -880,6 +887,607 @@ public final class Io {
     }
   }
   
+  public static final class StoredSimilarSubSequencesIndex extends
+      com.google.protobuf.GeneratedMessage {
+    // Use StoredSimilarSubSequencesIndex.newBuilder() to construct.
+    private StoredSimilarSubSequencesIndex() {}
+    
+    private static final StoredSimilarSubSequencesIndex defaultInstance = new StoredSimilarSubSequencesIndex();
+    public static StoredSimilarSubSequencesIndex getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StoredSimilarSubSequencesIndex getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
+    }
+    
+    // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
+    private java.util.List<bio.pih.io.proto.Io.StoredComparationResultInfo> storedComparationResultInfos_ =
+      java.util.Collections.emptyList();
+    public java.util.List<bio.pih.io.proto.Io.StoredComparationResultInfo> getStoredComparationResultInfosList() {
+      return storedComparationResultInfos_;
+    }
+    public int getStoredComparationResultInfosCount() { return storedComparationResultInfos_.size(); }
+    public bio.pih.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index) {
+      return storedComparationResultInfos_.get(index);
+    }
+    
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.newBuilder()
+      private Builder() {}
+      
+      bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex result = new bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex();
+      
+      protected bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        result = new bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex();
+        return this;
+      }
+      
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.getDescriptor();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex getDefaultInstanceForType() {
+        return bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.getDefaultInstance();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex build() {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex buildPartial() {
+        if (result.storedComparationResultInfos_ != java.util.Collections.EMPTY_LIST) {
+          result.storedComparationResultInfos_ =
+            java.util.Collections.unmodifiableList(result.storedComparationResultInfos_);
+        }
+        bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      
+      // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
+      public java.util.List<bio.pih.io.proto.Io.StoredComparationResultInfo> getStoredComparationResultInfosList() {
+        return java.util.Collections.unmodifiableList(result.storedComparationResultInfos_);
+      }
+      public int getStoredComparationResultInfosCount() {
+        return result.getStoredComparationResultInfosCount();
+      }
+      public bio.pih.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index) {
+        return result.getStoredComparationResultInfos(index);
+      }
+      public Builder setStoredComparationResultInfos(int index, bio.pih.io.proto.Io.StoredComparationResultInfo value) {
+        result.storedComparationResultInfos_.set(index, value);
+        return this;
+      }
+      public Builder setStoredComparationResultInfos(int index, bio.pih.io.proto.Io.StoredComparationResultInfo.Builder builderForValue) {
+        result.storedComparationResultInfos_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addStoredComparationResultInfos(bio.pih.io.proto.Io.StoredComparationResultInfo value) {
+        if (result.storedComparationResultInfos_.isEmpty()) {
+          result.storedComparationResultInfos_ = new java.util.ArrayList<bio.pih.io.proto.Io.StoredComparationResultInfo>();
+        }
+        result.storedComparationResultInfos_.add(value);
+        return this;
+      }
+      public Builder addStoredComparationResultInfos(bio.pih.io.proto.Io.StoredComparationResultInfo.Builder builderForValue) {
+        if (result.storedComparationResultInfos_.isEmpty()) {
+          result.storedComparationResultInfos_ = new java.util.ArrayList<bio.pih.io.proto.Io.StoredComparationResultInfo>();
+        }
+        result.storedComparationResultInfos_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllStoredComparationResultInfos(
+          java.lang.Iterable<? extends bio.pih.io.proto.Io.StoredComparationResultInfo> values) {
+        if (result.storedComparationResultInfos_.isEmpty()) {
+          result.storedComparationResultInfos_ = new java.util.ArrayList<bio.pih.io.proto.Io.StoredComparationResultInfo>();
+        }
+        super.addAll(values, result.storedComparationResultInfos_);
+        return this;
+      }
+      public Builder clearStoredComparationResultInfos() {
+        result.storedComparationResultInfos_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+  }
+  
+  public static final class StoredComparationResultInfo extends
+      com.google.protobuf.GeneratedMessage {
+    // Use StoredComparationResultInfo.newBuilder() to construct.
+    private StoredComparationResultInfo() {}
+    
+    private static final StoredComparationResultInfo defaultInstance = new StoredComparationResultInfo();
+    public static StoredComparationResultInfo getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StoredComparationResultInfo getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
+    }
+    
+    // required int32 encodedSubSequence = 1;
+    private boolean hasEncodedSubSequence;
+    private int encodedSubSequence_ = 0;
+    public boolean hasEncodedSubSequence() { return hasEncodedSubSequence; }
+    public int getEncodedSubSequence() { return encodedSubSequence_; }
+    
+    // required int32 length = 3;
+    private boolean hasLength;
+    private int length_ = 0;
+    public boolean hasLength() { return hasLength; }
+    public int getLength() { return length_; }
+    
+    // required int64 offset = 2;
+    private boolean hasOffset;
+    private long offset_ = 0L;
+    public boolean hasOffset() { return hasOffset; }
+    public long getOffset() { return offset_; }
+    
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(bio.pih.io.proto.Io.StoredComparationResultInfo prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using bio.pih.io.proto.Io.StoredComparationResultInfo.newBuilder()
+      private Builder() {}
+      
+      bio.pih.io.proto.Io.StoredComparationResultInfo result = new bio.pih.io.proto.Io.StoredComparationResultInfo();
+      
+      protected bio.pih.io.proto.Io.StoredComparationResultInfo internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        result = new bio.pih.io.proto.Io.StoredComparationResultInfo();
+        return this;
+      }
+      
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.io.proto.Io.StoredComparationResultInfo.getDescriptor();
+      }
+      
+      public bio.pih.io.proto.Io.StoredComparationResultInfo getDefaultInstanceForType() {
+        return bio.pih.io.proto.Io.StoredComparationResultInfo.getDefaultInstance();
+      }
+      
+      public bio.pih.io.proto.Io.StoredComparationResultInfo build() {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private bio.pih.io.proto.Io.StoredComparationResultInfo buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public bio.pih.io.proto.Io.StoredComparationResultInfo buildPartial() {
+        bio.pih.io.proto.Io.StoredComparationResultInfo returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      
+      // required int32 encodedSubSequence = 1;
+      public boolean hasEncodedSubSequence() {
+        return result.hasEncodedSubSequence();
+      }
+      public int getEncodedSubSequence() {
+        return result.getEncodedSubSequence();
+      }
+      public Builder setEncodedSubSequence(int value) {
+        result.hasEncodedSubSequence = true;
+        result.encodedSubSequence_ = value;
+        return this;
+      }
+      public Builder clearEncodedSubSequence() {
+        result.hasEncodedSubSequence = false;
+        result.encodedSubSequence_ = 0;
+        return this;
+      }
+      
+      // required int32 length = 3;
+      public boolean hasLength() {
+        return result.hasLength();
+      }
+      public int getLength() {
+        return result.getLength();
+      }
+      public Builder setLength(int value) {
+        result.hasLength = true;
+        result.length_ = value;
+        return this;
+      }
+      public Builder clearLength() {
+        result.hasLength = false;
+        result.length_ = 0;
+        return this;
+      }
+      
+      // required int64 offset = 2;
+      public boolean hasOffset() {
+        return result.hasOffset();
+      }
+      public long getOffset() {
+        return result.getOffset();
+      }
+      public Builder setOffset(long value) {
+        result.hasOffset = true;
+        result.offset_ = value;
+        return this;
+      }
+      public Builder clearOffset() {
+        result.hasOffset = false;
+        result.offset_ = 0L;
+        return this;
+      }
+    }
+  }
+  
+  public static final class StoredSimilarSubSequences extends
+      com.google.protobuf.GeneratedMessage {
+    // Use StoredSimilarSubSequences.newBuilder() to construct.
+    private StoredSimilarSubSequences() {}
+    
+    private static final StoredSimilarSubSequences defaultInstance = new StoredSimilarSubSequences();
+    public static StoredSimilarSubSequences getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StoredSimilarSubSequences getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
+    }
+    
+    // required int32 encodedSequence = 1;
+    private boolean hasEncodedSequence;
+    private int encodedSequence_ = 0;
+    public boolean hasEncodedSequence() { return hasEncodedSequence; }
+    public int getEncodedSequence() { return encodedSequence_; }
+    
+    // repeated int32 similarSequence = 2;
+    private java.util.List<java.lang.Integer> similarSequence_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.Integer> getSimilarSequenceList() {
+      return similarSequence_;
+    }
+    public int getSimilarSequenceCount() { return similarSequence_.size(); }
+    public int getSimilarSequence(int index) {
+      return similarSequence_.get(index);
+    }
+    
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(bio.pih.io.proto.Io.StoredSimilarSubSequences prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using bio.pih.io.proto.Io.StoredSimilarSubSequences.newBuilder()
+      private Builder() {}
+      
+      bio.pih.io.proto.Io.StoredSimilarSubSequences result = new bio.pih.io.proto.Io.StoredSimilarSubSequences();
+      
+      protected bio.pih.io.proto.Io.StoredSimilarSubSequences internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        result = new bio.pih.io.proto.Io.StoredSimilarSubSequences();
+        return this;
+      }
+      
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.io.proto.Io.StoredSimilarSubSequences.getDescriptor();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequences getDefaultInstanceForType() {
+        return bio.pih.io.proto.Io.StoredSimilarSubSequences.getDefaultInstance();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequences build() {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private bio.pih.io.proto.Io.StoredSimilarSubSequences buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public bio.pih.io.proto.Io.StoredSimilarSubSequences buildPartial() {
+        if (result.similarSequence_ != java.util.Collections.EMPTY_LIST) {
+          result.similarSequence_ =
+            java.util.Collections.unmodifiableList(result.similarSequence_);
+        }
+        bio.pih.io.proto.Io.StoredSimilarSubSequences returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      
+      // required int32 encodedSequence = 1;
+      public boolean hasEncodedSequence() {
+        return result.hasEncodedSequence();
+      }
+      public int getEncodedSequence() {
+        return result.getEncodedSequence();
+      }
+      public Builder setEncodedSequence(int value) {
+        result.hasEncodedSequence = true;
+        result.encodedSequence_ = value;
+        return this;
+      }
+      public Builder clearEncodedSequence() {
+        result.hasEncodedSequence = false;
+        result.encodedSequence_ = 0;
+        return this;
+      }
+      
+      // repeated int32 similarSequence = 2;
+      public java.util.List<java.lang.Integer> getSimilarSequenceList() {
+        return java.util.Collections.unmodifiableList(result.similarSequence_);
+      }
+      public int getSimilarSequenceCount() {
+        return result.getSimilarSequenceCount();
+      }
+      public int getSimilarSequence(int index) {
+        return result.getSimilarSequence(index);
+      }
+      public Builder setSimilarSequence(int index, int value) {
+        result.similarSequence_.set(index, value);
+        return this;
+      }
+      public Builder addSimilarSequence(int value) {
+        if (result.similarSequence_.isEmpty()) {
+          result.similarSequence_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        result.similarSequence_.add(value);
+        return this;
+      }
+      public Builder addAllSimilarSequence(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        if (result.similarSequence_.isEmpty()) {
+          result.similarSequence_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        super.addAll(values, result.similarSequence_);
+        return this;
+      }
+      public Builder clearSimilarSequence() {
+        result.similarSequence_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+  }
+  
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredDatabank_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -913,4 +1521,37 @@ public final class Io {
           new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", "Sequence", },
           bio.pih.io.proto.Io.StoredSequence.class,
           bio.pih.io.proto.Io.StoredSequence.Builder.class);
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
+        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+          internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
+          new java.lang.String[] { "StoredComparationResultInfos", },
+          bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.class,
+          bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredComparationResultInfo_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
+        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+          internal_static_proto_StoredComparationResultInfo_descriptor,
+          new java.lang.String[] { "EncodedSubSequence", "Length", "Offset", },
+          bio.pih.io.proto.Io.StoredComparationResultInfo.class,
+          bio.pih.io.proto.Io.StoredComparationResultInfo.Builder.class);
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSimilarSubSequences_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
+        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+          internal_static_proto_StoredSimilarSubSequences_descriptor,
+          new java.lang.String[] { "EncodedSequence", "SimilarSequence", },
+          bio.pih.io.proto.Io.StoredSimilarSubSequences.class,
+          bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder.class);
 }

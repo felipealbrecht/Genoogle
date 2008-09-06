@@ -1,6 +1,7 @@
 package bio.pih.io;
 
 import java.io.IOException;
+import java.util.List;
 
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
@@ -45,7 +46,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
-	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	public long[] getMachingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 	
 	
 
@@ -60,7 +61,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 
 	 */
-	public int[] getSimilarSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	public List<Integer> getSimilarSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 	
 	
 	/**

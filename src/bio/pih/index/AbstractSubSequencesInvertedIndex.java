@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.io.SequenceDataBank;
 
@@ -18,9 +18,9 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	protected final SequenceDataBank databank;
 	protected final int subSequenceLength;
 	protected final int indexSize;
-	protected final int[] EMPTY_ARRAY = new int[0];
+	protected final long[] EMPTY_ARRAY = new long[0];
 	
-	protected final DNASequenceEncoderToShort encoder;
+	protected final DNASequenceEncoderToInteger encoder;
 	protected boolean loaded;
 	
 	/**
@@ -33,7 +33,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 
 		this.databank = databank;
 		this.subSequenceLength = subSequenceLength;
-		this.encoder = (DNASequenceEncoderToShort) databank.getEncoder();
+		this.encoder = (DNASequenceEncoderToInteger) databank.getEncoder();
 
 		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(databank.getAlphabet().size());
 		this.indexSize = 1 << indexBitsSize;
@@ -68,7 +68,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @param sequenceId
 	 * @param encodedSequence 
 	 */
-	abstract public void addSequence(int sequenceId, short[] encodedSequence);
+	abstract public void addSequence(int sequenceId, int[] encodedSequence);
 	
 	/**
 	 * @param subSequence
@@ -77,7 +77,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
-	abstract public int[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	abstract public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 
 	/**
 	 * @param encodedSubSequence 
@@ -85,7 +85,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
-	abstract public int[] getMatchingSubSequence(short encodedSubSequence) throws IOException, InvalidHeaderData;
+	abstract public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData;
 
 	/**
 	 * @return a string containing the status of the index.

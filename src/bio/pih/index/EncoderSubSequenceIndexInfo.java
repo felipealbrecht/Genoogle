@@ -9,15 +9,16 @@ package bio.pih.index;
  */
 public class EncoderSubSequenceIndexInfo {
 	
+	private static final int DATA_32_BITS_MASK = 0xFFFFFFFF;
+
 	/**
 	 * @param sequenceId 
 	 * @param pos 
 	 * @return an integer containing the sequenceId and start point
 	 */
-	public static int getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
-		assert sequenceId <= 65535; //((long)1 << 16) -1; 
-		//assert pos <= 65535; //((long)1 << 16) -1;
-		return ((sequenceId << 16) | (pos & 0xFFFF));
+	public static long getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
+		assert sequenceId <= ((long) 1 << 32) - 1;
+		return ((((long)sequenceId) << 32) | (pos & DATA_32_BITS_MASK));
 	}
 
 	/**
@@ -25,7 +26,7 @@ public class EncoderSubSequenceIndexInfo {
 	 * @return the start position
 	 */
 	public static int getStart(long subSequenceInfoIntRepresention) {
-		return (int) (subSequenceInfoIntRepresention & 0xFFFF);
+		return (int) (subSequenceInfoIntRepresention & DATA_32_BITS_MASK);
 	}
 
 	/**
@@ -33,6 +34,6 @@ public class EncoderSubSequenceIndexInfo {
 	 * @return the sequence id 
 	 */
 	public static int getSequenceId(long subSequenceInfoIntRepresention) {
-		return (int) (subSequenceInfoIntRepresention >> 16) & 0xFFFF;
+		return (int) (subSequenceInfoIntRepresention >> 32) & DATA_32_BITS_MASK;
 	}
 }

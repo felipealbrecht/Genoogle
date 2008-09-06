@@ -6,14 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
@@ -21,11 +18,18 @@ import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleNeedlemanWunsch;
 import bio.pih.alignment.GenoogleSequenceAlignment;
-import bio.pih.encoder.DNASequenceEncoderToShort;
+import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.io.proto.Io.StoredComparationResultInfo;
+import bio.pih.io.proto.Io.StoredSimilarSubSequences;
+import bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex;
+import bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder;
 import bio.pih.seq.LightweightSymbolList;
+
+import com.google.common.collect.Lists;
 
 /**
  * Given two sub-sequences, return the *global* alignment between they.
@@ -33,40 +37,46 @@ import bio.pih.seq.LightweightSymbolList;
  * @author albrecht
  * 
  * 
- * <p>
- * How to use:
+ *         <p>
+ *         How to use:
  * 
- * Create a instance, check if exists, if not createData(), else loadData().
+ *         Create a instance, check if exists, if not createData(), else
+ *         loadData().
  * 
- * <p>
- * FILES FORMAT:<br>
- * Index File:<br>
- * <code>
- * ([encodedSequence:short][quantity:short][data offset:long]){4^8 times}
+ *         <p>
+ *         FILES FORMAT:<br>
+ *         Index File:<br>
+ *         <code>
+ * ([encodedSequence:int][quantity:int][data offset:long]){4^12 times}
  * </code> <br>
- * Data file:<br>
- * <code>
- * ([encodedSequence:short][quantity:short]([encodedSequence,score:int]){quantity times}){4^8 times}
+ *         Data file:<br>
+ *         <code>
+ * ([encodedSequence:int][quantity:int]([encodedSequence,score:int]){quantity times}){4^12 times}
  * </code> <br>
- * The encodedSequence and quantity appears also in data file for sanity checks.<br>
- * <br>
+ *         The encodedSequence and quantity appears also in data file for sanity
+ *         checks.<br>
+ *         <br>
  * 
- * TODO: Remove the default values from hardcoded class and put in a configuration file.
+ *         TODO: Remove the default values from hardcoded class and put in a
+ *         configuration file.
  */
 public class SimilarSubSequencesIndex {
 
+	private static final char[] ALPHABET = new char[] { 'A', 'C', 'G', 'T' };
 	private final GenoogleNeedlemanWunsch aligner;
-	private final DNASequenceEncoderToShort encoder;
+	private final DNASequenceEncoderToInteger encoder;
 
 	private static final int defaultThreshold = 3;
+	private static final int defaultDeeper = 1;
 	private static final int defaultMatch = -1;
 	private static final int defaultDismatch = 1;
 	private static final int defaultGapOpen = 0;
 	private static final int defaultGapExtend = 1;
-	private static final int defaultSubSequenceLength = 8;
+	private static final int defaultSubSequenceLength = 10;
 
 	private final int subSequenceLength;
 	private final int threshold;
+	private final int deeper;
 	private final int match;
 	private final int dismatch;
 	private final int gapOpen;
@@ -78,8 +88,8 @@ public class SimilarSubSequencesIndex {
 	private FileChannel dataFileChannel = null;
 
 	private long[] dataOffsetIndex;
-	private int[] dataQuantityIndex;
-	
+	private int[] dataLengthIndex;
+
 	private boolean isLoad = false;
 
 	private static SimilarSubSequencesIndex defaultInstance = null;
@@ -93,9 +103,13 @@ public class SimilarSubSequencesIndex {
 	public static SimilarSubSequencesIndex getDefaultInstance() {
 		if (defaultInstance == null) {
 			try {
-				defaultInstance = new SimilarSubSequencesIndex(DNATools.getDNA(), defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen, defaultGapExtend, defaultThreshold);
+				defaultInstance = new SimilarSubSequencesIndex(DNATools.getDNA(),
+						defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen,
+						defaultGapExtend, defaultThreshold, defaultDeeper);
 			} catch (ValueOutOfBoundsException e) {
-				logger.fatal("Fatar error in loading the default SubSequenceComparer. Probably related with subSequenceLength", e);
+				logger.fatal(
+						"Fatar error in loading the default SubSequenceComparer. Probably related with subSequenceLength",
+						e);
 			}
 		}
 		return defaultInstance;
@@ -108,10 +122,15 @@ public class SimilarSubSequencesIndex {
 	 * @throws IllegalSymbolException
 	 * @throws IOException
 	 * @throws BioException
+	 * @throws InvalidHeaderData
 	 * @throws ValueOutOfBoundsException
 	 */
-	public static void main(String[] args) throws IllegalSymbolException, IOException, BioException {
-		getDefaultInstance().generateData(true);
+	public static void main(String[] args) throws IllegalSymbolException, IOException,
+			BioException, InvalidHeaderData {
+//		getDefaultInstance().deleteData();
+//		getDefaultInstance().generateData(true);
+		getDefaultInstance().load();
+		getDefaultInstance().checkDataData(true);
 	}
 
 	/**
@@ -122,24 +141,31 @@ public class SimilarSubSequencesIndex {
 	 * @param gapOpen
 	 * @param gapExtend
 	 * @param threshold
+	 * @param deeper
 	 * @throws ValueOutOfBoundsException
 	 */
-	public SimilarSubSequencesIndex(FiniteAlphabet alphabet, int subSequenceLength, int match, int dismatch, int gapOpen, int gapExtend, int threshold) throws ValueOutOfBoundsException {
+	public SimilarSubSequencesIndex(FiniteAlphabet alphabet, int subSequenceLength, int match,
+			int dismatch, int gapOpen, int gapExtend, int threshold, int deeper)
+			throws ValueOutOfBoundsException {
 		this.subSequenceLength = subSequenceLength;
 		this.match = match;
 		this.dismatch = dismatch;
 		this.gapOpen = gapOpen;
 		this.gapExtend = gapExtend;
 		this.threshold = threshold;
+		this.deeper = deeper;
 
-		SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1, dismatch * -1); // values
-		this.aligner = new GenoogleNeedlemanWunsch(match, dismatch, gapOpen, gapOpen, gapExtend, substitutionMatrix);
-		this.encoder = new DNASequenceEncoderToShort(subSequenceLength);
+		SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1,
+				dismatch * -1); // values
+		this.aligner = new GenoogleNeedlemanWunsch(match, dismatch, gapOpen, gapOpen, gapExtend,
+				substitutionMatrix);
+		this.encoder = new DNASequenceEncoderToInteger(subSequenceLength);
 		this.maxEncodedSequenceValue = (int) Math.pow(alphabet.size(), subSequenceLength) - 1;
 	}
 
 	/**
-	 * @return the maximum value for a sequence that is possible for this actual alphabet and sequence length
+	 * @return the maximum value for a sequence that is possible for this actual
+	 *         alphabet and sequence length
 	 */
 	public int getMaxEncodedSequenceValue() {
 		return this.maxEncodedSequenceValue;
@@ -148,7 +174,8 @@ public class SimilarSubSequencesIndex {
 	private String indexFileName = null;
 
 	/**
-	 * @return name of the file containing the index of the data of this {@link SimilarSubSequencesIndex} score scheme.
+	 * @return name of the file containing the index of the data of this
+	 *         {@link SimilarSubSequencesIndex} score scheme.
 	 */
 	public String getIndexFileName() {
 		if (this.indexFileName == null) {
@@ -174,7 +201,8 @@ public class SimilarSubSequencesIndex {
 	private String dataFileName = null;
 
 	/**
-	 * @return name of the file containing the the data of this {@link SimilarSubSequencesIndex} score scheme.
+	 * @return name of the file containing the the data of this
+	 *         {@link SimilarSubSequencesIndex} score scheme.
 	 */
 	public String getDataFileName() {
 		if (this.dataFileName == null) {
@@ -237,6 +265,57 @@ public class SimilarSubSequencesIndex {
 	}
 
 	/**
+	 * Check the data consistency.
+	 * 
+	 * @param verbose
+	 * @throws IOException
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 * @throws InvalidHeaderData
+	 */
+	public void checkDataData(boolean verbose) throws IOException, IllegalSymbolException,
+			BioException, InvalidHeaderData {
+
+		long initialTime = System.currentTimeMillis();
+
+		System.out.println("Checking data of " + this.toString());
+		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
+			LinkedList<String> resultsString = Lists.newLinkedList();
+			LinkedList<Integer> resultsInteger = Lists.newLinkedList();
+			SymbolList sequence = getEncoder().decodeIntegerToSymbolList(encodedSequence1);
+			long time = System.currentTimeMillis();
+			List<String> similarSequences = generateSimilar(sequence.seqString(), deeper, ALPHABET);
+			for (String similar : similarSequences) {
+				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList.createDNA(similar);
+				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
+				String decodeIntegerToString = DNASequenceEncoderToInteger.getDefaultEncoder()
+						.decodeIntegerToString(encodedSimilar);
+				assert decodeIntegerToString.equals(similar);
+				resultsString.add(similar);
+				resultsInteger.add(encodedSimilar);
+			}
+			List<Integer> retrievedSimilarSequences = getSimilarSequences(encodedSequence1);
+			
+			assert retrievedSimilarSequences.size() == resultsString.size();
+			assert resultsInteger.equals(retrievedSimilarSequences);
+
+
+			if (encodedSequence1 % 10000 == 0) {
+			System.out.println(sequence.seqString() + "\t" + (System.currentTimeMillis() - time)
+					+ "\t" + resultsString.size() + "\t" + encodedSequence1 + "\t"
+					+ Integer.toHexString(encodedSequence1) + "\t"
+					+ Integer.toBinaryString(encodedSequence1));
+			}
+		}
+
+		if (verbose) {
+			System.out.println("-----------------------------");
+			System.out.println(" tempo total: " + (System.currentTimeMillis() - initialTime));
+			System.out.println("");
+		}
+	}
+
+	/**
 	 * Same <code>load(false)</code>
 	 * 
 	 * @throws IOException
@@ -249,112 +328,77 @@ public class SimilarSubSequencesIndex {
 	/**
 	 * Load the data (index and the data itself) for utilize it.
 	 * 
-	 * @param check
+	 * @param checkConsitency
 	 *            <code>true</code> if the consistency must be checked
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
-	public void load(boolean check) throws IOException, InvalidHeaderData {
+	public void load(boolean checkConsitency) throws IOException, InvalidHeaderData {
 		logger.info("Loading " + this.toString() + " data");
 		if (this.isLoad) {
 			logger.info(this.toString() + " is already loaded.");
 			return;
 		}
-		
+
 		long begin = System.currentTimeMillis();
-		MappedByteBuffer mappedIndexFile = new FileInputStream(getIndexFile()).getChannel().map(MapMode.READ_ONLY, 0, getIndexFile().length());
 
-		int encodedSequenceAndQuantity;
-		int sequence;
-		int quantity;
-		long offset;
-
-		this.dataQuantityIndex = new int[maxEncodedSequenceValue + 1];
+		this.dataLengthIndex = new int[maxEncodedSequenceValue + 1];
 		this.dataOffsetIndex = new long[maxEncodedSequenceValue + 1];
 
-		for (int i = 0; i <= maxEncodedSequenceValue; i++) {
-			encodedSequenceAndQuantity = mappedIndexFile.getInt();
-			sequence = (encodedSequenceAndQuantity >> 16) & 0xFFFF;
-			quantity = encodedSequenceAndQuantity & 0xFFFF;
-			offset = mappedIndexFile.getLong();
+		FileInputStream fileInputStream = new FileInputStream(getIndexFile());
+		StoredSimilarSubSequencesIndex similarIndex = StoredSimilarSubSequencesIndex.parseFrom(fileInputStream);
+		for (int i = 0; i < similarIndex.getStoredComparationResultInfosCount(); i++) {
+			StoredComparationResultInfo storedComparationResultInfo = similarIndex.getStoredComparationResultInfos(i);
+			int sequence = storedComparationResultInfo.getEncodedSubSequence();
+			int length = storedComparationResultInfo.getLength();
+			long offset = storedComparationResultInfo.getOffset();
 
-			// check the data consistency ?
-			if (check) {
-				getSimilarSequences(sequence, quantity, offset);
+			if (checkConsitency) {
+				getSimilarSequences(sequence, length, offset);
 			}
 
 			if ((sequence) != i) {
-				throw new InvalidHeaderData("Sequence (" + sequence + ") count do not match sequence position (" + i + ").");
+				throw new InvalidHeaderData("Sequence (" + sequence
+						+ ") count do not match sequence position (" + i + ").");
 			}
-			this.dataQuantityIndex[sequence] = quantity;
+			this.dataLengthIndex[sequence] = length;
 			this.dataOffsetIndex[sequence] = offset;
 		}
 		this.isLoad = true;
-		logger.info("SubSequencesComparer data loaded in " + (System.currentTimeMillis() - begin) + "ms");
-	}
-
-	/**
-	 * Same <code>getSimilarSequences(encodedSubSequence & 0xFFFF);</code>
-	 * 
-	 * @param encodedSubSequence
-	 * @return a array containing all sub-sequences that are similar with the given encodedSubSequence.  
-	 * @throws IOException
-	 * @throws InvalidHeaderData
-	 */
-	public int[] getSimilarSequences(short encodedSubSequence) throws IOException, InvalidHeaderData {
-		return getSimilarSequences(encodedSubSequence & 0xFFFF);
-
+		logger.info("SubSequencesComparer data loaded in " + (System.currentTimeMillis() - begin)
+				+ "ms");
 	}
 
 	/**
 	 * @param encodedSubSequence
-	 *            an int that where is read <b>only</b> its first 16bits. If the code has a short, use: <br>
+	 *            an int that where is read <b>only</b> its first 16bits. If the
+	 *            code has a short, use: <br>
 	 *            <code>getSimilarSequences(shortVariable & 0xFFFF)</code>
 	 * @return the similar subsequences that are equal or higher than threshold.
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
-	private int[] getSimilarSequences(int encodedSubSequence) throws IOException, InvalidHeaderData {
+	public List<Integer> getSimilarSequences(int encodedSubSequence) throws IOException, InvalidHeaderData {
 		long offset = dataOffsetIndex[encodedSubSequence];
-		int quantity = dataQuantityIndex[encodedSubSequence];
+		int length = dataLengthIndex[encodedSubSequence];
 
-		return getSimilarSequences(encodedSubSequence, quantity, offset);
+		return getSimilarSequences(encodedSubSequence, length, offset);
 	}
 
-	private int[] getSimilarSequences(int encodedSequence, int quantity, long offset) throws IOException, InvalidHeaderData {
-		int resultsInByte = quantity * 4;
-		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, 2 + 2 + resultsInByte);
-		IntBuffer buffer = map.asIntBuffer();
-		int header = buffer.get();
-		if (((header >> 16) & 0xFFFF) != (encodedSequence & 0xFFFF)) {
-			throw new InvalidHeaderData("the value " + (header >> 16) + " is different from " + encodedSequence);
+	private List<Integer> getSimilarSequences(int encodedSequence, int length, long offset)
+			throws IOException, InvalidHeaderData {
+
+		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, length);
+		byte[] data = new byte[length];
+		map.get(data);		
+		StoredSimilarSubSequences similarSubSequences = StoredSimilarSubSequences.parseFrom(data);
+
+		if (similarSubSequences.getEncodedSequence() != encodedSequence) {
+			throw new InvalidHeaderData("the value " + similarSubSequences.getEncodedSequence() + " is different from "
+					+ encodedSequence);
 		}
 
-		if ((header & 0xFFFF) != quantity) {
-			throw new InvalidHeaderData("the value " + (header & 0xFFFF) + " is different from " + encodedSequence);
-		}
-
-		int similarSequences[] = new int[quantity];
-		buffer.get(similarSequences, 0, quantity);
-		return similarSequences;
-	}
-
-	/**
-	 * Get the score from the int representation of similar sub sequence.
-	 * @param alignmentIntRepresentation
-	 * @return the score from short (16 bits) representation
-	 */
-	public static int getScore(int alignmentIntRepresentation) {
-		return ComparationResult.getScoreFromRepresentation(alignmentIntRepresentation);
-	}
-
-	/**
-	 * Get the sequence from the int representation of similar sub sequence.
-	 * @param alignmentIntRepresentation
-	 * @return the sequence from short (16 bits) representation
-	 */
-	public static int getSequence(int alignmentIntRepresentation) {
-		return ComparationResult.getSequenceFromRepresentation(alignmentIntRepresentation);
+		return similarSubSequences.getSimilarSequenceList();
 	}
 
 	/**
@@ -367,9 +411,10 @@ public class SimilarSubSequencesIndex {
 	public void generateData() throws IOException, IllegalSymbolException, BioException {
 		generateData(false);
 	}
-	
+
 	/**
 	 * Delete the data. Use with caution!
+	 * 
 	 * @return <code>true</code> if the data was deleted sucesfull.
 	 */
 	public boolean deleteData() {
@@ -392,95 +437,113 @@ public class SimilarSubSequencesIndex {
 	 * @throws IllegalSymbolException
 	 * @throws Exception
 	 */
-	public void generateData(boolean verbose) throws IOException, IllegalSymbolException, BioException {
-		int score;
+	public void generateData(boolean verbose) throws IOException, IllegalSymbolException,
+			BioException {
+
 		long initialTime = System.currentTimeMillis();
-		ComparationResult ar;
-		LinkedList<ComparationResult> results;
 
 		if (getIndexFile().createNewFile() == false) {
-			throw new IOException("File " + getIndexFile() + " alread exists. Delete it before if you *really* want to generate a new data set");
+			throw new IOException(
+					"File "
+							+ getIndexFile()
+							+ " alread exists. Delete it before if you *really* want to generate a new data set");
 		}
-		FileChannel indexFileChannel = new FileOutputStream(getIndexFile()).getChannel();
 
 		if (getDataFile().createNewFile() == false) {
-			throw new IOException("File " + getDataFile() + " alread exists. Delete it before if you *really* want to generate a new data set");
+			throw new IOException(
+					"File "
+							+ getDataFile()
+							+ " alread exists. Delete it before if you *really* want to generate a new data set");
 		}
 
 		FileChannel dataFileChannel = new FileOutputStream(getDataFile()).getChannel();
+		bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder indexInfoBuilder = StoredSimilarSubSequencesIndex.newBuilder();
 
 		System.out.println("Gerating data for  " + this.toString());
 		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
-			results = new LinkedList<ComparationResult>();
+			Builder similarSubSequencesBuilder = StoredSimilarSubSequences.newBuilder();
+			similarSubSequencesBuilder.setEncodedSequence(encodedSequence1);
+
+			SymbolList sequence = getEncoder().decodeIntegerToSymbolList(encodedSequence1);
 			long time = System.currentTimeMillis();
-			for (int encodedSequence2 = 0; encodedSequence2 <= maxEncodedSequenceValue; encodedSequence2++) {
-				score = (int) compareCompactedSequences((short) encodedSequence1, (short) encodedSequence2);
-				ar = new ComparationResult((short) score, (short) encodedSequence2);
-				if (score >= this.threshold) {
-					results.add(ar);
-				}
-			}
-			Collections.sort(results, ComparationResult.getScoreComparator());
-
-			if (verbose) {
-				System.out.println(getSequenceFromShort((short) (encodedSequence1 & 0xFFFF)).getString() + "\t" + (System.currentTimeMillis() - time) + "\t" + results.size() + "\t" + encodedSequence1 + "\t" + Integer.toHexString(encodedSequence1) + "\t" + Integer.toBinaryString(encodedSequence1));
+			List<String> similarSequences = generateSimilar(sequence.seqString(), deeper, ALPHABET);
+			for (String similar : similarSequences) {
+				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList.createDNA(similar);
+				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
+				similarSubSequencesBuilder.addSimilarSequence(encodedSimilar);
 			}
 
-			// 2 for sequence + 2 for the quantity + 64 for offset
-			ByteBuffer buffer = ByteBuffer.allocate(68);
-			buffer.putShort((short) (encodedSequence1 & 0xFFFF));
-			buffer.putShort((short) results.size());
-			buffer.putLong(dataFileChannel.position());
-			buffer.flip();
-			indexFileChannel.write(buffer);
+			StoredSimilarSubSequences storedSimilarSubSequences = similarSubSequencesBuilder.build();
 
-			// 2 for sequence itself and 2 for the quantity (both for sanity
-			// check) and 4 bytes for each result
-			int size = results.size() * 4 + 2 + 2;
-			buffer = ByteBuffer.allocate(size);
-			buffer.putShort((short) (encodedSequence1 & 0xFFFF));
-			buffer.putShort((short) results.size());
-			for (ComparationResult cr : results) {
-				buffer.putInt(cr.getIntRepresentation());
+			if (verbose & encodedSequence1 % 10000 == 0) {
+				System.out.println(sequence.seqString() + "\t"
+						+ (System.currentTimeMillis() - time) + "\t"
+						+ storedSimilarSubSequences.getSimilarSequenceCount() + "\t"
+						+ encodedSequence1 + "\t" + Integer.toHexString(encodedSequence1) + "\t"
+						+ Integer.toBinaryString(encodedSequence1));
 			}
-			buffer.flip();
-			dataFileChannel.write(buffer);
+
+			byte[] storedSimilarSubSequencesByteArray = storedSimilarSubSequences.toByteArray();
+
+			StoredComparationResultInfo storedComparationResultInfo = StoredComparationResultInfo.newBuilder()
+					.setEncodedSubSequence(encodedSequence1)
+					.setLength(storedSimilarSubSequencesByteArray.length)
+					.setOffset(dataFileChannel.position())
+					.build();
+
+			indexInfoBuilder.addStoredComparationResultInfos(storedComparationResultInfo);
+			dataFileChannel.write(ByteBuffer.wrap(storedSimilarSubSequencesByteArray));
 		}
-
-		indexFileChannel.close();
 		dataFileChannel.close();
+
+		FileChannel indexFileChannel = new FileOutputStream(getIndexFile()).getChannel();
+		indexFileChannel.write(ByteBuffer.wrap(indexInfoBuilder.build().toByteArray()));
+		indexFileChannel.close();
 
 		if (verbose) {
 			System.out.println("-----------------------------");
-			System.out.println(" tempo total: " + (System.currentTimeMillis() - initialTime));
+			System.out.println(" total time: " + (System.currentTimeMillis() - initialTime));
 			System.out.println("");
 		}
 	}
 
-	private HashMap<Short, LightweightSymbolList> encodedToSymbolList = new HashMap<Short, LightweightSymbolList>();
-
-	private LightweightSymbolList getSequenceFromShort(short encodedSymbolList) throws IllegalSymbolException, BioException {
-		LightweightSymbolList symbolList = encodedToSymbolList.get(encodedSymbolList);
-		if (symbolList == null) {
-			symbolList = (LightweightSymbolList) encoder.decodeShortToSymbolList(encodedSymbolList);
-			encodedToSymbolList.put(encodedSymbolList, symbolList);
+	private static List<String> generateSimilar(String sequence, int level, char[] alphabet) {
+		LinkedList<String> result = Lists.newLinkedList();
+		result.add(sequence);
+		if (level == 0) {
+			return result;
 		}
-		return symbolList;
+
+		for (int i = 0; i < sequence.length(); i++) {
+			for (char c : alphabet) {
+				char[] newSequenceChar = sequence.toCharArray();
+				if (newSequenceChar[i] != c) {
+					newSequenceChar[i] = c;
+					String newSequence = new String(newSequenceChar);
+					result.add(newSequence);
+					if (level > 1) {
+						List<String> deeper = generateSimilar(newSequence, level - 1, alphabet);
+						result.addAll(deeper);
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
-	 * Compare and align two encoded sub-sequences
+	 * Compare and align two sub-sequences
 	 * 
-	 * @param encodedSequence1
-	 * @param encodedSequence2
+	 * @param sequence1
+	 * @param sequence2
 	 * @return the alignment score
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */
-	public double compareCompactedSequences(short encodedSequence1, short encodedSequence2) throws IllegalSymbolException, BioException {
-		LightweightSymbolList symbolList1 = getSequenceFromShort(encodedSequence1);
-		LightweightSymbolList symbolList2 = getSequenceFromShort(encodedSequence2);
-		return aligner.fastPairwiseAlignment(symbolList1, symbolList2) * -1;
+	public int compareCompactedSequences(SymbolList sequence1, SymbolList sequence2)
+			throws IllegalSymbolException, BioException {
+		return (int) aligner.fastPairwiseAlignment(sequence1, sequence2) * -1;
 	}
 
 	/**
@@ -535,7 +598,7 @@ public class SimilarSubSequencesIndex {
 	/**
 	 * @return the encoder used
 	 */
-	public DNASequenceEncoderToShort getEncoder() {
+	public DNASequenceEncoderToInteger getEncoder() {
 		return encoder;
 	}
 
@@ -554,81 +617,4 @@ public class SimilarSubSequencesIndex {
 		sb.append(threshold);
 		return sb.toString();
 	}
-
-	/**
-	 * Stores an sequences and its scores. Used to represent these informations into a int
-	 * TODO: do junits!
-	 */
-	public static class ComparationResult {
-		short score;
-		short sequence;
-
-		/**
-		 * @param score
-		 * @param sequence
-		 */
-		public ComparationResult(short score, short sequence) {
-			this.score = score;
-			this.sequence = sequence;
-		}
-
-		/**
-		 * @return the score
-		 */
-		public short getScore() {
-			return score;
-		}
-
-		/**
-		 * @return the sequence
-		 */
-		public short getSequence() {
-			return sequence;
-		}
-
-		/**
-		 * @return a int containing the sequence and the score.
-		 */
-		public int getIntRepresentation() {
-			return ((sequence << 16) | (score & 0xFFFF));
-		}
-
-		/**
-		 * @param alignmentIntRepresentation
-		 * @return the score
-		 */
-		public static int getScoreFromRepresentation(int alignmentIntRepresentation) {
-			return alignmentIntRepresentation & 0xFFFF;
-		}
-
-		/**
-		 * @param alignmentIntRepresentation
-		 * @return the sequence
-		 */
-		public static int getSequenceFromRepresentation(int alignmentIntRepresentation) {
-			return (alignmentIntRepresentation >> 16) & 0xFFFF;
-		}
-
-		@Override
-		public String toString() {
-			return "[" + score + "/" + (sequence & 0xFFFF) + "]";
-		}
-
-		static Comparator<ComparationResult> scoreComparator = null;
-
-		/**
-		 * @return a comparator to compare two {@link ComparationResult} based in their score.
-		 */
-		public static Comparator<ComparationResult> getScoreComparator() {
-			if (scoreComparator == null) {
-				scoreComparator = new Comparator<ComparationResult>() {
-					public int compare(ComparationResult o1, ComparationResult o2) {
-						return o2.getScore() - o1.getScore();
-					}
-				};
-			}
-			return scoreComparator;
-		}
-	}
-
 }

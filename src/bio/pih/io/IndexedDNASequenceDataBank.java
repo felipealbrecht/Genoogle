@@ -3,18 +3,19 @@ package bio.pih.io;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.google.protobuf.ByteString;
-
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.MemorySubSequencesInvertedIndex;
+import bio.pih.index.MemorySubSequencesInvertedIndexInteger;
 import bio.pih.index.PersistentSubSequencesInvertedIndex;
 import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredSequence;
+
+import com.google.protobuf.ByteString;
 
 /**
  * A data bank witch index its sequences and uses similar subsequences index.
@@ -82,24 +83,35 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
-			index = new MemorySubSequencesInvertedIndex(this, 8);
+			index = new MemorySubSequencesInvertedIndexInteger(this, 10);
 			
 		} else { //if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
-			index = new PersistentSubSequencesInvertedIndex(this, 8);
+			System.err.println("Storage Kind DISK is Deprecated");
+			index = new PersistentSubSequencesInvertedIndex(this, 10);
 		} 
 	}
 
 	@Override
 	void doSequenceAddingProcessing(StoredSequence storedSequence) {
-		final short[] ret = getShortBuffer(storedSequence);
+		final int[] ret = getIntBuffer(storedSequence);
+// Check code... TODO: junit		
+//		final int[] r = getIntBuffer(storedSequence);
+//		String s = bio.pih.encoder.DNASequenceEncoderToInteger.getDefaultEncoder().decodeIntegerArrayToString(r);
+//		if (!s.equals(storedSequence.getSequence())) {
+//			for (int i = 0; i < s.length(); i++) {
+//				if (s.charAt(i) != storedSequence.getSequence().charAt(i)) {
+//					 System.out.println(i + " " + s.charAt(i) + " - " + storedSequence.getSequence().charAt(i));
+//				}
+//			}
+//		}		
 		index.addSequence(storedSequence.getId(), ret);
 	}
 
-	private short[] getShortBuffer(StoredSequence storedSequence) {
+	private int[] getIntBuffer(StoredSequence storedSequence) {
 		ByteString encodedSequence = storedSequence.getEncodedSequence();
 		byte[] byteArray = encodedSequence.toByteArray();
-		final short[] ret = new short[byteArray.length/2];
-		ByteBuffer.wrap(byteArray).asShortBuffer().get(ret);
+		final int[] ret = new int[byteArray.length/4];
+		ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
 		return ret;
 	}
 	
@@ -123,7 +135,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	@Override
 	void doSequenceProcessing(StoredSequence storedSequence) {
 		if (!index.exists()) {
-			final short[] ret = getShortBuffer(storedSequence);
+			final int[] ret = getIntBuffer(storedSequence);
 			index.addSequence(storedSequence.getId(), ret);
 		}
 	}
@@ -135,11 +147,11 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		}
 	}
 
-	public int[] getMachingSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public long[] getMachingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		return index.getMatchingSubSequence(encodedSubSequence);
 	}
 
-	public int[] getSimilarSubSequence(short encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public List<Integer> getSimilarSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		return similarSubSequencesIndex.getSimilarSequences(encodedSubSequence);
 	}
 
