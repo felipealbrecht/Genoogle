@@ -83,11 +83,11 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
-			index = new MemorySubSequencesInvertedIndexInteger(this, 10);
+			index = new MemorySubSequencesInvertedIndexInteger(this, XMLConfigurationReader.getSubSequenceLength());
 			
 		} else { //if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
 			System.err.println("Storage Kind DISK is Deprecated");
-			index = new PersistentSubSequencesInvertedIndex(this, 10);
+			index = new PersistentSubSequencesInvertedIndex(this, XMLConfigurationReader.getSubSequenceLength());
 		} 
 	}
 

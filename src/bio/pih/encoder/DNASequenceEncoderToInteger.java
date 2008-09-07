@@ -6,6 +6,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.io.XMLConfigurationReader;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
@@ -25,7 +26,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	public static DNASequenceEncoderToInteger getDefaultEncoder() {
 		if (defaultEncoder == null) {
 			try {
-				defaultEncoder = new DNASequenceEncoderToInteger(10);
+				defaultEncoder = new DNASequenceEncoderToInteger(XMLConfigurationReader.getSubSequenceLength());
 			} catch (ValueOutOfBoundsException e) {
 				logger.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
 				logger.fatal(e);

@@ -23,6 +23,7 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.alignment.GenoogleNeedlemanWunsch;
 import bio.pih.alignment.GenoogleSequenceAlignment;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredComparationResultInfo;
 import bio.pih.io.proto.Io.StoredSimilarSubSequences;
 import bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex;
@@ -72,7 +73,7 @@ public class SimilarSubSequencesIndex {
 	private static final int defaultDismatch = 1;
 	private static final int defaultGapOpen = 0;
 	private static final int defaultGapExtend = 1;
-	private static final int defaultSubSequenceLength = 10;
+	private static final int defaultSubSequenceLength = XMLConfigurationReader.getSubSequenceLength();
 
 	private final int subSequenceLength;
 	private final int threshold;

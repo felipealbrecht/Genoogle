@@ -17,6 +17,7 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.io.SequenceDataBank;
+import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
@@ -202,10 +203,10 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
-		int[] iess = new int[querySequence.length() - (10 - 1)];
+		int[] iess = new int[querySequence.length() - (XMLConfigurationReader.getSubSequenceLength() - 1)];
 
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory()
-				.newSymbolListWindowIterator(querySequence, 10);
+				.newSymbolListWindowIterator(querySequence, XMLConfigurationReader.getSubSequenceLength());
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
 			pos++;

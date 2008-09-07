@@ -25,8 +25,7 @@ import com.google.common.collect.Lists;
  */
 public class XMLConfigurationReader {
 
-	private static Logger logger = Logger
-			.getLogger("pih.bio.io.ConfigurationXMLReader");
+	private static Logger logger = Logger.getLogger("pih.bio.io.ConfigurationXMLReader");
 
 	private static String path = "conf" + File.separator + "genoogle.xml";
 
@@ -41,20 +40,30 @@ public class XMLConfigurationReader {
 	}
 
 	/**
+	 * The length of the sub-sequences utilized in the storing, indexing and searching process.
+	 * @return length of the sub-sequences.
+	 */
+	public static int getSubSequenceLength() {
+		Element rootElement = doc.getRootElement();
+		Element sequenceEncoding = rootElement.element("sequence-encoding");
+		Element subSequenceLength = sequenceEncoding.element("sub-sequence-length");
+		String value = subSequenceLength.attributeValue("value");
+		return Integer.parseInt(value);
+	}
+
+	/**
 	 * @return a brand new {@link SearchManager} with the parameters read from
 	 *         genoogle.xml and with its data banks.
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
 	 */
-	public static SearchManager getSearchManager() throws IOException,
-			ValueOutOfBoundsException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(
 				getMaxSimultaneousSearchs(searchManagerElement));
 
-		List<SequenceDataBank> dataBanks = XMLConfigurationReader
-				.getDataBanks();
+		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 		for (SequenceDataBank dataBank : dataBanks) {
 			dataBank.load();
 			searchManager.addDatabank(dataBank);
@@ -67,8 +76,7 @@ public class XMLConfigurationReader {
 	 * @return how many simultaneous searchs a searchManager can handle.
 	 */
 	private static int getMaxSimultaneousSearchs(Element searchManager) {
-		Element maxSimultaneousSearchs = searchManager
-				.element("max-simultaneous-searchs");
+		Element maxSimultaneousSearchs = searchManager.element("max-simultaneous-searchs");
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}
@@ -90,8 +98,7 @@ public class XMLConfigurationReader {
 		List<SequenceDataBank> sequenceDataBanks = Lists.newLinkedList();
 		Iterator databankIterator = databanks.elementIterator();
 		while (databankIterator.hasNext()) {
-			SequenceDataBank databank = getDatabank((Element) databankIterator
-					.next(), null);
+			SequenceDataBank databank = getDatabank((Element) databankIterator.next(), null);
 			if (databank == null) {
 				return null;
 			}
@@ -125,8 +132,7 @@ public class XMLConfigurationReader {
 				storageKind = StorageKind.MEMORY;
 			}
 			try {
-				return new IndexedDNASequenceDataBank(name, new File(path),
-						parent, storageKind);
+				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -135,22 +141,20 @@ public class XMLConfigurationReader {
 		} else if (e.getName().trim().equals("databank-collection")) {
 
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection;
-			databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent);
+			databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(name,
+					DNATools.getDNA(), new File(path), parent);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
 					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank(
-							(Element) databankIterator.next(),
-							databankCollection);
+							(Element) databankIterator.next(), databankCollection);
 					if (databank == null) {
 						return null;
 					}
 					databankCollection.addDatabank(databank);
 				} catch (DuplicateDatabankException e1) {
-					logger.fatal("Duplicate databanks named "
-							+ e1.getDatabankName() + " defined in "
-							+ e1.getDatabankName(), e1);
+					logger.fatal("Duplicate databanks named " + e1.getDatabankName()
+							+ " defined in " + e1.getDatabankName(), e1);
 					return null;
 				}
 			}
@@ -169,8 +173,8 @@ public class XMLConfigurationReader {
 	 *         configuration file.
 	 */
 	public static int getSubSequenceMinSimilarity() {
-		String value = getSearchParameters().element(
-				"sub-sequence-min-similarity").attributeValue("value");
+		String value = getSearchParameters().element("sub-sequence-min-similarity").attributeValue(
+				"value");
 		return Integer.parseInt(value);
 	}
 
@@ -179,8 +183,8 @@ public class XMLConfigurationReader {
 	 *         configuration file.
 	 */
 	public static int getDataBankMaxSubSequenceDistance() {
-		String value = getSearchParameters().element(
-				"databank-max-sub-sequence-distance").attributeValue("value");
+		String value = getSearchParameters().element("databank-max-sub-sequence-distance")
+				.attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
@@ -189,8 +193,8 @@ public class XMLConfigurationReader {
 	 *         the XML configuration file.
 	 */
 	public static int getDataBankMinMatchAreaLength() {
-		String value = getSearchParameters().element(
-				"databank-min-match-area-length").attributeValue("value");
+		String value = getSearchParameters().element("databank-min-match-area-length")
+				.attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
@@ -199,8 +203,8 @@ public class XMLConfigurationReader {
 	 *         configuration file.
 	 */
 	public static int getQueryMaxSubSequenceDistance() {
-		String value = getSearchParameters().element(
-				"query-max-sub-sequence-distance").attributeValue("value");
+		String value = getSearchParameters().element("query-max-sub-sequence-distance")
+				.attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
@@ -209,8 +213,8 @@ public class XMLConfigurationReader {
 	 *         configuration file.
 	 */
 	public static int getQueryMinSubSequenceLength() {
-		String value = getSearchParameters().element(
-				"query-min-sub-sequence-length").attributeValue("value");
+		String value = getSearchParameters().element("query-min-sub-sequence-length")
+				.attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
@@ -219,8 +223,7 @@ public class XMLConfigurationReader {
 	 *         file.
 	 */
 	public static int getExtendDropoff() {
-		String value = getSearchParameters().element("extend-dropoff")
-				.attributeValue("value");
+		String value = getSearchParameters().element("extend-dropoff").attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
