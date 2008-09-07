@@ -91,22 +91,6 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		} 
 	}
 
-	@Override
-	void doSequenceAddingProcessing(StoredSequence storedSequence) {
-		final int[] ret = getIntBuffer(storedSequence);
-// Check code... TODO: junit		
-//		final int[] r = getIntBuffer(storedSequence);
-//		String s = bio.pih.encoder.DNASequenceEncoderToInteger.getDefaultEncoder().decodeIntegerArrayToString(r);
-//		if (!s.equals(storedSequence.getSequence())) {
-//			for (int i = 0; i < s.length(); i++) {
-//				if (s.charAt(i) != storedSequence.getSequence().charAt(i)) {
-//					 System.out.println(i + " " + s.charAt(i) + " - " + storedSequence.getSequence().charAt(i));
-//				}
-//			}
-//		}		
-		index.addSequence(storedSequence.getId(), ret);
-	}
-
 	private int[] getIntBuffer(StoredSequence storedSequence) {
 		ByteString encodedSequence = storedSequence.getEncodedSequence();
 		byte[] byteArray = encodedSequence.toByteArray();
@@ -131,7 +115,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 			}
 		}
 	}
-
+	
 	@Override
 	void doSequenceProcessing(StoredSequence storedSequence) {
 		if (!index.exists()) {

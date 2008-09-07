@@ -108,7 +108,7 @@ public interface SequenceDataBank {
 	 * @throws IllegalSymbolException
 	 * @throws MultipleSequencesFoundException 
 	 */
-	StoredSequence getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
+	StoredSequence getSequenceFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
 	
 	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 

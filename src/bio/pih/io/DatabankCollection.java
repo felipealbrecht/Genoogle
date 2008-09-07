@@ -153,25 +153,25 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		if (t == null) {
 			return null;
 		}
-		return t.getSequenceInformationFromId(sequenceId);		
+		return t.getSequenceFromId(sequenceId);		
 	}
 
 	@Override
-	public StoredSequence getSequenceInformationFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException {
+	public StoredSequence getSequenceFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException {
 		StoredSequence foundSi = null;
 		String databankFound = null;
 
 		Iterator<T> iterator = this.collection.values().iterator();
 		while (iterator.hasNext()) {
 			T next = iterator.next();
-			StoredSequence si = next.getSequenceInformationFromId(sequenceId);
+			StoredSequence si = next.getSequenceFromId(sequenceId);
 
 			if (si != null) {
 				if (foundSi != null) {
 					throw new MultipleSequencesFoundException(sequenceId, next.getName(), databankFound);
 				}
 				databankFound = next.getName();
-				foundSi = next.getSequenceInformationFromId(sequenceId);
+				foundSi = next.getSequenceFromId(sequenceId);
 			}
 		}
 		return foundSi;

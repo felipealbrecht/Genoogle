@@ -84,6 +84,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.storedDatabank = null;
 	}
 
+	@Override
 	public synchronized void load() throws IOException, ValueOutOfBoundsException {
 		checkFile(getDataBankFile(), readOnly);
 		if (readOnly) {
@@ -109,7 +110,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		beginSequencesProcessing();
 		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
-			StoredSequence storedSequence = getSequenceInformationFromId(i);
+			StoredSequence storedSequence = getSequenceFromId(i);
 			totalSequences++;
 			doSequenceProcessing(storedSequence);
 		}
@@ -149,7 +150,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 */
 	abstract void finishSequencesProcessing() throws IOException;
 
-	public synchronized StoredSequence getSequenceInformationFromId(int sequenceId)
+	public synchronized StoredSequence getSequenceFromId(int sequenceId)
 			throws IOException {
 		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
 		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
@@ -255,7 +256,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
 
-		doSequenceAddingProcessing(storedSequence);
 		totalSequences++;
 
 		if (offset > Integer.MAX_VALUE) {
@@ -276,8 +276,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		
 		return byteBuf.array(); 
 	}
-
-	abstract void doSequenceAddingProcessing(StoredSequence sequenceInformation);
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {

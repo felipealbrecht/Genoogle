@@ -108,7 +108,7 @@ public class DNASearcher extends AbstractSearcher {
 				SymbolList hitSequence = null;
 
 				try {
-					storedSequence = databank.getSequenceInformationFromId(sequenceId);
+					storedSequence = databank.getSequenceFromId(sequenceId);
 					hitSequence = LightweightSymbolList.createDNA(storedSequence.getSequence());
 				} catch (Exception e) {
 					logger.fatal("Fatar error while loading sequence " + sequenceId
