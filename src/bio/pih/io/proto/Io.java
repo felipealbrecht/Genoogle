@@ -21,18 +21,18 @@ public final class Io {
       "oredSequenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020" +
       "\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenc" +
       "eInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006len" +
-      "gth\030\003 \002(\005\"\232\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
+      "gth\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
       "\022\n\n\002gi\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\021\n\taccession\030" +
       "\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\017\n\007version\030\006 " +
-      "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\022\020\n\010sequence" +
-      "\030\010 \001(\t\"j\n\036StoredSimilarSubSequencesIndex" +
-      "\022H\n\034storedComparationResultInfos\030\001 \003(\0132\"" +
-      ".proto.StoredComparationResultInfo\"Y\n\033St" +
-      "oredComparationResultInfo\022\032\n\022encodedSubS" +
-      "equence\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n\006offset\030" +
-      "\002 \002(\003\"M\n\031StoredSimilarSubSequences\022\027\n\017en" +
-      "codedSequence\030\001 \002(\005\022\027\n\017similarSequence\030\002" +
-      " \003(\005B\026\n\020bio.pih.io.protoB\002Io";
+      "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\"j\n\036StoredSi" +
+      "milarSubSequencesIndex\022H\n\034storedComparat" +
+      "ionResultInfos\030\001 \003(\0132\".proto.StoredCompa" +
+      "rationResultInfo\"Y\n\033StoredComparationRes" +
+      "ultInfo\022\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006l" +
+      "ength\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSim" +
+      "ilarSubSequences\022\027\n\017encodedSequence\030\001 \002(" +
+      "\005\022\027\n\017similarSequence\030\002 \003(\005B\030\n\020bio.pih.io" +
+      ".protoB\002IoH\001";
     try {
       return com.google.protobuf.Descriptors.FileDescriptor
         .internalBuildGeneratedFileFrom(descriptorData,
@@ -148,6 +148,58 @@ public final class Io {
       return sequencesInfo_.get(index);
     }
     
+    public final boolean isInitialized() {
+      if (!hasType) return false;
+      for (bio.pih.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasType()) {
+        output.writeEnum(1, getType().getNumber());
+      }
+      if (hasQtdSequences()) {
+        output.writeInt32(2, getQtdSequences());
+      }
+      if (hasQtdBases()) {
+        output.writeInt64(3, getQtdBases());
+      }
+      for (bio.pih.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
+        output.writeMessage(4, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasType()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, getType().getNumber());
+      }
+      if (hasQtdSequences()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, getQtdSequences());
+      }
+      if (hasQtdBases()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, getQtdBases());
+      }
+      for (bio.pih.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
     public static bio.pih.io.proto.Io.StoredDatabank parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -255,6 +307,92 @@ public final class Io {
         bio.pih.io.proto.Io.StoredDatabank returnMe = result;
         result = null;
         return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredDatabank) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredDatabank)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredDatabank other) {
+        if (other == bio.pih.io.proto.Io.StoredDatabank.getDefaultInstance()) return this;
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (other.hasQtdSequences()) {
+          setQtdSequences(other.getQtdSequences());
+        }
+        if (other.hasQtdBases()) {
+          setQtdBases(other.getQtdBases());
+        }
+        if (!other.sequencesInfo_.isEmpty()) {
+          if (result.sequencesInfo_.isEmpty()) {
+            result.sequencesInfo_ = new java.util.ArrayList<bio.pih.io.proto.Io.StoredSequenceInfo>();
+          }
+          result.sequencesInfo_.addAll(other.sequencesInfo_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+              bio.pih.io.proto.Io.StoredDatabank.SequenceType value = bio.pih.io.proto.Io.StoredDatabank.SequenceType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                setType(value);
+              }
+              break;
+            }
+            case 16: {
+              setQtdSequences(input.readInt32());
+              break;
+            }
+            case 24: {
+              setQtdBases(input.readInt64());
+              break;
+            }
+            case 34: {
+              bio.pih.io.proto.Io.StoredSequenceInfo.Builder subBuilder = bio.pih.io.proto.Io.StoredSequenceInfo.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addSequencesInfo(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
       }
       
       
@@ -401,6 +539,50 @@ public final class Io {
     public boolean hasLength() { return hasLength; }
     public int getLength() { return length_; }
     
+    public final boolean isInitialized() {
+      if (!hasId) return false;
+      if (!hasOffset) return false;
+      if (!hasLength) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasId()) {
+        output.writeInt32(1, getId());
+      }
+      if (hasOffset()) {
+        output.writeInt32(2, getOffset());
+      }
+      if (hasLength()) {
+        output.writeInt32(3, getLength());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, getId());
+      }
+      if (hasOffset()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, getOffset());
+      }
+      if (hasLength()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, getLength());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
     public static bio.pih.io.proto.Io.StoredSequenceInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -504,6 +686,74 @@ public final class Io {
         bio.pih.io.proto.Io.StoredSequenceInfo returnMe = result;
         result = null;
         return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredSequenceInfo) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredSequenceInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredSequenceInfo other) {
+        if (other == bio.pih.io.proto.Io.StoredSequenceInfo.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setId(input.readInt32());
+              break;
+            }
+            case 16: {
+              setOffset(input.readInt32());
+              break;
+            }
+            case 24: {
+              setLength(input.readInt32());
+              break;
+            }
+          }
+        }
       }
       
       
@@ -629,11 +879,74 @@ public final class Io {
     public boolean hasEncodedSequence() { return hasEncodedSequence; }
     public com.google.protobuf.ByteString getEncodedSequence() { return encodedSequence_; }
     
-    // optional string sequence = 8;
-    private boolean hasSequence;
-    private java.lang.String sequence_ = "";
-    public boolean hasSequence() { return hasSequence; }
-    public java.lang.String getSequence() { return sequence_; }
+    public final boolean isInitialized() {
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasId()) {
+        output.writeInt32(1, getId());
+      }
+      if (hasGi()) {
+        output.writeString(2, getGi());
+      }
+      if (hasName()) {
+        output.writeString(3, getName());
+      }
+      if (hasAccession()) {
+        output.writeString(4, getAccession());
+      }
+      if (hasDescription()) {
+        output.writeString(5, getDescription());
+      }
+      if (hasVersion()) {
+        output.writeInt32(6, getVersion());
+      }
+      if (hasEncodedSequence()) {
+        output.writeBytes(7, getEncodedSequence());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, getId());
+      }
+      if (hasGi()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(2, getGi());
+      }
+      if (hasName()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(3, getName());
+      }
+      if (hasAccession()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(4, getAccession());
+      }
+      if (hasDescription()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(5, getDescription());
+      }
+      if (hasVersion()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, getVersion());
+      }
+      if (hasEncodedSequence()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getEncodedSequence());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
     
     public static bio.pih.io.proto.Io.StoredSequence parseFrom(
         com.google.protobuf.ByteString data)
@@ -738,6 +1051,102 @@ public final class Io {
         bio.pih.io.proto.Io.StoredSequence returnMe = result;
         result = null;
         return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredSequence) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredSequence)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredSequence other) {
+        if (other == bio.pih.io.proto.Io.StoredSequence.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasGi()) {
+          setGi(other.getGi());
+        }
+        if (other.hasName()) {
+          setName(other.getName());
+        }
+        if (other.hasAccession()) {
+          setAccession(other.getAccession());
+        }
+        if (other.hasDescription()) {
+          setDescription(other.getDescription());
+        }
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
+        }
+        if (other.hasEncodedSequence()) {
+          setEncodedSequence(other.getEncodedSequence());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setId(input.readInt32());
+              break;
+            }
+            case 18: {
+              setGi(input.readString());
+              break;
+            }
+            case 26: {
+              setName(input.readString());
+              break;
+            }
+            case 34: {
+              setAccession(input.readString());
+              break;
+            }
+            case 42: {
+              setDescription(input.readString());
+              break;
+            }
+            case 48: {
+              setVersion(input.readInt32());
+              break;
+            }
+            case 58: {
+              setEncodedSequence(input.readBytes());
+              break;
+            }
+          }
+        }
       }
       
       
@@ -866,24 +1275,6 @@ public final class Io {
         result.encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
         return this;
       }
-      
-      // optional string sequence = 8;
-      public boolean hasSequence() {
-        return result.hasSequence();
-      }
-      public java.lang.String getSequence() {
-        return result.getSequence();
-      }
-      public Builder setSequence(java.lang.String value) {
-        result.hasSequence = true;
-        result.sequence_ = value;
-        return this;
-      }
-      public Builder clearSequence() {
-        result.hasSequence = false;
-        result.sequence_ = "";
-        return this;
-      }
     }
   }
   
@@ -920,6 +1311,36 @@ public final class Io {
     public int getStoredComparationResultInfosCount() { return storedComparationResultInfos_.size(); }
     public bio.pih.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index) {
       return storedComparationResultInfos_.get(index);
+    }
+    
+    public final boolean isInitialized() {
+      for (bio.pih.io.proto.Io.StoredComparationResultInfo element : getStoredComparationResultInfosList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (bio.pih.io.proto.Io.StoredComparationResultInfo element : getStoredComparationResultInfosList()) {
+        output.writeMessage(1, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (bio.pih.io.proto.Io.StoredComparationResultInfo element : getStoredComparationResultInfosList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
     }
     
     public static bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
@@ -1031,6 +1452,65 @@ public final class Io {
         return returnMe;
       }
       
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex other) {
+        if (other == bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.getDefaultInstance()) return this;
+        if (!other.storedComparationResultInfos_.isEmpty()) {
+          if (result.storedComparationResultInfos_.isEmpty()) {
+            result.storedComparationResultInfos_ = new java.util.ArrayList<bio.pih.io.proto.Io.StoredComparationResultInfo>();
+          }
+          result.storedComparationResultInfos_.addAll(other.storedComparationResultInfos_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bio.pih.io.proto.Io.StoredComparationResultInfo.Builder subBuilder = bio.pih.io.proto.Io.StoredComparationResultInfo.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addStoredComparationResultInfos(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
       
       // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
       public java.util.List<bio.pih.io.proto.Io.StoredComparationResultInfo> getStoredComparationResultInfosList() {
@@ -1120,6 +1600,50 @@ public final class Io {
     private long offset_ = 0L;
     public boolean hasOffset() { return hasOffset; }
     public long getOffset() { return offset_; }
+    
+    public final boolean isInitialized() {
+      if (!hasEncodedSubSequence) return false;
+      if (!hasLength) return false;
+      if (!hasOffset) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasEncodedSubSequence()) {
+        output.writeInt32(1, getEncodedSubSequence());
+      }
+      if (hasOffset()) {
+        output.writeInt64(2, getOffset());
+      }
+      if (hasLength()) {
+        output.writeInt32(3, getLength());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasEncodedSubSequence()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, getEncodedSubSequence());
+      }
+      if (hasOffset()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, getOffset());
+      }
+      if (hasLength()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, getLength());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
     
     public static bio.pih.io.proto.Io.StoredComparationResultInfo parseFrom(
         com.google.protobuf.ByteString data)
@@ -1226,6 +1750,74 @@ public final class Io {
         return returnMe;
       }
       
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredComparationResultInfo) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredComparationResultInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredComparationResultInfo other) {
+        if (other == bio.pih.io.proto.Io.StoredComparationResultInfo.getDefaultInstance()) return this;
+        if (other.hasEncodedSubSequence()) {
+          setEncodedSubSequence(other.getEncodedSubSequence());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setEncodedSubSequence(input.readInt32());
+              break;
+            }
+            case 16: {
+              setOffset(input.readInt64());
+              break;
+            }
+            case 24: {
+              setLength(input.readInt32());
+              break;
+            }
+          }
+        }
+      }
+      
       
       // required int32 encodedSubSequence = 1;
       public boolean hasEncodedSubSequence() {
@@ -1322,6 +1914,41 @@ public final class Io {
     public int getSimilarSequenceCount() { return similarSequence_.size(); }
     public int getSimilarSequence(int index) {
       return similarSequence_.get(index);
+    }
+    
+    public final boolean isInitialized() {
+      if (!hasEncodedSequence) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasEncodedSequence()) {
+        output.writeInt32(1, getEncodedSequence());
+      }
+      for (int element : getSimilarSequenceList()) {
+        output.writeInt32(2, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasEncodedSequence()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, getEncodedSequence());
+      }
+      for (int element : getSimilarSequenceList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
     }
     
     public static bio.pih.io.proto.Io.StoredSimilarSubSequences parseFrom(
@@ -1433,6 +2060,70 @@ public final class Io {
         return returnMe;
       }
       
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.StoredSimilarSubSequences) {
+          return mergeFrom((bio.pih.io.proto.Io.StoredSimilarSubSequences)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.StoredSimilarSubSequences other) {
+        if (other == bio.pih.io.proto.Io.StoredSimilarSubSequences.getDefaultInstance()) return this;
+        if (other.hasEncodedSequence()) {
+          setEncodedSequence(other.getEncodedSequence());
+        }
+        if (!other.similarSequence_.isEmpty()) {
+          if (result.similarSequence_.isEmpty()) {
+            result.similarSequence_ = new java.util.ArrayList<java.lang.Integer>();
+          }
+          result.similarSequence_.addAll(other.similarSequence_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setEncodedSequence(input.readInt32());
+              break;
+            }
+            case 16: {
+              addSimilarSequence(input.readInt32());
+              break;
+            }
+          }
+        }
+      }
+      
       
       // required int32 encodedSequence = 1;
       public boolean hasEncodedSequence() {
@@ -1518,7 +2209,7 @@ public final class Io {
       internal_static_proto_StoredSequence_fieldAccessorTable = new
         com.google.protobuf.GeneratedMessage.FieldAccessorTable(
           internal_static_proto_StoredSequence_descriptor,
-          new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", "Sequence", },
+          new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", },
           bio.pih.io.proto.Io.StoredSequence.class,
           bio.pih.io.proto.Io.StoredSequence.Builder.class);
   private static final com.google.protobuf.Descriptors.Descriptor

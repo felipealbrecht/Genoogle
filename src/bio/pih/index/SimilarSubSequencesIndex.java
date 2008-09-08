@@ -31,6 +31,7 @@ import bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder;
 import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Lists;
+import com.google.protobuf.CodedInputStream;
 
 /**
  * Given two sub-sequences, return the *global* alignment between they.
@@ -44,22 +45,6 @@ import com.google.common.collect.Lists;
  *         Create a instance, check if exists, if not createData(), else
  *         loadData().
  * 
- *         <p>
- *         FILES FORMAT:<br>
- *         Index File:<br>
- *         <code>
- * ([encodedSequence:int][quantity:int][data offset:long]){4^12 times}
- * </code> <br>
- *         Data file:<br>
- *         <code>
- * ([encodedSequence:int][quantity:int]([encodedSequence,score:int]){quantity times}){4^12 times}
- * </code> <br>
- *         The encodedSequence and quantity appears also in data file for sanity
- *         checks.<br>
- *         <br>
- * 
- *         TODO: Remove the default values from hardcoded class and put in a
- *         configuration file.
  */
 public class SimilarSubSequencesIndex {
 
@@ -130,8 +115,8 @@ public class SimilarSubSequencesIndex {
 			BioException, InvalidHeaderData {
 //		getDefaultInstance().deleteData();
 //		getDefaultInstance().generateData(true);
-		getDefaultInstance().load();
-		getDefaultInstance().checkDataData(true);
+//		getDefaultInstance().load();
+//		getDefaultInstance().checkDataData(true);
 	}
 
 	/**

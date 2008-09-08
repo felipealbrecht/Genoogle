@@ -17,6 +17,8 @@ import bio.pih.util.LongArray;
  */
 public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequencesInvertedIndex {
 
+	private static final int BUCKET_SIZE = 5;
+
 	protected LongArray index[] = null;	
 	
 	Logger logger = Logger.getLogger("bio.pih.index.SubSequencesArrayIndex");
@@ -78,7 +80,7 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 		int indexPos = subSequenceEncoded;
 		LongArray indexBucket = index[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new LongArray(100);
+			indexBucket = new LongArray(BUCKET_SIZE);
 			index[indexPos] = indexBucket;
 		}
 		indexBucket.add(subSequenceInfoEncoded);

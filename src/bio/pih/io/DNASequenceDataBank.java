@@ -248,8 +248,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 				.setAccession(s.getAccession())
 				.setVersion(s.getVersion())
 				.setDescription(s.getDescription())
-				.setEncodedSequence(ByteString.copyFrom(ret))
-				.setSequence(s.seqString());
+				.setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();
 

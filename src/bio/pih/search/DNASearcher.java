@@ -1,6 +1,7 @@
 package bio.pih.search;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +29,7 @@ import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
 import com.google.common.collect.Lists;
+import com.google.protobuf.ByteString;
 
 /**
  * Interface witch defines methods for search for similar DNA sequences and
@@ -37,7 +39,8 @@ import com.google.common.collect.Lists;
  */
 public class DNASearcher extends AbstractSearcher {
 
-	Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final Logger logger = Logger.getLogger(DNASearcher.class.getName());
+	private static final DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(
 			DNATools.getDNA(), 1, -1);
@@ -110,7 +113,11 @@ public class DNASearcher extends AbstractSearcher {
 
 				try {
 					storedSequence = databank.getSequenceFromId(sequenceId);
-					hitSequence = LightweightSymbolList.createDNA(storedSequence.getSequence());
+					ByteString encodedSequence = storedSequence.getEncodedSequence();
+					byte[] byteArray = encodedSequence.toByteArray();
+					final int[] ret = new int[byteArray.length/4];
+					ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
+					hitSequence = encoder.decodeIntegerArrayToSymbolList(ret);
 				} catch (Exception e) {
 					logger.fatal("Fatar error while loading sequence " + sequenceId
 							+ " from datatabank " + databank.getName() + ".", e);

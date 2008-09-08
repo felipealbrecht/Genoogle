@@ -2,31 +2,34 @@
 
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
+  <genoogle:sequence-encoding>
+  	<genoogle:sub-sequence-length value="10"/>
+  </genoogle:sequence-encoding>
+
   <genoogle:search-manager>
-    <genoogle:max-simultaneous-searchs    value="3"/>     
+    <genoogle:max-simultaneous-searchs value="3"/>     
   </genoogle:search-manager>
 
   <genoogle:search-parameters>
     <genoogle:sub-sequence-min-similarity        value="6"/>
-    <genoogle:databank-max-sub-sequence-distance value="8"/>
-    <genoogle:databank-min-match-area-length     value="24"/>
-    <genoogle:query-max-sub-sequence-distance    value="16"/>
-    <genoogle:query-min-sub-sequence-length      value="8"/>
+    <genoogle:databank-max-sub-sequence-distance value="20"/>
+    <genoogle:databank-min-match-area-length     value="20"/>
+    <genoogle:query-max-sub-sequence-distance    value="20"/>
+    <genoogle:query-min-sub-sequence-length      value="20"/>
     <genoogle:extend-dropoff                     value="5" />
   </genoogle:search-parameters>
 
   <genoogle:databanks>      
-<!--    <genoogle:databank name="Cow"       path="files/fasta/cow.rna.fna"   storage="memory" />
-
-     -->  
-      <genoogle:databank-collection name="RefSeq" path="files/fasta" >
-      <genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
-	   <genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
-       <genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />
-       <genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
-       <genoogle:databank name="Rat"       path="rat.rna.fna"   storage="memory" />
-       <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="disk" />
-     </genoogle:databank-collection>
+      
+  <genoogle:databank-collection name="RefSeq" path="files/fasta" >
+   		<genoogle:databank name="Cow"     path="cow.rna.fna"   storage="memory" />
+       	<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />
+	   	<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
+       	<genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
+       	<genoogle:databank name="Rat"       path="rat.rna.fna"   storage="memory" />
+       	<genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="memory" />         
+   </genoogle:databank-collection> 
+  
   </genoogle:databanks>
   
 </genoogle:conf>

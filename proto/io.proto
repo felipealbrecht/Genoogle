@@ -3,6 +3,8 @@ package proto;
 option java_package = "bio.pih.io.proto";
 option java_outer_classname = "Io";
 
+option optimize_for = SPEED;
+
 /////////////////////////////////////////////////////////////////////
 // Inverted Index Stuffs
 /////////////////////////////////////////////////////////////////////
@@ -34,7 +36,6 @@ message StoredSequence {
   optional string description = 5;
   optional int32 version = 6;
   optional bytes encodedSequence = 7;
-  optional string sequence = 8;
 }
 
 
