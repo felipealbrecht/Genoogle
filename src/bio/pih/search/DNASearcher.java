@@ -115,7 +115,7 @@ public class DNASearcher extends AbstractSearcher {
 					storedSequence = databank.getSequenceFromId(sequenceId);
 					ByteString encodedSequence = storedSequence.getEncodedSequence();
 					byte[] byteArray = encodedSequence.toByteArray();
-					final int[] ret = new int[byteArray.length/4];
+					final int[] ret = new int[byteArray.length / 4];
 					ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
 					hitSequence = encoder.decodeIntegerArrayToSymbolList(ret);
 				} catch (Exception e) {
@@ -130,8 +130,14 @@ public class DNASearcher extends AbstractSearcher {
 				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 					int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 					int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
+					if (sequenceAreaEnd > hitSequence.length()) {
+						sequenceAreaEnd = hitSequence.length();
+					}
 					int queryAreaBegin = retrievedArea.queryAreaBegin;
 					int queryAreaEnd = retrievedArea.queryAreaEnd;
+					if (queryAreaEnd > querySequence.length()) {
+						queryAreaBegin = querySequence.length();
+					}
 
 					ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence,
 							queryAreaBegin, queryAreaEnd, hitSequence, sequenceAreaBegin,
@@ -200,7 +206,7 @@ public class DNASearcher extends AbstractSearcher {
 
 			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 
-			for (Integer similarSubSequence: similarSubSequences) {
+			for (Integer similarSubSequence : similarSubSequences) {
 				long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
 				for (long subSequenceIndexInfo : indexPositions) {
 					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
@@ -210,16 +216,18 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
-		int[] iess = new int[querySequence.length() - (XMLConfigurationReader.getSubSequenceLength() - 1)];
+		int[] iess = new int[querySequence.length()
+				- (XMLConfigurationReader.getSubSequenceLength() - 1)];
 
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory()
-				.newSymbolListWindowIterator(querySequence, XMLConfigurationReader.getSubSequenceLength());
+				.newSymbolListWindowIterator(querySequence,
+						XMLConfigurationReader.getSubSequenceLength());
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
 			pos++;
 			SymbolList subSequence = symbolListWindowIterator.next();
-			iess[pos] = DNASequenceEncoderToInteger.getDefaultEncoder().encodeSubSymbolListToInteger(
-					subSequence);
+			iess[pos] = DNASequenceEncoderToInteger.getDefaultEncoder()
+					.encodeSubSymbolListToInteger(subSequence);
 		}
 		return iess;
 	}
