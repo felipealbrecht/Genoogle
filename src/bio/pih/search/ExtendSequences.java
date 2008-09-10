@@ -1,7 +1,11 @@
 package bio.pih.search;
 
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
+
+import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.seq.LightweightSymbolList;
 
 /**
  * Extend sequences by its similarity to the right and to the left.
@@ -9,6 +13,7 @@ import org.biojava.bio.symbol.SymbolList;
  * @author albrecht
  */
 public class ExtendSequences {
+	private static final DNASequenceEncoderToInteger DEFAULT_ENCODER = DNASequenceEncoderToInteger.getDefaultEncoder();
 	private SymbolList querySequenceExtended;
 	private SymbolList targetSequenceExtended;
 
@@ -100,7 +105,9 @@ public class ExtendSequences {
 	 * @param beginTargetSequence
 	 * @return {@link ExtendSequences} containing the extended query and target sequences.
 	 */
-	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int beginQuerySequence, int beginTargetSequence) {
+	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, 
+			SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
+		
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -176,8 +183,114 @@ public class ExtendSequences {
 		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
 		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
 
-		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginTargetSequence);
+		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginDatabankSequenceSegment);
 	}
+	
+	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment, 
+			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int subSequenceLength) {
+		int score = 0;
+		int bestScore = 0;
+		int bestQueryPos, bestDatabankPos;
+		int queryPos, databankPos;
+
+		// right extend
+		bestQueryPos = endQuerySegment;
+		bestDatabankPos = endDatabankSequenceSegment;
+
+		queryPos = endQuerySegment + 1;
+		databankPos = endDatabankSequenceSegment + 1;
+
+		int queryLength = encodedQuerySequence[0];
+		int databankLength = encodedDatabankSequence[0];
+		
+		//http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
+		while (queryPos < queryLength && databankPos < databankLength) {
+			int queryValue = getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
+			int databankValue = getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			if (queryValue == databankValue) {
+				score++;
+				if (score >= bestScore) {
+					bestScore = score;
+					bestQueryPos = queryPos;
+					bestDatabankPos = databankPos;
+				}
+			} else {
+				score--;
+				if (bestScore - score > dropoff) {
+					break;
+				}
+			}
+			queryPos++;
+			databankPos++;
+		}
+		
+		int rightBestQueryPos = bestQueryPos;
+		int rightBestDatabankPos = bestDatabankPos;
+
+		// left extend
+		score = 0;
+		bestScore = 0;
+
+		bestQueryPos = beginQuerySegment;
+		bestDatabankPos = beginDatabankSequenceSegment;
+
+		queryPos = beginQuerySegment - 1;
+		databankPos = beginDatabankSequenceSegment - 1;
+
+		while (queryPos >= 0 && databankPos >= 0) {
+			int queryValue = getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
+			int databankValue = getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			if (queryValue == databankValue) {
+				score++;
+				if (score >= bestScore) {
+					bestScore = score;
+					bestQueryPos = queryPos;
+					bestDatabankPos = databankPos;
+				}
+			} else {
+				score--;
+				if (bestScore - score > dropoff) {
+					break;
+				}
+			}
+			queryPos--;
+			databankPos--;
+		}
+		
+		String queryExtendedString = DEFAULT_ENCODER.decodeIntegerArrayToString(encodedQuerySequence, bestQueryPos, rightBestQueryPos);
+		String targetExtendedString = DEFAULT_ENCODER.decodeIntegerArrayToString(encodedDatabankSequence, bestDatabankPos, rightBestDatabankPos);
+		
+		SymbolList queryExtended = null;
+		SymbolList targetExtended = null;
+		
+		try {
+			queryExtended = LightweightSymbolList.createDNA(queryExtendedString);
+			targetExtended = LightweightSymbolList.createDNA(targetExtendedString);
+		} catch (IllegalSymbolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int queryLeftExtended = beginQuerySegment - bestQueryPos;
+		int queryRightExtend = rightBestQueryPos - endQuerySegment;
+		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
+		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
+
+		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginDatabankSequenceSegment);
+	}
+	
+	
+	
+	//TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
+	private static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
+		int posInArray = (pos / subSequenceLength) + 1;
+		int posInInt = (subSequenceLength) - (pos % subSequenceLength) ;
+		int vectorValue = encodedSequence[posInArray]; 		
+		int shift = posInInt * 2;
+		int value = vectorValue >> (shift - 2);
+		return value & 3;
+	}
+	
 	
 	@Override
 	public int hashCode() {

@@ -20,22 +20,22 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	// TODO: implements a way to put at the end of the sequence the "correct" base information.
 	static byte defaultWildcharValue = 0x00;
 	
-	static Hashtable<Symbol, Byte> DNASymbolToBitsSubstitionTable;
+	static Hashtable<Symbol, Integer> DNASymbolToBitsSubstitionTable;
 	static Character[] DNABitsToSymbolSubstitionTable;
 		
 	static {
-		DNASymbolToBitsSubstitionTable = new Hashtable<Symbol, Byte>();
-		DNASymbolToBitsSubstitionTable.put(DNATools.a(), (byte) 0x00);
-		DNASymbolToBitsSubstitionTable.put(DNATools.c(), (byte) 0x01);
-		DNASymbolToBitsSubstitionTable.put(DNATools.g(), (byte) 0x02);
-		DNASymbolToBitsSubstitionTable.put(DNATools.t(), (byte) 0x03);
+		DNASymbolToBitsSubstitionTable = new Hashtable<Symbol, Integer>();
+		DNASymbolToBitsSubstitionTable.put(DNATools.a(), 0x00);
+		DNASymbolToBitsSubstitionTable.put(DNATools.c(), 0x01);
+		DNASymbolToBitsSubstitionTable.put(DNATools.g(), 0x02);
+		DNASymbolToBitsSubstitionTable.put(DNATools.t(), 0x03);
 
 		DNABitsToSymbolSubstitionTable = new Character[] {'A', 'C', 'G', 'T'};
 	}
 	
 
-	protected byte getBitsFromSymbol(Symbol symbol) {
-		Byte b = DNASymbolToBitsSubstitionTable.get(symbol);
+	public int getBitsFromSymbol(Symbol symbol) {
+		Integer b = DNASymbolToBitsSubstitionTable.get(symbol);
 		if (b == null) {
 			return defaultWildcharValue ;
 		} 
@@ -44,7 +44,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	}
 	
 
-	protected char getSymbolFromBits(byte bits) {
+	public static char getSymbolFromBits(int bits) {
 		return DNABitsToSymbolSubstitionTable[bits];
 	}
 	

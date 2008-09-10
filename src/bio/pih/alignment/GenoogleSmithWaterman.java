@@ -49,11 +49,11 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	private static final long serialVersionUID = 2884980510887845616L;
 
-	private double match;
-	private double replace;
-	private double insert;
-	private double delete;
-	private double gapExt;
+	private int match;
+	private int replace;
+	private int insert;
+	private int delete;
+	private int gapExt;
 
 	/**
 	 * Constructs the new SmithWaterman alignment object. Alignments are only performed, if the
@@ -77,8 +77,8 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * @param matrix
 	 *          the <code>SubstitutionMatrix</code> object to use.
 	 */
-	public GenoogleSmithWaterman(double match, double replace, double insert, double delete,
-			double gapExtend, SubstitutionMatrix matrix) {
+	public GenoogleSmithWaterman(int match, int replace, int insert, int delete,
+			int gapExtend, SubstitutionMatrix matrix) {
 		super(insert, delete, gapExtend, match, replace, matrix);
 		this.match = -match;
 		this.replace = -replace;
@@ -98,7 +98,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          costs for a single insert operation
 	 */
 	@Override
-	public void setInsert(double ins) {
+	public void setInsert(int ins) {
 		this.insert = -ins;
 	}
 
@@ -111,7 +111,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          costs for a single deletion operation
 	 */
 	@Override
-	public void setDelete(double del) {
+	public void setDelete(int del) {
 		this.delete = -del;
 	}
 
@@ -124,7 +124,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          costs for any gap extension
 	 */
 	@Override
-	public void setGapExt(double ge) {
+	public void setGapExt(int ge) {
 		this.gapExt = -ge;
 	}
 
@@ -137,7 +137,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          costs for a single match operation
 	 */
 	@Override
-	public void setMatch(double ma) {
+	public void setMatch(int ma) {
 		this.match = -ma;
 	}
 
@@ -150,7 +150,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          costs for a single replace operation
 	 */
 	@Override
-	public void setReplace(double rep) {
+	public void setReplace(int rep) {
 		this.replace = -rep;
 	}
 
@@ -158,37 +158,38 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 * A simpler version of pairwiseAlignment that align SymbolList and return its score.
 	 */
 	@Override
-	public double fastPairwiseAlignment(SymbolList query, SymbolList subject)
+	public int fastPairwiseAlignment(SymbolList query, SymbolList subject)
 			throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet())
 				&& query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
 			int i, j, maxI = 0, maxJ = 0;
-			double[][] scoreMatrix = new double[query.length() + 1][subject.length() + 1];
+			int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];
 
 			/*
 			 * Use affine gap panalties.
 			 */
 			if ((gapExt != delete) || (gapExt != insert)) {
+				System.out.println("**slow** alignment");
 
-				double[][] E = new double[query.length() + 1][subject.length() + 1]; // Inserts
-				double[][] F = new double[query.length() + 1][subject.length() + 1]; // Deletes
+				int[][] E = new int[query.length() + 1][subject.length() + 1]; // Inserts
+				int[][] F = new int[query.length() + 1][subject.length() + 1]; // Deletes
 
 				scoreMatrix[0][0] = 0;
-				E[0][0] = F[0][0] = Double.NEGATIVE_INFINITY;
+				E[0][0] = F[0][0] = Integer.MIN_VALUE;
 				for (i = 1; i <= query.length(); i++) {
 					scoreMatrix[i][0] = F[i][0] = 0;
-					E[i][0] = Double.NEGATIVE_INFINITY;
+					E[i][0] = Integer.MIN_VALUE;
 				}
 				for (j = 1; j <= subject.length(); j++) {
 					scoreMatrix[0][j] = E[0][j] = 0;
-					F[0][j] = Double.NEGATIVE_INFINITY;
+					F[0][j] = Integer.MIN_VALUE;
 				}
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
 						E[i][j] = Math.max(E[i][j - 1], scoreMatrix[i][j - 1] + insert) + gapExt;
 						F[i][j] = Math.max(F[i - 1][j], scoreMatrix[i - 1][j] + delete) + gapExt;
-						scoreMatrix[i][j] = max(0.0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
+						scoreMatrix[i][j] = max(0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
 								+ matchReplace(query, subject, i, j));
 
 						if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
@@ -201,7 +202,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				 * No affine gap penalties to save memory.
 				 */
 			} else {
-
+				System.out.println("**fast** alignment");
 				for (i = 0; i <= query.length(); i++)
 					scoreMatrix[i][0] = 0;
 				for (j = 0; j <= subject.length(); j++)
@@ -209,7 +210,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
 
-						scoreMatrix[i][j] = max(0.0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1]
+						scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1]
 								+ insert, scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j));
 
 						if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
@@ -229,14 +230,13 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
 
-	@Override
-	public double pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
+	public int pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet())
 				&& query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
 			long beginTime = System.currentTimeMillis();
 			int i, j;
-			double[][] scoreMatrix = new double[query.length() + 1][subject.length() + 1];
+			int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];
 
 			SymbolTokenization st;
 			try {
@@ -249,25 +249,24 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 			 * Use affine gap panalties.
 			 */
 			if ((gapExt != delete) || (gapExt != insert)) {
-
-				double[][] E = new double[query.length() + 1][subject.length() + 1]; // Inserts
-				double[][] F = new double[query.length() + 1][subject.length() + 1]; // Deletes
+				int[][] E = new int[query.length() + 1][subject.length() + 1]; // Inserts
+				int[][] F = new int[query.length() + 1][subject.length() + 1]; // Deletes
 
 				scoreMatrix[0][0] = 0;
-				E[0][0] = F[0][0] = Double.NEGATIVE_INFINITY;
+				E[0][0] = F[0][0] = Integer.MIN_VALUE;
 				for (i = 1; i <= query.length(); i++) {
 					scoreMatrix[i][0] = F[i][0] = 0;
-					E[i][0] = Double.NEGATIVE_INFINITY;
+					E[i][0] = Integer.MIN_VALUE;
 				}
 				for (j = 1; j <= subject.length(); j++) {
 					scoreMatrix[0][j] = E[0][j] = 0;
-					F[0][j] = Double.NEGATIVE_INFINITY;
+					F[0][j] = Integer.MIN_VALUE;
 				}
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
 						E[i][j] = Math.max(E[i][j - 1], scoreMatrix[i][j - 1] + insert) + gapExt;
 						F[i][j] = Math.max(F[i - 1][j], scoreMatrix[i - 1][j] + delete) + gapExt;
-						scoreMatrix[i][j] = max(0.0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
+						scoreMatrix[i][j] = max(0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
 								+ matchReplace(query, subject, i, j));
 
 						if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
@@ -337,7 +336,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				 * No affine gap penalties to save memory.
 				 */
 			} else {
-
 				for (i = 0; i <= query.length(); i++)
 					scoreMatrix[i][0] = 0;
 				for (j = 0; j <= subject.length(); j++)
@@ -345,7 +343,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				for (i = 1; i <= query.length(); i++)
 					for (j = 1; j <= subject.length(); j++) {
 
-						scoreMatrix[i][j] = max(0.0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1]
+						scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1]
 								+ insert, scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j));
 
 						if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
@@ -400,7 +398,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				}
 			}
 
-			this.costMatrix = new double[1][1];
+			this.costMatrix = new int[1][1];
 			costMatrix[0][0] = -scoreMatrix[maxI][maxJ];
 			this.time = System.currentTimeMillis() - beginTime;
 			this.score = scoreMatrix[maxI][maxJ];
@@ -432,15 +430,15 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	}
 
 	/**
-	 * This just computes the maximum of four doubles.
+	 * This just computes the maximum of four integers.
 	 * 
 	 * @param w
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return the maximum of four <code>double</code>s.
+	 * @return the maximum of four <code>int</code>s.
 	 */
-	private double max(double w, double x, double y, double z) {
+	private int max(int w, int x, int y, int z) {
 		if ((w > x) && (w > y) && (w > z))
 			return w;
 		if ((x > y) && (x > z))
@@ -465,7 +463,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *          The position of the symbol under consideration within the target sequence
 	 * @return The score for the given substitution.
 	 */
-	private double matchReplace(SymbolList query, SymbolList subject, int i, int j) {
+	private int matchReplace(SymbolList query, SymbolList subject, int i, int j) {
 		try {
 			return subMatrix.getValueAt(query.symbolAt(i), subject.symbolAt(j));
 		} catch (Exception exc) {

@@ -26,9 +26,11 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	public static DNASequenceEncoderToInteger getDefaultEncoder() {
 		if (defaultEncoder == null) {
 			try {
-				defaultEncoder = new DNASequenceEncoderToInteger(XMLConfigurationReader.getSubSequenceLength());
+				defaultEncoder = new DNASequenceEncoderToInteger(XMLConfigurationReader
+						.getSubSequenceLength());
 			} catch (ValueOutOfBoundsException e) {
-				logger.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
+				logger
+						.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
 				logger.fatal(e);
 				return null;
 			}
@@ -61,7 +63,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		return encoded;
 	}
-	
+
 	/**
 	 * Decode an int vector to its sequence string representation
 	 * 
@@ -89,19 +91,28 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * 
 	 * @param encoded
 	 * @param length
-	 * @return a array with the symbols that are represented in that encoded
-	 *         value
+	 * @return a array with the symbols that are represented in that encoded value
 	 */
 	private String decodeIntegerToString(int encoded, int length) {
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = subSequenceLength - 1; i >= subSequenceLength - length; i--) {
 			int shift = i * bitsByAlphabetSize;
-			int mask = ((1 << bitsByAlphabetSize) - 1) << shift;
+			int mask = bitsMask << shift;
 			int value = encoded & mask;
-			byte symbolValue = (byte) (value >> shift);
+			int symbolValue = value >> shift;
 			sb.append(getSymbolFromBits(symbolValue));
 		}
+		return sb.toString();
+	}
 
+	private String decodeIntegerToString(int encoded, int begin, int end) {
+		StringBuilder sb = new StringBuilder((end - begin) + 1);
+		for (int pos = begin; pos <= end; pos++) {
+			int posInInt = subSequenceLength - pos;
+			int shift = posInInt * bitsByAlphabetSize;
+			int value = encoded >> (shift - bitsByAlphabetSize);
+			sb.append(getSymbolFromBits(value & bitsMask));
+		}
 		return sb.toString();
 	}
 
@@ -123,12 +134,13 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		sequenceEncoded[getPositionLength()] = sequence.length();
 
 		if (sequence.length() < subSequenceLength) {
-			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSymbolListToInteger(sequence.subList(
-					1, sequence.length()));
+			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSymbolListToInteger(sequence
+					.subList(1, sequence.length()));
 		} else {
 			int pos = getPositionBeginBitsVector();
-			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory()
-					.newSymbolListWindowIterator(sequence, this.subSequenceLength);
+			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
+					.getNotOverlappedFactory().newSymbolListWindowIterator(sequence,
+							this.subSequenceLength);
 			while (symbolListWindowIterator.hasNext()) {
 				SymbolList next = symbolListWindowIterator.next();
 				sequenceEncoded[pos] = encodeSubSymbolListToInteger(next);
@@ -136,8 +148,8 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 			}
 			if (pos < size) {
 				int from = sequence.length() - extra + 1;
-				sequenceEncoded[pos] = encodeSubSymbolListToInteger(sequence.subList(from,
-						sequence.length()));
+				sequenceEncoded[pos] = encodeSubSymbolListToInteger(sequence.subList(from, sequence
+						.length()));
 			}
 		}
 
@@ -154,6 +166,52 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 			throws IllegalSymbolException, BioException {
 		String sequenceString = decodeIntegerArrayToString(encodedSequence);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
+	}
+
+	public String decodeIntegerArrayToString(int[] encodedSequence, int begin, int end) {
+
+		if ((end - begin) + 1 < subSequenceLength) {
+			return decoteIntegerArrayToStringShortenOneSubSequence(encodedSequence, begin, end);
+		}
+		StringBuilder sequence = new StringBuilder();
+
+		int arrayPos = (begin / subSequenceLength) + 1;
+		int posInInt = begin % subSequenceLength;
+
+		if (posInInt != 0) {
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], begin,
+					subSequenceLength-1));
+			arrayPos++;
+		}
+
+		int arrayPosLast = end / subSequenceLength;
+		for (; arrayPos <= arrayPosLast; arrayPos++) {
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos]));
+		}
+
+		int posInIntLast = end % subSequenceLength;
+		sequence.append(decodeIntegerToString(encodedSequence[arrayPos], 0, posInIntLast));
+
+		return sequence.toString();
+	}
+
+	private String decoteIntegerArrayToStringShortenOneSubSequence(int[] encodedSequence,
+			int begin, int end) {
+
+		int arrayPosBegin = (begin / subSequenceLength) + 1;
+		int arrayPosEnd = (end / subSequenceLength) + 1;
+		int firstInt = encodedSequence[arrayPosBegin];
+
+		if (arrayPosBegin == arrayPosEnd) {
+			return decodeIntegerToString(firstInt, begin, end);
+		}
+
+		StringBuilder sequence = new StringBuilder();
+		int beginPos = begin % subSequenceLength;
+		sequence.append(decodeIntegerToString(firstInt, beginPos, subSequenceLength - 1));
+		int endPos = end % subSequenceLength;
+		sequence.append(decodeIntegerToString(encodedSequence[arrayPosEnd], 0, endPos));
+		return sequence.toString();
 	}
 
 	/**

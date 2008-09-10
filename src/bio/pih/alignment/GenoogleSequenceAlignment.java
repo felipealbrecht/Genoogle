@@ -2,13 +2,12 @@ package bio.pih.alignment;
 
 import java.io.Serializable;
 
-import org.biojava.bio.alignment.SequenceAlignment;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
  * Some changes by Felipe Albrecht for faster alignment methods
  */
-public abstract class GenoogleSequenceAlignment extends SequenceAlignment implements Serializable {
+public abstract class GenoogleSequenceAlignment implements Serializable {
 
 	/**
 	 * Performs a pairwise sequence alignment of the two given SymbolList.
@@ -18,7 +17,7 @@ public abstract class GenoogleSequenceAlignment extends SequenceAlignment implem
 	 * @return score of the alignment or the distance.
 	 * @throws Exception
 	 */
-	public abstract double fastPairwiseAlignment(SymbolList query, SymbolList subject) throws Exception;
+	public abstract int fastPairwiseAlignment(SymbolList query, SymbolList subject) throws Exception;
 
 	/**
 	 * This method provides a BLAST-like formated alignment from the given <code>String</code>s, in which the sequence coordinates and the information "Query" or "Target", respectively is added to each line. Each line contains 60 sequence characters including the gap symbols plus the meta information. There is one white line between two pairs of sequences.

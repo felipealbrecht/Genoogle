@@ -18,6 +18,7 @@ public abstract class SequenceEncoder {
 	protected final FiniteAlphabet alphabet;
 	protected final int subSequenceLength;
 	protected final int bitsByAlphabetSize;
+	protected final int bitsMask;
 
 	/**
 	 * @param alphabet
@@ -28,6 +29,7 @@ public abstract class SequenceEncoder {
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
 		this.bitsByAlphabetSize = bitsByAlphabetSize(alphabet.size());
+		this.bitsMask = ((1 << bitsByAlphabetSize) - 1);
 	}
 
 	/**

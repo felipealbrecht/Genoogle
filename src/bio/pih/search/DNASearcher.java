@@ -24,7 +24,6 @@ import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
-import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
@@ -40,7 +39,8 @@ import com.google.protobuf.ByteString;
 public class DNASearcher extends AbstractSearcher {
 
 	private static final Logger logger = Logger.getLogger(DNASearcher.class.getName());
-	private static final DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getDefaultEncoder();
+	private static final int SUB_SEQUENCE_LENGTH = XMLConfigurationReader.getSubSequenceLength();
+	private static final DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(
 			DNATools.getDNA(), 1, -1);
@@ -90,6 +90,7 @@ public class DNASearcher extends AbstractSearcher {
 					+ querySequence.seqString());
 
 			int[] iess = getEncodedSubSequences(querySequence);
+			int[] encodedQuery = ENCODER.encodeSymbolListToIntegerArray(querySequence);
 			int threshould = sp.getMinSimilarity();
 
 			long init = System.currentTimeMillis();
@@ -109,15 +110,18 @@ public class DNASearcher extends AbstractSearcher {
 					continue;
 				}
 				StoredSequence storedSequence = null;
-				SymbolList hitSequence = null;
+				int[] encodedSequence = null;
+				
 
 				try {
+					//long begin = System.currentTimeMillis();
 					storedSequence = databank.getSequenceFromId(sequenceId);
-					ByteString encodedSequence = storedSequence.getEncodedSequence();
-					byte[] byteArray = encodedSequence.toByteArray();
+					ByteString encodedByteSequence = storedSequence.getEncodedSequence();
+					byte[] byteArray = encodedByteSequence.toByteArray();
 					final int[] ret = new int[byteArray.length / 4];
 					ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
-					hitSequence = encoder.decodeIntegerArrayToSymbolList(ret);
+					encodedSequence = ret;				
+					
 				} catch (Exception e) {
 					logger.fatal("Fatar error while loading sequence " + sequenceId
 							+ " from datatabank " + databank.getName() + ".", e);
@@ -139,10 +143,10 @@ public class DNASearcher extends AbstractSearcher {
 						queryAreaBegin = querySequence.length();
 					}
 
-					ExtendSequences extensionResult = ExtendSequences.doExtension(querySequence,
-							queryAreaBegin, queryAreaEnd, hitSequence, sequenceAreaBegin,
-							sequenceAreaEnd, sp.getSequencesExtendDropoff(), queryAreaBegin,
-							sequenceAreaBegin);
+					ExtendSequences extensionResult = ExtendSequences.doExtension(
+							encodedQuery, queryAreaBegin, queryAreaEnd, 
+							encodedSequence, sequenceAreaBegin, sequenceAreaEnd, 
+							sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
 
 					if (extendedSequencesList.contains(extensionResult)) {
 						continue;
@@ -155,12 +159,11 @@ public class DNASearcher extends AbstractSearcher {
 				}
 
 				status.setActualStep(SearchStep.ALIGNMENT);
-				if (hitSequence != null && extendedSequencesList.size() > 0) {
+				if (extendedSequencesList.size() > 0) {
 					Hit hit = new Hit(hitNum++, storedSequence.getName(),
 							storedSequence.getAccession(), storedSequence.getDescription(),
-							hitSequence.length(), databank.getName());
+							/*hitSequence.length()*/ 0, databank.getName());
 					for (ExtendSequences extensionResult : extendedSequencesList) {
-
 						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3,
 								3, 1, substitutionMatrix);
 						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
@@ -216,12 +219,10 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
-		int[] iess = new int[querySequence.length()
-				- (XMLConfigurationReader.getSubSequenceLength() - 1)];
+		int[] iess = new int[querySequence.length() - (SUB_SEQUENCE_LENGTH - 1)];
 
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory()
-				.newSymbolListWindowIterator(querySequence,
-						XMLConfigurationReader.getSubSequenceLength());
+				.newSymbolListWindowIterator(querySequence, SUB_SEQUENCE_LENGTH);
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
 			pos++;
