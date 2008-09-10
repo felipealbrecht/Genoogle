@@ -134,8 +134,8 @@ public class DNASearcher extends AbstractSearcher {
 				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 					int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 					int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
-					if (sequenceAreaEnd > hitSequence.length()) {
-						sequenceAreaEnd = hitSequence.length();
+					if (sequenceAreaEnd > encodedSequence[0]) {
+						sequenceAreaEnd = encodedSequence[0];
 					}
 					int queryAreaBegin = retrievedArea.queryAreaBegin;
 					int queryAreaEnd = retrievedArea.queryAreaEnd;

@@ -179,7 +179,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		int posInInt = begin % subSequenceLength;
 
 		if (posInInt != 0) {
-			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], begin,
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], posInInt,
 					subSequenceLength-1));
 			arrayPos++;
 		}
