@@ -14,14 +14,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
-import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.alignment.GenoogleNeedlemanWunsch;
-import bio.pih.alignment.GenoogleSequenceAlignment;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredComparationResultInfo;
@@ -31,7 +28,6 @@ import bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder;
 import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Lists;
-import com.google.protobuf.CodedInputStream;
 
 /**
  * Given two sub-sequences, return the *global* alignment between they.
@@ -49,7 +45,6 @@ import com.google.protobuf.CodedInputStream;
 public class SimilarSubSequencesIndex {
 
 	private static final char[] ALPHABET = new char[] { 'A', 'C', 'G', 'T' };
-	private final GenoogleNeedlemanWunsch aligner;
 	private final DNASequenceEncoderToInteger encoder;
 
 	private static final int defaultThreshold = 3;
@@ -113,10 +108,10 @@ public class SimilarSubSequencesIndex {
 	 */
 	public static void main(String[] args) throws IllegalSymbolException, IOException,
 			BioException, InvalidHeaderData {
-//		getDefaultInstance().deleteData();
-//		getDefaultInstance().generateData(true);
-//		getDefaultInstance().load();
-//		getDefaultInstance().checkDataData(true);
+		// getDefaultInstance().deleteData();
+		// getDefaultInstance().generateData(true);
+		// getDefaultInstance().load();
+		// getDefaultInstance().checkDataData(true);
 	}
 
 	/**
@@ -141,10 +136,6 @@ public class SimilarSubSequencesIndex {
 		this.threshold = threshold;
 		this.deeper = deeper;
 
-		SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(alphabet, match * -1,
-				dismatch * -1); // values
-		this.aligner = new GenoogleNeedlemanWunsch(match, dismatch, gapOpen, gapOpen, gapExtend,
-				substitutionMatrix);
 		this.encoder = new DNASequenceEncoderToInteger(subSequenceLength);
 		this.maxEncodedSequenceValue = (int) Math.pow(alphabet.size(), subSequenceLength) - 1;
 	}
@@ -281,16 +272,15 @@ public class SimilarSubSequencesIndex {
 				resultsInteger.add(encodedSimilar);
 			}
 			List<Integer> retrievedSimilarSequences = getSimilarSequences(encodedSequence1);
-			
+
 			assert retrievedSimilarSequences.size() == resultsString.size();
 			assert resultsInteger.equals(retrievedSimilarSequences);
 
-
 			if (encodedSequence1 % 10000 == 0) {
-			System.out.println(sequence.seqString() + "\t" + (System.currentTimeMillis() - time)
-					+ "\t" + resultsString.size() + "\t" + encodedSequence1 + "\t"
-					+ Integer.toHexString(encodedSequence1) + "\t"
-					+ Integer.toBinaryString(encodedSequence1));
+				System.out.println(sequence.seqString() + "\t"
+						+ (System.currentTimeMillis() - time) + "\t" + resultsString.size() + "\t"
+						+ encodedSequence1 + "\t" + Integer.toHexString(encodedSequence1) + "\t"
+						+ Integer.toBinaryString(encodedSequence1));
 			}
 		}
 
@@ -364,7 +354,8 @@ public class SimilarSubSequencesIndex {
 	 * @throws IOException
 	 * @throws InvalidHeaderData
 	 */
-	public List<Integer> getSimilarSequences(int encodedSubSequence) throws IOException, InvalidHeaderData {
+	public List<Integer> getSimilarSequences(int encodedSubSequence) throws IOException,
+			InvalidHeaderData {
 		long offset = dataOffsetIndex[encodedSubSequence];
 		int length = dataLengthIndex[encodedSubSequence];
 
@@ -376,12 +367,12 @@ public class SimilarSubSequencesIndex {
 
 		MappedByteBuffer map = getDataFileChannel().map(MapMode.READ_ONLY, offset, length);
 		byte[] data = new byte[length];
-		map.get(data);		
+		map.get(data);
 		StoredSimilarSubSequences similarSubSequences = StoredSimilarSubSequences.parseFrom(data);
 
 		if (similarSubSequences.getEncodedSequence() != encodedSequence) {
-			throw new InvalidHeaderData("the value " + similarSubSequences.getEncodedSequence() + " is different from "
-					+ encodedSequence);
+			throw new InvalidHeaderData("the value " + similarSubSequences.getEncodedSequence()
+					+ " is different from " + encodedSequence);
 		}
 
 		return similarSubSequences.getSimilarSequenceList();
@@ -519,20 +510,6 @@ public class SimilarSubSequencesIndex {
 	}
 
 	/**
-	 * Compare and align two sub-sequences
-	 * 
-	 * @param sequence1
-	 * @param sequence2
-	 * @return the alignment score
-	 * @throws IllegalSymbolException
-	 * @throws BioException
-	 */
-	public int compareCompactedSequences(SymbolList sequence1, SymbolList sequence2)
-			throws IllegalSymbolException, BioException {
-		return (int) aligner.fastPairwiseAlignment(sequence1, sequence2) * -1;
-	}
-
-	/**
 	 * @return the default threshold
 	 */
 	public static int getDefaultTreadshould() {
@@ -572,13 +549,6 @@ public class SimilarSubSequencesIndex {
 	 */
 	public static int getDefaultSubSequenceLength() {
 		return defaultSubSequenceLength;
-	}
-
-	/**
-	 * @return the aligner used
-	 */
-	public GenoogleSequenceAlignment getAligner() {
-		return aligner;
 	}
 
 	/**
