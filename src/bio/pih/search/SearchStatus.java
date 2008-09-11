@@ -71,16 +71,17 @@ public class SearchStatus {
 	protected SearchResults results;
 	protected SearchStep actualStep;
 	protected SearchManager sm;
-	private final Searcher parent;
+	private final AbstractSearcher parent;
 
-	/** 
-	 * @param code 
+	/**
+	 * @param code
 	 * @param sp
 	 * @param db
-	 * @param sm 
+	 * @param sm
 	 * @param parent
 	 */
-	public SearchStatus(long code, SearchParams sp, SequenceDataBank db, SearchManager sm, Searcher parent) {
+	public SearchStatus(long code, SearchParams sp, SequenceDataBank db, SearchManager sm,
+			AbstractSearcher parent) {
 		this.code = code;
 		this.timeBegin = System.currentTimeMillis();
 		this.sp = sp;
@@ -114,16 +115,16 @@ public class SearchStatus {
 			this.timeEnd = System.currentTimeMillis();
 			if (parent != null) {
 				parent.setFinished(this);
-			}
-			if (sm != null) {
+			} else {
 				sm.setFinished(code);
 			}
-		} 
+		}
 	}
 
 	@Override
 	public String toString() {
-		return "Query '" + sp.getQuery().seqString() + "' against " + db.getName() + " (" + actualStep + ")";
+		return "Query '" + sp.getQuery().seqString() + "' against " + db.getName() + " ("
+				+ actualStep + ")";
 	}
 
 	/**

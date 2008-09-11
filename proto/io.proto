@@ -2,7 +2,6 @@ package proto;
 
 option java_package = "bio.pih.io.proto";
 option java_outer_classname = "Io";
-
 option optimize_for = SPEED;
 
 /////////////////////////////////////////////////////////////////////

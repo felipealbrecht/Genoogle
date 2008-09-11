@@ -15,6 +15,7 @@ public class SearchResults {
 	
 	private final SearchParams params;
 	private final List<Hit> hits;
+	private List<Exception> fails = null;
 	
 	/**
 	 * @param params
@@ -52,5 +53,27 @@ public class SearchResults {
 	 */
 	public void addAllHits(List<Hit> hits) {
 		this.hits.addAll(hits);
+	}
+	
+	public boolean hasFail() {
+		return fails != null;
+	}
+
+	public void addFails(List<Exception> fail) {
+		if (fails == null) {
+			fails = Lists.newLinkedList();
+		}
+		fails.addAll(fail);
+	}
+	
+	public void addFail(Exception fail) {
+		if (fails == null) {
+			fails = Lists.newLinkedList();
+		}
+		fails.add(fail);
+	}
+	
+	public List<Exception> getFails() {
+		return fails;
 	}
 }

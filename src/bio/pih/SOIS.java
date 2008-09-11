@@ -197,8 +197,19 @@ public class SOIS {
 			}
 			
 			Collections.sort(codes);
+			boolean hasError = false;
 			for (Long code: codes) {
-				results.add(sois.getResult(code));
+				SearchResults result = sois.getResult(code);
+				if (result.hasFail()) {
+					hasError = true;
+					for(Exception e: result.getFails()) {
+						logger.fatal("Fail while doing searching process", e); 						
+					}
+				}
+				results.add(result);
+			}
+			if (hasError) {
+				System.out.println("The seach processing had some errors.");
 			}
 			
 			logger.info("total time: "

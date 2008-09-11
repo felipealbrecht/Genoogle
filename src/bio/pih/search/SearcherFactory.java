@@ -19,7 +19,7 @@ public class SearcherFactory {
 	 * @param parent
 	 * @return {@link Searcher} related with the data bank given.
 	 */
-	static public Searcher getSearcher(long id, SearchParams sp, SequenceDataBank databank, SearchManager sm, Searcher parent) {
+	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank, SearchManager sm, AbstractSearcher parent) {
 		if (databank instanceof IndexedDNASequenceDataBank) {
 			return new DNASearcher(id, sp, databank, sm, parent);
 		}

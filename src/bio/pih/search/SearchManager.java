@@ -26,9 +26,9 @@ public class SearchManager {
 	
 	Map<String, SequenceDataBank> databanks;
 
-	private Map<Long, Searcher> waitingQueue;
-	private Map<Long, Searcher> runningQueue;
-	private Map<Long, Searcher> finishedQueue;
+	private Map<Long, AbstractSearcher> waitingQueue;
+	private Map<Long, AbstractSearcher> runningQueue;
+	private Map<Long, AbstractSearcher> finishedQueue;
 	private final int maxSimulaneousSearchs;
 
 	/**
@@ -67,7 +67,7 @@ public class SearchManager {
 
 		long id = getNextSearchId();
 
-		Searcher searcher = SearcherFactory.getSearcher(id, sp, databank, this, null);
+		AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank, this, null);
 
 		if (runningQueue.size() < maxSimulaneousSearchs) {
 			logger.info("Has space in the queue! Lets do the search");
@@ -82,15 +82,15 @@ public class SearchManager {
 	}
 
 	public synchronized void setFinished(long finishedId) {
-		Searcher finishedSearcher = runningQueue.remove(finishedId);
+		AbstractSearcher finishedSearcher = runningQueue.remove(finishedId);
 		finishedQueue.put(finishedId, finishedSearcher);
 
-		Iterator<Entry<Long, Searcher>> iterator = waitingQueue.entrySet().iterator();
+		Iterator<Entry<Long, AbstractSearcher>> iterator = waitingQueue.entrySet().iterator();
 		if (iterator.hasNext()) {
 			System.out.println("Removing one search in the waiting queue, has "
 					+ waitingQueue.size() + " searches waiting..");
-			Entry<Long, Searcher> next = iterator.next();
-			Searcher nextSearcher = next.getValue();
+			Entry<Long, AbstractSearcher> next = iterator.next();
+			AbstractSearcher nextSearcher = next.getValue();
 			Long id = next.getKey();
 			runningQueue.put(id, nextSearcher);
 			waitingQueue.remove(id);
@@ -116,7 +116,7 @@ public class SearchManager {
 	 * @return {@link SearchResults} of the related search.
 	 */
 	public SearchResults getResult(long code) {
-		Searcher searcher = finishedQueue.get(code);
+		AbstractSearcher searcher = finishedQueue.get(code);
 		if (searcher == null) {
 			return null;
 		}

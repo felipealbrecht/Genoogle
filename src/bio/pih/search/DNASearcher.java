@@ -53,7 +53,7 @@ public class DNASearcher extends AbstractSearcher {
 	 * @param parent
 	 */
 	public DNASearcher(long id, SearchParams sp, SequenceDataBank bank, SearchManager sm,
-			Searcher parent) {
+			AbstractSearcher parent) {
 		super(id, sp, bank, sm, parent);
 		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
 		ss.setName("DNASearcher on " + bank.getName());
@@ -67,6 +67,7 @@ public class DNASearcher extends AbstractSearcher {
 	protected class IndexedDatabankSimilarSearcher extends Thread {
 		private final IndexedSequenceDataBank databank;
 		private final SearchParams sp;
+		private final SearchResults sr;
 
 		/**
 		 * Constructor for the inner class that construct a searcher to find
@@ -78,10 +79,21 @@ public class DNASearcher extends AbstractSearcher {
 		public IndexedDatabankSimilarSearcher(SearchParams sp, IndexedSequenceDataBank databank) {
 			this.sp = sp;
 			this.databank = databank;
+			this.sr = new SearchResults(sp);
 		}
 
 		@Override
 		public void run() {
+			try {
+				doSearch();
+			} catch (Exception e) {
+				sr.addFail(e);
+				status.setResults(sr);
+				status.setActualStep(SearchStep.FATAL_ERROR);
+			}
+		}
+
+		public void doSearch() throws Exception {
 			SymbolList querySequence = sp.getQuery();
 
 			status.setActualStep(SearchStep.INITIALIZED);
@@ -100,8 +112,6 @@ public class DNASearcher extends AbstractSearcher {
 			status.setActualStep(SearchStep.INDEX_SEARCH);
 			List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
 
-			SearchResults sr = new SearchResults(sp);
-
 			status.setActualStep(SearchStep.EXTENDING);
 			int hitNum = 0;
 			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
@@ -109,26 +119,13 @@ public class DNASearcher extends AbstractSearcher {
 				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
 					continue;
 				}
-				StoredSequence storedSequence = null;
-				int[] encodedSequence = null;
+
+				StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
+				ByteString encodedByteSequence = storedSequence.getEncodedSequence();
+				byte[] byteArray = encodedByteSequence.toByteArray();
+				int[] encodedSequence = new int[byteArray.length / 4];
+				ByteBuffer.wrap(byteArray).asIntBuffer().get(encodedSequence);
 				
-
-				try {
-					//long begin = System.currentTimeMillis();
-					storedSequence = databank.getSequenceFromId(sequenceId);
-					ByteString encodedByteSequence = storedSequence.getEncodedSequence();
-					byte[] byteArray = encodedByteSequence.toByteArray();
-					final int[] ret = new int[byteArray.length / 4];
-					ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
-					encodedSequence = ret;				
-					
-				} catch (Exception e) {
-					logger.fatal("Fatar error while loading sequence " + sequenceId
-							+ " from datatabank " + databank.getName() + ".", e);
-					status.setActualStep(SearchStep.FATAL_ERROR);
-					return;
-				}
-
 				int hspNum = 0;
 				List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
 				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
@@ -143,10 +140,9 @@ public class DNASearcher extends AbstractSearcher {
 						queryAreaBegin = querySequence.length();
 					}
 
-					ExtendSequences extensionResult = ExtendSequences.doExtension(
-							encodedQuery, queryAreaBegin, queryAreaEnd, 
-							encodedSequence, sequenceAreaBegin, sequenceAreaEnd, 
-							sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
+					ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
+							queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
+							sequenceAreaEnd, sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
 
 					if (extendedSequencesList.contains(extensionResult)) {
 						continue;
@@ -162,7 +158,7 @@ public class DNASearcher extends AbstractSearcher {
 				if (extendedSequencesList.size() > 0) {
 					Hit hit = new Hit(hitNum++, storedSequence.getName(),
 							storedSequence.getAccession(), storedSequence.getDescription(),
-							/*hitSequence.length()*/ 0, databank.getName());
+							/* hitSequence.length() */0, databank.getName());
 					for (ExtendSequences extensionResult : extendedSequencesList) {
 						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3,
 								3, 1, substitutionMatrix);
@@ -184,21 +180,15 @@ public class DNASearcher extends AbstractSearcher {
 			status.setActualStep(SearchStep.FINISHED);
 		}
 
-		private IndexRetrievedData getIndexPositions(int[] iess, int threshould) {
+		private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
+				throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
 			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(),
 					sp);
 
 			status.setActualStep(SearchStep.INDEX_SEARCH);
-			try {
-				for (int ss = 0; ss < iess.length; ss++) {
-					retrieveIndexPosition(iess[ss], threshould, retrievedData, ss);
-				}
-			} catch (Exception e) {
-				logger.fatal("Fatar error while searching at index of the datatabank "
-						+ databank.getName() + ".", e);
-				status.setActualStep(SearchStep.FATAL_ERROR);
-				return null;
+			for (int ss = 0; ss < iess.length; ss++) {
+				retrieveIndexPosition(iess[ss], threshould, retrievedData, ss);
 			}
 			return retrievedData;
 		}
@@ -278,7 +268,6 @@ public class DNASearcher extends AbstractSearcher {
 						fromIndex = pos;
 						toIndex = pos;
 					} else {
-						// TODO: See why some sequences are lost.
 						toIndex = pos;
 					}
 					if (openedArea.length() >= sp.getMinMatchAreaLength()) {

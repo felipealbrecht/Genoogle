@@ -35,7 +35,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	 * @param parent
 	 */
 	@SuppressWarnings("unchecked")
-	public CollectionSearcher(long code, SearchParams sp, SequenceDataBank bank, SearchManager sm, Searcher parent) {
+	public CollectionSearcher(long code, SearchParams sp, SequenceDataBank bank, SearchManager sm, AbstractSearcher parent) {
 		super(code, sp, bank, sm, parent);
 
 		ss = new SimilarSearcherDelegate(sp, (DatabankCollection<SequenceDataBank>) bank);
@@ -49,8 +49,11 @@ public class CollectionSearcher extends AbstractSearcher {
 			Thread.yield();
 		}
 		
-		if (searchStatus.getResults().getHits() != null) {
-			sr.addAllHits(searchStatus.getResults().getHits());
+		SearchResults results = searchStatus.getResults();
+		if (!results.hasFail()) {
+			sr.addAllHits(results.getHits());
+		} else {			
+			sr.addFails(results.getFails());
 		}
 		
 		boolean b = innerDataBanksStatus.remove(searchStatus);
@@ -86,7 +89,7 @@ public class CollectionSearcher extends AbstractSearcher {
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				Searcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, null, CollectionSearcher.this);
+				AbstractSearcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, null, CollectionSearcher.this);
 				innerDataBanksStatus.add(searcher.getStatus());
 				searcher.doSearch();
 			}		

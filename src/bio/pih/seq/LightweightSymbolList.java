@@ -1,7 +1,6 @@
 package bio.pih.seq;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.io.SymbolTokenization;
@@ -11,8 +10,6 @@ import org.biojava.bio.symbol.AlphabetManager;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author albrecht
