@@ -191,12 +191,13 @@ public class SOIS {
 				long code = sois.doSearch(seqString, databank);
 				codes.add(code);
 			}
+			                       
+			Collections.sort(codes);
 			
 			while (sois.sm.hasPeding()) {
 				Thread.yield();
 			}
 			
-			Collections.sort(codes);
 			boolean hasError = false;
 			for (Long code: codes) {
 				SearchResults result = sois.getResult(code);
@@ -210,6 +211,7 @@ public class SOIS {
 			}
 			if (hasError) {
 				System.out.println("The seach processing had some errors.");
+				return;
 			}
 			
 			logger.info("total time: "

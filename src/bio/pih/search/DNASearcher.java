@@ -313,7 +313,7 @@ public class DNASearcher extends AbstractSearcher {
 				}
 			}
 
-			System.out.println("TotalAreas: " + totalNotZero);
+			logger.info("TotalAreas: " + totalNotZero);
 
 			return retrievedAreasArray;
 		}

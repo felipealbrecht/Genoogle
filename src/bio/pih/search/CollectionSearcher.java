@@ -2,7 +2,6 @@ package bio.pih.search;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -12,30 +11,30 @@ import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
-import com.google.common.collect.Lists;
-
 /**
- * A searcher that does search operation at each data bank of its collection. 
+ * A searcher that does search operation at each data bank of its collection.
+ * 
  * @author albrecht
- *
+ * 
  */
 public class CollectionSearcher extends AbstractSearcher {
 
 	static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
-	
-	private List<SearchStatus> innerDataBanksStatus = null;
+
+	private volatile int waitingSearchs = 0;
 	private SearchResults sr;
-	private volatile boolean acceptingResults;
+	private boolean acceptingResults;
 
 	/**
-	 * @param code 
+	 * @param code
 	 * @param sp
 	 * @param bank
-	 * @param sm 
+	 * @param sm
 	 * @param parent
 	 */
 	@SuppressWarnings("unchecked")
-	public CollectionSearcher(long code, SearchParams sp, SequenceDataBank bank, SearchManager sm, AbstractSearcher parent) {
+	public CollectionSearcher(long code, SearchParams sp, SequenceDataBank bank, SearchManager sm,
+			AbstractSearcher parent) {
 		super(code, sp, bank, sm, parent);
 
 		ss = new SimilarSearcherDelegate(sp, (DatabankCollection<SequenceDataBank>) bank);
@@ -48,21 +47,21 @@ public class CollectionSearcher extends AbstractSearcher {
 		while (!acceptingResults) {
 			Thread.yield();
 		}
-		
+
 		SearchResults results = searchStatus.getResults();
-		if (!results.hasFail()) {
-			sr.addAllHits(results.getHits());
-		} else {			
+		if (results.hasFail()) {
 			sr.addFails(results.getFails());
+		} else {
+			sr.addAllHits(results.getHits());
 		}
-		
-		boolean b = innerDataBanksStatus.remove(searchStatus);
-		if (innerDataBanksStatus.size() == 0) {
-			synchronized (ss) {
+
+		synchronized (ss) {
+			waitingSearchs--;
+			if (waitingSearchs == 0) {
 				ss.notify();
 			}
 		}
-		return b;
+		return true;
 	}
 
 	private class SimilarSearcherDelegate extends Thread {
@@ -74,7 +73,8 @@ public class CollectionSearcher extends AbstractSearcher {
 		 * @param sp
 		 * @param databankCollection
 		 */
-		public SimilarSearcherDelegate(SearchParams sp, DatabankCollection<SequenceDataBank> databankCollection) {
+		public SimilarSearcherDelegate(SearchParams sp,
+				DatabankCollection<SequenceDataBank> databankCollection) {
 			this.sp = sp;
 			this.databankCollection = databankCollection;
 		}
@@ -82,22 +82,21 @@ public class CollectionSearcher extends AbstractSearcher {
 		@Override
 		public void run() {
 			status.setActualStep(SearchStep.SEARCHING_INNER);
-			innerDataBanksStatus = Lists.newLinkedList();
-			innerDataBanksStatus = Collections.synchronizedList(innerDataBanksStatus);
+			
 			acceptingResults = false;
-
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				AbstractSearcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, null, CollectionSearcher.this);
-				innerDataBanksStatus.add(searcher.getStatus());
+				AbstractSearcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, null,
+						CollectionSearcher.this);
+				waitingSearchs++;
 				searcher.doSearch();
-			}		
+			}
 			acceptingResults = true;
 
 			try {
 				synchronized (this) {
-					while (innerDataBanksStatus.size() > 0) {
+					while (waitingSearchs > 0) {
 						this.wait();
 					}
 				}

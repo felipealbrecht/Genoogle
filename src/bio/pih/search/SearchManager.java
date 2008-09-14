@@ -8,9 +8,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import bio.pih.SOIS;
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Maps;
@@ -58,7 +56,7 @@ public class SearchManager {
 	 * @return unique identifier of the solicited search.
 	 * @throws UnknowDataBankException
 	 */
-	public synchronized long doSearch(SearchParams sp) throws UnknowDataBankException {
+	public long doSearch(SearchParams sp) throws UnknowDataBankException {
 		logger.info("doSearch on " + sp);
 		SequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
@@ -108,7 +106,7 @@ public class SearchManager {
 	 * @return <code>true</code> if the search is completed.
 	 */
 	public boolean checkSearch(long code) {
-		return finishedQueue.containsKey(code);
+            return finishedQueue.containsKey(code);
 	}
 
 	/**
