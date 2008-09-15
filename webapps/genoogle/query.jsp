@@ -49,13 +49,8 @@
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		long code = sois.doSearch(query, "RefSeq");
-
-		while (sois.checkStatus(code) != true) {
-			Thread.yield();
-		}
+		SearchResults sr = sois.doSyncSearch(query, "RefSeq");
 		long total = System.currentTimeMillis() - begin;
-		SearchResults sr = sois.getResult(code);
 
 		if (sr.hasFail()) {			
 			out.println("<body><title>Epic Fail</title>");
@@ -75,7 +70,7 @@
 			
 		} else {
 			out.print("Searching time: " + (total) + " milli seconds.");
-			Document document = Output.genoogleOutputToXML(sois.getResult(code));
+			Document document = Output.genoogleOutputToXML(sr);
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 

@@ -1,7 +1,10 @@
 package bio.pih.search;
 
+import java.util.concurrent.Callable;
+
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
+import bio.pih.search.results.SearchResults;
 
 /**
  * This interface defines the methods that are presents in a similar sequence
@@ -13,34 +16,27 @@ import bio.pih.search.SearchStatus.SearchStep;
  * 
  * @author albrecht
  */
-public abstract class AbstractSearcher {
+public abstract class AbstractSearcher implements Callable<SearchResults> {
 
-	protected SearchStatus status = null;
-	protected AbstractSearcher parent;
-	protected Thread ss;
+	protected final SearchStatus status;
+	protected final SearchParams sp;
+	protected final SearchResults sr;
 
 	/**
 	 * @param id
 	 * @param sp
 	 *            Parameter of the search
-	 * @param bank
+	 * @param databank 
 	 *            Sequence data bank where the search will be performed.
 	 * @param sm
 	 * @param parent
 	 *            The parent of this search.
 	 */
-	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank bank, SearchManager sm,
-			AbstractSearcher parent) {
-		status = new SearchStatus(id, sp, bank, sm, parent);
+	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
+		this.sp = sp;
+		this.sr = new SearchResults(sp);
+		status = new SearchStatus(id, sp, databank);
 		status.setActualStep(SearchStep.NOT_INITIALIZED);
-
-	}
-
-	/**
-	 * Start an asynchronous search for similar sequences against the sequence data bank.
-	 */
-	public void doSearch() {
-		ss.start();
 	}
 
 	/**
@@ -49,15 +45,11 @@ public abstract class AbstractSearcher {
 	public SearchStatus getStatus() {
 		return status;
 	}
-
+		
 	/**
-	 * Alert this search that its soon was finished.
-	 * 
-	 * @param searchStatus
-	 * @return <code>true</code> if the search was found and marked as finished.
+	 * @return the results of the search
 	 */
-	public boolean setFinished(SearchStatus searchStatus) {
-		throw new UnsupportedOperationException("This Searcher do not support sons.");
+	public SearchResults getSearchResults() {
+		return sr;
 	}
-
 }

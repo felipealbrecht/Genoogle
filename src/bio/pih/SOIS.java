@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
 
 import javax.xml.transform.TransformerException;
 
@@ -77,47 +77,61 @@ public class SOIS {
 	}
 
 	/**
-	 * Do a search
-	 * 
+	 * @param in
+	 * @param databank
+	 * @return {@link List} of {@link SearchResults} of the given queries.
+	 * @throws IOException
+	 * @throws IllegalSymbolException
+	 * @throws UnknowDataBankException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank)
+			throws IOException, IllegalSymbolException, UnknowDataBankException,
+			InterruptedException, ExecutionException {
+
+		List<SearchParams> batch = Lists.newLinkedList();
+		while (in.ready()) {
+			String seqString = in.readLine();
+			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
+			SearchParams sp = new SearchParams(sequence, databank);
+			batch.add(sp);
+		}
+		return sm.doSyncSearch(batch);
+	}
+
+	/**
 	 * @param seqString
 	 * @param dataBankName
-	 * @return code of the search.
+	 * @return {@link SearchResults} of the search
 	 */
-	public long doSearch(String seqString, String dataBankName) {
-		long code = -1;
+	public SearchResults doSyncSearch(String seqString, String dataBankName) {
+		SearchResults sr = null;
 		seqString = seqString.trim();
 		try {
 			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
 			SearchParams sp = new SearchParams(sequence, dataBankName);
-			code = sm.doSearch(sp);
+			sr = sm.doSyncSearch(sp);
 		} catch (UnknowDataBankException e) {
 			logger.error(e);
 		} catch (IllegalSymbolException e) {
 			logger.error(e);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		} catch (ExecutionException e) {
+			logger.error(e);
 		}
-		return code;
+
+		return sr;
 	}
 
 	/**
-	 * @param code
-	 * @return <code>true</code> if the search is finished.
+	 * Finish {@link SOIS}.
+	 * @throws InterruptedException 
 	 */
-	public boolean checkStatus(long code) {
-		return sm.checkSearch(code);
-	}
-
-	/**
-	 * @param code
-	 * @return {@link Document} containing the results of the search.
-	 */
-	public SearchResults getResult(long code) {
-		SearchResults result = sm.getResult(code);
-		if (result == null) {
-			return null;
-		}
-		return result;
-		// Document document = Output.genoogleOutputToXML(result);
-		// return document;
+	public void shutdown() throws InterruptedException {
+		sm.shutdown();
 	}
 
 	/**
@@ -132,17 +146,18 @@ public class SOIS {
 	 * @throws DuplicateDatabankException
 	 * @throws UnknowDataBankException
 	 * @throws ValueOutOfBoundsException
-	 * @throws TransformerException 
+	 * @throws TransformerException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 * @throws DocumentException
 	 */
-	public static void main(String[] args) throws IOException,
-			NoSuchElementException, BioException, UnknowDataBankException,
-			ValueOutOfBoundsException, TransformerException {
+	public static void main(String[] args) throws IOException, NoSuchElementException,
+			BioException, UnknowDataBankException, ValueOutOfBoundsException, TransformerException,
+			InterruptedException, ExecutionException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 
 		logger.info("SOIS - Search Over Indexed Sequences.");
-		logger
-				.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
+		logger.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
 		logger.info("Contact at felioe.albrecht@gmail.com");
 
 		if (args.length == 0) {
@@ -150,8 +165,7 @@ public class SOIS {
 			return;
 		}
 
-		List<SequenceDataBank> dataBanks = XMLConfigurationReader
-				.getDataBanks();
+		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 
 		String option = args[0];
 
@@ -160,17 +174,16 @@ public class SOIS {
 
 			for (SequenceDataBank dataBank : dataBanks) {
 				if (!dataBank.check()) {
-					System.out.println("Data bank " + dataBank.getName()
-							+ " is not encoded.");
+					System.out.println("Data bank " + dataBank.getName() + " is not encoded.");
 					dataBank.encodeSequences();
 				}
 			}
-			logger
-					.info("All specified data banks are encoded. You can do yours searchs now.");
+			logger.info("All specified data banks are encoded. You can do yours searchs now.");
 			return;
 		}
 
 		else if (option.equals("-s")) {
+			SOIS sois = new SOIS();
 			logger.info("Initalizing SOIS for searchs.");
 
 			String inputFile = args[1];
@@ -178,54 +191,35 @@ public class SOIS {
 
 			File f = new File(inputFile);
 			BufferedReader in = new BufferedReader(new FileReader(f));
-
-			SOIS sois = SOIS.getInstance();
-
-			List<SearchResults> results = Lists.newLinkedList();
-
-			List<Long> codes = Lists.newLinkedList();
 			long beginTime = System.currentTimeMillis();
-			
-			while (in.ready()) {
-				String seqString = in.readLine();
-				long code = sois.doSearch(seqString, databank);
-				codes.add(code);
-			}
-			                       
-			Collections.sort(codes);
-			
-			while (sois.sm.hasPeding()) {
-				Thread.yield();
-			}
-			
+
+			List<SearchResults> results = sois.doBatchSyncSearch(in, databank);
+			sois.shutdown();
+
 			boolean hasError = false;
-			for (Long code: codes) {
-				SearchResults result = sois.getResult(code);
+			for (SearchResults result : results) {
 				if (result.hasFail()) {
 					hasError = true;
-					for(Exception e: result.getFails()) {
-						logger.fatal("Fail while doing searching process", e); 						
+					for (Exception e : result.getFails()) {
+						logger.fatal("Fail while doing searching process", e);
 					}
 				}
-				results.add(result);
 			}
 			if (hasError) {
 				System.out.println("The seach processing had some errors.");
 				return;
 			}
-			
-			logger.info("total time: "
-					+ (System.currentTimeMillis() - beginTime));
+
+			logger.info("total time: " + (System.currentTimeMillis() - beginTime));
 
 			Document document = Output.genoogleOutputToXML(results);
-			 OutputFormat outformat = OutputFormat.createPrettyPrint();
+			OutputFormat outformat = OutputFormat.createPrettyPrint();
 			outformat.setEncoding("UTF-8");
 			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(inputFile
 					+ "_results.xml")), outformat);
 			writer.write(document);
 			writer.flush();
-			
-	
+
 		} else {
 			showHelp();
 		}
@@ -233,11 +227,8 @@ public class SOIS {
 
 	private static void showHelp() {
 		logger.info("Options for SOIS execution:");
-		logger
-				.info(" -g : encode all not encoded databanks specified at conf/genoogle.conf .");
-		logger
-				.info(" -s : do a search. Being the first argument the file name with the sequences that will be searched and the second argument is the data bank name which will be searched.");
-		logger
-				.info("      Example: -s ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA SeqRef");
+		logger.info(" -g : encode all not encoded databanks specified at conf/genoogle.conf .");
+		logger.info(" -s : do a search. Being the first argument the file name with the sequences that will be searched and the second argument is the data bank name which will be searched.");
+		logger.info("      Example: -s ATGGACCCGGTCACAGTGCCTGTAAAGGGCAGTCTATCCAGCAGGGTGTTCAGGATGGATGGGGCTTCTGTTTGGAGTGA SeqRef");
 	}
 }

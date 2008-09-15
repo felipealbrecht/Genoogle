@@ -1,13 +1,11 @@
 package bio.pih.alignment;
 
-import java.io.Serializable;
-
 import org.biojava.bio.symbol.SymbolList;
 
 /**
  * Some changes by Felipe Albrecht for faster alignment methods
  */
-public abstract class GenoogleSequenceAlignment implements Serializable {
+public abstract class GenoogleSequenceAlignment {
 
 	/**
 	 * Performs a pairwise sequence alignment of the two given SymbolList.

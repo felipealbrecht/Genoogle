@@ -16,8 +16,7 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.IndexedSequenceDataBank;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.SearchStatus.SearchStep;
@@ -45,165 +44,151 @@ public class DNASearcher extends AbstractSearcher {
 	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(
 			DNATools.getDNA(), 1, -1);
 
+	protected final IndexedDNASequenceDataBank databank;
+
 	/**
 	 * @param id
 	 * @param sp
-	 * @param bank
+	 * @param databank
 	 * @param sm
 	 * @param parent
 	 */
-	public DNASearcher(long id, SearchParams sp, SequenceDataBank bank, SearchManager sm,
-			AbstractSearcher parent) {
-		super(id, sp, bank, sm, parent);
-		ss = new IndexedDatabankSimilarSearcher(sp, (IndexedSequenceDataBank) bank);
-		ss.setName("DNASearcher on " + bank.getName());
+	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
+		super(id, sp, databank);
+		this.databank = databank;
+	}
+	
+	String thisToString = null;
+	@Override
+	public String toString() {
+		if (thisToString == null) {
+			StringBuilder sb = new StringBuilder(this.hashCode());
+			sb.append("-");
+			sb.append(databank.toString());
+			thisToString = sb.toString();				
+		}
+		return thisToString;
 	}
 
 	@Override
-	public void doSearch() {
-		ss.start();
+	public SearchResults call() throws Exception {
+		try {
+			doSearch();
+		} catch (Exception e) {
+			sr.addFail(e);
+			status.setResults(sr);
+			status.setActualStep(SearchStep.FATAL_ERROR);
+		}
+		return sr;
 	}
 
-	protected class IndexedDatabankSimilarSearcher extends Thread {
-		private final IndexedSequenceDataBank databank;
-		private final SearchParams sp;
-		private final SearchResults sr;
+	protected void doSearch() throws Exception {
+		SymbolList querySequence = sp.getQuery();
+		status.setActualStep(SearchStep.INITIALIZED);
+		logger.info("["+this.toString() + "] Begining the search at " + databank.getName() + " with the sequence with "
+				+ querySequence.length() + "bases " + querySequence.seqString());
 
-		/**
-		 * Constructor for the inner class that construct a searcher to find
-		 * sequences that are similar with the sequence into databank.
-		 * 
-		 * @param sp
-		 * @param databank
-		 */
-		public IndexedDatabankSimilarSearcher(SearchParams sp, IndexedSequenceDataBank databank) {
-			this.sp = sp;
-			this.databank = databank;
-			this.sr = new SearchResults(sp);
-		}
+		int[] iess = getEncodedSubSequences(querySequence);
+		int[] encodedQuery = ENCODER.encodeSymbolListToIntegerArray(querySequence);
+		int threshould = sp.getMinSimilarity();
 
-		@Override
-		public void run() {
-			try {
-				doSearch();
-			} catch (Exception e) {
-				sr.addFail(e);
-				status.setResults(sr);
-				status.setActualStep(SearchStep.FATAL_ERROR);
+		long init = System.currentTimeMillis();
+		IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
+
+		logger.info("["+this.toString() + "] Index search time:" + (System.currentTimeMillis() - init));
+		status.setActualStep(SearchStep.INDEX_SEARCH);
+		List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
+
+		status.setActualStep(SearchStep.EXTENDING);
+		int hitNum = 0;
+		for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
+			List<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
+			if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
+				continue;
 			}
-		}
 
-		public void doSearch() throws Exception {
-			SymbolList querySequence = sp.getQuery();
+			StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
+			ByteString encodedByteSequence = storedSequence.getEncodedSequence();
+			byte[] byteArray = encodedByteSequence.toByteArray();
+			int[] encodedSequence = new int[byteArray.length / 4];
+			ByteBuffer.wrap(byteArray).asIntBuffer().get(encodedSequence);
 
-			status.setActualStep(SearchStep.INITIALIZED);
+			int hspNum = 0;
+			List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
+			for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
+				int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
+				int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
+				if (sequenceAreaEnd > encodedSequence[0]) {
+					sequenceAreaEnd = encodedSequence[0];
+				}
+				int queryAreaBegin = retrievedArea.queryAreaBegin;
+				int queryAreaEnd = retrievedArea.queryAreaEnd;
+				if (queryAreaEnd > querySequence.length()) {
+					queryAreaBegin = querySequence.length();
+				}
 
-			logger.info("Begining the search of sequence with " + querySequence.length() + "bases "
-					+ querySequence.seqString());
+				ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
+						queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
+						sequenceAreaEnd, sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
 
-			int[] iess = getEncodedSubSequences(querySequence);
-			int[] encodedQuery = ENCODER.encodeSymbolListToIntegerArray(querySequence);
-			int threshould = sp.getMinSimilarity();
-
-			long init = System.currentTimeMillis();
-			IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
-
-			logger.info("Index search time:" + (System.currentTimeMillis() - init));
-			status.setActualStep(SearchStep.INDEX_SEARCH);
-			List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
-
-			status.setActualStep(SearchStep.EXTENDING);
-			int hitNum = 0;
-			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
-				List<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
-				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
+				if (extendedSequencesList.contains(extensionResult)) {
 					continue;
 				}
 
-				StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
-				ByteString encodedByteSequence = storedSequence.getEncodedSequence();
-				byte[] byteArray = encodedByteSequence.toByteArray();
-				int[] encodedSequence = new int[byteArray.length / 4];
-				ByteBuffer.wrap(byteArray).asIntBuffer().get(encodedSequence);
-				
-				int hspNum = 0;
-				List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
-				for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
-					int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
-					int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
-					if (sequenceAreaEnd > encodedSequence[0]) {
-						sequenceAreaEnd = encodedSequence[0];
-					}
-					int queryAreaBegin = retrievedArea.queryAreaBegin;
-					int queryAreaEnd = retrievedArea.queryAreaEnd;
-					if (queryAreaEnd > querySequence.length()) {
-						queryAreaBegin = querySequence.length();
-					}
-
-					ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
-							queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
-							sequenceAreaEnd, sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
-
-					if (extendedSequencesList.contains(extensionResult)) {
-						continue;
-					}
-
-					if (extensionResult.getQuerySequenceExtended().length() > sp.getMinQuerySequenceSubSequence()
-							&& extensionResult.getTargetSequenceExtended().length() > sp.getMinMatchAreaLength()) {
-						extendedSequencesList.add(extensionResult);
-					}
-				}
-
-				status.setActualStep(SearchStep.ALIGNMENT);
-				if (extendedSequencesList.size() > 0) {
-					Hit hit = new Hit(hitNum++, storedSequence.getName(),
-							storedSequence.getAccession(), storedSequence.getDescription(),
-							/* hitSequence.length() */0, databank.getName());
-					for (ExtendSequences extensionResult : extendedSequencesList) {
-						GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3,
-								3, 1, substitutionMatrix);
-						smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
-								extensionResult.getTargetSequenceExtended());
-						hit.addHSP(new HSP(hspNum++, smithWaterman,
-								extensionResult.getQueryOffset(), extensionResult.getTargetOffset()));
-					}
-					sr.addHit(hit);
+				if (extensionResult.getQuerySequenceExtended().length() > sp.getMinQuerySequenceSubSequence()
+						&& extensionResult.getTargetSequenceExtended().length() > sp.getMinMatchAreaLength()) {
+					extendedSequencesList.add(extensionResult);
 				}
 			}
 
-			status.setActualStep(SearchStep.SELECTING);
-
-			Collections.sort(sr.getHits(), Hit.COMPARATOR);
-
-			status.setResults(sr);
-			logger.info("Search time:" + (System.currentTimeMillis() - init));
-			status.setActualStep(SearchStep.FINISHED);
-		}
-
-		private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
-				throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-
-			IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(),
-					sp);
-
-			status.setActualStep(SearchStep.INDEX_SEARCH);
-			for (int ss = 0; ss < iess.length; ss++) {
-				retrieveIndexPosition(iess[ss], threshould, retrievedData, ss);
-			}
-			return retrievedData;
-		}
-
-		private void retrieveIndexPosition(int encodedSubSequence, int threshould,
-				IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
-				IOException, InvalidHeaderData {
-
-			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
-
-			for (Integer similarSubSequence : similarSubSequences) {
-				long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
-				for (long subSequenceIndexInfo : indexPositions) {
-					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
+			status.setActualStep(SearchStep.ALIGNMENT);
+			if (extendedSequencesList.size() > 0) {
+				Hit hit = new Hit(hitNum++, storedSequence.getName(),
+						storedSequence.getAccession(), storedSequence.getDescription(),
+						/* hitSequence.length() */0, databank.getName());
+				for (ExtendSequences extensionResult : extendedSequencesList) {
+					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3, 3, 1,
+							substitutionMatrix);
+					smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
+							extensionResult.getTargetSequenceExtended());
+					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(),
+							extensionResult.getTargetOffset()));
 				}
+				sr.addHit(hit);
+			}
+		}
+
+		status.setActualStep(SearchStep.SELECTING);
+
+		Collections.sort(sr.getHits(), Hit.COMPARATOR);
+
+		status.setResults(sr);
+		logger.info("["+this.toString() + "] Search time:" + (System.currentTimeMillis() - init));
+		status.setActualStep(SearchStep.FINISHED);
+	}
+
+	private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
+			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), sp);
+
+		status.setActualStep(SearchStep.INDEX_SEARCH);
+		for (int ss = 0; ss < iess.length; ss++) {
+			retrieveIndexPosition(iess[ss], threshould, retrievedData, ss);
+		}
+		return retrievedData;
+	}
+
+	private void retrieveIndexPosition(int encodedSubSequence, int threshould,
+			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
+			IOException, InvalidHeaderData {
+
+		List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
+
+		for (Integer similarSubSequence : similarSubSequences) {
+			long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
+			for (long subSequenceIndexInfo : indexPositions) {
+				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 			}
 		}
 	}
@@ -313,7 +298,7 @@ public class DNASearcher extends AbstractSearcher {
 				}
 			}
 
-			logger.info("TotalAreas: " + totalNotZero);
+			logger.info("["+this.toString() + "] TotalAreas: " + totalNotZero);
 
 			return retrievedAreasArray;
 		}

@@ -12,22 +12,24 @@ import bio.pih.io.SequenceDataBank;
 public class SearcherFactory {
 
 	/**
-	 * @param id 
+	 * @param id
 	 * @param sp
 	 * @param databank
-	 * @param sm 
+	 * @param sm
 	 * @param parent
 	 * @return {@link Searcher} related with the data bank given.
 	 */
-	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank, SearchManager sm, AbstractSearcher parent) {
+	@SuppressWarnings("unchecked")
+	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank) {
 		if (databank instanceof IndexedDNASequenceDataBank) {
-			return new DNASearcher(id, sp, databank, sm, parent);
+			return new DNASearcher(id, sp, (IndexedDNASequenceDataBank) databank);
 		}
-		
+
 		if (databank instanceof DatabankCollection) {
-			return new CollectionSearcher(id, sp, databank, sm, parent); 
+			return new CollectionSearcher(id, sp, (DatabankCollection<SequenceDataBank>) databank);
 		}
-		
-		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName() + " not implemented yet. :-( ");		
+
+		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName()
+				+ " not implemented yet. :-( ");
 	}
 }

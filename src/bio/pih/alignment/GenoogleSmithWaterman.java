@@ -230,6 +230,12 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
 
+	/**
+	 * @param query
+	 * @param subject
+	 * @return the score of the alignment
+	 * @throws BioRuntimeException
+	 */
 	public int pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
 		if (query.getAlphabet().equals(subject.getAlphabet())
 				&& query.getAlphabet().equals(subMatrix.getAlphabet())) {

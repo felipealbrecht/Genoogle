@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">  <head>
-    <title>Genoogle - Pre-alpha(0.095)</title>
+    <title>Genoogle - alpha - 0.12</title>
 </head>
 
 <body>
@@ -12,7 +12,6 @@
  </form>
  
  <br>
- <br>
  
    <font size="-1">
  Input example: <a href="query.jsp?query=GGTTATATAGGAATTCACAACGAAATCAGATGGCTCCTAATTGTGTATGCAGTATTGATAACATGGACCTTTGCTGTTCA">GGTTATATAGGAATTCACAACGAAATCAGATGGCTCCTAATTGTGTATGCAGTATTGATAACATGGACCTTTGCTGTTCA</a> <br>
@@ -23,28 +22,19 @@ GGTTATATAGGAATCACAACGAAATCAGATGGCTGCTAATTGTGTATGCAGTTGATAACATGGACCTTTGCTGTTCAGC<
 
  Try to insert, remove, change some bases.
   </font>
- 
- 
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
-
  </center>
-<hr> 
+ 
+
+
+<div style="position: absolute; bottom: 20px;">
+<hr style="width: 100%;"> 
  <font size=-1>
-  Genoogle is the Ms.C. thesis project of the <a href="http://www.pih.bio.br">Felipe Albrecht</a> which aims to create a fast and scalable search engine for bio-molecular sequences. </br> Last update: September 9th, 2008. </br>
-  It is currently being developed and it is only a pre-alpha test version.</br>
+  Genoogle is the Ms.C. thesis project of the <a href="http://www.pih.bio.br">Felipe Albrecht</a> which aims to create a fast and scalable search engine for bio-molecular sequences. </br> Last update: September 13th, 2008. </br>
+  It is currently being developed and it is only a alpha version.</br>
   Genoogle log at: <a href="http://www.pih.bio.br/genoogle.log">www.pih.bio.br/genoogle.log</a> for debuging propose. </br>
   Genoogle do <b>not</b> have any affiliation with Google. I just think 'genoogle' is a cool name and better than 'Genhooo' or 'Genuil' or 'Gensn' :-) </br>
-  </font> 
+  </font>
+</div> 
   
   <script type="text/javascript">
      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -54,6 +44,7 @@ GGTTATATAGGAATCACAACGAAATCAGATGGCTGCTAATTGTGTATGCAGTTGATAACATGGACCTTTGCTGTTCAGC<
    var pageTracker = _gat._getTracker("UA-373397-4");
    pageTracker._trackPageview();
  </script>
+
 
 
 </body>

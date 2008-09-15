@@ -70,8 +70,6 @@ public class SearchStatus {
 	protected final SearchParams sp;
 	protected SearchResults results;
 	protected SearchStep actualStep;
-	protected SearchManager sm;
-	private final AbstractSearcher parent;
 
 	/**
 	 * @param code
@@ -80,14 +78,11 @@ public class SearchStatus {
 	 * @param sm
 	 * @param parent
 	 */
-	public SearchStatus(long code, SearchParams sp, SequenceDataBank db, SearchManager sm,
-			AbstractSearcher parent) {
+	public SearchStatus(long code, SearchParams sp, SequenceDataBank db) {
 		this.code = code;
 		this.timeBegin = System.currentTimeMillis();
 		this.sp = sp;
 		this.db = db;
-		this.sm = sm;
-		this.parent = parent;
 		this.actualStep = SearchStep.NOT_INITIALIZED;
 		this.results = null;
 	}
@@ -113,11 +108,6 @@ public class SearchStatus {
 		this.actualStep = step;
 		if ((step == SearchStep.FINISHED) || (step == SearchStep.FATAL_ERROR)) {
 			this.timeEnd = System.currentTimeMillis();
-			if (parent != null) {
-				parent.setFinished(this);
-			} else {
-				sm.setFinished(code);
-			}
 		}
 	}
 

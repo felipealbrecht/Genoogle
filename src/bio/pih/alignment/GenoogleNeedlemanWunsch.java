@@ -20,18 +20,8 @@
  */
 package bio.pih.alignment;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.biojava.bio.BioException;
 import org.biojava.bio.BioRuntimeException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.SequenceIterator;
-import org.biojava.bio.seq.db.SequenceDB;
-import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.Alignment;
 import org.biojava.bio.symbol.SymbolList;
 
 /*
@@ -51,9 +41,6 @@ import org.biojava.bio.symbol.SymbolList;
  */
 
 public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
-
-	private static final long serialVersionUID = 2350726346461936144L;
-
 	/**
 	 * A matrix with the size length(sequence1) times length(sequence2)
 	 */
