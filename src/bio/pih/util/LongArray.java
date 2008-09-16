@@ -1,8 +1,9 @@
 package bio.pih.util;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author Felipe Albrecht
@@ -65,7 +66,7 @@ public class LongArray {
 
 	private List<long[]> getBlocksArray() {
 		if (blockArrays == null) {
-			blockArrays = new LinkedList<long[]>();
+			blockArrays = Lists.newArrayList();
 		}
 		return blockArrays;
 	}
