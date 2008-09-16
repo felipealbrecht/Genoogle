@@ -62,7 +62,7 @@ public class DNASearcher extends AbstractSearcher {
 	@Override
 	public String toString() {
 		if (thisToString == null) {
-			StringBuilder sb = new StringBuilder(this.hashCode());
+			StringBuilder sb = new StringBuilder(Integer.toString(this.hashCode()));
 			sb.append("-");
 			sb.append(databank.toString());
 			thisToString = sb.toString();				
