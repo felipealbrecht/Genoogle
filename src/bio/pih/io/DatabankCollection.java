@@ -26,11 +26,10 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	Logger logger = Logger.getLogger("bio.pih.io.DataBankCollection");
 
-	private String name;
-
-	private final FiniteAlphabet alphabet;
-	private final LinkedHashMap<String, T> collection;
-	private final File path;
+	protected String name;
+	protected final FiniteAlphabet alphabet;
+	protected final LinkedHashMap<String, T> collection;
+	protected final File path;
 
 	private SequenceDataBank parent;
 

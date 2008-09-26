@@ -220,7 +220,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	private synchronized StoredSequenceInfo addSequence(RichSequence s,
+	synchronized StoredSequenceInfo addSequence(RichSequence s,
 			FileChannel dataBankFileChannel) throws BioException, IOException {
 		if (readOnly) {
 			throw new IOException("The file " + getDataBankFile() + " is marked as read only");

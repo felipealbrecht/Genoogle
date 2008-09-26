@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.biojava.bio.seq.DNATools;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -34,13 +33,16 @@ public class XMLConfigurationReader {
 	static {
 		try {
 			doc = new SAXReader().read(new File(path));
-		} catch (DocumentException e) {
-			logger.fatal("Error reading the configuration at " + path + ".", e);
+		} catch (Exception e) {
+			System.err.println("Error reading the configuration at " + path + ".");
+			System.err.println(e);
 		}
 	}
 
 	/**
-	 * The length of the sub-sequences utilized in the storing, indexing and searching process.
+	 * The length of the sub-sequences utilized in the storing, indexing and
+	 * searching process.
+	 * 
 	 * @return length of the sub-sequences.
 	 */
 	public static int getSubSequenceLength() {
@@ -123,6 +125,29 @@ public class XMLConfigurationReader {
 			return null;
 		}
 
+		if (e.getName().trim().equals("split-databanks")) {
+			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
+
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), size);
+			
+			Iterator databankIterator = e.elementIterator();
+			while (databankIterator.hasNext()) {
+				try {
+					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank(
+							(Element) databankIterator.next(), splittedSequenceDatabank);
+					if (databank == null) {
+						return null;
+					}
+					splittedSequenceDatabank.addDatabank(databank);
+				} catch (DuplicateDatabankException e1) {
+					logger.fatal("Duplicate databanks named " + e1.getDatabankName()
+							+ " defined in " + e1.getDatabankName(), e1);
+					return null;
+				}
+			}
+			return splittedSequenceDatabank;
+		}
+
 		if (e.getName().trim().equals("databank")) {
 			StorageKind storageKind = null;
 			String storage = e.attributeValue("storage");
@@ -140,9 +165,8 @@ public class XMLConfigurationReader {
 
 		} else if (e.getName().trim().equals("databank-collection")) {
 
-			DatabankCollection<IndexedDNASequenceDataBank> databankCollection;
-			databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(name,
-					DNATools.getDNA(), new File(path), parent);
+			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
+					name, DNATools.getDNA(), new File(path), parent);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
