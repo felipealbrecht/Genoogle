@@ -155,7 +155,6 @@ public class SOIS {
 	public static void main(String[] args) throws IOException, NoSuchElementException,
 			BioException, UnknowDataBankException, ValueOutOfBoundsException, TransformerException,
 			InterruptedException, ExecutionException {		
-		
 		PropertyConfigurator.configure("conf/log4j.properties");
 		logger.info("SOIS - Search Over Indexed Sequences.");
 		logger.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");

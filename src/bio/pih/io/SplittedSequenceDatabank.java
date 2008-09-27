@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -114,6 +113,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
+					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
+							+ subCount, path, this, StorageKind.MEMORY);
 				}
 			}
 		}
@@ -132,11 +133,15 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	}
 
 	private String getStoredDatabankFileName(int subCount) {
-		return "sub_" + subCount + ".ssdb";
+		return getSubDatabankName(subCount) + ".ssdb";
 	}
 
 	private String getDatabankFileName(int subCount) {
-		return "sub_" + subCount + ".dsdb";
+		return getSubDatabankName(subCount) + ".dsdb";
+	}
+	
+	private String getSubDatabankName(int subCount) {
+		return this.getName() + "_sub_" + subCount;
 	}
 
 	private void finalizeSubDatabankConstruction(int totalSequences, int totalBases,
@@ -184,6 +189,24 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void load() throws IOException, ValueOutOfBoundsException {
+		logger.info("Loading internals databanks");
+		long time = System.currentTimeMillis();
+		this.clear();
+		for (int i = 0; i < qtdSubBases; i++) {
+			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY);
+			subDataBank.load();
+			try {
+				this.addDatabank(subDataBank);
+			} catch (DuplicateDatabankException e) {
+				logger.info("Fatal error while loading sub databanks.", e);
+			}			
+			logger.info("Loaded " + i + " of " + qtdSubBases);
+		}
+		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time));
 	}
 
 	private class FastaFileInfo {
