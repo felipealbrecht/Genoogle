@@ -98,17 +98,6 @@ public interface SequenceDataBank {
 	 * @throws ValueOutOfBoundsException 
 	 */
 	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException;
-
-	/**
-	 * Get a {@link SymbolList} sequence from an internal id
-	 * 
-	 * @param sequenceId
-	 * @return the symbol list of the given id
-	 * @throws IOException
-	 * @throws IllegalSymbolException
-	 * @throws MultipleSequencesFoundException 
-	 */
-	StoredSequence getSequenceFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException;
 	
 	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 

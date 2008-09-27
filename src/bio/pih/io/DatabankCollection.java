@@ -10,11 +10,9 @@ import java.util.NoSuchElementException;
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.proto.Io.StoredSequence;
 
 /**
  * @author albrecht
@@ -30,6 +28,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	protected final FiniteAlphabet alphabet;
 	protected final LinkedHashMap<String, T> collection;
 	protected final File path;
+	protected final int maxThreads;
 
 	private SequenceDataBank parent;
 
@@ -38,12 +37,14 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param alphabet
 	 * @param path
 	 * @param parent 
+	 * @param maxThreads 
 	 */
-	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent) {		
+	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent, int maxThreads) {		
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
 		this.parent = parent;
+		this.maxThreads = maxThreads;
 		this.collection = new LinkedHashMap<String, T>();
 	}
 
@@ -138,44 +139,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		return path;
 	}
 	
-	/**
-	 * Load a {@link SequenceInformation} from a specified {@link SequenceDataBank}.
-	 * @param databankName 
-	 * @param sequenceId
-	 * @return SequenceInformation from the given sequenceId or <code>null</code> if this sequenceId was not found.
-	 * @throws IllegalSymbolException
-	 * @throws IOException
-	 * @throws MultipleSequencesFoundException
-	 */
-	public StoredSequence getSequenceInformationFromId(String databankName, int sequenceId) throws IllegalSymbolException, IOException, MultipleSequencesFoundException {
-		T t = collection.get(databankName);
-		if (t == null) {
-			return null;
-		}
-		return t.getSequenceFromId(sequenceId);		
-	}
-
-	@Override
-	public StoredSequence getSequenceFromId(int sequenceId) throws IOException, IllegalSymbolException, MultipleSequencesFoundException {
-		StoredSequence foundSi = null;
-		String databankFound = null;
-
-		Iterator<T> iterator = this.collection.values().iterator();
-		while (iterator.hasNext()) {
-			T next = iterator.next();
-			StoredSequence si = next.getSequenceFromId(sequenceId);
-
-			if (si != null) {
-				if (foundSi != null) {
-					throw new MultipleSequencesFoundException(sequenceId, next.getName(), databankFound);
-				}
-				databankFound = next.getName();
-				foundSi = next.getSequenceFromId(sequenceId);
-			}
-		}
-		return foundSi;
-	}
-
 	@Override
 	public int getTotalSequences() {
 		int total = 0;
@@ -278,6 +241,13 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	@Override
 	public SequenceEncoder getEncoder() {
 		throw new UnsupportedOperationException("Each sub-data bank has its own encoder.");
+	}
+	
+	/**
+	 * @return the quantity of max threads that this Collection will create. 
+	 */
+	public int getMaxThreads() {
+		return maxThreads;
 	}
 
 }

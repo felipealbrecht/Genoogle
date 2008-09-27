@@ -20,7 +20,7 @@
   </genoogle:search-parameters>
 
   <genoogle:databanks>        
-  	<genoogle:split-databanks name="RefSeq" path="files/fasta" number-of-sub-databanks="4">
+  	<genoogle:split-databanks name="RefSeq" path="files/fasta" number-of-sub-databanks="4" max-threads="4">
        	<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />
    		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
     	<genoogle:databank name="Rat"       path="rat.rna.fna"   storage="memory" />
@@ -31,7 +31,7 @@
   </genoogle:databanks>  	
   	
   <!--
-  		<genoogle:databank-collection name="RefSeq" path="files/fasta" >  		        
+  		<genoogle:databank-collection name="RefSeq" path="files/fasta" max-threads="4">  		        
   		</genoogle:databank-collection>
   	  -->
 </genoogle:conf>

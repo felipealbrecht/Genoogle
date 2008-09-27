@@ -62,8 +62,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 * @param path directory where it will be
 	 * @param qtdSubBases how many parts will have this sequence databank
 	 */
-	public SplittedSequenceDatabank(String name, File path, int qtdSubBases) {
-		super(name, DNATools.getDNA(), path, null);
+	public SplittedSequenceDatabank(String name, File path, int qtdSubBases, int maxThreads) {
+		super(name, DNATools.getDNA(), path, null, maxThreads);
 		this.qtdSubBases = qtdSubBases;
 	}
 

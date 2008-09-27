@@ -44,7 +44,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	@Override
 	public SearchResults call() {
 		status.setActualStep(SearchStep.SEARCHING_INNER);
-		ExecutorService executor = Executors.newFixedThreadPool(databankCollection.size());
+		ExecutorService executor = Executors.newFixedThreadPool(databankCollection.getMaxThreads());
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				executor);
 

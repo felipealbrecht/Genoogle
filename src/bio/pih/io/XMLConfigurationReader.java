@@ -127,8 +127,9 @@ public class XMLConfigurationReader {
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
+			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), size);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), size, maxThreads);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -165,8 +166,10 @@ public class XMLConfigurationReader {
 
 		} else if (e.getName().trim().equals("databank-collection")) {
 
+			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
+			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent);
+					name, DNATools.getDNA(), new File(path), parent, maxThreads);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
