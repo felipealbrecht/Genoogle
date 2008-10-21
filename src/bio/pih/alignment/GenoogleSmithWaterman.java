@@ -80,12 +80,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	public GenoogleSmithWaterman(int match, int replace, int insert, int delete,
 			int gapExtend, SubstitutionMatrix matrix) {
 		super(insert, delete, gapExtend, match, replace, matrix);
-		this.match = -match;
-		this.replace = -replace;
-		this.insert = -insert;
-		this.delete = -delete;
-		this.gapExt = -gapExtend;
-		this.subMatrix = matrix;
 		this.alignment = "";
 	}
 

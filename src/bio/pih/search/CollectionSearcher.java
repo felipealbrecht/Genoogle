@@ -44,6 +44,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	@Override
 	public SearchResults call() {
 		status.setActualStep(SearchStep.SEARCHING_INNER);
+		long begin = System.currentTimeMillis();
 		ExecutorService executor = Executors.newFixedThreadPool(databankCollection.getMaxThreads());
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				executor);
@@ -84,6 +85,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		status.setActualStep(SearchStep.FINISHED);
 		
 		executor.shutdown();
+		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 
 		return sr;
 	}

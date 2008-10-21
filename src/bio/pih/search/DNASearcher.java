@@ -23,6 +23,7 @@ import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
+import bio.pih.statistics.Statistics;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
 
@@ -42,7 +43,7 @@ public class DNASearcher extends AbstractSearcher {
 	private static final DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(
-			DNATools.getDNA(), 1, -1);
+			DNATools.getDNA(), 1, -3);
 
 	protected final IndexedDNASequenceDataBank databank;
 
@@ -55,10 +56,11 @@ public class DNASearcher extends AbstractSearcher {
 	 */
 	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
 		super(id, sp, databank);
-		this.databank = databank;
+		this.databank = databank;		
 	}
 	
 	String thisToString = null;
+	private Statistics statitics;
 	@Override
 	public String toString() {
 		if (thisToString == null) {
@@ -83,6 +85,8 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	protected void doSearch() throws Exception {
+		this.statitics = new Statistics(-3, 1, sp.getQuery(), databank.getTotalSequences() * 1000, databank.getTotalSequences());
+		
 		SymbolList querySequence = sp.getQuery();
 		status.setActualStep(SearchStep.INITIALIZED);
 		logger.info("["+this.toString() + "] Begining the search at " + databank.getName() + " with the sequence with "
@@ -147,12 +151,14 @@ public class DNASearcher extends AbstractSearcher {
 						storedSequence.getAccession(), storedSequence.getDescription(),
 						/* hitSequence.length() */0, databank.getName());
 				for (ExtendSequences extensionResult : extendedSequencesList) {
-					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 2, 3, 3, 1,
+					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 3, 3, 3,
 							substitutionMatrix);
 					smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 							extensionResult.getTargetSequenceExtended());
 					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(),
 							extensionResult.getTargetOffset()));
+					System.out.println("Score: " + smithWaterman.getScore());
+					System.out.println("E-value: " + statitics.getEvalue(smithWaterman.getScore()));
 				}
 				sr.addHit(hit);
 			}
