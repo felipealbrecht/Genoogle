@@ -43,12 +43,11 @@ import com.google.common.collect.Lists;
  * @author albrecht
  */
 public class SOIS {
-	
+
 	SearchManager sm = null;
 	private static SOIS singleton = null;
 
 	static Logger logger = Logger.getLogger(SOIS.class.getName());
-	
 
 	/**
 	 * @return SOIS Singleton instance.
@@ -129,7 +128,8 @@ public class SOIS {
 
 	/**
 	 * Finish {@link SOIS}.
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	public void shutdown() throws InterruptedException {
 		sm.shutdown();
@@ -154,7 +154,7 @@ public class SOIS {
 	 */
 	public static void main(String[] args) throws IOException, NoSuchElementException,
 			BioException, UnknowDataBankException, ValueOutOfBoundsException, TransformerException,
-			InterruptedException, ExecutionException {		
+			InterruptedException, ExecutionException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		logger.info("SOIS - Search Over Indexed Sequences.");
 		logger.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
@@ -219,7 +219,6 @@ public class SOIS {
 					+ "_results.xml")), outformat);
 			writer.write(document);
 			writer.flush();
-
 		} else {
 			showHelp();
 		}

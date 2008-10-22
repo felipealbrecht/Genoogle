@@ -34,7 +34,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	}
 	
 
-	public int getBitsFromSymbol(Symbol symbol) {
+	protected static int getBitsFromSymbol(Symbol symbol) {
 		Integer b = DNASymbolToBitsSubstitionTable.get(symbol);
 		if (b == null) {
 			return defaultWildcharValue ;
@@ -43,8 +43,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 		return b.byteValue();		
 	}
 	
-
-	public static char getSymbolFromBits(int bits) {
+	protected static char getSymbolFromBits(int bits) {
 		return DNABitsToSymbolSubstitionTable[bits];
 	}
 }

@@ -2,28 +2,12 @@
 
 <xsl:template match="/">
   <html>
-  <head><!--
-    <style type="text/css">
-      .hidden {visibility: hidden;}
-      .unhidden {visibility: unhidden;}
-    </style> 
-
-    <script type="text/javascript">
-     function unhide(divID) {
-       var item = document.getElementById(divID);
-       if (item) {
-         item.className=(item.className=='hidden')?'unhidden':'hidden';
-	item.style="visibility: hidden;";
-       }
-      }
-    </script>
-	-->
+  <head>
     <title>
  	Genoogle
     </title>
   </head>
   <body>
-<!--	<a href="javascript:unhide('parameters');">Show parameters</a>  -->
 	<xsl:apply-templates/>
 	<hr/>
 	Genoogle by Felipe Albrecht
@@ -57,6 +41,8 @@
 <xsl:template match="hsps/hsp">
 	<p class="hsp">
 	Score: <xsl:value-of select="@score"/>
+	Normalized Score: <xsl:value-of select="@normalized-score"/>
+	E-Value: <xsl:value-of select="@e-value"/>
 	Query from:<xsl:value-of select="@query-from"/>
 	Query to:<xsl:value-of select="@query-to"/>
 	Hit from:<xsl:value-of select="@hit-from"/>

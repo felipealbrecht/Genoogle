@@ -43,10 +43,10 @@ public class WebServer {
 		embedded.addConnector(connector);
 	}
 
-	public void start() throws LifecycleException {
+	public void start() throws LifecycleException, InterruptedException {
 		embedded.start();
 		while (running) {
-			Thread.yield();
+			Thread.sleep(1000);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class WebServer {
 		running = false;
 	}
 
-	public static void main(String[] args) throws LifecycleException {
+	public static void main(String[] args) throws LifecycleException, InterruptedException {
 		String defaultHost = args[0];
 		String path = args[1];
 		int port = Integer.parseInt(args[2]);

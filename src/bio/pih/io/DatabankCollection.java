@@ -286,7 +286,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 				this.totalNumberOfSequences = total;
 			}
 		}
-		return 0;
+		return totalNumberOfSequences;
 	}
-
 }

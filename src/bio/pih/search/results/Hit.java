@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
  *
  */
 public class Hit {
-
 	private final int hitNum;
 	private final String id;
 	private final String accession;

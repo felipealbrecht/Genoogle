@@ -1,5 +1,6 @@
 package bio.pih.io;
 
+import java.util.Formatter;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -20,7 +21,9 @@ import bio.pih.search.results.SearchResults;
 public class Output {
 
 	private static String copyRightNotice = "Genoogle by Albrecht, Justel and Pinto. 2008.";
-
+	private static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
+	private static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
+	
 	/**
 	 * @param searchResults
 	 * 
@@ -159,7 +162,7 @@ public class Output {
 		assert hsp != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
 
-		Element hspElement = factory.createElement("hsp");
+		Element hspElement = factory.createElement("hsp");		
 		hspElement.addAttribute("score", Double.toString(hsp.getScore()));
 		hspElement.addAttribute("normalized-score", Double.toString(hsp.getNormalizedScore()));
 		hspElement.addAttribute("e-value", Double.toString(hsp.getEValue()));
@@ -174,6 +177,21 @@ public class Output {
 		hspElement.addAttribute("midline", hsp.getPathSeq());
 
 		return hspElement;
+	}
+	
+	
+	private static String doubleToString(double value) {
+		StringBuilder sb = new StringBuilder();
+		Formatter formatter = new Formatter(sb);
+		formatter.format(SIMPLE_DOUBLE_FORMAT, value);
+		return sb.toString();
+	}
+	
+	private static String doubleToScientificString(double value) {
+		StringBuilder sb = new StringBuilder();
+		Formatter formatter = new Formatter(sb);
+		formatter.format(SCIENTIFIC_DOUBLE_FORMAT, value);
+		return sb.toString();
 	}
 
 }

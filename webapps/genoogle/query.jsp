@@ -1,4 +1,7 @@
-<%@page import="bio.pih.SOIS"%>
+
+<%@page import="java.lang.management.ThreadInfo"%>
+<%@page import="java.lang.management.ManagementFactory"%>
+<%@page import="java.lang.management.ThreadMXBean"%><%@page import="bio.pih.SOIS"%>
 <%@page import="org.dom4j.Document"%>
 <%@page import="org.dom4j.io.OutputFormat"%>
 <%@page import="org.dom4j.io.XMLWriter"%>
@@ -16,6 +19,12 @@
 
 <%
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
+
+ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+ThreadInfo[] infos = threads.getThreadInfo( threads.getAllThreadIds() );
+for (ThreadInfo info: infos) {
+	out.print(info.getThreadName() + " " + threads.getThreadCpuTime(info.getThreadId()) + " <BR> ");
+}
 
 	if (request.getParameter("query") != null) {
 		SOIS sois = SOIS.getInstance();
@@ -74,6 +83,7 @@
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+			long tBegin = System.currentTimeMillis();
 			try {
 				TransformerFactory factory = TransformerFactory.newInstance();
 				Transformer transformer = factory.newTransformer(new StreamSource(
@@ -81,6 +91,7 @@
 				DocumentSource source = new DocumentSource(document);
 				DocumentResult result = new DocumentResult();
 				transformer.transform(source, result);
+				System.out.println((System.currentTimeMillis() - tBegin) + " para transformacao");
 				Document resultDocument = result.getDocument();
 				OutputFormat outformat = OutputFormat.createPrettyPrint();
 				outformat.setEncoding("UTF-8");
