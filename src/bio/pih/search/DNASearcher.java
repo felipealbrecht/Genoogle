@@ -13,6 +13,7 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
@@ -149,7 +150,7 @@ public class DNASearcher extends AbstractSearcher {
 			if (extendedSequencesList.size() > 0) {
 				Hit hit = new Hit(hitNum++, storedSequence.getName(),
 						storedSequence.getAccession(), storedSequence.getDescription(),
-						/* hitSequence.length() */0, databank.getName());
+						SequenceEncoder.getSequenceLength(encodedSequence), databank.getName());
 				for (ExtendSequences extensionResult : extendedSequencesList) {
 					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 3, 3, 3,
 							substitutionMatrix);

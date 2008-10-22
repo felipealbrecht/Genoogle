@@ -3,6 +3,7 @@ package bio.pih.io;
 import java.util.Formatter;
 import java.util.List;
 
+import org.dom4j.CDATA;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -162,7 +163,7 @@ public class Output {
 		assert hsp != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
 
-		Element hspElement = factory.createElement("hsp");		
+		Element hspElement = factory.createElement("hsp").addAttribute("xml:space","preserve");;
 		hspElement.addAttribute("score", Double.toString(hsp.getScore()));
 		hspElement.addAttribute("normalized-score", Double.toString(hsp.getNormalizedScore()));
 		hspElement.addAttribute("e-value", Double.toString(hsp.getEValue()));
@@ -172,13 +173,14 @@ public class Output {
 		hspElement.addAttribute("hit-to", Integer.toString(hsp.getHitTo()));
 		hspElement.addAttribute("identity-len", Integer.toString(hsp.getIdentityLength()));
 		hspElement.addAttribute("align-len", Integer.toString(hsp.getAlignLength()));
-		hspElement.addAttribute("qseq", hsp.getQuerySeq());
-		hspElement.addAttribute("hseq", hsp.getTargetSeq());
-		hspElement.addAttribute("midline", hsp.getPathSeq());
+		
+		hspElement.addElement("query").addText(hsp.getQuerySeq());
+		hspElement.addElement("path").addText(hsp.getPathSeq());
+		hspElement.addElement("target").addText(hsp.getTargetSeq());
+				
 
 		return hspElement;
 	}
-	
 	
 	private static String doubleToString(double value) {
 		StringBuilder sb = new StringBuilder();

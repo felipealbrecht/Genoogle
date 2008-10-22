@@ -214,6 +214,7 @@ public class SOIS {
 
 			Document document = Output.genoogleOutputToXML(results);
 			OutputFormat outformat = OutputFormat.createPrettyPrint();
+			outformat.setTrimText(false);
 			outformat.setEncoding("UTF-8");
 			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(inputFile
 					+ "_results.xml")), outformat);

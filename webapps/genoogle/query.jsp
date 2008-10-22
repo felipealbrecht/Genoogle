@@ -1,4 +1,5 @@
 
+<%@page import="org.dom4j.io.HTMLWriter"%>
 <%@page import="java.lang.management.ThreadInfo"%>
 <%@page import="java.lang.management.ManagementFactory"%>
 <%@page import="java.lang.management.ThreadMXBean"%><%@page import="bio.pih.SOIS"%>
@@ -19,12 +20,6 @@
 
 <%
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
-
-ThreadMXBean threads = ManagementFactory.getThreadMXBean();
-ThreadInfo[] infos = threads.getThreadInfo( threads.getAllThreadIds() );
-for (ThreadInfo info: infos) {
-	out.print(info.getThreadName() + " " + threads.getThreadCpuTime(info.getThreadId()) + " <BR> ");
-}
 
 	if (request.getParameter("query") != null) {
 		SOIS sois = SOIS.getInstance();
@@ -78,9 +73,9 @@ for (ThreadInfo info: infos) {
 			out.println("</body>");
 			
 		} else {
-			out.print("Searching time: " + (total) + " milli seconds.");
 			Document document = Output.genoogleOutputToXML(sr);
-
+			document.getRootElement().addElement("infos").addAttribute("search-time", Long.toString(total));
+			
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 			long tBegin = System.currentTimeMillis();
@@ -94,8 +89,8 @@ for (ThreadInfo info: infos) {
 				System.out.println((System.currentTimeMillis() - tBegin) + " para transformacao");
 				Document resultDocument = result.getDocument();
 				OutputFormat outformat = OutputFormat.createPrettyPrint();
-				outformat.setEncoding("UTF-8");
-				XMLWriter writer = new XMLWriter(outputStream, outformat);
+				outformat.setTrimText(false);
+				HTMLWriter writer = new HTMLWriter(outputStream, outformat);
 				writer.write(resultDocument);
 				out.print(outputStream);
 			} catch (TransformerConfigurationException e) {
