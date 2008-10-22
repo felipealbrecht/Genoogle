@@ -61,6 +61,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 * @param name name of this databank
 	 * @param path directory where it will be
 	 * @param qtdSubBases how many parts will have this sequence databank
+	 * @param maxThreads number of maximum simultaneous threads
 	 */
 	public SplittedSequenceDatabank(String name, File path, int qtdSubBases, int maxThreads) {
 		super(name, DNATools.getDNA(), path, null, maxThreads);
@@ -190,7 +191,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		}
 		return true;
 	}
-	
+
 	@Override
 	public void load() throws IOException, ValueOutOfBoundsException {
 		logger.info("Loading internals databanks");

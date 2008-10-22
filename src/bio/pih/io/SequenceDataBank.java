@@ -7,12 +7,9 @@ import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.proto.Io.StoredSequence;
 
 /**
  * This interface specifies the ways to access a sequence bank.
@@ -55,17 +52,27 @@ public interface SequenceDataBank {
 	void setPath(File directory);
 
 	/**
-	 * @return the total quantity of sequences stored in this SequenceDataBank
+	 * @return the number of sequences stored in this SequenceDataBank
 	 */
-	int getTotalSequences();
-
+	int getNumberOfSequences();
+	
 	/**
-	 * Set the {@link FiniteAlphabet} of the sequences of this sequence bank.
-	 * 
-	 * @param alphabet
-	 */
-	void setAlphabet(FiniteAlphabet alphabet);
-
+	 * @return the total number of sequences stored in this SequenceDataBank and all siblings.
+	 * <b>To calculate statistics, this value should be used</b>.
+	 */	
+	long getTotalNumberOfSequences();
+	
+	/**
+	 * @return the number of bases stored in this SequenceDataBank.
+	 */	
+	long getDataBaseSize();
+	
+	/**
+	 * @return the number of bases stored in this SequenceDataBank and all siblings.
+	 * <b>To calculate statistics, this value should be used</b>. 
+	 */	
+	long getTotalDataBaseSize();
+	
 	/**
 	 * @return the {@link FiniteAlphabet} of the sequences of this sequence bank.
 	 */

@@ -17,18 +17,25 @@ public class HSP implements Serializable {
 	private final int queryOffset;
 	private final int targetOffset;
 	private final int num;
+	private final double normalizedScore;
+	private final double eValue;
 
 	/**
 	 * @param num
 	 * @param alignment
 	 * @param queryOffset
 	 * @param targetOffset
+	 * @param normalizedScore 
+	 * @param eValue 
 	 */
-	public HSP(int num, GenoogleSmithWaterman alignment, int queryOffset, int targetOffset) {
+	public HSP(int num, GenoogleSmithWaterman alignment, int queryOffset, int targetOffset,
+			double normalizedScore, double eValue) {
 		this.num = num;
 		this.alignment = alignment;
 		this.queryOffset = queryOffset;
 		this.targetOffset = targetOffset;
+		this.normalizedScore = normalizedScore;
+		this.eValue = eValue;
 	}
 
 	/**
@@ -113,6 +120,20 @@ public class HSP implements Serializable {
 	 */
 	public GenoogleSmithWaterman getAlignment() {
 		return alignment; 
+	}
+	
+	/**
+	 * @return normalize score of this HSP.
+	 */
+	public double getNormalizedScore() {
+		return normalizedScore;
+	}
+	
+	/**
+	 * @return E-Value of this HSP.
+	 */
+	public double getEValue() {
+		return eValue;
 	}
 	
 		

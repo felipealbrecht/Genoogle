@@ -47,20 +47,4 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	public static char getSymbolFromBits(int bits) {
 		return DNABitsToSymbolSubstitionTable[bits];
 	}
-	
-	@Override
-	public int getLengthInBytes(int sequenceLength) {
-		int total = sequenceLength / subSequenceLength;
-		int extra = sequenceLength % subSequenceLength;
-		if (extra != 0) { // extra space for the incomplete sub-sequence
-			total++;
-		}
-
-		total++; // extra space for length information
-
-		total *= 2; // convert short to byte
-
-		return total;
-	}
-
 }

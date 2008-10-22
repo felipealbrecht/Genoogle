@@ -36,10 +36,11 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param name
 	 * @param alphabet
 	 * @param path
-	 * @param parent 
-	 * @param maxThreads 
+	 * @param parent
+	 * @param maxThreads
 	 */
-	public DatabankCollection(String name, FiniteAlphabet alphabet, File path, SequenceDataBank parent, int maxThreads) {		
+	public DatabankCollection(String name, FiniteAlphabet alphabet, File path,
+			SequenceDataBank parent, int maxThreads) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
@@ -82,7 +83,8 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * Check if a data bank is in this data bank collection.
 	 * 
 	 * @param name
-	 * @return <code>true</code> if the data bank is in this data bank collection.
+	 * @return <code>true</code> if the data bank is in this data bank
+	 *         collection.
 	 */
 	public boolean containsDatabank(String name) {
 		return this.collection.containsKey(name);
@@ -99,14 +101,15 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	/**
-	 * @return {@link Iterator} that iterate over all data banks of this collection.
+	 * @return {@link Iterator} that iterate over all data banks of this
+	 *         collection.
 	 */
 	public Iterator<T> databanksIterator() {
 		return this.collection.values().iterator();
 	}
 
 	/**
-	 * Remove all data banks of this collection. 
+	 * Remove all data banks of this collection.
 	 */
 	public void clear() {
 		this.collection.clear();
@@ -114,6 +117,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	/**
 	 * Check if this data bank collection is empty.
+	 * 
 	 * @return <code>true</code> if this data bank collection is empty.
 	 */
 	public boolean isEmpty() {
@@ -122,6 +126,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	/**
 	 * Remove a data bank from this collection.
+	 * 
 	 * @param name
 	 * @return the removed data bank.
 	 */
@@ -130,7 +135,8 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException, IOException {
+	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
+			BioException, IOException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -138,14 +144,14 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	public File getFilePath() {
 		return path;
 	}
-	
+
 	@Override
-	public int getTotalSequences() {
+	public int getNumberOfSequences() {
 		int total = 0;
 
 		Iterator<T> iterator = this.collection.values().iterator();
 		while (iterator.hasNext()) {
-			total += iterator.next().getTotalSequences();
+			total += iterator.next().getNumberOfSequences();
 		}
 		return total;
 	}
@@ -159,11 +165,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 			iterator.next().load();
 		}
 		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time));
-	}
-
-	@Override
-	public void setAlphabet(FiniteAlphabet alphabet) {
-		throw new UnsupportedOperationException("The alphabet is imutable for this class");
 	}
 
 	@Override
@@ -194,7 +195,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	File fullPath = null;
-	
+
 	@Override
 	public File getFullPath() {
 		if (fullPath == null) {
@@ -213,23 +214,24 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
+			ValueOutOfBoundsException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
-		while (iterator.hasNext()) {			
+		while (iterator.hasNext()) {
 			T next = iterator.next();
 			if (!next.check()) {
 				next.encodeSequences();
 			}
 		}
-		logger.info("Databanks encoded in " + (System.currentTimeMillis() - time));		
+		logger.info("Databanks encoded in " + (System.currentTimeMillis() - time));
 	}
-	
+
 	@Override
 	public boolean check() {
 		Iterator<T> iterator = this.collection.values().iterator();
-		while (iterator.hasNext()) {			
+		while (iterator.hasNext()) {
 			T next = iterator.next();
 			if (!next.check()) {
 				return false;
@@ -242,12 +244,49 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	public SequenceEncoder getEncoder() {
 		throw new UnsupportedOperationException("Each sub-data bank has its own encoder.");
 	}
-	
+
 	/**
-	 * @return the quantity of max threads that this Collection will create. 
+	 * @return the quantity of max threads that this Collection will create.
 	 */
 	public int getMaxThreads() {
 		return maxThreads;
+	}
+
+	@Override
+	public long getDataBaseSize() {
+		return getTotalDataBaseSize();
+	}
+
+	long totalDataBaseSize = -1;
+
+	@Override
+	public long getTotalDataBaseSize() {
+		if (totalDataBaseSize == -1) {
+			synchronized (this) {
+				long total = 0;
+				for (SequenceDataBank dataBank : collection.values()) {
+					total += dataBank.getDataBaseSize();
+				}
+				this.totalDataBaseSize = total;
+			}
+		}
+		return totalDataBaseSize;
+	}
+
+	long totalNumberOfSequences = -1;
+
+	@Override
+	public long getTotalNumberOfSequences() {
+		if (totalNumberOfSequences == -1) {
+			synchronized (this) {
+				long total = 0;
+				for (SequenceDataBank dataBank : collection.values()) {
+					total += dataBank.getNumberOfSequences();
+				}
+				this.totalNumberOfSequences = total;
+			}
+		}
+		return 0;
 	}
 
 }

@@ -161,6 +161,8 @@ public class Output {
 
 		Element hspElement = factory.createElement("hsp");
 		hspElement.addAttribute("score", Double.toString(hsp.getScore()));
+		hspElement.addAttribute("normalized-score", Double.toString(hsp.getNormalizedScore()));
+		hspElement.addAttribute("e-value", Double.toString(hsp.getEValue()));
 		hspElement.addAttribute("query-from", Integer.toString(hsp.getQueryFrom()));
 		hspElement.addAttribute("query-to", Integer.toString(hsp.getQueryTo()));
 		hspElement.addAttribute("hit-from", Integer.toString(hsp.getHitFrom()));

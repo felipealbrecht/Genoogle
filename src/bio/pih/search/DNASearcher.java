@@ -85,7 +85,7 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	protected void doSearch() throws Exception {
-		this.statitics = new Statistics(-3, 1, sp.getQuery(), databank.getTotalSequences() * 1000, databank.getTotalSequences());
+		this.statitics = new Statistics(-3, 1, sp.getQuery(), databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 		
 		SymbolList querySequence = sp.getQuery();
 		status.setActualStep(SearchStep.INITIALIZED);
@@ -155,10 +155,11 @@ public class DNASearcher extends AbstractSearcher {
 							substitutionMatrix);
 					smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 							extensionResult.getTargetSequenceExtended());
+					
+					double normalizedScore = statitics.normalizedScore(smithWaterman.getScore());
+					double evalue = statitics.calculateEvalue(normalizedScore);
 					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(),
-							extensionResult.getTargetOffset()));
-					System.out.println("Score: " + smithWaterman.getScore());
-					System.out.println("E-value: " + statitics.getEvalue(smithWaterman.getScore()));
+							extensionResult.getTargetOffset(), normalizedScore, evalue));
 				}
 				sr.addHit(hit);
 			}
@@ -176,7 +177,7 @@ public class DNASearcher extends AbstractSearcher {
 	private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
 			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getTotalSequences(), sp);
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp);
 
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		for (int ss = 0; ss < iess.length; ss++) {

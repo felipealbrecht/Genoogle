@@ -211,7 +211,7 @@ public class Statistics {
 	}
 
 	private double lengthAdjust(double K, double ungappedLogK, double ungappedH,
-			int querySize, int databaseSize, int numberOfSequences) {
+			int querySize, long databaseSize, long numberOfSequences) {
 		double lenghtAdjust = 0;
 		double minimumQueryLength = (double) 1 / K;
 
@@ -227,25 +227,12 @@ public class Statistics {
 		return lenghtAdjust;
 	}
 
-	private double ungappedNominal2Normalized(double nominalScore, double lambda,
-			double logK, double log2) {
-		return ((nominalScore * lambda) - logK) / log2;
+	public double normalizedScore(double nominalScore) {
+		return ((nominalScore * this.lambda) - this.logK) / this.LOG_2;
 	}
 
-	private double calculateEvalue(double normalizedScore, double searchSpaceSize) {
-		return searchSpaceSize / Math.pow(2, normalizedScore);
-	}
-	
-	public double getEvalue(double nominalScore) {
-		double normalizedScore = ungappedNominal2Normalized(nominalScore, lambda, logK, LOG_2);
-		System.out.println(normalizedScore);
-		double eValue = calculateEvalue(normalizedScore, searchSpaceSize);
-		System.out.println("Evalue: " + eValue);
-		return eValue;
-	}
-
-	public static void main(String[] args) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
-		new Statistics(-3, 1, LightweightSymbolList.createDNA("ATGGTCGATGTACGTACGTCAGTGTCAGTGTCAGTC"), 850000, 1000);
+	public double calculateEvalue(double normalizedScore) {
+		return this.searchSpaceSize / Math.pow(2, normalizedScore);
 	}
 	
 	private final SymbolList query;
@@ -258,7 +245,9 @@ public class Statistics {
 	private final double effectiveDatabaseSize;
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
-	public Statistics(int match, int mismatch, SymbolList query, int databaseSize, int numberOfSequences) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
+	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
+		System.out.println("Number of sequences: " + numberOfSequences);
+		System.out.println("Database size: " + databaseSize);
 		this.query = query;
 		this.probabilities = scoreProbabilities(match, mismatch, query);
 		this.lambda = calculateLambda(probabilities, match, mismatch);

@@ -63,24 +63,24 @@ public abstract class SequenceEncoder {
 	/**
 	 * @return Position in integer vector that is the information of the {@link SymbolList} length
 	 */
-	public static int getPositionLength() {
+	public final static int getPositionLength() {
 		return POSITION_LENGTH;
 	}
 
 	/**
 	 * @return Position that the bit vector itself begin
 	 */
-	public static int getPositionBeginBitsVector() {
+	public final static int getPositionBeginBitsVector() {
 		return POSITION_BEGIN_BITS_VECTOR;
 	}
-
+	
 	/**
-	 * Return the length in bytes that is required to store an encoded sequence
-	 * 
-	 * @param sequenceLength
-	 * @return the space in bytes
+	 * @param encodedSequence
+	 * @return length in bases of the encoded sequence.
 	 */
-	abstract public int getLengthInBytes(int sequenceLength);
+	public final static int getSequenceLength(int[] encodedSequence) {
+		return encodedSequence[POSITION_LENGTH];
+	}
 
 	/**
 	 * 

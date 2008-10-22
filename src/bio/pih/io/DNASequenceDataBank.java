@@ -47,8 +47,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private File fullPath = null;
 
 	private volatile int nextSequenceId;
-	private int totalSequences;
-	private long totalBases;
+	private int numberOfSequences;
+	private long dataBankSize;
 
 	protected final boolean readOnly;
 	protected StoredDatabank storedDatabank;
@@ -79,8 +79,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.parent = parent;
 		this.readOnly = readOnly;
 		this.nextSequenceId = 0;
-		this.totalSequences = 0;
-		this.totalBases = 0;
+		this.numberOfSequences = 0;
+		this.dataBankSize = 0;
 		this.storedDatabank = null;
 	}
 
@@ -111,13 +111,16 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		beginSequencesProcessing();
 		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
 			StoredSequence storedSequence = getSequenceFromId(i);
-			totalSequences++;
-			doSequenceProcessing(storedSequence);
+			numberOfSequences++;
+			final int[] encodedSequence = Utils.getEncodedSequence(storedSequence);
+			dataBankSize += SequenceEncoder.getSequenceLength(encodedSequence);
+
+			doSequenceProcessing(storedSequence.getId(), encodedSequence);
 		}
 		dataBankFileChannel.close();
 		finishSequencesProcessing();
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with "
-				+ totalSequences + " sequences.");
+				+ numberOfSequences + " sequences.");
 	}
 
 	/**
@@ -140,7 +143,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * 
 	 * @param sequenceInformation
 	 */
-	abstract void doSequenceProcessing(StoredSequence sequenceInformation);
+	abstract void doSequenceProcessing(int sequenceId, int[] encodedSequence);
 
 	/**
 	 * Finish the sequences processing. <br>
@@ -150,8 +153,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 */
 	abstract void finishSequencesProcessing() throws IOException;
 
-	public synchronized StoredSequence getSequenceFromId(int sequenceId)
-			throws IOException {
+	public synchronized StoredSequence getSequenceFromId(int sequenceId) throws IOException {
 		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
 		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
 
@@ -209,8 +211,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 
 		storedDatabankBuilder.setType(SequenceType.DNA);
-		storedDatabankBuilder.setQtdSequences(totalSequences);
-		storedDatabankBuilder.setQtdBases(totalBases);
+		storedDatabankBuilder.setQtdSequences(numberOfSequences);
+		storedDatabankBuilder.setQtdBases(dataBankSize);
 
 		storedDatabank = storedDatabankBuilder.build();
 		storedSequenceInfoChannel.write(ByteBuffer.wrap(storedDatabank.toByteArray()));
@@ -220,8 +222,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	synchronized StoredSequenceInfo addSequence(RichSequence s,
-			FileChannel dataBankFileChannel) throws BioException, IOException {
+	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel)
+			throws BioException, IOException {
 		if (readOnly) {
 			throw new IOException("The file " + getDataBankFile() + " is marked as read only");
 		}
@@ -255,7 +257,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
 
-		totalSequences++;
+		numberOfSequences++;
 
 		if (offset > Integer.MAX_VALUE) {
 			throw new IOException("PUTA QUE PARIU!, o offset eh maior que o valor maximo");
@@ -272,8 +274,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		for (int i = 0; i < encoded.length; i++) {
 			byteBuf.putInt(encoded[i]);
 		}
-		
-		return byteBuf.array(); 
+
+		return byteBuf.array();
 	}
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
@@ -298,12 +300,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return id;
 	}
 
-	public int getTotalSequences() {
-		return totalSequences;
-	}
-
-	public void setAlphabet(FiniteAlphabet alphabet) {
-		throw new UnsupportedOperationException("The alphabet is imutable for this class");
+	public int getNumberOfSequences() {
+		return numberOfSequences;
 	}
 
 	public FiniteAlphabet getAlphabet() {
@@ -374,4 +372,24 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return encoder;
 	}
 
+	@Override
+	public long getDataBaseSize() {
+		return dataBankSize;
+	}
+
+	@Override
+	public long getTotalDataBaseSize() {
+		if (parent == null) {
+			return getDataBaseSize();
+		}
+		return parent.getTotalDataBaseSize();
+	}
+
+	@Override
+	public long getTotalNumberOfSequences() {
+		if (parent == null) {
+			return getNumberOfSequences();
+		}
+		return parent.getTotalNumberOfSequences();
+	}
 }
