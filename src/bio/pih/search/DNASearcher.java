@@ -149,7 +149,8 @@ public class DNASearcher extends AbstractSearcher {
 			status.setActualStep(SearchStep.ALIGNMENT);
 			if (extendedSequencesList.size() > 0) {
 				Hit hit = new Hit(hitNum++, storedSequence.getName(),
-						storedSequence.getAccession(), storedSequence.getDescription(),
+						storedSequence.getGi(), 
+						storedSequence.getDescription(), storedSequence.getAccession(),  
 						SequenceEncoder.getSequenceLength(encodedSequence), databank.getName());
 				for (ExtendSequences extensionResult : extendedSequencesList) {
 					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 3, 3, 3,

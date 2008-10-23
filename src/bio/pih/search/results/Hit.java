@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 public class Hit {
 	private final int hitNum;
 	private final String id;
+	private final String gi;
 	private final String accession;
 	private final String description;
 	private final int length;
@@ -23,13 +24,15 @@ public class Hit {
 	/**
 	 * @param hitNum
 	 * @param id
+	 * @param gi 
 	 * @param description
 	 * @param accession
 	 * @param hitLength
 	 * @param databankName
 	 */
-	public Hit(int hitNum, String id, String description, String accession, int hitLength, String databankName) {
+	public Hit(int hitNum, String id, String gi, String description, String accession, int hitLength, String databankName) {
 		this.id = id;
+		this.gi = gi;
 		this.hitNum = hitNum;
 		this.accession = accession;
 		this.description = description;
@@ -50,6 +53,13 @@ public class Hit {
 	 */
 	public String getId() {
 		return id;
+	}
+	
+	/**
+	 * @return gi of the sequence target.
+	 */
+	public String getGi() {
+		return gi;
 	}
 	
 	/**

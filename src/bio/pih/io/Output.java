@@ -130,12 +130,13 @@ public class Output {
 		Element hitElement = factory.createElement("hit");
 		hitElement.addAttribute("num", Integer.toString(hit.getHitNum()));
 		hitElement.addAttribute("id", hit.getId());
+		hitElement.addAttribute("gi", hit.getGi());
 		hitElement.addAttribute("description", hit.getDescription());
 		hitElement.addAttribute("accession", hit.getAccession());
 		hitElement.addAttribute("length", Integer.toString(hit.getLength()));
 		hitElement.addAttribute("databank", hit.getDatabankName());
 		hitElement.add(hspsToXML(hit.getHSPs()));
-
+		
 		return hitElement;
 	}
 
