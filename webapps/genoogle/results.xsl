@@ -38,10 +38,10 @@
 	<p class="hit" style="border:thin dotted">
 	id: <b><xsl:value-of select="@id"/></b>
 	Gi: <xsl:value-of select="@gi"/>
-	description: <b><xsl:value-of select="@description"/></b><br/>
+	description: <b><xsl:value-of select="@description"/></b>
 	length: <xsl:value-of select="@length"/>	 
 	 <a>	   
-	   <xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=nuccore&amp;id=113931351</xsl:attribute>
+	   <xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=nuccore&amp;id=<xsl:value-of select="@gi"/>am</xsl:attribute>
 	   More info
 	 </a>
 	 
