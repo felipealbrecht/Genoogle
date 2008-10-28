@@ -3,7 +3,6 @@ package bio.pih.io;
 import java.util.Formatter;
 import java.util.List;
 
-import org.dom4j.CDATA;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -22,8 +21,8 @@ import bio.pih.search.results.SearchResults;
 public class Output {
 
 	private static String copyRightNotice = "Genoogle by Albrecht, Justel and Pinto. 2008.";
-	private static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
-	private static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
+	private final static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
+	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
 	
 	/**
 	 * @param searchResults

@@ -44,19 +44,18 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private final String name;
 	private final File file;
 	private final DatabankCollection<? extends DNASequenceDataBank> parent;
+	private final DNASequenceEncoderToInteger encoder;
+	private final int subSequenceLength;
 	private File fullPath = null;
 
 	private volatile int nextSequenceId;
 	private int numberOfSequences;
 	private long dataBankSize;
-
-	protected final boolean readOnly;
 	protected StoredDatabank storedDatabank;
 
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
 
-	static DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
@@ -70,29 +69,24 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @param parent
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
+	 * @param subSequenceLength 
 	 * @throws IOException
 	 */
 	public DNASequenceDataBank(String name, File path,
-			DatabankCollection<? extends DNASequenceDataBank> parent, boolean readOnly) {
+			DatabankCollection<? extends DNASequenceDataBank> parent, int subSequenceLength) {
 		this.name = name;
 		this.file = path;
 		this.parent = parent;
-		this.readOnly = readOnly;
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;
+		this.subSequenceLength = subSequenceLength;
+		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.storedDatabank = null;
 	}
 
 	@Override
 	public synchronized void load() throws IOException, ValueOutOfBoundsException {
-		checkFile(getDataBankFile(), readOnly);
-		if (readOnly) {
-			if (!dataBankFile.setReadOnly()) {
-				throw new IOException("Can not set " + dataBankFile + " as read only");
-			}
-		}
-
 		logger.info("Loading databank from " + getDataBankFile());
 
 		long begin = System.currentTimeMillis();
@@ -153,6 +147,11 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 */
 	abstract void finishSequencesProcessing() throws IOException;
 
+	/**
+	 * @param sequenceId
+	 * @return {@link StoredSequence} of the given sequenceId.
+	 * @throws IOException
+	 */
 	public synchronized StoredSequence getSequenceFromId(int sequenceId) throws IOException {
 		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
 		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
@@ -224,10 +223,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel)
 			throws BioException, IOException {
-		if (readOnly) {
-			throw new IOException("The file " + getDataBankFile() + " is marked as read only");
-		}
-
 		if (!s.getAlphabet().equals(this.alphabet)) {
 			throw new BioException("Invalid alphabet for sequence " + s.getName());
 		}
@@ -368,7 +363,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	@Override
-	public SequenceEncoder getEncoder() {
+	public DNASequenceEncoderToInteger getEncoder() {
 		return encoder;
 	}
 
@@ -391,5 +386,10 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			return getNumberOfSequences();
 		}
 		return parent.getTotalNumberOfSequences();
+	}
+	
+	@Override
+	public int getSubSequenceLength() {
+		return subSequenceLength;
 	}
 }

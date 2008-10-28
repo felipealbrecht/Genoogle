@@ -32,6 +32,6 @@
 	<classpathentry kind="lib" path="lib/tomcat-i18n-fr.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/genoogle/lib/protobuf-java-2.0.0beta.jar" sourcepath="/home/albrecht/Área de Trabalho/protobuf-2.0.1/java/src/main/java/com/google/protobuf"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar" sourcepath="/home/albrecht/Área de Trabalho/protobuf-2.0.2/java/src/main/java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

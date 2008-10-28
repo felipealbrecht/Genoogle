@@ -51,8 +51,9 @@ public class SOIS {
 
 	/**
 	 * @return SOIS Singleton instance.
+	 * @throws InvalidHeaderData 
 	 */
-	public static SOIS getInstance() {
+	public static SOIS getInstance() throws InvalidHeaderData {
 		if (singleton == null) {
 			try {
 				singleton = new SOIS();
@@ -70,8 +71,9 @@ public class SOIS {
 	 * 
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
+	 * @throws InvalidHeaderData 
 	 */
-	private SOIS() throws IOException, ValueOutOfBoundsException {
+	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
 	}
@@ -150,11 +152,12 @@ public class SOIS {
 	 * @throws TransformerException
 	 * @throws ExecutionException
 	 * @throws InterruptedException
+	 * @throws InvalidHeaderData 
 	 * @throws DocumentException
 	 */
 	public static void main(String[] args) throws IOException, NoSuchElementException,
 			BioException, UnknowDataBankException, ValueOutOfBoundsException, TransformerException,
-			InterruptedException, ExecutionException {
+			InterruptedException, ExecutionException, InvalidHeaderData {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		logger.info("SOIS - Search Over Indexed Sequences.");
 		logger.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");

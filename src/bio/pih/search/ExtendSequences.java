@@ -13,7 +13,6 @@ import bio.pih.seq.LightweightSymbolList;
  * @author albrecht
  */
 public class ExtendSequences {
-	private static final DNASequenceEncoderToInteger DEFAULT_ENCODER = DNASequenceEncoderToInteger.getDefaultEncoder();
 	private SymbolList querySequenceExtended;
 	private SymbolList targetSequenceExtended;
 
@@ -31,8 +30,7 @@ public class ExtendSequences {
 		this.queryRightExtended = queryRightExtended;
 		this.targetRightExtended = targetRightExtended;
 		this.beginTargetSegment = beginTargetSegment;
-		this.beginQuerySegment = beginQuerySegment;
-		
+		this.beginQuerySegment = beginQuerySegment;		
 	}
 
 	/**
@@ -186,8 +184,20 @@ public class ExtendSequences {
 		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginDatabankSequenceSegment);
 	}
 	
+	/**
+	 * @param encodedQuerySequence
+	 * @param beginQuerySegment
+	 * @param endQuerySegment
+	 * @param encodedDatabankSequence
+	 * @param beginDatabankSequenceSegment
+	 * @param endDatabankSequenceSegment
+	 * @param dropoff
+	 * @param subSequenceLength
+	 * @param encoder 
+	 * @return {@link ExtendSequences} of the extended sequences.
+	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment, 
-			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int subSequenceLength) {
+			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int subSequenceLength, DNASequenceEncoderToInteger encoder) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -257,8 +267,8 @@ public class ExtendSequences {
 			databankPos--;
 		}
 		
-		String queryExtendedString = DEFAULT_ENCODER.decodeIntegerArrayToString(encodedQuerySequence, bestQueryPos, rightBestQueryPos);
-		String targetExtendedString = DEFAULT_ENCODER.decodeIntegerArrayToString(encodedDatabankSequence, bestDatabankPos, rightBestDatabankPos);
+		String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuerySequence, bestQueryPos, rightBestQueryPos);
+		String targetExtendedString = encoder.decodeIntegerArrayToString(encodedDatabankSequence, bestDatabankPos, rightBestDatabankPos);
 		
 		SymbolList queryExtended = null;
 		SymbolList targetExtended = null;

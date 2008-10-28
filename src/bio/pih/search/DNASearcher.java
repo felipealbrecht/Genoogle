@@ -12,13 +12,11 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
-import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
@@ -40,8 +38,6 @@ import com.google.protobuf.ByteString;
 public class DNASearcher extends AbstractSearcher {
 
 	private static final Logger logger = Logger.getLogger(DNASearcher.class.getName());
-	private static final int SUB_SEQUENCE_LENGTH = XMLConfigurationReader.getSubSequenceLength();
-	private static final DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getDefaultEncoder();
 
 	private static SubstitutionMatrix substitutionMatrix = new SubstitutionMatrix(
 			DNATools.getDNA(), 1, -3);
@@ -94,7 +90,7 @@ public class DNASearcher extends AbstractSearcher {
 				+ querySequence.length() + "bases " + querySequence.seqString());
 
 		int[] iess = getEncodedSubSequences(querySequence);
-		int[] encodedQuery = ENCODER.encodeSymbolListToIntegerArray(querySequence);
+		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(querySequence);
 		int threshould = sp.getMinSimilarity();
 
 		long init = System.currentTimeMillis();
@@ -134,7 +130,7 @@ public class DNASearcher extends AbstractSearcher {
 
 				ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
 						queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
-						sequenceAreaEnd, sp.getSequencesExtendDropoff(), SUB_SEQUENCE_LENGTH);
+						sequenceAreaEnd, sp.getSequencesExtendDropoff(), subSequenceLegth, encoder);
 
 				if (extendedSequencesList.contains(extensionResult)) {
 					continue;
@@ -203,16 +199,15 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
-		int[] iess = new int[querySequence.length() - (SUB_SEQUENCE_LENGTH - 1)];
+		int[] iess = new int[querySequence.length() - (subSequenceLegth - 1)];
 
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory()
-				.newSymbolListWindowIterator(querySequence, SUB_SEQUENCE_LENGTH);
+				.newSymbolListWindowIterator(querySequence, subSequenceLegth);
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
 			pos++;
 			SymbolList subSequence = symbolListWindowIterator.next();
-			iess[pos] = DNASequenceEncoderToInteger.getDefaultEncoder()
-					.encodeSubSymbolListToInteger(subSequence);
+			iess[pos] = encoder.encodeSubSymbolListToInteger(subSequence);
 		}
 		return iess;
 	}

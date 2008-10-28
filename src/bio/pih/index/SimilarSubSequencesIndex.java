@@ -20,7 +20,6 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.io.XMLConfigurationReader;
 import bio.pih.io.proto.Io.StoredComparationResultInfo;
 import bio.pih.io.proto.Io.StoredSimilarSubSequences;
 import bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex;
@@ -28,6 +27,7 @@ import bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder;
 import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Lists;
+import com.google.protobuf.CodedInputStream;
 
 /**
  * Given two sub-sequences, return the *global* alignment between they.
@@ -38,8 +38,7 @@ import com.google.common.collect.Lists;
  *         <p>
  *         How to use:
  * 
- *         Create a instance, check if exists, if not createData(), else
- *         loadData().
+ *         Create a instance, check if exists, if not createData(), else loadData().
  * 
  */
 public class SimilarSubSequencesIndex {
@@ -47,21 +46,8 @@ public class SimilarSubSequencesIndex {
 	private static final char[] ALPHABET = new char[] { 'A', 'C', 'G', 'T' };
 	private final DNASequenceEncoderToInteger encoder;
 
-	private static final int defaultThreshold = 3;
-	private static final int defaultDeeper = 1;
-	private static final int defaultMatch = -1;
-	private static final int defaultDismatch = 1;
-	private static final int defaultGapOpen = 0;
-	private static final int defaultGapExtend = 1;
-	private static final int defaultSubSequenceLength = XMLConfigurationReader.getSubSequenceLength();
-
 	private final int subSequenceLength;
-	private final int threshold;
 	private final int deeper;
-	private final int match;
-	private final int dismatch;
-	private final int gapOpen;
-	private final int gapExtend;
 	private final int maxEncodedSequenceValue;
 
 	private File indexFile = null;
@@ -73,45 +59,30 @@ public class SimilarSubSequencesIndex {
 
 	private boolean isLoad = false;
 
-	private static SimilarSubSequencesIndex defaultInstance = null;
+	private static SimilarSubSequencesIndex similarSubSequencesIndexes[] = new SimilarSubSequencesIndex[Integer.SIZE / 2];
 
-	static Logger logger = Logger.getLogger("bio.pih.index.SubSequencesComparer");
+	private static final Logger logger = Logger.getLogger(SimilarSubSequencesIndex.class.getName());
 
 	/**
+	 * @param subSequenceLength
+	 *            the length of the subSequences.
 	 * @return the default instance of {@link SimilarSubSequencesIndex}
+	 * @throws InvalidHeaderData
+	 * @throws IOException
 	 * @throws ValueOutOfBoundsException
 	 */
-	public static SimilarSubSequencesIndex getDefaultInstance() {
-		if (defaultInstance == null) {
+	public static SimilarSubSequencesIndex getDefaultInstance(int subSequenceLength)
+			throws IOException, InvalidHeaderData {
+		if (similarSubSequencesIndexes[subSequenceLength] == null) {
 			try {
-				defaultInstance = new SimilarSubSequencesIndex(DNATools.getDNA(),
-						defaultSubSequenceLength, defaultMatch, defaultDismatch, defaultGapOpen,
-						defaultGapExtend, defaultThreshold, defaultDeeper);
+				similarSubSequencesIndexes[subSequenceLength] = new SimilarSubSequencesIndex(
+						DNATools.getDNA(), subSequenceLength, 1);
+				similarSubSequencesIndexes[subSequenceLength].load();
 			} catch (ValueOutOfBoundsException e) {
-				logger.fatal(
-						"Fatar error in loading the default SubSequenceComparer. Probably related with subSequenceLength",
-						e);
+				logger.fatal(e);
 			}
 		}
-		return defaultInstance;
-	}
-
-	/**
-	 * Auxiliar main class for generate default data.
-	 * 
-	 * @param args
-	 * @throws IllegalSymbolException
-	 * @throws IOException
-	 * @throws BioException
-	 * @throws InvalidHeaderData
-	 * @throws ValueOutOfBoundsException
-	 */
-	public static void main(String[] args) throws IllegalSymbolException, IOException,
-			BioException, InvalidHeaderData {
-		// getDefaultInstance().deleteData();
-		// getDefaultInstance().generateData(true);
-		// getDefaultInstance().load();
-		// getDefaultInstance().checkDataData(true);
+		return similarSubSequencesIndexes[subSequenceLength];
 	}
 
 	/**
@@ -125,15 +96,9 @@ public class SimilarSubSequencesIndex {
 	 * @param deeper
 	 * @throws ValueOutOfBoundsException
 	 */
-	public SimilarSubSequencesIndex(FiniteAlphabet alphabet, int subSequenceLength, int match,
-			int dismatch, int gapOpen, int gapExtend, int threshold, int deeper)
+	public SimilarSubSequencesIndex(FiniteAlphabet alphabet, int subSequenceLength, int deeper)
 			throws ValueOutOfBoundsException {
 		this.subSequenceLength = subSequenceLength;
-		this.match = match;
-		this.dismatch = dismatch;
-		this.gapOpen = gapOpen;
-		this.gapExtend = gapExtend;
-		this.threshold = threshold;
 		this.deeper = deeper;
 
 		this.encoder = new DNASequenceEncoderToInteger(subSequenceLength);
@@ -141,8 +106,8 @@ public class SimilarSubSequencesIndex {
 	}
 
 	/**
-	 * @return the maximum value for a sequence that is possible for this actual
-	 *         alphabet and sequence length
+	 * @return the maximum value for a sequence that is possible for this actual alphabet and
+	 *         sequence length
 	 */
 	public int getMaxEncodedSequenceValue() {
 		return this.maxEncodedSequenceValue;
@@ -160,15 +125,7 @@ public class SimilarSubSequencesIndex {
 			sb.append("_");
 			sb.append(subSequenceLength);
 			sb.append("_");
-			sb.append(match);
-			sb.append("_");
-			sb.append(dismatch);
-			sb.append("_");
-			sb.append(gapOpen);
-			sb.append("_");
-			sb.append(gapExtend);
-			sb.append("_");
-			sb.append(threshold);
+			sb.append(deeper);
 			sb.append(".idx");
 			this.indexFileName = sb.toString();
 		}
@@ -178,8 +135,8 @@ public class SimilarSubSequencesIndex {
 	private String dataFileName = null;
 
 	/**
-	 * @return name of the file containing the the data of this
-	 *         {@link SimilarSubSequencesIndex} score scheme.
+	 * @return name of the file containing the the data of this {@link SimilarSubSequencesIndex}
+	 *         score scheme.
 	 */
 	public String getDataFileName() {
 		if (this.dataFileName == null) {
@@ -187,15 +144,7 @@ public class SimilarSubSequencesIndex {
 			sb.append("_");
 			sb.append(subSequenceLength);
 			sb.append("_");
-			sb.append(match);
-			sb.append("_");
-			sb.append(dismatch);
-			sb.append("_");
-			sb.append(gapOpen);
-			sb.append("_");
-			sb.append(gapExtend);
-			sb.append("_");
-			sb.append(threshold);
+			sb.append(deeper);
 			sb.append(".bin");
 			this.dataFileName = sb.toString();
 		}
@@ -263,10 +212,10 @@ public class SimilarSubSequencesIndex {
 			long time = System.currentTimeMillis();
 			List<String> similarSequences = generateSimilar(sequence.seqString(), deeper, ALPHABET);
 			for (String similar : similarSequences) {
-				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList.createDNA(similar);
+				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList
+						.createDNA(similar);
 				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
-				String decodeIntegerToString = DNASequenceEncoderToInteger.getDefaultEncoder()
-						.decodeIntegerToString(encodedSimilar);
+				String decodeIntegerToString = encoder.decodeIntegerToString(encodedSimilar);
 				assert decodeIntegerToString.equals(similar);
 				resultsString.add(similar);
 				resultsInteger.add(encodedSimilar);
@@ -316,15 +265,29 @@ public class SimilarSubSequencesIndex {
 			return;
 		}
 
+		if (!getIndexFile().exists()) {
+			try {
+				logger.info(getIndexFile() + " not found. Generating data for " + this.toString());
+				this.generateData(true);
+			} catch (Exception e) {
+				logger.fatal(e);
+			}
+		}
+
 		long begin = System.currentTimeMillis();
 
 		this.dataLengthIndex = new int[maxEncodedSequenceValue + 1];
 		this.dataOffsetIndex = new long[maxEncodedSequenceValue + 1];
 
 		FileInputStream fileInputStream = new FileInputStream(getIndexFile());
-		StoredSimilarSubSequencesIndex similarIndex = StoredSimilarSubSequencesIndex.parseFrom(fileInputStream);
+		CodedInputStream inputStream = CodedInputStream.newInstance(fileInputStream);
+		inputStream.setSizeLimit(64 << 22);
+		StoredSimilarSubSequencesIndex.Builder builder = StoredSimilarSubSequencesIndex.newBuilder();
+		StoredSimilarSubSequencesIndex similarIndex = builder.mergeFrom(inputStream).build();	
+		
 		for (int i = 0; i < similarIndex.getStoredComparationResultInfosCount(); i++) {
-			StoredComparationResultInfo storedComparationResultInfo = similarIndex.getStoredComparationResultInfos(i);
+			StoredComparationResultInfo storedComparationResultInfo = similarIndex
+					.getStoredComparationResultInfos(i);
 			int sequence = storedComparationResultInfo.getEncodedSubSequence();
 			int length = storedComparationResultInfo.getLength();
 			long offset = storedComparationResultInfo.getOffset();
@@ -347,8 +310,8 @@ public class SimilarSubSequencesIndex {
 
 	/**
 	 * @param encodedSubSequence
-	 *            an int that where is read <b>only</b> its first 16bits. If the
-	 *            code has a short, use: <br>
+	 *            an int that where is read <b>only</b> its first 16bits. If the code has a short,
+	 *            use: <br>
 	 *            <code>getSimilarSequences(shortVariable & 0xFFFF)</code>
 	 * @return the similar subsequences that are equal or higher than threshold.
 	 * @throws IOException
@@ -434,7 +397,8 @@ public class SimilarSubSequencesIndex {
 		}
 
 		FileChannel dataFileChannel = new FileOutputStream(getDataFile()).getChannel();
-		bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder indexInfoBuilder = StoredSimilarSubSequencesIndex.newBuilder();
+		bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder indexInfoBuilder = StoredSimilarSubSequencesIndex
+				.newBuilder();
 
 		System.out.println("Gerating data for  " + this.toString());
 		for (int encodedSequence1 = 0; encodedSequence1 <= maxEncodedSequenceValue; encodedSequence1++) {
@@ -445,12 +409,13 @@ public class SimilarSubSequencesIndex {
 			long time = System.currentTimeMillis();
 			List<String> similarSequences = generateSimilar(sequence.seqString(), deeper, ALPHABET);
 			for (String similar : similarSequences) {
-				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList.createDNA(similar);
+				SymbolList similarSequence = LightweightSymbolList.createDNA(similar);
 				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
 				similarSubSequencesBuilder.addSimilarSequence(encodedSimilar);
 			}
 
-			StoredSimilarSubSequences storedSimilarSubSequences = similarSubSequencesBuilder.build();
+			StoredSimilarSubSequences storedSimilarSubSequences = similarSubSequencesBuilder
+					.build();
 
 			if (verbose & encodedSequence1 % 10000 == 0) {
 				System.out.println(sequence.seqString() + "\t"
@@ -462,11 +427,10 @@ public class SimilarSubSequencesIndex {
 
 			byte[] storedSimilarSubSequencesByteArray = storedSimilarSubSequences.toByteArray();
 
-			StoredComparationResultInfo storedComparationResultInfo = StoredComparationResultInfo.newBuilder()
-					.setEncodedSubSequence(encodedSequence1)
-					.setLength(storedSimilarSubSequencesByteArray.length)
-					.setOffset(dataFileChannel.position())
-					.build();
+			StoredComparationResultInfo storedComparationResultInfo = StoredComparationResultInfo
+					.newBuilder().setEncodedSubSequence(encodedSequence1).setLength(
+							storedSimilarSubSequencesByteArray.length).setOffset(
+							dataFileChannel.position()).build();
 
 			indexInfoBuilder.addStoredComparationResultInfos(storedComparationResultInfo);
 			dataFileChannel.write(ByteBuffer.wrap(storedSimilarSubSequencesByteArray));
@@ -510,48 +474,6 @@ public class SimilarSubSequencesIndex {
 	}
 
 	/**
-	 * @return the default threshold
-	 */
-	public static int getDefaultTreadshould() {
-		return defaultThreshold;
-	}
-
-	/**
-	 * @return the default dismatch cost
-	 */
-	public static int getDefaultDismatch() {
-		return defaultDismatch;
-	}
-
-	/**
-	 * @return the default gap extend cost
-	 */
-	public static int getDefaultGapExtend() {
-		return defaultGapExtend;
-	}
-
-	/**
-	 * @return the default gap open cost
-	 */
-	public static int getDefaultGapOpen() {
-		return defaultGapOpen;
-	}
-
-	/**
-	 * @return the default match value
-	 */
-	public static int getDefaultMatch() {
-		return defaultMatch;
-	}
-
-	/**
-	 * @return the default sub-sequence length
-	 */
-	public static int getDefaultSubSequenceLength() {
-		return defaultSubSequenceLength;
-	}
-
-	/**
 	 * @return the encoder used
 	 */
 	public DNASequenceEncoderToInteger getEncoder() {
@@ -562,15 +484,9 @@ public class SimilarSubSequencesIndex {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SubSequenceComparer ");
-		sb.append(match);
+		sb.append(subSequenceLength);
 		sb.append('/');
-		sb.append(dismatch);
-		sb.append('/');
-		sb.append(gapOpen);
-		sb.append('/');
-		sb.append(gapExtend);
-		sb.append('/');
-		sb.append(threshold);
+		sb.append(deeper);
 		return sb.toString();
 	}
 }

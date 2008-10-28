@@ -2,6 +2,7 @@ package bio.pih.search;
 
 import java.util.concurrent.Callable;
 
+import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.SearchResults;
@@ -21,6 +22,8 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	protected final SearchStatus status;
 	protected final SearchParams sp;
 	protected final SearchResults sr;
+	protected final DNASequenceEncoderToInteger encoder;
+	protected final int subSequenceLegth;
 
 	/**
 	 * @param id
@@ -35,6 +38,8 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
 		this.sp = sp;
 		this.sr = new SearchResults(sp);
+		this.encoder = databank.getEncoder();
+		this.subSequenceLegth = databank.getSubSequenceLength();
 		status = new SearchStatus(id, sp, databank);
 		status.setActualStep(SearchStep.NOT_INITIALIZED);
 	}

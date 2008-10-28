@@ -110,4 +110,11 @@ public abstract class SequenceEncoder {
 		}
 	}
 
+	/**
+	 * @return the length of the subsequences.
+	 */
+	public int getSubSequenceLength() {
+		return subSequenceLength;
+	}
+
 }

@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.MemorySubSequencesInvertedIndexInteger;
-import bio.pih.index.PersistentSubSequencesInvertedIndex;
 import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 
@@ -20,48 +17,27 @@ import bio.pih.index.ValueOutOfBoundsException;
  * 
  */
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
-
-	private static Logger logger = Logger.getLogger("pih.bio.io.IndexedDNASequenceDataBank");
-
+	
 	private final AbstractSubSequencesInvertedIndex index;
-	private static final SimilarSubSequencesIndex similarSubSequencesIndex;
+	private final SimilarSubSequencesIndex similarSubSequencesIndex;
 
 	private final StorageKind storageKind;
 
-	static {
-		similarSubSequencesIndex = SimilarSubSequencesIndex.getDefaultInstance();
-		try {
-			similarSubSequencesIndex.load();
-		} catch (Exception e) {
-			logger.fatal("Fatar error while loading default SimilarSubSequencesIndex.\n Pay attention if the files " + similarSubSequencesIndex.getDataFileName() + " and " + similarSubSequencesIndex.getIndexFileName() + " exists and are not corrupted.", e);
-		}
-	}
-
 	/**
 	 * Same as public IndexedDNASequenceDataBank(String name, File path, boolean isReadOnly) setting isReadOnly as false.
 	 * 
 	 * @param name
 	 * @param path
 	 * @param storageKind 
+	 * @param subSequenceLenth 
 	 * @throws ValueOutOfBoundsException
+	 * @throws InvalidHeaderData 
+	 * @throws IOException 
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, StorageKind storageKind) throws ValueOutOfBoundsException {
-		this(name, path, null, storageKind, false);
+	public IndexedDNASequenceDataBank(String name, File path, StorageKind storageKind, int subSequenceLenth) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		this(name, path, null, storageKind, subSequenceLenth);
 	}
 	
-	/**
-	 * Same as public IndexedDNASequenceDataBank(String name, File path, boolean isReadOnly) setting isReadOnly as false.
-	 * 
-	 * @param name
-	 * @param path
-	 * @param parent 
-	 * @param storageKind 
-	 * @throws ValueOutOfBoundsException
-	 */
-	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, StorageKind storageKind) throws ValueOutOfBoundsException {
-		this(name, path, parent, storageKind, false);
-	}
-
 	/**
 	 * 
 	 * @param name
@@ -69,21 +45,24 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @param path
 	 *            the path where the data bank is/will be stored
 	 * @param parent 
-	 * @param isReadOnly
 	 * @param storageKind  
+	 * @param subSequenceLength 
 	 * @throws ValueOutOfBoundsException
+	 * @throws InvalidHeaderData 
+	 * @throws IOException 
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, StorageKind storageKind, boolean isReadOnly) throws ValueOutOfBoundsException {
-		super(name, path, parent, isReadOnly);
+	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, StorageKind storageKind, int subSequenceLength) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		super(name, path, parent, subSequenceLength);
 		this.storageKind = storageKind;
+		this.similarSubSequencesIndex = SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
 		
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
-			index = new MemorySubSequencesInvertedIndexInteger(this, XMLConfigurationReader.getSubSequenceLength());
+			index = new MemorySubSequencesInvertedIndexInteger(this, subSequenceLength);
 			
 		} else { //if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
-			System.err.println("Storage Kind DISK is Deprecated");
-			index = new PersistentSubSequencesInvertedIndex(this, XMLConfigurationReader.getSubSequenceLength());
+			throw new RuntimeException("Storage Kind DISK is Deprecated");
+			//index = new PersistentSubSequencesInvertedIndex(this, XMLConfigurationReader.getSubSequenceLength());
 		} 
 	}
 	

@@ -61,7 +61,8 @@ public class Genoogle {
 			//worker.start();
 			
 		} else if (args[0].equals("-g")) {
-			SimilarSubSequencesIndex.getDefaultInstance().generateData(true);
+			int subSequenceLength = Integer.parseInt(args[1]);
+			SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength).generateData(true);
 			
 		} else {
 			System.out.println("-s para scheduler ou -w [port] para worker ou -g para gerar dados necess�rios.");

@@ -11,13 +11,14 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Embedded;
 
 import bio.pih.SOIS;
+import bio.pih.index.InvalidHeaderData;
 
 public class WebServer {
 
 	private volatile boolean running = true;
 	Embedded embedded = null;
 
-	public WebServer(String defaultHost, int port, String path) throws LifecycleException {
+	public WebServer(String defaultHost, int port, String path) throws LifecycleException, InvalidHeaderData {
 		System.out.println(defaultHost);
 		System.out.println(path);
 		
@@ -55,7 +56,7 @@ public class WebServer {
 		running = false;
 	}
 
-	public static void main(String[] args) throws LifecycleException, InterruptedException {
+	public static void main(String[] args) throws LifecycleException, InterruptedException, InvalidHeaderData {
 		String defaultHost = args[0];
 		String path = args[1];
 		int port = Integer.parseInt(args[2]);

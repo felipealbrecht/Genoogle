@@ -6,7 +6,6 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.XMLConfigurationReader;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.util.SymbolListWindowIterator;
 import bio.pih.util.SymbolListWindowIteratorFactory;
@@ -18,16 +17,16 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 	static Logger logger = Logger.getLogger("bio.pih.encoder.DNASequenceEncoderToInteger");
 
-	private static DNASequenceEncoderToInteger defaultEncoder = null;
-
+	private static DNASequenceEncoderToInteger[] encoders = new DNASequenceEncoderToInteger[Integer.SIZE/2];
+	
 	/**
+	 * @param subSequenceLength length of the subSequences.
 	 * @return singleton of the {@link DNASequenceEncoderToInteger}
 	 */
-	public static DNASequenceEncoderToInteger getDefaultEncoder() {
-		if (defaultEncoder == null) {
+	public static DNASequenceEncoderToInteger getEncoder(int subSequenceLength) {
+		if (encoders[subSequenceLength] == null) {
 			try {
-				defaultEncoder = new DNASequenceEncoderToInteger(XMLConfigurationReader
-						.getSubSequenceLength());
+				encoders[subSequenceLength] = new DNASequenceEncoderToInteger(subSequenceLength);
 			} catch (ValueOutOfBoundsException e) {
 				logger
 						.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
@@ -35,7 +34,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 				return null;
 			}
 		}
-		return defaultEncoder;
+		return encoders[subSequenceLength];
 	}
 
 	/**
@@ -168,6 +167,14 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
 	}
 
+	/**
+	 * @param encodedSequence
+	 * @param begin 
+	 * @param end 
+	 * @return the sequence in {@link String} form that is stored in encodedSequence
+	 * @throws IllegalSymbolException
+	 * @throws BioException
+	 */
 	public String decodeIntegerArrayToString(int[] encodedSequence, int begin, int end) {
 
 		if ((end - begin) + 1 < subSequenceLength) {

@@ -16,7 +16,7 @@ message StoredDatabank {
   }
   
   required SequenceType type = 1;
-  optional int32 qtdSequences = 2;
+  optional int64 qtdSequences = 2;
   optional int64 qtdBases = 3;
   repeated StoredSequenceInfo sequencesInfo = 4;  
 }

@@ -11,7 +11,9 @@ import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 
+import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
+import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
 /**
@@ -29,22 +31,29 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	protected final LinkedHashMap<String, T> collection;
 	protected final File path;
 	protected final int maxThreads;
+	protected final int subSequenceLength;
+	private final DNASequenceEncoderToInteger encoder;
 
 	private SequenceDataBank parent;
+
+
 
 	/**
 	 * @param name
 	 * @param alphabet
 	 * @param path
 	 * @param parent
+	 * @param subSequenceLength 
 	 * @param maxThreads
 	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, File path,
-			SequenceDataBank parent, int maxThreads) {
+			SequenceDataBank parent, int subSequenceLength, int maxThreads) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
 		this.parent = parent;
+		this.subSequenceLength = subSequenceLength;
+		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.maxThreads = maxThreads;
 		this.collection = new LinkedHashMap<String, T>();
 	}
@@ -157,7 +166,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException {
+	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
@@ -215,7 +224,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException {
+			ValueOutOfBoundsException, InvalidHeaderData {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
@@ -241,8 +250,8 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public SequenceEncoder getEncoder() {
-		throw new UnsupportedOperationException("Each sub-data bank has its own encoder.");
+	public DNASequenceEncoderToInteger getEncoder() {
+		return encoder;
 	}
 
 	/**
@@ -287,5 +296,10 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 			}
 		}
 		return totalNumberOfSequences;
+	}
+	
+	@Override
+	public int getSubSequenceLength() {
+		return subSequenceLength;
 	}
 }

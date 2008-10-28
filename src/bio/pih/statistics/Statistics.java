@@ -246,8 +246,6 @@ public class Statistics {
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
 	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
-		System.out.println("Number of sequences: " + numberOfSequences);
-		System.out.println("Database size: " + databaseSize);
 		this.query = query;
 		this.probabilities = scoreProbabilities(match, mismatch, query);
 		this.lambda = calculateLambda(probabilities, match, mismatch);

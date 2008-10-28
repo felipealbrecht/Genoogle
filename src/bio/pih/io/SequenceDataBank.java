@@ -8,7 +8,8 @@ import java.util.NoSuchElementException;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 
-import bio.pih.encoder.SequenceEncoder;
+import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
 /**
@@ -94,8 +95,9 @@ public interface SequenceDataBank {
 	 * 
 	 * @throws IOException
 	 * @throws ValueOutOfBoundsException  
+	 * @throws InvalidHeaderData 
 	 */
-	void load() throws IOException, ValueOutOfBoundsException;	
+	void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData;	
 	
 	/**
 	 * Encode the sequences into a computer legible mode 
@@ -103,8 +105,9 @@ public interface SequenceDataBank {
 	 * @throws BioException 
 	 * @throws NoSuchElementException 
 	 * @throws ValueOutOfBoundsException 
+	 * @throws InvalidHeaderData 
 	 */
-	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException;
+	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData;
 	
 	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 
@@ -117,7 +120,12 @@ public interface SequenceDataBank {
 	boolean check();
 	
 	/**
-	 * @return {@link SequenceDataBank} witch is responsible to encode the sequences in this data bank.
+	 * @return {@link DNASequenceEncoderToInteger} witch is responsible to encode the sequences in this data bank.
 	 */
-	public SequenceEncoder getEncoder(); 
+	public DNASequenceEncoderToInteger getEncoder(); 
+	
+	/**
+	 * @return length of the sub sequences stored in this data bank.
+	 */
+	public int getSubSequenceLength();
 }

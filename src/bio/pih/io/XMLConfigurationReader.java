@@ -11,6 +11,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 import bio.pih.search.SearchManager;
@@ -40,26 +41,13 @@ public class XMLConfigurationReader {
 	}
 
 	/**
-	 * The length of the sub-sequences utilized in the storing, indexing and
-	 * searching process.
-	 * 
-	 * @return length of the sub-sequences.
-	 */
-	public static int getSubSequenceLength() {
-		Element rootElement = doc.getRootElement();
-		Element sequenceEncoding = rootElement.element("sequence-encoding");
-		Element subSequenceLength = sequenceEncoding.element("sub-sequence-length");
-		String value = subSequenceLength.attributeValue("value");
-		return Integer.parseInt(value);
-	}
-
-	/**
 	 * @return a brand new {@link SearchManager} with the parameters read from
 	 *         genoogle.xml and with its data banks.
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
+	 * @throws InvalidHeaderData 
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(
@@ -86,9 +74,11 @@ public class XMLConfigurationReader {
 	/**
 	 * @return {@link List} of {@link SequenceDataBank} that are configured in
 	 *         the XML file.
+	 * @throws InvalidHeaderData 
+	 * @throws IOException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<SequenceDataBank> getDataBanks() {
+	public static List<SequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData {
 		// TODO: to check if the XML is valid
 		Element rootElement = doc.getRootElement();
 		Element databanks = rootElement.element("databanks");
@@ -112,9 +102,18 @@ public class XMLConfigurationReader {
 
 	@SuppressWarnings("unchecked")
 	private static SequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends DNASequenceDataBank> parent) {
+			DatabankCollection<? extends DNASequenceDataBank> parent) throws IOException, InvalidHeaderData {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
+		
+		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
+		int subSequenceLength = -1; 
+		if (parent != null) {
+			subSequenceLength = parent.getSubSequenceLength();
+		} else {
+			subSequenceLength = Integer.parseInt(subSequenceLengthString);
+		}
+		
 		if (name == null) {
 			logger.fatal("Missing attribute name in element " + e.getName());
 			return null;
@@ -129,7 +128,7 @@ public class XMLConfigurationReader {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), size, maxThreads);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, maxThreads);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -157,8 +156,9 @@ public class XMLConfigurationReader {
 			} else {
 				storageKind = StorageKind.MEMORY;
 			}
+					
 			try {
-				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind);
+				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind, subSequenceLength);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -169,7 +169,7 @@ public class XMLConfigurationReader {
 			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent, maxThreads);
+					name, DNATools.getDNA(), new File(path), parent, subSequenceLength, maxThreads);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {

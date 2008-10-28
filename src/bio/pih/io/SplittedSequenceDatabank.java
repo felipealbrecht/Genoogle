@@ -17,6 +17,7 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojavax.bio.seq.RichSequence;
 
+import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 import bio.pih.io.proto.Io.StoredDatabank;
@@ -60,36 +61,37 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	/**
 	 * @param name name of this databank
 	 * @param path directory where it will be
+	 * @param subSequenceLength 
 	 * @param qtdSubBases how many parts will have this sequence databank
 	 * @param maxThreads number of maximum simultaneous threads
 	 */
-	public SplittedSequenceDatabank(String name, File path, int qtdSubBases, int maxThreads) {
-		super(name, DNATools.getDNA(), path, null, maxThreads);
+	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, int maxThreads) {
+		super(name, DNATools.getDNA(), path, null, subSequenceLength, maxThreads);
 		this.qtdSubBases = qtdSubBases;
 	}
 
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException {
+			ValueOutOfBoundsException, InvalidHeaderData {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (SequenceDataBank sequence : collection.values()) {
 			fastaFiles.add(new FastaFileInfo(sequence.getFullPath()));
 		}
 
-		int totalBasesCount = 0;
+		long totalBasesCount = 0;
 		for (FastaFileInfo fastaFileInfo : fastaFiles) {
 			totalBasesCount += fastaFileInfo.getQtdBases();
 		}
 		sortFiles(fastaFiles);
 
-		int totalBasesBySubBase = totalBasesCount / qtdSubBases;
-		int subCount = 0;
+		long totalBasesBySubBase = totalBasesCount / qtdSubBases;
+		long subCount = 0;
 
 		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
-				+ subCount, path, this, StorageKind.MEMORY);
-		int totalSequences = 0;
-		int totalBases = 0;
+				+ subCount, path, this, StorageKind.MEMORY, subSequenceLength);
+		long totalSequences = 0;
+		long totalBases = 0;
 		FileChannel dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
@@ -115,7 +117,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
 					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
-							+ subCount, path, this, StorageKind.MEMORY);
+							+ subCount, path, this, StorageKind.MEMORY, subSequenceLength);
 				}
 			}
 		}
@@ -123,29 +125,29 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 				storedSequenceInfoChannel, storedDatabankBuilder);
 	}
 
-	private File getStoredDatabakFileName(int subCount) {
+	private File getStoredDatabakFileName(long subCount) {
 		return new File(getFullPath(),
 				getStoredDatabankFileName(subCount));
 	}
 
-	private File getDatabankFile(int subCount) {
+	private File getDatabankFile(long subCount) {
 		return new File(getFullPath(),
 				getDatabankFileName(subCount));
 	}
 
-	private String getStoredDatabankFileName(int subCount) {
+	private String getStoredDatabankFileName(long subCount) {
 		return getSubDatabankName(subCount) + ".ssdb";
 	}
 
-	private String getDatabankFileName(int subCount) {
+	private String getDatabankFileName(long subCount) {
 		return getSubDatabankName(subCount) + ".dsdb";
 	}
 	
-	private String getSubDatabankName(int subCount) {
+	private String getSubDatabankName(long subCount) {
 		return this.getName() + "_sub_" + subCount;
 	}
 
-	private void finalizeSubDatabankConstruction(int totalSequences, int totalBases,
+	private void finalizeSubDatabankConstruction(long totalSequences, long totalBases,
 			FileChannel dataBankFileChannel, FileChannel storedSequenceInfoChannel,
 			bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder) throws IOException {
 		StoredDatabank storedDatabank = buildStoredDatabank(totalSequences, totalBases,
@@ -155,7 +157,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		dataBankFileChannel.close();
 	}
 
-	private StoredDatabank buildStoredDatabank(int totalSequences, int totalBases,
+	private StoredDatabank buildStoredDatabank(long totalSequences, long totalBases,
 			bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder) {
 		storedDatabankBuilder.setType(SequenceType.DNA);
 		storedDatabankBuilder.setQtdSequences(totalSequences);
@@ -193,12 +195,12 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException {
+	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
-			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY);
+			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength);
 			subDataBank.load();
 			try {
 				this.addDatabank(subDataBank);
@@ -227,8 +229,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			while (readFastaDNA.hasNext()) {
 				RichSequence sequence = readFastaDNA.nextRichSequence();
 				qtdBases += sequence.length();
-				if (qtdBases % 10000 == 0) {
-					System.out.println(qtdBases);
+				if (qtdSequences % 10000 == 0) {
+					System.out.println(qtdSequences);
 				}
 				qtdSequences++;
 			}

@@ -78,13 +78,15 @@ public class LightweightFastaFormat extends FastaFormat {
 			rsiol.setNamespace((ns == null ? RichObjectFactory.getDefaultNamespace() : ns));
 		}
 		rsiol.setName(name);
-		if (!this.getElideComments())
+		if (!this.getElideComments()) {
 			rsiol.setDescription(desc);
+		}
 
 		StringBuffer seq = new StringBuffer();
 		boolean hasMoreSeq = true;
 		while (hasMoreSeq) {
-			reader.mark(500);
+			// TODO: buggy if the description line is longer than 2048 chars.
+			reader.mark(2048);
 			line = reader.readLine();
 			if (line != null) {
 				line = line.trim();

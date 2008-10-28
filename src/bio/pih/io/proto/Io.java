@@ -4,47 +4,9 @@ package bio.pih.io.proto;
 
 public final class Io {
   private Io() {}
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
+  public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistry registry) {
   }
-  private static final com.google.protobuf.Descriptors.FileDescriptor
-      descriptor = buildDescriptor();
-  private static
-      com.google.protobuf.Descriptors.FileDescriptor
-      buildDescriptor() {
-    java.lang.String descriptorData =
-      "\n\010io.proto\022\005proto\"\313\001\n\016StoredDatabank\0220\n\004" +
-      "type\030\001 \002(\0162\".proto.StoredDatabank.Sequen" +
-      "ceType\022\024\n\014qtdSequences\030\002 \001(\005\022\020\n\010qtdBases" +
-      "\030\003 \001(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.St" +
-      "oredSequenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020" +
-      "\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenc" +
-      "eInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006len" +
-      "gth\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
-      "\022\n\n\002gi\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\021\n\taccession\030" +
-      "\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\017\n\007version\030\006 " +
-      "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\"j\n\036StoredSi" +
-      "milarSubSequencesIndex\022H\n\034storedComparat" +
-      "ionResultInfos\030\001 \003(\0132\".proto.StoredCompa" +
-      "rationResultInfo\"Y\n\033StoredComparationRes" +
-      "ultInfo\022\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006l" +
-      "ength\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSim" +
-      "ilarSubSequences\022\027\n\017encodedSequence\030\001 \002(" +
-      "\005\022\027\n\017similarSequence\030\002 \003(\005B\030\n\020bio.pih.io" +
-      ".protoB\002IoH\001";
-    try {
-      return com.google.protobuf.Descriptors.FileDescriptor
-        .internalBuildGeneratedFileFrom(descriptorData,
-          new com.google.protobuf.Descriptors.FileDescriptor[] {
-          });
-    } catch (Exception e) {
-      throw new RuntimeException(
-        "Failed to parse protocol buffer descriptor for " +
-        "\"io.proto\".", e);
-    }
-  }
-  
   public static final class StoredDatabank extends
       com.google.protobuf.GeneratedMessage {
     // Use StoredDatabank.newBuilder() to construct.
@@ -64,6 +26,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredDatabank_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredDatabank_fieldAccessorTable;
@@ -117,6 +80,10 @@ public final class Io {
         this.index = index;
         this.value = value;
       }
+      
+      static {
+        bio.pih.io.proto.Io.getDescriptor();
+      }
     }
     
     // required .proto.StoredDatabank.SequenceType type = 1;
@@ -125,11 +92,11 @@ public final class Io {
     public boolean hasType() { return hasType; }
     public bio.pih.io.proto.Io.StoredDatabank.SequenceType getType() { return type_; }
     
-    // optional int32 qtdSequences = 2;
+    // optional int64 qtdSequences = 2;
     private boolean hasQtdSequences;
-    private int qtdSequences_ = 0;
+    private long qtdSequences_ = 0L;
     public boolean hasQtdSequences() { return hasQtdSequences; }
-    public int getQtdSequences() { return qtdSequences_; }
+    public long getQtdSequences() { return qtdSequences_; }
     
     // optional int64 qtdBases = 3;
     private boolean hasQtdBases;
@@ -148,6 +115,7 @@ public final class Io {
       return sequencesInfo_.get(index);
     }
     
+    @Override
     public final boolean isInitialized() {
       if (!hasType) return false;
       for (bio.pih.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
@@ -156,13 +124,14 @@ public final class Io {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasType()) {
         output.writeEnum(1, getType().getNumber());
       }
       if (hasQtdSequences()) {
-        output.writeInt32(2, getQtdSequences());
+        output.writeInt64(2, getQtdSequences());
       }
       if (hasQtdBases()) {
         output.writeInt64(3, getQtdBases());
@@ -174,6 +143,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -185,7 +155,7 @@ public final class Io {
       }
       if (hasQtdSequences()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, getQtdSequences());
+          .computeInt64Size(2, getQtdSequences());
       }
       if (hasQtdBases()) {
         size += com.google.protobuf.CodedOutputStream
@@ -260,19 +230,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredDatabank result = new bio.pih.io.proto.Io.StoredDatabank();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredDatabank internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredDatabank();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredDatabank.getDescriptor();
@@ -309,6 +283,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredDatabank) {
           return mergeFrom((bio.pih.io.proto.Io.StoredDatabank)other);
@@ -339,6 +314,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -346,6 +322,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -378,7 +355,7 @@ public final class Io {
               break;
             }
             case 16: {
-              setQtdSequences(input.readInt32());
+              setQtdSequences(input.readInt64());
               break;
             }
             case 24: {
@@ -414,21 +391,21 @@ public final class Io {
         return this;
       }
       
-      // optional int32 qtdSequences = 2;
+      // optional int64 qtdSequences = 2;
       public boolean hasQtdSequences() {
         return result.hasQtdSequences();
       }
-      public int getQtdSequences() {
+      public long getQtdSequences() {
         return result.getQtdSequences();
       }
-      public Builder setQtdSequences(int value) {
+      public Builder setQtdSequences(long value) {
         result.hasQtdSequences = true;
         result.qtdSequences_ = value;
         return this;
       }
       public Builder clearQtdSequences() {
         result.hasQtdSequences = false;
-        result.qtdSequences_ = 0;
+        result.qtdSequences_ = 0L;
         return this;
       }
       
@@ -495,6 +472,10 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
   public static final class StoredSequenceInfo extends
@@ -516,6 +497,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
@@ -539,6 +521,7 @@ public final class Io {
     public boolean hasLength() { return hasLength; }
     public int getLength() { return length_; }
     
+    @Override
     public final boolean isInitialized() {
       if (!hasId) return false;
       if (!hasOffset) return false;
@@ -546,6 +529,7 @@ public final class Io {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasId()) {
@@ -561,6 +545,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -643,19 +628,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredSequenceInfo result = new bio.pih.io.proto.Io.StoredSequenceInfo();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredSequenceInfo internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredSequenceInfo();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredSequenceInfo.getDescriptor();
@@ -688,6 +677,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredSequenceInfo) {
           return mergeFrom((bio.pih.io.proto.Io.StoredSequenceInfo)other);
@@ -712,6 +702,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -719,6 +710,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -811,6 +803,10 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
   public static final class StoredSequence extends
@@ -832,6 +828,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequence_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable;
@@ -879,10 +876,12 @@ public final class Io {
     public boolean hasEncodedSequence() { return hasEncodedSequence; }
     public com.google.protobuf.ByteString getEncodedSequence() { return encodedSequence_; }
     
+    @Override
     public final boolean isInitialized() {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasId()) {
@@ -910,6 +909,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -1008,19 +1008,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredSequence result = new bio.pih.io.proto.Io.StoredSequence();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredSequence internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredSequence();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredSequence.getDescriptor();
@@ -1053,6 +1057,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredSequence) {
           return mergeFrom((bio.pih.io.proto.Io.StoredSequence)other);
@@ -1089,6 +1094,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -1096,6 +1102,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -1276,6 +1283,10 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
   public static final class StoredSimilarSubSequencesIndex extends
@@ -1297,6 +1308,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
@@ -1313,6 +1325,7 @@ public final class Io {
       return storedComparationResultInfos_.get(index);
     }
     
+    @Override
     public final boolean isInitialized() {
       for (bio.pih.io.proto.Io.StoredComparationResultInfo element : getStoredComparationResultInfosList()) {
         if (!element.isInitialized()) return false;
@@ -1320,6 +1333,7 @@ public final class Io {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (bio.pih.io.proto.Io.StoredComparationResultInfo element : getStoredComparationResultInfosList()) {
@@ -1329,6 +1343,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -1403,19 +1418,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex result = new bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.getDescriptor();
@@ -1452,6 +1471,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex) {
           return mergeFrom((bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex)other);
@@ -1473,6 +1493,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -1480,6 +1501,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -1557,6 +1579,10 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
   public static final class StoredComparationResultInfo extends
@@ -1578,6 +1604,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
@@ -1601,6 +1628,7 @@ public final class Io {
     public boolean hasOffset() { return hasOffset; }
     public long getOffset() { return offset_; }
     
+    @Override
     public final boolean isInitialized() {
       if (!hasEncodedSubSequence) return false;
       if (!hasLength) return false;
@@ -1608,6 +1636,7 @@ public final class Io {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasEncodedSubSequence()) {
@@ -1623,6 +1652,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -1705,19 +1735,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredComparationResultInfo result = new bio.pih.io.proto.Io.StoredComparationResultInfo();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredComparationResultInfo internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredComparationResultInfo();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredComparationResultInfo.getDescriptor();
@@ -1750,6 +1784,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredComparationResultInfo) {
           return mergeFrom((bio.pih.io.proto.Io.StoredComparationResultInfo)other);
@@ -1774,6 +1809,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -1781,6 +1817,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -1873,6 +1910,10 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
   public static final class StoredSimilarSubSequences extends
@@ -1894,6 +1935,7 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
@@ -1916,11 +1958,13 @@ public final class Io {
       return similarSequence_.get(index);
     }
     
+    @Override
     public final boolean isInitialized() {
       if (!hasEncodedSequence) return false;
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasEncodedSequence()) {
@@ -1933,6 +1977,7 @@ public final class Io {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -2011,19 +2056,23 @@ public final class Io {
       
       bio.pih.io.proto.Io.StoredSimilarSubSequences result = new bio.pih.io.proto.Io.StoredSimilarSubSequences();
       
+      @Override
       protected bio.pih.io.proto.Io.StoredSimilarSubSequences internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         result = new bio.pih.io.proto.Io.StoredSimilarSubSequences();
         return this;
       }
       
+      @Override
       public Builder clone() {
         return new Builder().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return bio.pih.io.proto.Io.StoredSimilarSubSequences.getDescriptor();
@@ -2060,6 +2109,7 @@ public final class Io {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.io.proto.Io.StoredSimilarSubSequences) {
           return mergeFrom((bio.pih.io.proto.Io.StoredSimilarSubSequences)other);
@@ -2084,6 +2134,7 @@ public final class Io {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
@@ -2091,6 +2142,7 @@ public final class Io {
           com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistry extensionRegistry)
@@ -2177,72 +2229,129 @@ public final class Io {
         return this;
       }
     }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
   }
   
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredDatabank_descriptor =
-      getDescriptor().getMessageTypes().get(0);
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredDatabank_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredDatabank_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredDatabank_descriptor,
-          new java.lang.String[] { "Type", "QtdSequences", "QtdBases", "SequencesInfo", },
-          bio.pih.io.proto.Io.StoredDatabank.class,
-          bio.pih.io.proto.Io.StoredDatabank.Builder.class);
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredSequenceInfo_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      internal_static_proto_StoredDatabank_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSequenceInfo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredSequenceInfo_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredSequenceInfo_descriptor,
-          new java.lang.String[] { "Id", "Offset", "Length", },
-          bio.pih.io.proto.Io.StoredSequenceInfo.class,
-          bio.pih.io.proto.Io.StoredSequenceInfo.Builder.class);
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredSequence_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSequence_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredSequence_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredSequence_descriptor,
-          new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", },
-          bio.pih.io.proto.Io.StoredSequence.class,
-          bio.pih.io.proto.Io.StoredSequence.Builder.class);
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      internal_static_proto_StoredSequence_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
-          new java.lang.String[] { "StoredComparationResultInfos", },
-          bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.class,
-          bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredComparationResultInfo_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredComparationResultInfo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredComparationResultInfo_descriptor,
-          new java.lang.String[] { "EncodedSubSequence", "Length", "Offset", },
-          bio.pih.io.proto.Io.StoredComparationResultInfo.class,
-          bio.pih.io.proto.Io.StoredComparationResultInfo.Builder.class);
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_StoredSimilarSubSequences_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_StoredSimilarSubSequences_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-          internal_static_proto_StoredSimilarSubSequences_descriptor,
-          new java.lang.String[] { "EncodedSequence", "SimilarSequence", },
-          bio.pih.io.proto.Io.StoredSimilarSubSequences.class,
-          bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder.class);
+      internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
+  
+  public static com.google.protobuf.Descriptors.FileDescriptor
+      getDescriptor() {
+    return descriptor;
+  }
+  private static com.google.protobuf.Descriptors.FileDescriptor
+      descriptor;
+  static {
+    java.lang.String descriptorData =
+      "\n\010io.proto\022\005proto\"\313\001\n\016StoredDatabank\0220\n\004" +
+      "type\030\001 \002(\0162\".proto.StoredDatabank.Sequen" +
+      "ceType\022\024\n\014qtdSequences\030\002 \001(\003\022\020\n\010qtdBases" +
+      "\030\003 \001(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.St" +
+      "oredSequenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020" +
+      "\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenc" +
+      "eInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006len" +
+      "gth\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
+      "\022\n\n\002gi\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\021\n\taccession\030" +
+      "\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\017\n\007version\030\006 " +
+      "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\"j\n\036StoredSi" +
+      "milarSubSequencesIndex\022H\n\034storedComparat" +
+      "ionResultInfos\030\001 \003(\0132\".proto.StoredCompa" +
+      "rationResultInfo\"Y\n\033StoredComparationRes" +
+      "ultInfo\022\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006l" +
+      "ength\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSim" +
+      "ilarSubSequences\022\027\n\017encodedSequence\030\001 \002(" +
+      "\005\022\027\n\017similarSequence\030\002 \003(\005B\030\n\020bio.pih.io" +
+      ".protoB\002IoH\001";
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+        public com.google.protobuf.ExtensionRegistry assignDescriptors(
+            com.google.protobuf.Descriptors.FileDescriptor root) {
+          descriptor = root;
+          internal_static_proto_StoredDatabank_descriptor =
+            getDescriptor().getMessageTypes().get(0);
+          internal_static_proto_StoredDatabank_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredDatabank_descriptor,
+              new java.lang.String[] { "Type", "QtdSequences", "QtdBases", "SequencesInfo", },
+              bio.pih.io.proto.Io.StoredDatabank.class,
+              bio.pih.io.proto.Io.StoredDatabank.Builder.class);
+          internal_static_proto_StoredSequenceInfo_descriptor =
+            getDescriptor().getMessageTypes().get(1);
+          internal_static_proto_StoredSequenceInfo_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredSequenceInfo_descriptor,
+              new java.lang.String[] { "Id", "Offset", "Length", },
+              bio.pih.io.proto.Io.StoredSequenceInfo.class,
+              bio.pih.io.proto.Io.StoredSequenceInfo.Builder.class);
+          internal_static_proto_StoredSequence_descriptor =
+            getDescriptor().getMessageTypes().get(2);
+          internal_static_proto_StoredSequence_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredSequence_descriptor,
+              new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", },
+              bio.pih.io.proto.Io.StoredSequence.class,
+              bio.pih.io.proto.Io.StoredSequence.Builder.class);
+          internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
+            getDescriptor().getMessageTypes().get(3);
+          internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
+              new java.lang.String[] { "StoredComparationResultInfos", },
+              bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.class,
+              bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
+          internal_static_proto_StoredComparationResultInfo_descriptor =
+            getDescriptor().getMessageTypes().get(4);
+          internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredComparationResultInfo_descriptor,
+              new java.lang.String[] { "EncodedSubSequence", "Length", "Offset", },
+              bio.pih.io.proto.Io.StoredComparationResultInfo.class,
+              bio.pih.io.proto.Io.StoredComparationResultInfo.Builder.class);
+          internal_static_proto_StoredSimilarSubSequences_descriptor =
+            getDescriptor().getMessageTypes().get(5);
+          internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_StoredSimilarSubSequences_descriptor,
+              new java.lang.String[] { "EncodedSequence", "SimilarSequence", },
+              bio.pih.io.proto.Io.StoredSimilarSubSequences.class,
+              bio.pih.io.proto.Io.StoredSimilarSubSequences.Builder.class);
+          return null;
+        }
+      };
+    com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+        }, assigner);
+  }
 }
