@@ -70,6 +70,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
 	 * @param subSequenceLength 
+	 * @param minEvalueDropOut 
 	 * @throws IOException
 	 */
 	public DNASequenceDataBank(String name, File path,
@@ -102,6 +103,10 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		this.storedDatabank = StoredDatabank.parseFrom(new FileInputStream(
 				getStoredDataBankInfoFile()));
 
+		System.out.println("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
+		System.out.println("Databank with : " + storedDatabank.getQtdBases() + " bases.");
+		System.out.println("Databank with : " + storedDatabank.getQtdBases() / 11 + " sub-sequences bases aprox.");
+
 		beginSequencesProcessing();
 		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
 			StoredSequence storedSequence = getSequenceFromId(i);
@@ -110,6 +115,9 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			dataBankSize += SequenceEncoder.getSequenceLength(encodedSequence);
 
 			doSequenceProcessing(storedSequence.getId(), encodedSequence);
+			if (i % 1000 == 0) {
+				System.out.println(i + "/" + storedDatabank.getSequencesInfoCount());
+			}
 		}
 		dataBankFileChannel.close();
 		finishSequencesProcessing();

@@ -28,9 +28,8 @@
 		Databank: <xsl:value-of select="@databank"/>
 		MinSubSequencesSimilarity: <xsl:value-of select="@minSubSequenceSimilarity"/>
 		MaxDatababkSubSequencesDistance: <xsl:value-of select="@maxDatabankSubSequencesDistance"/>
-		MinMatchAreaLength: <xsl:value-of select="@minMatchAreaLength"/>
 		MaxQuerySubSequencesDistance: <xsl:value-of select="@maxQuerySubSequencesDistance"/>
-		MinQuerySubSequence: <xsl:value-of select="@minQuerySubSequence"/>
+		Min E-Value: <xsl:value-of select="@minEvalue"/>
 	</div>
 </xsl:template>
 

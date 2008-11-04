@@ -30,6 +30,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @param path
 	 * @param storageKind 
 	 * @param subSequenceLenth 
+	 * @param minLengthDropOut 
 	 * @throws ValueOutOfBoundsException
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 
@@ -47,6 +48,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @param parent 
 	 * @param storageKind  
 	 * @param subSequenceLength 
+	 * @param minEvalueDropOut 
 	 * @throws ValueOutOfBoundsException
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 

@@ -64,6 +64,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 * @param subSequenceLength 
 	 * @param qtdSubBases how many parts will have this sequence databank
 	 * @param maxThreads number of maximum simultaneous threads
+	 * @param minEvalueDropOut 
 	 */
 	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, int maxThreads) {
 		super(name, DNATools.getDNA(), path, null, subSequenceLength, maxThreads);

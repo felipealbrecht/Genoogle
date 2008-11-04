@@ -19,10 +19,9 @@ public final class SearchParams implements Serializable {
 	private final String databankName;
 	private final int minSimilarity;
 	private final int maxDatabankSubSequencesDistance;
-	private final int minMatchAreaLength;
 	private final int maxQuerySubSequencesDistance;
-	private final int minQuerySubSequence;
 	private final int sequencesExtendDropoff;
+	private final double minEvalue;
 
 	/**
 	 * Default similarity threshold at the similar sub-sequences index. 
@@ -35,32 +34,27 @@ public final class SearchParams implements Serializable {
 	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getDataBankMaxSubSequenceDistance();
 	
 	/**
-	 * Default minimum data bank sequence area length.
-	 */
-	public static final int DEFAULT_MIN_MATCH_AREA_LENGTH = XMLConfigurationReader.getDataBankMinMatchAreaLength();
-	
-	/**
 	 * Default maximum distance between two sub-sequences of a query sequence to be considered at same area.
 	 */
 	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getQueryMaxSubSequenceDistance();
-	
-	/**
-	 * Default minimum query sequence area length.
-	 */
-	public static final int DEFAULT_MIN_QUERY_SUB_SEQUENCE = XMLConfigurationReader.getQueryMinSubSequenceLength();
 	
 	
 	/**
 	 * Drop off for sequences extension.
 	 */
 	public static final int SEQUENCES_EXTEND_DROPOFF = XMLConfigurationReader.getExtendDropoff();
+	
+	/**
+	 * Minimum value for E-Value
+	 */
+	public static final double MIN_EVALUE = XMLConfigurationReader.getMinEvalue();
 
 	/**
 	 * @param query
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_MATCH_AREA_LENGTH, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, DEFAULT_MIN_QUERY_SUB_SEQUENCE, SEQUENCES_EXTEND_DROPOFF);
+		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
 	}
 
 	/**
@@ -72,16 +66,16 @@ public final class SearchParams implements Serializable {
 	 * @param maxQuerySequenceSubSequencesDistance
 	 * @param minQuerySequenceSubSequence
 	 * @param sequencesExtendDropoff 
+	 * @param minEvalue 
 	 */
-	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int minMatchAreaLength, int maxQuerySequenceSubSequencesDistance, int minQuerySequenceSubSequence, int sequencesExtendDropoff) {
+	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int maxQuerySequenceSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
 		this.query = query;
 		this.databankName = databankName;
 		this.minSimilarity = minSimilarity;
 		this.maxDatabankSubSequencesDistance = maxDatabankSequenceSubSequencesDistance;
-		this.minMatchAreaLength = minMatchAreaLength;
 		this.maxQuerySubSequencesDistance = maxQuerySequenceSubSequencesDistance;
-		this.minQuerySubSequence = minQuerySequenceSubSequence;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
+		this.minEvalue = minEvalue;
 	}
 
 	/**
@@ -113,13 +107,6 @@ public final class SearchParams implements Serializable {
 	}
 
 	/**
-	 * @return minimum data bank sequence area length.
-	 */
-	public int getMinMatchAreaLength() {
-		return minMatchAreaLength;
-	}
-
-	/**
 	 * @return maximum distance between two sub-sequences of a query sequence to be considered at same area.
 	 */
 	public int getMaxQuerySequenceSubSequencesDistance() {
@@ -127,17 +114,16 @@ public final class SearchParams implements Serializable {
 	}
 	
 	/**
-	 * 
-	 * @return minimum query sequence area length.
-	 */
-	public int getMinQuerySequenceSubSequence() {
-		return minQuerySubSequence;
-	}
-
-	/**
 	 * @return drop off for sequences extension.
 	 */
 	public int getSequencesExtendDropoff() {
 		return sequencesExtendDropoff;
+	}
+	
+	/**
+	 * @return the minimum value of the E-value
+	 */
+	public double getMinEvalue() {
+		return minEvalue;
 	}
 }

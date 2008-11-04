@@ -12,6 +12,7 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
+import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.InvalidHeaderData;
@@ -82,7 +83,7 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	protected void doSearch() throws Exception {
-		this.statitics = new Statistics(-3, 1, sp.getQuery(), databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		this.statitics = new Statistics(1, -3, sp.getQuery(), databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences(), sp.getMinEvalue());
 		
 		SymbolList querySequence = sp.getQuery();
 		status.setActualStep(SearchStep.INITIALIZED);
@@ -119,8 +120,8 @@ public class DNASearcher extends AbstractSearcher {
 			for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 				int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 				int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
-				if (sequenceAreaEnd > encodedSequence[0]) {
-					sequenceAreaEnd = encodedSequence[0];
+				if (sequenceAreaEnd > DNASequenceEncoderToInteger.getSequenceLength(encodedSequence)) {
+					sequenceAreaEnd = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
 				}
 				int queryAreaBegin = retrievedArea.queryAreaBegin;
 				int queryAreaEnd = retrievedArea.queryAreaEnd;
@@ -136,8 +137,8 @@ public class DNASearcher extends AbstractSearcher {
 					continue;
 				}
 
-				if (extensionResult.getQuerySequenceExtended().length() > sp.getMinQuerySequenceSubSequence()
-						&& extensionResult.getTargetSequenceExtended().length() > sp.getMinMatchAreaLength()) {
+				if (extensionResult.getQuerySequenceExtended().length() > statitics.getMinLengthDropOut()
+						&& extensionResult.getTargetSequenceExtended().length() > statitics.getMinLengthDropOut()) {
 					extendedSequencesList.add(extensionResult);
 				}
 			}
@@ -154,7 +155,7 @@ public class DNASearcher extends AbstractSearcher {
 					smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 							extensionResult.getTargetSequenceExtended());
 					
-					double normalizedScore = statitics.normalizedScore(smithWaterman.getScore());
+					double normalizedScore = statitics.nominalToNormalizedScore(smithWaterman.getScore());
 					double evalue = statitics.calculateEvalue(normalizedScore);
 					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(),
 							extensionResult.getTargetOffset(), normalizedScore, evalue));
@@ -175,7 +176,7 @@ public class DNASearcher extends AbstractSearcher {
 	private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
 			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp);
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, statitics.getMinLengthDropOut());
 
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		for (int ss = 0; ss < iess.length; ss++) {
@@ -188,8 +189,8 @@ public class DNASearcher extends AbstractSearcher {
 			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
+				
 		List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
-
 		for (Integer similarSubSequence : similarSubSequences) {
 			long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
 			for (long subSequenceIndexInfo : indexPositions) {
@@ -216,10 +217,12 @@ public class DNASearcher extends AbstractSearcher {
 		final List<RetrievedArea>[] retrievedAreasArray;
 		final FuckingArrayList<RetrievedArea>[] openedAreasArray;
 		private final SearchParams sp;
+		private final int minLength;
 
 		@SuppressWarnings("unchecked")
-		public IndexRetrievedData(int size, SearchParams sp) {
+		public IndexRetrievedData(int size, SearchParams sp, int minLength) {
 			this.sp = sp;
+			this.minLength = minLength;
 			retrievedAreasArray = new List[size];
 			openedAreasArray = new FuckingArrayList[size];
 			for (int i = 0; i < size; i++) {
@@ -259,7 +262,7 @@ public class DNASearcher extends AbstractSearcher {
 					} else {
 						toIndex = pos;
 					}
-					if (openedArea.length() >= sp.getMinMatchAreaLength()) {
+					if (openedArea.length() >= minLength) {
 						if (retrievedAreasArray[sequenceId] == null) {
 							retrievedAreasArray[sequenceId] = Lists.newArrayList();
 						}
@@ -284,7 +287,7 @@ public class DNASearcher extends AbstractSearcher {
 				List<RetrievedArea> openedAreaList = openedAreasArray[sequenceId];
 				if (openedAreaList != null) {
 					for (RetrievedArea openedArea : openedAreaList) {
-						if (openedArea.length() >= sp.getMinMatchAreaLength()) {
+						if (openedArea.length() >= minLength) {
 							if (retrievedAreasArray[sequenceId] == null) {
 								retrievedAreasArray[sequenceId] = Lists.newArrayList();
 							}

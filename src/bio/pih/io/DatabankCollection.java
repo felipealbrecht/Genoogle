@@ -12,7 +12,6 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
@@ -45,6 +44,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param parent
 	 * @param subSequenceLength 
 	 * @param maxThreads
+	 * @param minEvalueDropOut 
 	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, File path,
 			SequenceDataBank parent, int subSequenceLength, int maxThreads) {

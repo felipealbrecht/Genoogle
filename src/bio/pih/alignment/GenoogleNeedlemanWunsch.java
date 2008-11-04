@@ -117,100 +117,11 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		this.subMatrix = matrix;
 	}
 
-	/**
-	 * Sets the penalty for an insert operation to the specified value.
-	 * 
-	 * @param ins
-	 *            costs for a single insert operation
-	 */
-	public void setInsert(int ins) {
-		this.insert = ins;
-	}
 
-	/**
-	 * Sets the penalty for a delete operation to the specified value.
-	 * 
-	 * @param del
-	 *            costs for a single deletion operation
-	 */
-	public void setDelete(int del) {
-		this.delete = del;
-	}
 
-	/**
-	 * Sets the penalty for an extension of any gap (insert or delete) to the specified value.
-	 * 
-	 * @param ge
-	 *            costs for any gap extension
-	 */
-	public void setGapExt(int ge) {
-		this.gapExt = ge;
-	}
 
-	/**
-	 * Sets the penalty for a match operation to the specified value.
-	 * 
-	 * @param ma
-	 *            costs for a single match operation
-	 */
-	public void setMatch(int ma) {
-		this.match = ma;
-	}
 
-	/**
-	 * Sets the penalty for a replace operation to the specified value.
-	 * 
-	 * @param rep
-	 *            costs for a single replace operation
-	 */
-	public void setReplace(int rep) {
-		this.replace = rep;
-	}
 
-	/**
-	 * Returns the current expenses of a single insert operation.
-	 * 
-	 * @return insert
-	 */
-	public int getInsert() {
-		return insert;
-	}
-
-	/**
-	 * Returns the current expenses of a single delete operation.
-	 * 
-	 * @return delete
-	 */
-	public int getDelete() {
-		return delete;
-	}
-
-	/**
-	 * Returns the current expenses of any extension of a gap operation.
-	 * 
-	 * @return gapExt
-	 */
-	public int getGapExt() {
-		return gapExt;
-	}
-
-	/**
-	 * Returns the current expenses of a single match operation.
-	 * 
-	 * @return match
-	 */
-	public int getMatch() {
-		return match;
-	}
-
-	/**
-	 * Returns the current expenses of a single replace operation.
-	 * 
-	 * @return replace
-	 */
-	public int getReplace() {
-		return replace;
-	}
 
 	/**
 	 * Prints a String representation of the CostMatrix for the given Alignment on the screen. This can be used to get a better understanding of the algorithm. There is no other purpose. This method also works for all extensions of this class with all kinds of matrices.

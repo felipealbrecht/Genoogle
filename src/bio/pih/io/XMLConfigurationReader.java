@@ -107,7 +107,7 @@ public class XMLConfigurationReader {
 		String path = readPath(e.attributeValue("path"));
 		
 		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
-		int subSequenceLength = -1; 
+		int subSequenceLength; 
 		if (parent != null) {
 			subSequenceLength = parent.getSubSequenceLength();
 		} else {
@@ -216,31 +216,11 @@ public class XMLConfigurationReader {
 	}
 
 	/**
-	 * @return default data bank sequence minimum match area length specified at
-	 *         the XML configuration file.
-	 */
-	public static int getDataBankMinMatchAreaLength() {
-		String value = getSearchParameters().element("databank-min-match-area-length")
-				.attributeValue("value");
-		return Integer.parseInt(value);
-	}
-
-	/**
 	 * @return default query max SubSequence distance specified at the XML
 	 *         configuration file.
 	 */
 	public static int getQueryMaxSubSequenceDistance() {
 		String value = getSearchParameters().element("query-max-sub-sequence-distance")
-				.attributeValue("value");
-		return Integer.parseInt(value);
-	}
-
-	/**
-	 * @return default query minimum SubSequence length specified at the XML
-	 *         configuration file.
-	 */
-	public static int getQueryMinSubSequenceLength() {
-		String value = getSearchParameters().element("query-min-sub-sequence-length")
 				.attributeValue("value");
 		return Integer.parseInt(value);
 	}
@@ -252,6 +232,15 @@ public class XMLConfigurationReader {
 	public static int getExtendDropoff() {
 		String value = getSearchParameters().element("extend-dropoff").attributeValue("value");
 		return Integer.parseInt(value);
+	}
+	
+	/**
+	 * @return default extended drop off specified at the XML configuration
+	 *         file.
+	 */
+	public static double getMinEvalue() {
+		String value = getSearchParameters().element("min-evalue").attributeValue("value");
+		return Double.parseDouble(value);
 	}
 
 	private static String readPath(String path) {

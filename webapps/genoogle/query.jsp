@@ -53,7 +53,7 @@
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		SearchResults sr = sois.doSyncSearch(query, "human_rna_11");
+		SearchResults sr = sois.doSyncSearch(query, "RefSeq");
 		long total = System.currentTimeMillis() - begin;
 
 		if (sr.hasFail()) {			

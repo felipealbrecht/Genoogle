@@ -11,8 +11,6 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.seq.LightweightSymbolList;
-
 import com.google.common.collect.Maps;
 
 public class Statistics {
@@ -20,18 +18,15 @@ public class Statistics {
 	private static final double BLAST_KARLIN_LAMBDA0_DEFAULT = 0.5;
 	private static final double BLAST_KARLIN_LAMBDA_ACCURACY_DEFAULT = (1.e-5);
 	private static final int BLAST_KARLIN_LAMBDA_ITER_DEFAULT = 17;
-	
-	private static final double GAPPED_NORMALIZED_DROPOFF = 30.0;
-	private static final double GAPPED_FINAL_NORMALIZED_DROPOFF = 50.0;	
-	
+		
 	private static final double LOG_2 = Math.log(2.0);
 
-	private Map<Integer, Double> scoreProbabilities(int min, int max, SymbolList query)
+	private Map<Integer, Double> scoreProbabilities(int dismatch, int match, SymbolList query)
 			throws IndexOutOfBoundsException, BioException {
-		SubstitutionMatrix matrix = new SubstitutionMatrix(DNATools.getDNA(), max, min);
+		SubstitutionMatrix matrix = new SubstitutionMatrix(DNATools.getDNA(), match, dismatch);
 
 		HashMap<Integer, Double> scoreProbabilities = Maps.newHashMap();
-		for (int i = min; i <= max; i++) {
+		for (int i = dismatch; i <= match; i++) {
 			scoreProbabilities.put(i, 0.0);
 		}
 
@@ -57,7 +52,7 @@ public class Statistics {
 
 		final double sum = 1000.00;
 
-		for (int i = min; i <= max; i++) {
+		for (int i = dismatch; i <= match; i++) {
 			Double probability = scoreProbabilities.get(i);
 			scoreProbabilities.put(i, probability / sum);
 		}
@@ -65,8 +60,8 @@ public class Statistics {
 		return scoreProbabilities;
 	}
 
-	private Double calculateLambda(Map<Integer, Double> prob, int min, int max) {
-		if (!checkScoreRange(min, max)) {
+	private Double calculateLambda(Map<Integer, Double> prob, int mismatch, int match) {
+		if (!checkScoreRange(mismatch, match)) {
 			return null;
 		}
 
@@ -79,11 +74,11 @@ public class Statistics {
 				break;
 			}
 			double x0 = Math.exp(lambda0);
-			double x1 = Math.pow(x0, min - 1);
+			double x1 = Math.pow(x0, mismatch - 1);
 			if (Double.compare(x1, 0.0) == 0) {
 				break;
 			}
-			for (int i = min; i <= max; i++) {
+			for (int i = mismatch; i <= match; i++) {
 				x1 *= x0;
 				double temp = prob.get(i) * x1;
 				sum += temp;
@@ -98,7 +93,7 @@ public class Statistics {
 				break;
 			}
 		}
-		return blastKarlinLambdaBis(prob, min, max);
+		return blastKarlinLambdaBis(prob, mismatch, match);
 	}
 
 	private Double blastKarlinLambdaBis(Map<Integer, Double> prob, int min, int max) {
@@ -154,25 +149,25 @@ public class Statistics {
 		return (lambda + up) / 2.;
 	}
 
-	private double blastH(Map<Integer, Double> prob, double lambda, int min, int max) {
+	private double blastH(Map<Integer, Double> prob, double lambda, int mismatch, int match) {
 		if (lambda < 0.0) {
 			return -1.0;
 		}
 
-		if (!checkScoreRange(min, max)) {
+		if (!checkScoreRange(mismatch, match)) {
 			return -1.0;
 		}
 
 		double etolam = Math.exp(lambda);
-		double etolami = Math.pow(etolam, min - 1);
+		double etolami = Math.pow(etolam, mismatch - 1);
 		double av = 0.0;
 		if (etolami > 0.0) {
-			for (int score = min; score <= max; score++) {
+			for (int score = mismatch; score <= match; score++) {
 				etolami *= etolam;
 				av += prob.get(score) * score * etolami;
 			}
 		} else {
-			for (int score = min; score <= max; score++) {
+			for (int score = mismatch; score <= match; score++) {
 				av += prob.get(score) * score * Math.exp(lambda * score);
 			}
 		}
@@ -180,7 +175,7 @@ public class Statistics {
 		return lambda * av;
 	}
 
-	private double blastK(Map<Integer, Double> prob, double lambda, double h, int min, int max) {
+	private double blastK(Map<Integer, Double> prob, double lambda, double h, int mismatch, int match) {
 
 		if (lambda <= 0.0 || h <= 0.0) {
 			return -1.0;
@@ -188,7 +183,7 @@ public class Statistics {
 
 		double av = h / lambda;
 		double etolam = Math.exp(lambda);
-		if (min == -1 || max == 1) {
+		if (mismatch == -1 || match == 1) {
 			double K = av;
 			return K * (1.0 - 1.0 / etolam);
 		}
@@ -213,7 +208,7 @@ public class Statistics {
 	private double lengthAdjust(double K, double ungappedLogK, double ungappedH,
 			int querySize, long databaseSize, long numberOfSequences) {
 		double lenghtAdjust = 0;
-		double minimumQueryLength = (double) 1 / K;
+		double minimumQueryLength =  1 / K;
 
 		for (int count = 0; count < 5; count++) {
 			lenghtAdjust = (ungappedLogK + Math.log((querySize - lenghtAdjust)
@@ -227,12 +222,22 @@ public class Statistics {
 		return lenghtAdjust;
 	}
 
-	public double normalizedScore(double nominalScore) {
+	public double nominalToNormalizedScore(double nominalScore) {
 		return ((nominalScore * this.lambda) - this.logK) / this.LOG_2;
 	}
 
 	public double calculateEvalue(double normalizedScore) {
 		return this.searchSpaceSize / Math.pow(2, normalizedScore);
+	}
+	
+	
+	public double gappedEvalueToNominal(double evalue) {
+		double normalizedScore = Math.log(this.searchSpaceSize / evalue) / LOG_2;		
+		return Math.ceil((LOG_2 * normalizedScore + this.logK) / lambda);	
+	}
+	
+	public int getMinLengthDropOut() {
+		return minLength;
 	}
 	
 	private final SymbolList query;
@@ -245,15 +250,14 @@ public class Statistics {
 	private final double effectiveDatabaseSize;
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
-	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
+	private final int minLength;
+	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences, double minEvalue) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
 		this.query = query;
-		this.probabilities = scoreProbabilities(match, mismatch, query);
-		this.lambda = calculateLambda(probabilities, match, mismatch);
-		this.H = blastH(probabilities, lambda, match, mismatch);
-		this.K = blastK(probabilities, lambda, H, match, mismatch);
+		this.probabilities = scoreProbabilities(mismatch, match, query);
+		this.lambda = calculateLambda(probabilities, mismatch, match);
+		this.H = blastH(probabilities, lambda, mismatch, match);
+		this.K = blastK(probabilities, lambda, H, mismatch, match);
 
-//		this.gappedNominalDropoff = Math.floor(GAPPED_NORMALIZED_DROPOFF * LOG_2 / lambda);
-//		this.gappedFinalNominalDropoff = Math.floor(GAPPED_FINAL_NORMALIZED_DROPOFF * LOG_2/ lambda);
 		this.logK = Math.log(K);
 
 		this.lengthAdjust = lengthAdjust(K, logK, H, query.length(), databaseSize, numberOfSequences);
@@ -261,11 +265,32 @@ public class Statistics {
 		this.effectiveQuerySize = query.length() - lengthAdjust;
 		this.effectiveDatabaseSize = databaseSize - numberOfSequences * lengthAdjust;
 		this.searchSpaceSize = effectiveQuerySize * effectiveDatabaseSize;
+		this.minLength = (int) Math.floor(gappedEvalueToNominal(minEvalue) / match);
+		System.out.println("Min Length: " + calculateEvalue(nominalToNormalizedScore(minLength)));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.1) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.1)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.001) / match));
+//		System.out.println(0.001);
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.00001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.00001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.0000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.0000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.0000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.0000000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.000000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.000000000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.000000000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.000000000000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.00000000000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.00000000000000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.0000000000000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.0000000000000000001)))));
+//		System.out.println((int) Math.floor(gappedEvalueToNominal(0.0000000000000000000001) / match));
+//		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(0.0000000000000000000001)))));
 //		System.out.println("lambda: " + lambda);
 //		System.out.println("H: " + H);
 //		System.out.println("K: " + K);
-//		System.out.println("Gapped Nominal Dropoff: " + gappedNominalDropoff);
-//		System.out.println("Gapped Final Nominal Dropoff: " + gappedFinalNominalDropoff);
 //		System.out.println("Length Adjust: " + lengthAdjust);
 //		System.out.println("Effective query size: " + effectiveQuerySize);
 //		System.out.println("Effective database size: " + effectiveDatabaseSize);

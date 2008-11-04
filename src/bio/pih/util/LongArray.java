@@ -21,13 +21,14 @@ public class LongArray {
 	private int actualBockPos;
 	private int blockSize;
 
-	private static int defaultInitialSize = 50;
+	private static final int DEFAULT_INITIAL_SIZE = 25;
+	private static final int BLOCKS_THRESHOULD = 5;
 
 	/**
 	 * Default constructor that uses default size for the blocks.
 	 */
 	public LongArray() {
-		this(defaultInitialSize);
+		this(DEFAULT_INITIAL_SIZE);
 	}
 
 	/**
@@ -59,6 +60,9 @@ public class LongArray {
 			actualBockPos = 0;
 		} else if (actualBockPos == blockSize) {
 			getBlocksArray().add(actualBlock);
+			if ((getBlocksArray().size() & BLOCKS_THRESHOULD) == BLOCKS_THRESHOULD) {
+				getArray();
+			}
 			actualBlock = new long[blockSize];
 			actualBockPos = 0;
 		}
@@ -73,7 +77,7 @@ public class LongArray {
 
 	/**
 	 * Get the data as a long array. It returns the internal array reference, do not a copy, for performance reasons.
-	 * 
+	 * It is also used to compress the buckets into a unique array.
 	 * @return the array, without empty fields.
 	 */
 	public long[] getArray() {

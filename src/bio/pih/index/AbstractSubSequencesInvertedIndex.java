@@ -33,7 +33,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 
 		this.databank = databank;
 		this.subSequenceLength = subSequenceLength;
-		this.encoder = (DNASequenceEncoderToInteger) databank.getEncoder();
+		this.encoder = databank.getEncoder();
 
 		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(databank.getAlphabet().size());
 		this.indexSize = 1 << indexBitsSize;
