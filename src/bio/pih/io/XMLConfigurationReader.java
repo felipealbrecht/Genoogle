@@ -206,21 +206,10 @@ public class XMLConfigurationReader {
 	}
 
 	/**
-	 * @return default data bank max sub sequence distance specified at the XML
-	 *         configuration file.
+	 * @return max SubSequence distance
 	 */
-	public static int getDataBankMaxSubSequenceDistance() {
-		String value = getSearchParameters().element("databank-max-sub-sequence-distance")
-				.attributeValue("value");
-		return Integer.parseInt(value);
-	}
-
-	/**
-	 * @return default query max SubSequence distance specified at the XML
-	 *         configuration file.
-	 */
-	public static int getQueryMaxSubSequenceDistance() {
-		String value = getSearchParameters().element("query-max-sub-sequence-distance")
+	public static int getMaxSubSequenceDistance() {
+		String value = getSearchParameters().element("max-sub-sequence-distance")
 				.attributeValue("value");
 		return Integer.parseInt(value);
 	}

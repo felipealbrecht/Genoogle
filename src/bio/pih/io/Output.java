@@ -94,8 +94,7 @@ public class Output {
 		paramsElement.addAttribute("query", params.getQuery().seqString());
 		paramsElement.addAttribute("databank", params.getDatabank());
 		paramsElement.addAttribute("minSubSequenceSimilarity", Integer.toString(params.getMinSimilarity()));
-		paramsElement.addAttribute("maxDatabankSubSequencesDistance", Integer.toString(params.getMaxDatabankSequenceSubSequencesDistance()));
-		paramsElement.addAttribute("maxQuerySubSequencesDistance", Integer.toString(params.getMaxQuerySequenceSubSequencesDistance()));
+		paramsElement.addAttribute("maxSubSequencesDistance", Integer.toString(params.getMaxSubSequencesDistance()));
 		paramsElement.addAttribute("minEvalue", Double.toString(params.getMinEvalue()));
 
 		return paramsElement;

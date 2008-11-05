@@ -7,21 +7,24 @@
   </genoogle:search-manager>
 
   <genoogle:search-parameters>
-    <genoogle:sub-sequence-min-similarity        value="6"/>
-    <genoogle:databank-max-sub-sequence-distance value="20"/>
-    <genoogle:query-max-sub-sequence-distance    value="20"/>
-    <genoogle:extend-dropoff                     value="5" />
-    <genoogle:min-evalue                         value="0.1" />
+    <genoogle:sub-sequence-min-similarity value="6"/>
+    <genoogle:max-sub-sequence-distance   value="10"/>
+    <genoogle:min-evalue                  value="0.01" />
+    <genoogle:extend-dropoff              value="5" />
   </genoogle:search-parameters>
 
   <genoogle:databanks>
 	<genoogle:databank-collection name="RefSeq" path="files/fasta" sub-sequence-length="11" max-threads="6">  		        
-  		<genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="memory" />  		
-  	    <genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />
+  	    <genoogle:databank name="unique"     path="unique" storage="memory" />
+		<genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="memory" />
+  		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
    		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
     	<genoogle:databank name="Rat"       path="rat.rna.fna"   storage="memory" />
 		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
     	<genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
+  	    <!-- 
+    	 -->
+
   	</genoogle:databank-collection>        
   	<!-- 
   	<genoogle:split-databanks name="human_3gb" path="files/fasta" sub-sequence-length="11" number-of-sub-databanks="4" max-threads="4">

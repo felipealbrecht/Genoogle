@@ -52,11 +52,6 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	protected transient SubstitutionMatrix subMatrix;
 
 	/**
-	 * The result of a successfull alignment as a simple String.
-	 */
-	protected String alignment;
-
-	/**
 	 * Expenses for insterts.
 	 */
 	private int insert;
@@ -104,7 +99,6 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		this.gapExt = gapExtend;
 		this.match = match;
 		this.replace = replace;
-		this.alignment = "";
 	}
 
 	/**
@@ -116,12 +110,6 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	public void setSubstitutionMatrix(SubstitutionMatrix matrix) {
 		this.subMatrix = matrix;
 	}
-
-
-
-
-
-
 
 	/**
 	 * Prints a String representation of the CostMatrix for the given Alignment on the screen. This can be used to get a better understanding of the algorithm. There is no other purpose. This method also works for all extensions of this class with all kinds of matrices.
@@ -153,15 +141,6 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 		}
 		output += System.getProperty("line.separator") + "delta[Edit] = " + CostMatrix[line - 1][col - 1] + System.getProperty("line.separator");
 		return output;
-	}
-
-	/**
-	 * This gives the edit distance acording to the given parameters of this certain object. It returns just the last element of the internal cost matrix (left side down). So if you extend this class, you can just do the following: <code>int myDistanceValue = foo; this.CostMatrix = new int[1][1]; this.CostMatrix[0][0] = myDistanceValue;</code>
-	 * 
-	 * @return returns the edit_distance computed with the given parameters.
-	 */
-	public int getEditDistance() {
-		return costMatrix[costMatrix.length - 1][costMatrix[costMatrix.length - 1].length - 1];
 	}
 
 	/**
@@ -235,7 +214,7 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 
 			}
 
-			return getEditDistance();
+			return costMatrix[costMatrix.length - 1][costMatrix[costMatrix.length - 1].length - 1];
 
 		}
 		throw new BioRuntimeException("Alphabet missmatch occured: sequences with different alphabet cannot be aligned.");
@@ -245,8 +224,8 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * Variables needed for traceback
 	 */
 	int score = Integer.MIN_VALUE;
-	String[] align = new String[] { "", "" };
-	String path = "";
+	StringBuilder[] align = new StringBuilder[2];
+	StringBuilder path = null;
 	int identitySize;
 	long time;
 
@@ -254,20 +233,20 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @return {@link String} containing the representation of the query aligned.
 	 */
 	public String getQueryAligned() {
-		return align[0];
+		return align[0].toString();
 	}
 	/**
 	 * @return {@link String} containing the representation of the target aligned.
 	 */
 	public String getTargetAligned() {
-		return align[1];
+		return align[1].toString();
 	}
 
 	/**
 	 * @return {@link String} containing the representation of the alignment path.
 	 */
 	public String getPath() {
-		return path;
+		return path.toString();
 	}
 
 	/**

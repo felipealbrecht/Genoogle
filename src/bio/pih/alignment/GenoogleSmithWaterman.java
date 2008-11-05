@@ -80,7 +80,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	public GenoogleSmithWaterman(int match, int replace, int insert, int delete,
 			int gapExtend, SubstitutionMatrix matrix) {
 		super(insert, delete, gapExtend, match, replace, matrix);
-		this.alignment = "";
 	}
 
 	/**
@@ -169,9 +168,11 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 		if (query.getAlphabet().equals(subject.getAlphabet())
 				&& query.getAlphabet().equals(subMatrix.getAlphabet())) {
 
-			long beginTime = System.currentTimeMillis();
 			int i, j;
 			int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];
+			path = new StringBuilder();
+			align[0] = new StringBuilder();
+			align[1] = new StringBuilder();
 
 			SymbolTokenization st;
 			try {
@@ -231,13 +232,14 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 									- (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001)
 									&& !(gap_extend[0] || gap_extend[1])) {
 								if (query.symbolAt(i) == subject.symbolAt(j)) {
-									path = '|' + path;
+									path.insert(0, '|');
 									identitySize++;
-								} else
-									path = ' ' + path;
-
-								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
-								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
+								} else  {
+									path.insert(0, ' ');
+								}
+								
+								align[0].insert(0, st.tokenizeSymbol(query.symbolAt(i--)));
+								align[1].insert(0, st.tokenizeSymbol(subject.symbolAt(j--)));
 
 								// Insert || finish gap if extended gap is
 								// opened
@@ -246,10 +248,9 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								// opened
 								gap_extend[0] = Math.abs(E[i][j] - (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
 
-								align[0] = '-' + align[0];
-								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
-								path = ' ' + path;
-
+								align[0].insert(0, '-');
+								align[1].insert(0, st.tokenizeSymbol(subject.symbolAt(j--)));
+								path.insert(0, ' ');
 								// Delete || finish gap if extended gap is
 								// opened
 							} else {
@@ -257,9 +258,9 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 								// opened
 								gap_extend[1] = Math.abs(F[i][j] - (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
 
-								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
-								align[1] = '-' + align[1];
-								path = ' ' + path;
+								align[0].insert(0, st.tokenizeSymbol(query.symbolAt(i--)));
+								align[1].insert(0, '-');
+								path.insert(0, ' ');
 							}
 						} while (j > 0);
 					}
@@ -270,7 +271,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 				/*
 				 * No affine gap penalties to save memory.
 				 */
-			} else {
+			} else {		
 				for (i = 0; i <= query.length(); i++)
 					scoreMatrix[i][0] = 0;
 				for (j = 0; j <= subject.length(); j++)
@@ -306,25 +307,26 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 							} else if (Math.abs(scoreMatrix[i][j]
 									- (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001) {
 								if (query.symbolAt(i) == subject.symbolAt(j)) {
-									path = '|' + path;
+									path.insert(0, '|');
 									identitySize++;
-								} else
-									path = ' ' + path;
+								} else {
+									path.insert(0, ' ');
+								}
 
-								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
-								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
+								align[0].insert(0, st.tokenizeSymbol(query.symbolAt(i--)));
+								align[1].insert(0, st.tokenizeSymbol(subject.symbolAt(j--)));
 
 								// Insert
 							} else if (Math.abs(scoreMatrix[i][j] - (scoreMatrix[i][j - 1] + insert)) < 0.0001) {
-								align[0] = '-' + align[0];
-								align[1] = st.tokenizeSymbol(subject.symbolAt(j--)) + align[1];
-								path = ' ' + path;
+								align[0].insert(0, '-');
+								align[1].insert(0, st.tokenizeSymbol(subject.symbolAt(j--)));
+								path.insert(0, ' ');
 
 								// Delete
 							} else {
-								align[0] = st.tokenizeSymbol(query.symbolAt(i--)) + align[0];
-								align[1] = '-' + align[1];
-								path = ' ' + path;
+								align[0].insert(0, st.tokenizeSymbol(query.symbolAt(i--)));
+								align[1].insert(0, '-');
+								path.insert(0, ' ');
 							}
 						} while (j > 0);
 					}
@@ -335,7 +337,6 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 			this.costMatrix = new int[1][1];
 			costMatrix[0][0] = -scoreMatrix[maxI][maxJ];
-			this.time = System.currentTimeMillis() - beginTime;
 			this.score = scoreMatrix[maxI][maxJ];
 			return this.score;
 
@@ -346,7 +347,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	@Override
 	public int getQueryStart() {
-		return queryStart;
+		return queryStart+1;
 	}
 
 	@Override
@@ -356,7 +357,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 
 	@Override
 	public int getTargetStart() {
-		return targetStart;
+		return targetStart+1;
 	}
 
 	@Override

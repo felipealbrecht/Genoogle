@@ -18,8 +18,7 @@ public final class SearchParams implements Serializable {
 	private final SymbolList query;
 	private final String databankName;
 	private final int minSimilarity;
-	private final int maxDatabankSubSequencesDistance;
-	private final int maxQuerySubSequencesDistance;
+	private final int maxSubSequencesDistance;
 	private final int sequencesExtendDropoff;
 	private final double minEvalue;
 
@@ -29,15 +28,9 @@ public final class SearchParams implements Serializable {
 	public static final int DEFAULT_MIN_SIMILARITY = XMLConfigurationReader.getSubSequenceMinSimilarity();
 	
 	/**
-	 * Default maximum distance between two sub-sequences of a sequence at data bank to be considered at same area.
+	 * Default maximum distance between two sub-sequences of a sequence to be considered at same area.
 	 */
-	public static final int DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getDataBankMaxSubSequenceDistance();
-	
-	/**
-	 * Default maximum distance between two sub-sequences of a query sequence to be considered at same area.
-	 */
-	public static final int DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getQueryMaxSubSequenceDistance();
-	
+	public static final int DEFAULT_MAX_SUB_SEQUENCE_DISTANCE = XMLConfigurationReader.getMaxSubSequenceDistance();
 	
 	/**
 	 * Drop off for sequences extension.
@@ -54,26 +47,24 @@ public final class SearchParams implements Serializable {
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_DATABANK_SUB_SEQUENCE_DISTANCE, DEFAULT_MAX_QUERY_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
+		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
 	}
 
 	/**
 	 * @param query
 	 * @param databankName
 	 * @param minSimilarity
-	 * @param maxDatabankSequenceSubSequencesDistance
+	 * @param maxSubSequencesDistance 
 	 * @param minMatchAreaLength
-	 * @param maxQuerySequenceSubSequencesDistance
 	 * @param minQuerySequenceSubSequence
 	 * @param sequencesExtendDropoff 
 	 * @param minEvalue 
 	 */
-	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxDatabankSequenceSubSequencesDistance, int maxQuerySequenceSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
+	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
 		this.query = query;
 		this.databankName = databankName;
 		this.minSimilarity = minSimilarity;
-		this.maxDatabankSubSequencesDistance = maxDatabankSequenceSubSequencesDistance;
-		this.maxQuerySubSequencesDistance = maxQuerySequenceSubSequencesDistance;
+		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
 		this.minEvalue = minEvalue;
 	}
@@ -100,17 +91,10 @@ public final class SearchParams implements Serializable {
 	}
 
 	/**
-	 * @return maximum distance between two sub-sequences of a sequence at data bank to be considered at same area.
+	 * @return maximum distance between two sub-sequences to be considered at same area.
 	 */
-	public int getMaxDatabankSequenceSubSequencesDistance() {
-		return maxDatabankSubSequencesDistance;
-	}
-
-	/**
-	 * @return maximum distance between two sub-sequences of a query sequence to be considered at same area.
-	 */
-	public int getMaxQuerySequenceSubSequencesDistance() {
-		return maxQuerySubSequencesDistance;
+	public int getMaxSubSequencesDistance() {
+		return maxSubSequencesDistance;
 	}
 	
 	/**

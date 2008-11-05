@@ -23,17 +23,17 @@ public class HSP implements Serializable {
 	/**
 	 * @param num
 	 * @param alignment
-	 * @param queryOffset
-	 * @param targetOffset
+	 * @param queryPos
+	 * @param targetPos
 	 * @param normalizedScore 
 	 * @param eValue 
 	 */
-	public HSP(int num, GenoogleSmithWaterman alignment, int queryOffset, int targetOffset,
+	public HSP(int num, GenoogleSmithWaterman alignment, int queryPos, int targetPos,
 			double normalizedScore, double eValue) {
 		this.num = num;
 		this.alignment = alignment;
-		this.queryOffset = queryOffset;
-		this.targetOffset = targetOffset;
+		this.queryOffset = queryPos;
+		this.targetOffset = targetPos;
 		this.normalizedScore = normalizedScore;
 		this.eValue = eValue;
 	}

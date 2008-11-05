@@ -13,177 +13,84 @@ import bio.pih.seq.LightweightSymbolList;
  * @author albrecht
  */
 public class ExtendSequences {
-	private SymbolList querySequenceExtended;
-	private SymbolList targetSequenceExtended;
-
-	private int queryLeftExtended, queryRightExtended, targetLeftExtended, targetRightExtended;
-
-	private final int beginTargetSegment;
+	
+	private final int[] encodedQuery;
+	private final int[] encodedTarget;
 	private final int beginQuerySegment;
+	private final int endQuerySegment;
+	private final int beginTargetSegment;
+	private final int endTargetSegment;
+	private final DNASequenceEncoderToInteger encoder;
 
-	private ExtendSequences(SymbolList querySequenceExtended, SymbolList targetSequenceExtended, int queryLeftExtended, int queryRightExtended, int targetLeftExtended, int targetRightExtended, int beginTargetSegment, int beginQuerySegment) {
-		this.querySequenceExtended = querySequenceExtended;
-		this.targetSequenceExtended = targetSequenceExtended;
 
-		this.queryLeftExtended = queryLeftExtended;
-		this.targetLeftExtended = targetLeftExtended;
-		this.queryRightExtended = queryRightExtended;
-		this.targetRightExtended = targetRightExtended;
+	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, 
+			int beginQuerySegment, int endQuerySegment, int beginTargetSegment, int endTargetSegment,
+			DNASequenceEncoderToInteger encoder) {
+		this.encodedQuery = encodedQuery;
+		this.encodedTarget = encodedTarget;
+
+		this.beginQuerySegment = beginQuerySegment;
+		this.endQuerySegment = endQuerySegment;
 		this.beginTargetSegment = beginTargetSegment;
-		this.beginQuerySegment = beginQuerySegment;		
+		this.endTargetSegment = endTargetSegment;
+		this.encoder = encoder;		
 	}
-
+		
+	SymbolList queryExtended = null;
 	/**
 	 * @return extended query.
+	 * @throws IllegalSymbolException 
 	 */
-	public SymbolList getQuerySequenceExtended() {
-		return querySequenceExtended;
+	public SymbolList getQuerySequenceExtended() throws IllegalSymbolException {
+		if (queryExtended == null) {
+			String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);
+			queryExtended = LightweightSymbolList.createDNA(queryExtendedString);			
+		}
+		return queryExtended;
 	}
 
+	
+	SymbolList targetExtended = null;
 	/**
 	 * @return extended target.
+	 * @throws IllegalSymbolException 
 	 */
-	public SymbolList getTargetSequenceExtended() {
-		return targetSequenceExtended;
-	}
-
-	/**
-	 * @return how many bases the query was extended to left.
-	 */
-	public int getQueryLeftExtended() {
-		return queryLeftExtended;
-	}
-
-	/**
-	 * @return how many bases the target was extended to left.
-	 */
-	public int getTargetLeftExtended() {
-		return targetLeftExtended;
-	}
-
-	/**
-	 * @return how many bases the query was extended to right.
-	 */
-	public int getQueryRightExtended() {
-		return queryRightExtended;
-	}
-
-	/**
-	 * @return how many bases the target was extended to right.
-	 */
-	public int getTargetRightExtended() {
-		return targetRightExtended;
-	}
-	
-	/**
-	 * @return difference between the query segment and the extended.
-	 */
-	public int getQueryOffset() {
-		return beginQuerySegment - this.getQueryLeftExtended();
-	}
-
-	/**
-	 * @return difference between the target segment and the extended.
-	 */
-	public int getTargetOffset() {
-		return beginTargetSegment - this.getTargetLeftExtended();
-	}
-	
-	/**
-	 * Do the extension of the query and target.
-	 * 
-	 * @param querySequence
-	 * @param beginQuerySegment
-	 * @param endQuerySegment
-	 * @param databankSequence
-	 * @param beginDatabankSequenceSegment
-	 * @param endDatabankSequenceSegment
-	 * @param dropoff
-	 * @param beginQuerySequence
-	 * @param beginTargetSequence
-	 * @return {@link ExtendSequences} containing the extended query and target sequences.
-	 */
-	public static ExtendSequences doExtension(SymbolList querySequence, int beginQuerySegment, int endQuerySegment, 
-			SymbolList databankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff) {
-		
-		int score = 0;
-		int bestScore = 0;
-		int bestQueryPos, bestDatabankPos;
-		int queryPos, databankPos;
-
-		// Attention: biojava sequence symbols is from 1 to sequenceLength. It means that the first position is one and not zero!
-
-		// right extend
-		bestQueryPos = endQuerySegment;
-		bestDatabankPos = endDatabankSequenceSegment;
-
-		queryPos = endQuerySegment;
-		databankPos = endDatabankSequenceSegment;
-
-		while (queryPos <= querySequence.length() && databankPos <= databankSequence.length()) {
-			Symbol symbolAtQuery = querySequence.symbolAt(queryPos);
-			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos);
-			if (symbolAtQuery == symbolAtDatabank) {
-				score++;
-				if (score >= bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
-				}
-			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
-			}
-			queryPos++;
-			databankPos++;
+	public SymbolList getTargetSequenceExtended() throws IllegalSymbolException {
+		if (targetExtended == null) {
+			String targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment);
+			targetExtended = LightweightSymbolList.createDNA(targetExtendedString);
 		}
-		
-		int rightBestQueryPos = bestQueryPos;
-		int rightBestDatabankPos = bestDatabankPos;
+		return targetExtended;
+	}
 
-		// left extend
-		score = 0;
-		bestScore = 0;
-
-		bestQueryPos = beginQuerySegment;
-		bestDatabankPos = beginDatabankSequenceSegment;
-
-		queryPos = beginQuerySegment;
-		databankPos = beginDatabankSequenceSegment;
-
-		while (queryPos >= 0 && databankPos >= 0) {
-			Symbol symbolAtQuery = querySequence.symbolAt(queryPos + 1);
-			Symbol symbolAtDatabank = databankSequence.symbolAt(databankPos + 1);
-			if (symbolAtQuery == symbolAtDatabank) {
-				score++;
-				if (score >= bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
-				}
-			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
-			}
-			queryPos--;
-			databankPos--;
-		}
-
-		SymbolList queryExtended = querySequence.subList(bestQueryPos + 1, rightBestQueryPos);
-		SymbolList targetExtended = databankSequence.subList(bestDatabankPos + 1, rightBestDatabankPos);
-
-		int queryLeftExtended = beginQuerySegment - bestQueryPos;
-		int queryRightExtend = rightBestQueryPos - endQuerySegment;
-		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
-		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
-
-		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginDatabankSequenceSegment);
+	public int getBeginQuerySegment() {
+		return beginQuerySegment;
 	}
 	
+	public int getEndQuerySegment() {
+		return endQuerySegment;
+	}
+	
+	public int getBeginTargetSegment() {
+		return beginTargetSegment;
+	}
+	
+	public int getEndTargetSegment() {
+		return endTargetSegment;
+	}
+	
+	public int[] getEncodedQuery() {
+		return encodedQuery;
+	}
+	
+	public int[] getEncodedTarget() {
+		return encodedTarget;
+	}
+	
+	public DNASequenceEncoderToInteger getEncoder() {
+		return encoder;
+	}
+		
 	/**
 	 * @param encodedQuerySequence
 	 * @param beginQuerySegment
@@ -266,27 +173,8 @@ public class ExtendSequences {
 			queryPos--;
 			databankPos--;
 		}
-		
-		String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuerySequence, bestQueryPos, rightBestQueryPos);
-		String targetExtendedString = encoder.decodeIntegerArrayToString(encodedDatabankSequence, bestDatabankPos, rightBestDatabankPos);
-		
-		SymbolList queryExtended = null;
-		SymbolList targetExtended = null;
-		
-		try {
-			queryExtended = LightweightSymbolList.createDNA(queryExtendedString);
-			targetExtended = LightweightSymbolList.createDNA(targetExtendedString);
-		} catch (IllegalSymbolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int queryLeftExtended = beginQuerySegment - bestQueryPos;
-		int queryRightExtend = rightBestQueryPos - endQuerySegment;
-		int targetLeftExtended = beginDatabankSequenceSegment - bestDatabankPos;
-		int targetRightExtended = rightBestDatabankPos - endDatabankSequenceSegment;
-
-		return new ExtendSequences(queryExtended, targetExtended, queryLeftExtended, queryRightExtend, targetLeftExtended, targetRightExtended, beginQuerySegment, beginDatabankSequenceSegment);
+				
+		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, encoder);
 	}
 	
 	
@@ -319,19 +207,27 @@ public class ExtendSequences {
 		
 		ExtendSequences other = (ExtendSequences) anObject;
 		
-		if (this.getQueryOffset() != other.getQueryOffset()) {
+		if (this.getBeginQuerySegment() != other.getBeginQuerySegment()) {
 			return false;
 		}
 		
-		if (this.getTargetOffset() != other.getTargetOffset()) {
+		if (this.getBeginTargetSegment() != other.getBeginTargetSegment()) {
 			return false;
 		}
 		
-		if (!(this.querySequenceExtended.seqString().equals(other.querySequenceExtended.seqString()))) {
+		if (this.getEndQuerySegment() != other.getEndQuerySegment()) {
 			return false;
 		}
 		
-		if (!(this.targetSequenceExtended.seqString().equals(other.targetSequenceExtended.seqString()))) {
+		if (this.getEndTargetSegment() != other.getEndTargetSegment()) {
+			return false;
+		}
+		
+		if (!(this.encodedQuery == other.getEncodedQuery())) {
+			return false;
+		}
+		
+		if (!(this.encodedTarget == other.getEncodedTarget())) {
 			return false;
 		}
 				

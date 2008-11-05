@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.alignment.SubstitutionMatrix;
@@ -31,8 +32,8 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 
 /**
- * Interface witch defines methods for search for similar DNA sequences and
- * checks the status of the searchers.
+ * Interface witch defines methods for search for similar DNA sequences and checks the status of the
+ * searchers.
  * 
  * @author albrecht
  */
@@ -54,18 +55,19 @@ public class DNASearcher extends AbstractSearcher {
 	 */
 	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
 		super(id, sp, databank);
-		this.databank = databank;		
+		this.databank = databank;
 	}
-	
+
 	String thisToString = null;
 	private Statistics statitics;
+
 	@Override
 	public String toString() {
 		if (thisToString == null) {
 			StringBuilder sb = new StringBuilder(Integer.toString(this.hashCode()));
 			sb.append("-");
 			sb.append(databank.toString());
-			thisToString = sb.toString();				
+			thisToString = sb.toString();
 		}
 		return thisToString;
 	}
@@ -83,12 +85,14 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	protected void doSearch() throws Exception {
-		this.statitics = new Statistics(1, -3, sp.getQuery(), databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences(), sp.getMinEvalue());
-		
+		this.statitics = new Statistics(1, -3, sp.getQuery(), databank.getTotalDataBaseSize(),
+				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+
 		SymbolList querySequence = sp.getQuery();
 		status.setActualStep(SearchStep.INITIALIZED);
-		logger.info("["+this.toString() + "] Begining the search at " + databank.getName() + " with the sequence with "
-				+ querySequence.length() + "bases " + querySequence.seqString());
+		logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
+				+ " with the sequence with " + querySequence.length() + "bases "
+				+ querySequence.seqString());
 
 		int[] iess = getEncodedSubSequences(querySequence);
 		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(querySequence);
@@ -97,7 +101,8 @@ public class DNASearcher extends AbstractSearcher {
 		long init = System.currentTimeMillis();
 		IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
 
-		logger.info("["+this.toString() + "] Index search time:" + (System.currentTimeMillis() - init));
+		logger.info("[" + this.toString() + "] Index search time:"
+				+ (System.currentTimeMillis() - init));
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
 
@@ -120,8 +125,10 @@ public class DNASearcher extends AbstractSearcher {
 			for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 				int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 				int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
-				if (sequenceAreaEnd > DNASequenceEncoderToInteger.getSequenceLength(encodedSequence)) {
-					sequenceAreaEnd = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
+				if (sequenceAreaEnd > DNASequenceEncoderToInteger
+						.getSequenceLength(encodedSequence)) {
+					sequenceAreaEnd = DNASequenceEncoderToInteger
+							.getSequenceLength(encodedSequence);
 				}
 				int queryAreaBegin = retrievedArea.queryAreaBegin;
 				int queryAreaEnd = retrievedArea.queryAreaEnd;
@@ -133,32 +140,31 @@ public class DNASearcher extends AbstractSearcher {
 						queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
 						sequenceAreaEnd, sp.getSequencesExtendDropoff(), subSequenceLegth, encoder);
 
-				if (extendedSequencesList.contains(extensionResult)) {
-					continue;
-				}
-
-				if (extensionResult.getQuerySequenceExtended().length() > statitics.getMinLengthDropOut()
-						&& extensionResult.getTargetSequenceExtended().length() > statitics.getMinLengthDropOut()) {
+				if (!extendedSequencesList.contains(extensionResult)) {
 					extendedSequencesList.add(extensionResult);
 				}
+
 			}
+
+			extendedSequencesList = mergeExtendedAreas(extendedSequencesList);
 
 			status.setActualStep(SearchStep.ALIGNMENT);
 			if (extendedSequencesList.size() > 0) {
-				Hit hit = new Hit(hitNum++, storedSequence.getName(),
-						storedSequence.getGi(), 
-						storedSequence.getDescription(), storedSequence.getAccession(),  
+				Hit hit = new Hit(hitNum++, storedSequence.getName(), storedSequence.getGi(),
+						storedSequence.getDescription(), storedSequence.getAccession(),
 						SequenceEncoder.getSequenceLength(encodedSequence), databank.getName());
 				for (ExtendSequences extensionResult : extendedSequencesList) {
 					GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(-1, 3, 3, 3, 3,
 							substitutionMatrix);
 					smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 							extensionResult.getTargetSequenceExtended());
-					
-					double normalizedScore = statitics.nominalToNormalizedScore(smithWaterman.getScore());
+
+					double normalizedScore = statitics.nominalToNormalizedScore(smithWaterman
+							.getScore());
 					double evalue = statitics.calculateEvalue(normalizedScore);
-					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult.getQueryOffset(),
-							extensionResult.getTargetOffset(), normalizedScore, evalue));
+					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult
+							.getBeginQuerySegment(), extensionResult.getBeginTargetSegment(),
+							normalizedScore, evalue));
 				}
 				sr.addHit(hit);
 			}
@@ -169,14 +175,116 @@ public class DNASearcher extends AbstractSearcher {
 		Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
 		status.setResults(sr);
-		logger.info("["+this.toString() + "] Search time:" + (System.currentTimeMillis() - init));
+		logger.info("[" + this.toString() + "] Search time:" + (System.currentTimeMillis() - init));
 		status.setActualStep(SearchStep.FINISHED);
+	}
+
+	private List<ExtendSequences> mergeExtendedAreas(List<ExtendSequences> extendedSequences) {
+		ListIterator<ExtendSequences> iterator1 = extendedSequences.listIterator();
+		while (iterator1.hasNext()) {
+			ExtendSequences extSeqs1 = iterator1.next();
+			ListIterator<ExtendSequences> iterator2 = extendedSequences.listIterator(iterator1
+					.nextIndex());
+			while (iterator2.hasNext()) {
+				ExtendSequences extSeqs2 = iterator2.next();
+				ExtendSequences merged = tryToMerge(extSeqs1, extSeqs2);
+				if (merged != null) {
+					extendedSequences.remove(extSeqs1);
+					extendedSequences.remove(extSeqs2);
+					extendedSequences.add(merged);
+					return mergeExtendedAreas(extendedSequences);
+				}
+			}
+		}
+		return extendedSequences;
+	}
+
+	private ExtendSequences tryToMerge(ExtendSequences seq1, ExtendSequences seq2) {
+		int seq1QueryBegin = seq1.getBeginQuerySegment();
+		int seq1QueryEnd = seq1.getEndQuerySegment();
+		int seq1TargetBegin = seq1.getBeginTargetSegment();
+		int seq1TargetEnd = seq1.getEndTargetSegment();
+
+		int seq2QueryBegin = seq2.getBeginQuerySegment();
+		int seq2QueryEnd = seq2.getEndQuerySegment();
+		int seq2TargetBegin = seq2.getBeginTargetSegment();
+		int seq2TargetEnd = seq2.getEndTargetSegment();
+
+		int queryEnd = Math.max(seq1QueryEnd, seq2QueryEnd);
+		int targetEnd = Math.max(seq1TargetEnd, seq2TargetEnd);
+
+		if (contains(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin, seq1TargetEnd)
+				|| contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
+			if ((isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin))
+					|| isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
+						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
+						seq2TargetBegin), targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if (contains(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin, seq2QueryEnd)
+				|| contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
+			if ((isIn(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin))
+					|| isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
+						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
+						seq2TargetBegin), targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if ((isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin))
+				|| isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
+			if (contains(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin, seq1TargetEnd)
+					|| contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
+						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
+						seq2TargetBegin), targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if ((isIn(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin))
+				|| isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
+			if (contains(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin, seq2QueryEnd)
+					|| contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
+						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
+						seq2TargetBegin), targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if (contains(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin, seq1TargetEnd)
+				|| contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
+			if (contains(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin, seq2QueryEnd)
+					|| contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
+						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
+						seq2TargetBegin), targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if (isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin)) {
+			if (isIn(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(),
+						seq1QueryBegin, queryEnd, seq1TargetBegin, targetEnd, seq1.getEncoder());
+			}
+		}
+
+		if (isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
+			if (isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(),
+						seq2QueryBegin, queryEnd, seq2TargetBegin, targetEnd, seq1.getEncoder());
+			}
+		}
+
+		return null;
 	}
 
 	private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
 			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, statitics.getMinLengthDropOut());
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(),
+				sp, statitics.getMinLengthDropOut(), databank.getSubSequenceLength());
 
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		for (int ss = 0; ss < iess.length; ss++) {
@@ -189,7 +297,6 @@ public class DNASearcher extends AbstractSearcher {
 			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
-				
 		List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 		for (Integer similarSubSequence : similarSubSequences) {
 			long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
@@ -202,7 +309,8 @@ public class DNASearcher extends AbstractSearcher {
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
 		int[] iess = new int[querySequence.length() - (subSequenceLegth - 1)];
 
-		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getOverlappedFactory()
+		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
+				.getOverlappedFactory()
 				.newSymbolListWindowIterator(querySequence, subSequenceLegth);
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
@@ -213,16 +321,32 @@ public class DNASearcher extends AbstractSearcher {
 		return iess;
 	}
 
+	private static boolean isIn(int begin, int end, int pos) {
+		if ((pos >= begin) && (pos <= end)) {
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean contains(int seq1Begin, int seq1End, int seq2Begin, int seq2End) {
+		if ((seq2Begin >= seq1Begin) && (seq2End <= seq1End)) {
+			return true;
+		}
+		return false;
+	}
+
 	private static final class IndexRetrievedData {
-		final List<RetrievedArea>[] retrievedAreasArray;
-		final FuckingArrayList<RetrievedArea>[] openedAreasArray;
+		private final List<RetrievedArea>[] retrievedAreasArray;
+		private final FuckingArrayList<RetrievedArea>[] openedAreasArray;
 		private final SearchParams sp;
 		private final int minLength;
+		private final int subSequenceLength;
 
 		@SuppressWarnings("unchecked")
-		public IndexRetrievedData(int size, SearchParams sp, int minLength) {
+		public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength) {
 			this.sp = sp;
 			this.minLength = minLength;
+			this.subSequenceLength = subSequenceLength;
 			retrievedAreasArray = new List[size];
 			openedAreasArray = new FuckingArrayList[size];
 			for (int i = 0; i < size; i++) {
@@ -232,29 +356,29 @@ public class DNASearcher extends AbstractSearcher {
 
 		void addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
 			int start = EncoderSubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
-			int sequenceId = EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoIntRepresention);
+			int sequenceId = EncoderSubSequenceIndexInfo
+					.getSequenceId(subSequenceInfoIntRepresention);
 
 			mergeOrRemoveOrNew(queryPos, start, sequenceId);
 		}
 
-		private void mergeOrRemoveOrNew(int queryPos, int start, int sequenceId) {
+		private void mergeOrRemoveOrNew(int queryPos, int sequencePos, int sequenceId) {
 			boolean merged = false;
-			FuckingArrayList<RetrievedArea> list = openedAreasArray[sequenceId];
+			FuckingArrayList<RetrievedArea> openedList = openedAreasArray[sequenceId];
 			int fromIndex = -1;
 			int toIndex = -1;
 
-			int size = list.size();
+			int size = openedList.size();
 			for (int pos = 0; pos < size; pos++) {
-				RetrievedArea openedArea = list.get(pos);
+				RetrievedArea openedArea = openedList.get(pos);
 				// Try merge with previous area.
-				if (openedArea.setTestAndSet(queryPos,
-						sp.getMaxQuerySequenceSubSequencesDistance(), start,
-						sp.getMaxDatabankSequenceSubSequencesDistance())) {
+				if (openedArea.setTestAndSet(queryPos, sequencePos,
+						sp.getMaxSubSequencesDistance(), subSequenceLength)) {
 					merged = true;
 
 					// Check if the area end is away from the actual sequence
 					// pos.
-				} else if (queryPos - openedArea.queryAreaEnd > sp.getMaxQuerySequenceSubSequencesDistance()) {
+				} else if (queryPos - openedArea.queryAreaEnd > sp.getMaxSubSequencesDistance()) {
 					// Mark the areas to remove.
 					if (fromIndex == -1) {
 						fromIndex = pos;
@@ -272,13 +396,13 @@ public class DNASearcher extends AbstractSearcher {
 			}
 
 			if (fromIndex != -1) {
-				list.removeRange(fromIndex, toIndex + 1);
+				openedList.removeRange(fromIndex, toIndex + 1);
 			}
 
 			if (!merged) {
-				RetrievedArea retrievedArea = new RetrievedArea(queryPos, queryPos + 7, start,
-						start + 7);
-				openedAreasArray[sequenceId].add(retrievedArea);
+				RetrievedArea retrievedArea = new RetrievedArea(queryPos, sequencePos,
+						subSequenceLength);
+				openedList.add(retrievedArea);
 			}
 		}
 
@@ -296,16 +420,14 @@ public class DNASearcher extends AbstractSearcher {
 					}
 				}
 			}
-			int totalNotZero = 0;
+			int totalAreas = 0;
 			for (int i = 0; i < retrievedAreasArray.length; i++) {
 				if (retrievedAreasArray[i] != null) {
-					if (retrievedAreasArray[i].size() > 0) {
-						totalNotZero++;
-					}
+					totalAreas += retrievedAreasArray[i].size();
 				}
 			}
 
-			logger.info("["+this.toString() + "] TotalAreas: " + totalNotZero);
+			logger.info("[" + this.toString() + "] TotalAreas: " + totalAreas);
 
 			return retrievedAreasArray;
 		}
@@ -318,28 +440,29 @@ public class DNASearcher extends AbstractSearcher {
 		int sequenceAreaEnd;
 		int length;
 
-		public RetrievedArea(int queryAreaBegin, int queryAreaEnd, int sequenceAreaBegin,
-				int sequenceAreaEnd) {
+		public RetrievedArea(int queryAreaBegin, int sequenceAreaBegin, int subSequenceLength) {
 			this.queryAreaBegin = queryAreaBegin;
-			this.queryAreaEnd = queryAreaEnd;
+			this.queryAreaEnd = queryAreaBegin + subSequenceLength - 1;
 			this.sequenceAreaBegin = sequenceAreaBegin;
-			this.sequenceAreaEnd = sequenceAreaEnd;
-			this.length = 8;
+			this.sequenceAreaEnd = sequenceAreaBegin + subSequenceLength - 1;
+			this.length = subSequenceLength;
 		}
 
 		public int length() {
 			return this.length;
 		}
 
-		public boolean setTestAndSet(int newQueryAreaBegin, int maxQueryAreaDistance,
-				int newSequenceAreaBegin, int maxSequenceAreaDistance) {
+		public boolean setTestAndSet(int newQueryPos, int newSequencePos,
+				int maxSubSequenceDistance, int subSequenceLength) {
 
-			int queryAreaEndOffset = newQueryAreaBegin - queryAreaEnd;
-			if (queryAreaEndOffset > -7 && queryAreaEndOffset <= maxQueryAreaDistance) {
-				int sequenceAreaEndOffset = newSequenceAreaBegin - sequenceAreaEnd;
-				if (sequenceAreaEndOffset > -7 && sequenceAreaEndOffset <= maxSequenceAreaDistance) {
-					this.queryAreaEnd = newQueryAreaBegin + 7;
-					this.sequenceAreaEnd = newSequenceAreaBegin + 7;
+			if (isIn(queryAreaBegin, queryAreaEnd, newQueryPos)
+					|| (queryAreaEnd + maxSubSequenceDistance > newQueryPos)) {
+
+				if (isIn(sequenceAreaBegin, sequenceAreaEnd, newSequencePos)
+						|| (sequenceAreaEnd + maxSubSequenceDistance > newSequencePos)) {
+
+					this.queryAreaEnd = newQueryPos + (subSequenceLength - 1);
+					this.sequenceAreaEnd = newSequencePos + (subSequenceLength - 1);
 					this.length = Math.min(queryAreaEnd - queryAreaBegin, sequenceAreaEnd
 							- sequenceAreaBegin);
 					return true;
