@@ -99,4 +99,13 @@ public class SearchResults {
 	public List<Exception> getFails() {
 		return fails;
 	}
+
+	public void mergeInverted(SearchResults invertedSearchResults) {
+		if (invertedSearchResults.hasFail()) {
+			addAllFails(invertedSearchResults.getFails());
+			return;
+		}
+		
+		addAllHits(invertedSearchResults.getHits());				
+	}
 }

@@ -21,7 +21,6 @@ import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 import bio.pih.statistics.Statistics;
@@ -50,8 +49,6 @@ public class DNASearcher extends AbstractSearcher {
 	 * @param id
 	 * @param sp
 	 * @param databank
-	 * @param sm
-	 * @param parent
 	 */
 	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
 		super(id, sp, databank);
@@ -85,10 +82,15 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	protected void doSearch() throws Exception {
-		this.statitics = new Statistics(1, -3, sp.getQuery(), databank.getTotalDataBaseSize(),
+		SymbolList querySequence = getQuery();
+		int queryLength = querySequence.length();
+		if (queryLength < databank.getSubSequenceLength()) {
+			throw new RuntimeException("Sequence: \"" + querySequence.seqString() +"\" is too short");
+		}
+		
+		this.statitics = new Statistics(1, -3, querySequence, databank.getTotalDataBaseSize(),
 				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
 
-		SymbolList querySequence = sp.getQuery();
 		status.setActualStep(SearchStep.INITIALIZED);
 		logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
 				+ " with the sequence with " + querySequence.length() + "bases "
@@ -162,9 +164,8 @@ public class DNASearcher extends AbstractSearcher {
 					double normalizedScore = statitics.nominalToNormalizedScore(smithWaterman
 							.getScore());
 					double evalue = statitics.calculateEvalue(normalizedScore);
-					hit.addHSP(new HSP(hspNum++, smithWaterman, extensionResult
-							.getBeginQuerySegment(), extensionResult.getBeginTargetSegment(),
-							normalizedScore, evalue));
+					addHit(hspNum, hit, extensionResult, smithWaterman, normalizedScore,
+							evalue, queryLength);
 				}
 				sr.addHit(hit);
 			}
@@ -336,6 +337,7 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private static final class IndexRetrievedData {
+				
 		private final List<RetrievedArea>[] retrievedAreasArray;
 		private final FuckingArrayList<RetrievedArea>[] openedAreasArray;
 		private final SearchParams sp;
@@ -492,6 +494,12 @@ public class DNASearcher extends AbstractSearcher {
 	private static class FuckingArrayList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = -7142636234255880892L;
 
+		public FuckingArrayList() { }
+		
+		public FuckingArrayList(int i) {
+			super(i);
+		}
+		
 		@Override
 		public void removeRange(int fromIndex, int toIndex) {
 			super.removeRange(fromIndex, toIndex);

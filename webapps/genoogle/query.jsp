@@ -53,7 +53,7 @@
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		SearchResults sr = sois.doSyncSearch(query, "RefSeq");
+		SearchResults sr = sois.doSyncSearch(query, "RefSeq_4");
 		long total = System.currentTimeMillis() - begin;
 
 		if (sr.hasFail()) {			

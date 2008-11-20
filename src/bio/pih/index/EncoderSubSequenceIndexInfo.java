@@ -16,9 +16,9 @@ public class EncoderSubSequenceIndexInfo {
 	 * @param pos 
 	 * @return an integer containing the sequenceId and start point
 	 */
-	public static long getSubSequenceInfoIntRepresention(int sequenceId, int pos) {
+	public static long getSubSequenceInfoIntRepresention(long sequenceId, int pos) {
 		assert sequenceId <= ((long) 1 << 32) - 1;
-		return ((((long)sequenceId) << 32) | (pos & DATA_32_BITS_MASK));
+		return (((sequenceId) << 32) | (pos & DATA_32_BITS_MASK));
 	}
 
 	/**

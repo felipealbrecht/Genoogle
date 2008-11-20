@@ -208,9 +208,9 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			} catch (DuplicateDatabankException e) {
 				logger.info("Fatal error while loading sub databanks.", e);
 			}			
-			logger.info("Loaded " + i + " of " + qtdSubBases);
+			logger.info("Loaded " + (i+1) + " of " + qtdSubBases + " sub-databanks.");
 		}
-		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time));
+		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time) + "ms.");
 	}
 
 	private class FastaFileInfo {

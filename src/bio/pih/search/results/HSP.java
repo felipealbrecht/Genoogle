@@ -14,26 +14,35 @@ public class HSP implements Serializable {
 	private static final long serialVersionUID = -7701610542981141900L;
 
 	private final GenoogleSmithWaterman alignment;
-	private final int queryOffset;
-	private final int targetOffset;
 	private final int num;
 	private final double normalizedScore;
 	private final double eValue;
 
+	private final int queryFrom;
+	private final int queryTo;
+	private final int hitFrom;
+	private final int hitTo;
+	
+	
 	/**
 	 * @param num
 	 * @param alignment
-	 * @param queryPos
-	 * @param targetPos
-	 * @param normalizedScore 
-	 * @param eValue 
+	 * @param queryFrom
+	 * @param queryTo
+	 * @param hitFrom
+	 * @param hitTo
+	 * @param normalizedScore
+	 * @param eValue
 	 */
-	public HSP(int num, GenoogleSmithWaterman alignment, int queryPos, int targetPos,
+	public HSP(int num, GenoogleSmithWaterman alignment, 
+			int queryFrom, int queryTo, int hitFrom, int hitTo, 
 			double normalizedScore, double eValue) {
 		this.num = num;
 		this.alignment = alignment;
-		this.queryOffset = queryPos;
-		this.targetOffset = targetPos;
+		this.queryFrom = queryFrom;
+		this.queryTo = queryTo;
+		this.hitFrom = hitFrom;
+		this.hitTo = hitTo;
 		this.normalizedScore = normalizedScore;
 		this.eValue = eValue;
 	}
@@ -56,28 +65,28 @@ public class HSP implements Serializable {
 	 * @return where the query begins at this HSP.
 	 */
 	public int getQueryFrom() {
-		return queryOffset + alignment.getQueryStart();
+		return queryFrom;
 	}
 	
 	/**
 	 * @return where the query ends at this HSP.
 	 */	
 	public int getQueryTo() {
-		return queryOffset + alignment.getQueryEnd();
+		return queryTo;
 	}
 	
 	/**
 	 * @return where the target begins at this HSP.
 	 */
 	public int getHitFrom() {
-		return targetOffset + alignment.getTargetStart();
+		return hitFrom;
 	}
 	
 	/**
 	 * @return where the target ends at this HSP.
 	 */
 	public int getHitTo() {
-		return targetOffset + alignment.getTargetEnd();
+		return hitTo;
 	}
 	
 	/**

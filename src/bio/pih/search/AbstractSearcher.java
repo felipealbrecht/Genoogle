@@ -2,9 +2,15 @@ package bio.pih.search;
 
 import java.util.concurrent.Callable;
 
+import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
+
+import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
+import bio.pih.search.results.HSP;
+import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
 /**
@@ -24,6 +30,7 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	protected final SearchResults sr;
 	protected final DNASequenceEncoderToInteger encoder;
 	protected final int subSequenceLegth;
+	protected final long id;
 
 	/**
 	 * @param id
@@ -36,6 +43,7 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	 *            The parent of this search.
 	 */
 	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
+		this.id = id;
 		this.sp = sp;
 		this.sr = new SearchResults(sp);
 		this.encoder = databank.getEncoder();
@@ -57,4 +65,38 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	public SearchResults getSearchResults() {
 		return sr;
 	}
+	
+	protected SymbolList getQuery() throws IllegalSymbolException {
+		return sp.getQuery();
+	}
+
+	protected void addHit(int hspNum, Hit hit, ExtendSequences extensionResult,
+			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
+			int queryLength) {
+
+		hit.addHSP(new HSP(hspNum++, 
+				smithWaterman,
+				getQueryStart(extensionResult, smithWaterman),
+				getQueryEnd(extensionResult, smithWaterman),
+				getTargetStart(extensionResult, smithWaterman),
+				getTargetEnd(extensionResult, smithWaterman),
+				normalizedScore, evalue));
+	}
+
+	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart();
+	}
+	
+	private int getQueryEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd();
+	}
+
+	private int getTargetStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
+	}
+	
+	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
+	}
+	
 }

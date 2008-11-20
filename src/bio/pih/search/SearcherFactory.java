@@ -22,7 +22,8 @@ public class SearcherFactory {
 	@SuppressWarnings("unchecked")
 	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank) {
 		if (databank instanceof IndexedDNASequenceDataBank) {
-			return new DNASearcher(id, sp, (IndexedDNASequenceDataBank) databank);
+			//return new DNASearcher(id, sp, (IndexedDNASequenceDataBank) databank);
+			return new DNABothDirectionsSearcher(id, sp, (IndexedDNASequenceDataBank) databank);
 		}
 
 		if (databank instanceof DatabankCollection) {

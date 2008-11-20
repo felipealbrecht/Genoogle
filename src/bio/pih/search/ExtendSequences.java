@@ -177,8 +177,6 @@ public class ExtendSequences {
 		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, encoder);
 	}
 	
-	
-	
 	//TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
 	private static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
 		int posInArray = (pos / subSequenceLength) + 1;

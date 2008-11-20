@@ -173,7 +173,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		while (iterator.hasNext()) {
 			iterator.next().load();
 		}
-		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time));
+		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time) + "ms,");
 	}
 
 	@Override

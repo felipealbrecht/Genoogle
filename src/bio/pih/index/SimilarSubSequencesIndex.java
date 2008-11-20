@@ -447,7 +447,7 @@ public class SimilarSubSequencesIndex {
 			System.out.println("");
 		}
 	}
-
+	
 	private static List<String> generateSimilar(String sequence, int level, char[] alphabet) {
 		LinkedList<String> result = Lists.newLinkedList();
 		result.add(sequence);

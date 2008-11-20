@@ -95,6 +95,10 @@ public class SOIS {
 		List<SearchParams> batch = Lists.newLinkedList();
 		while (in.ready()) {
 			String seqString = in.readLine();
+			seqString = seqString.trim();
+			if (seqString.length() == 0) {
+				continue;
+			}
 			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
 			SearchParams sp = new SearchParams(sequence, databank);
 			batch.add(sp);

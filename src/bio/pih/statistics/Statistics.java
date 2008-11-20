@@ -13,6 +13,15 @@ import org.biojava.bio.symbol.SymbolList;
 
 import com.google.common.collect.Maps;
 
+/**
+ * Class to calculate some statistics values for biological searching.
+ * Basesd on FSA Blast source code.
+ * 
+ * TODO: To test with protein score matrix
+ * TODO: To implement the calculation of K where the score matrix does not have -1 or 1.
+ *    
+ * @author albrecht (felipe.albrecht@gmail.com)
+ */
 public class Statistics {
 
 	private static final double BLAST_KARLIN_LAMBDA0_DEFAULT = 0.5;
