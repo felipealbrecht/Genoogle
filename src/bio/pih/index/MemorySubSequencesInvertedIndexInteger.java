@@ -57,9 +57,10 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 		}
 		int length = encodedSequence.length;
 
-		for (int pos = SequenceEncoder.getPositionBeginBitsVector(); pos < length; pos++) {			
-			long subSequenceInfoIntRepresention = EncoderSubSequenceIndexInfo.getSubSequenceInfoIntRepresention(sequenceId, (pos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength);
-			addSubSequenceInfoEncoded(encodedSequence[pos], subSequenceInfoIntRepresention);
+		for (int arrayPos = SequenceEncoder.getPositionBeginBitsVector(); arrayPos < length; arrayPos++) {
+			int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength;
+			long longntRepresention = EncoderSubSequenceIndexInfo.getSubSequenceInfoLongRepresention(sequenceId, sequencePos);
+			addSubSequenceInfoEncoded(encodedSequence[arrayPos], longntRepresention);
 		}
 	}
 

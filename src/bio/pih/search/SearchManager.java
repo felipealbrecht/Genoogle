@@ -129,6 +129,15 @@ public class SearchManager {
 	public Collection<SequenceDataBank> getDatabanks() {
 		return databanks.values();
 	}
+	
+	/**
+	 * The name of the default data bank name. 
+	 * For while will be the first data bank. 
+	 * @return name of the default data bank.
+	 */
+	public String getDefaultDataBankName() {
+		return this.databanks.keySet().iterator().next();
+	}
 
 	private long searchId = 0;
 

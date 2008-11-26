@@ -77,6 +77,23 @@ public class SOIS {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
 	}
+	
+	/**
+	 * @param in
+	 * @param databank
+	 * @return {@link List} of {@link SearchResults} of the given queries.
+	 * @throws IOException
+	 * @throws IllegalSymbolException
+	 * @throws UnknowDataBankException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in)
+			throws IOException, IllegalSymbolException, UnknowDataBankException,
+			InterruptedException, ExecutionException {
+		String defaultDataBankName = sm.getDefaultDataBankName();
+		return doBatchSyncSearch(in, defaultDataBankName);
+	}
 
 	/**
 	 * @param in
@@ -106,6 +123,16 @@ public class SOIS {
 		return sm.doSyncSearch(batch);
 	}
 
+	/**
+	 * @param seqString
+	 * @return {@link SearchResults} of the search using the default databank.
+	 */	
+	public SearchResults doSyncSearch(String seqString) {
+		String defaultDataBankName = sm.getDefaultDataBankName();
+		return doSyncSearch(seqString, defaultDataBankName);
+	}
+	
+	
 	/**
 	 * @param seqString
 	 * @param dataBankName

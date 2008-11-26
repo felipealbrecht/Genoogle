@@ -29,4 +29,28 @@ public class Utils {
 	     return temp.toString();
 	}
 	
+	public static String sequenceComplement(String seqString) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < seqString.length(); i++) {
+			char base = seqString.charAt(i);
+			char complement = Utils.getComplement(base);
+			sb.append(complement);
+		}
+		return sb.toString();
+	}
+	
+	public static char getComplement(char base) {
+		switch (base) {
+		case 'A': return 'T';
+		case 'T': return 'A';
+		case 'C': return 'G';
+		case 'G': return 'C';
+		case 'a': return 't';
+		case 't': return 'a';
+		case 'c': return 'g';
+		case 'g': return 'c';
+		default: throw new IllegalStateException(base + " is not a valid DNA base.");		
+		}
+	}
+	
 }

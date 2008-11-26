@@ -12,6 +12,8 @@ import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.SymbolList;
 
+import sun.misc.VM;
+
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
@@ -85,16 +87,19 @@ public class DNASearcher extends AbstractSearcher {
 		SymbolList querySequence = getQuery();
 		int queryLength = querySequence.length();
 		if (queryLength < databank.getSubSequenceLength()) {
-			throw new RuntimeException("Sequence: \"" + querySequence.seqString() +"\" is too short");
+			throw new RuntimeException("Sequence: \"" + querySequence.seqString()
+					+ "\" is too short");
 		}
-		
+
 		this.statitics = new Statistics(1, -3, querySequence, databank.getTotalDataBaseSize(),
 				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+		
+		sr.setMinSubSequenceLength(this.statitics.getMinLengthDropOut());
 
 		status.setActualStep(SearchStep.INITIALIZED);
 		logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
 				+ " with the sequence with " + querySequence.length() + "bases "
-				+ querySequence.seqString());
+				+ querySequence.seqString() + " and min subSequenceLength >= " + this.statitics.getMinLengthDropOut());
 
 		int[] iess = getEncodedSubSequences(querySequence);
 		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(querySequence);
@@ -121,16 +126,15 @@ public class DNASearcher extends AbstractSearcher {
 			byte[] byteArray = encodedByteSequence.toByteArray();
 			int[] encodedSequence = new int[byteArray.length / 4];
 			ByteBuffer.wrap(byteArray).asIntBuffer().get(encodedSequence);
+			int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
 
 			int hspNum = 0;
 			List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
 			for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
 				int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 				int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
-				if (sequenceAreaEnd > DNASequenceEncoderToInteger
-						.getSequenceLength(encodedSequence)) {
-					sequenceAreaEnd = DNASequenceEncoderToInteger
-							.getSequenceLength(encodedSequence);
+				if (sequenceAreaEnd > targetLength) {
+					sequenceAreaEnd = targetLength;
 				}
 				int queryAreaBegin = retrievedArea.queryAreaBegin;
 				int queryAreaEnd = retrievedArea.queryAreaEnd;
@@ -164,14 +168,14 @@ public class DNASearcher extends AbstractSearcher {
 					double normalizedScore = statitics.nominalToNormalizedScore(smithWaterman
 							.getScore());
 					double evalue = statitics.calculateEvalue(normalizedScore);
-					addHit(hspNum, hit, extensionResult, smithWaterman, normalizedScore,
-							evalue, queryLength);
+					addHit(hspNum, hit, extensionResult, smithWaterman, normalizedScore, evalue,
+							queryLength, targetLength);
 				}
 				sr.addHit(hit);
 			}
 		}
 
-		status.setActualStep(SearchStep.SELECTING);
+		status.setActualStep(SearchStep.SORTING);
 
 		Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
@@ -298,13 +302,20 @@ public class DNASearcher extends AbstractSearcher {
 			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
+		// String e = encoder.decodeIntegerToString(encodedSubSequence).toLowerCase();
+		// System.out.println(e + ":");
+
 		List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 		for (Integer similarSubSequence : similarSubSequences) {
+			// String toString = encoder.decodeIntegerToString(similarSubSequence).toLowerCase();
+			// System.out.print(toString + " ");
 			long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
+			// long[] indexPositions = databank.getMachingSubSequence(encodedSubSequence);
 			for (long subSequenceIndexInfo : indexPositions) {
 				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 			}
 		}
+		// System.out.println();
 	}
 
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
@@ -337,7 +348,7 @@ public class DNASearcher extends AbstractSearcher {
 	}
 
 	private static final class IndexRetrievedData {
-				
+
 		private final List<RetrievedArea>[] retrievedAreasArray;
 		private final FuckingArrayList<RetrievedArea>[] openedAreasArray;
 		private final SearchParams sp;
@@ -457,14 +468,20 @@ public class DNASearcher extends AbstractSearcher {
 		public boolean setTestAndSet(int newQueryPos, int newSequencePos,
 				int maxSubSequenceDistance, int subSequenceLength) {
 
-			if (isIn(queryAreaBegin, queryAreaEnd, newQueryPos)
-					|| (queryAreaEnd + maxSubSequenceDistance > newQueryPos)) {
+			if (isIn(queryAreaBegin, queryAreaEnd + maxSubSequenceDistance, newQueryPos)) {
+				if (isIn(sequenceAreaBegin, sequenceAreaEnd + maxSubSequenceDistance,
+						newSequencePos)) {
 
-				if (isIn(sequenceAreaBegin, sequenceAreaEnd, newSequencePos)
-						|| (sequenceAreaEnd + maxSubSequenceDistance > newSequencePos)) {
+					int newQueryPosEnd = newQueryPos + (subSequenceLength - 1);
+					if (newQueryPosEnd > this.queryAreaEnd) {
+						this.queryAreaEnd = newQueryPosEnd;
+					}
 
-					this.queryAreaEnd = newQueryPos + (subSequenceLength - 1);
-					this.sequenceAreaEnd = newSequencePos + (subSequenceLength - 1);
+					int newSequencePosEnd = newSequencePos + (subSequenceLength - 1);
+					if (newSequencePosEnd > this.sequenceAreaEnd) {
+						this.sequenceAreaEnd = newSequencePosEnd;
+					}
+
 					this.length = Math.min(queryAreaEnd - queryAreaBegin, sequenceAreaEnd
 							- sequenceAreaBegin);
 					return true;
@@ -494,12 +511,13 @@ public class DNASearcher extends AbstractSearcher {
 	private static class FuckingArrayList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = -7142636234255880892L;
 
-		public FuckingArrayList() { }
-		
+		public FuckingArrayList() {
+		}
+
 		public FuckingArrayList(int i) {
 			super(i);
 		}
-		
+
 		@Override
 		public void removeRange(int fromIndex, int toIndex) {
 			super.removeRange(fromIndex, toIndex);

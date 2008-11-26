@@ -71,7 +71,7 @@ public class MockWorker extends AbstractWorker {
 				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 
-				this.searchInformation.setActualStep(SearchStep.SELECTING);
+				this.searchInformation.setActualStep(SearchStep.SORTING);
 				sleepTime = Math.round(Math.random() * 300);
 				Thread.sleep(sleepTime);
 

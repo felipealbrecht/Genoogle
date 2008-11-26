@@ -7,7 +7,6 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.Utils;
-import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.seq.LightweightSymbolList;
@@ -31,40 +30,38 @@ public class DNAInvertedSearcher extends DNASearcher {
 		return thisToString;
 	}
 	
+	@Override
 	protected void addHit(int hspNum, Hit hit, ExtendSequences extensionResult,
 			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
-			int queryLength) {
+			int queryLength, int targetLength) {
 
 		hit.addHSP(new HSP(hspNum++, 
 				smithWaterman,
-				getQueryStart(extensionResult, smithWaterman, queryLength),
-				getQueryEnd(extensionResult, smithWaterman, queryLength),
-				getTargetStart(extensionResult, smithWaterman),
-				getTargetEnd(extensionResult, smithWaterman),
+				getQueryStart(extensionResult, smithWaterman),
+				getQueryEnd(extensionResult, smithWaterman),
+				getTargetStart(extensionResult, smithWaterman, targetLength),
+				getTargetEnd(extensionResult, smithWaterman, targetLength),
 				normalizedScore, evalue));
 	}
 
-	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman, int queryLength) {
-		return queryLength - (extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart()) + 1;
+	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart();
 	}
 	
-	private int getQueryEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman, int queryLength) {
-		return queryLength - (extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd()) + 1;
+	private int getQueryEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd();
 	}
-	
-	private int getTargetStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
-		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
-	}
-	
-	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+		
+	private int getTargetStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman, int targetLength) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
+	}
+	
+	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman, int targetLength) {
+		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
 	}
 
 	@Override
 	protected SymbolList getQuery() throws IllegalSymbolException {
-		SymbolList invertedQuery;
-		invertedQuery = LightweightSymbolList.createDNA(Utils.invert(sp.getQuery().seqString()));
-		return invertedQuery;
+		return LightweightSymbolList.createDNA(Utils.invert(sp.getQuery().seqString()));
 	}
-
 }

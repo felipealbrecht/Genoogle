@@ -16,6 +16,7 @@ public class SearchResults {
 	private final SearchParams params;
 	private final List<Hit> hits;
 	private List<Exception> fails = null;
+	private int minSubSequenceLength;
 
 	/**
 	 * @param params
@@ -42,6 +43,7 @@ public class SearchResults {
 	/**
 	 * Add a new {@link Hit} to this search result.
 	 * 
+	 * @param id
 	 * @param hit
 	 */
 	public void addHit(Hit hit) {
@@ -49,12 +51,19 @@ public class SearchResults {
 	}
 
 	/**
-	 * Add a {@link List} of {@link Hit} to this search result.
+	 * Merge another Hash of hits into this search results.
 	 * 
-	 * @param hits
+	 * @param newHits
 	 */
-	public void addAllHits(List<Hit> hits) {
-		this.hits.addAll(hits);
+	public void addAllHits(List<Hit> newHits) {
+		for (Hit h: newHits) {			
+			int i = this.hits.indexOf(h);
+			if (i >= 0) {
+				this.hits.get(i).addAllHSP(h.getHSPs());
+			} else {
+				this.addHit(h);
+			}			
+		}
 	}
 
 	/**
@@ -99,13 +108,12 @@ public class SearchResults {
 	public List<Exception> getFails() {
 		return fails;
 	}
-
-	public void mergeInverted(SearchResults invertedSearchResults) {
-		if (invertedSearchResults.hasFail()) {
-			addAllFails(invertedSearchResults.getFails());
-			return;
-		}
-		
-		addAllHits(invertedSearchResults.getHits());				
+	
+	public void setMinSubSequenceLength(int minSubSequenceLength) {
+		this.minSubSequenceLength = minSubSequenceLength;
+	}
+	
+	public int getMinSubSequenceLength() {
+		return minSubSequenceLength;
 	}
 }

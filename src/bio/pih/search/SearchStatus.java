@@ -43,9 +43,9 @@ public class SearchStatus {
 		ALIGNMENT,
 
 		/**
-		 * Selecting the best alignments.
+		 * Sorting the alignments.
 		 */
-		SELECTING,
+		SORTING,
 
 		/**
 		 * Waiting the search result of its inner data banks.

@@ -275,8 +275,6 @@ public class Statistics {
 		this.effectiveDatabaseSize = databaseSize - numberOfSequences * lengthAdjust;
 		this.searchSpaceSize = effectiveQuerySize * effectiveDatabaseSize;
 		this.minLength = (int) Math.floor(gappedEvalueToNominal(minEvalue) / match);
-		System.out.println("Min Length: " + minLength);
-		//print_values(match);
 	}
 
 	private void print_values(int match) {

@@ -16,8 +16,13 @@ public class EncoderSubSequenceIndexInfo {
 	 * @param pos 
 	 * @return an integer containing the sequenceId and start point
 	 */
-	public static long getSubSequenceInfoIntRepresention(long sequenceId, int pos) {
-		assert sequenceId <= ((long) 1 << 32) - 1;
+	public static long getSubSequenceInfoLongRepresention(long sequenceId, long pos) {
+		if (sequenceId > ((long) 1 << 32) - 1) {
+			throw new RuntimeException(sequenceId + "is too high. Should be fill into a integer.");
+		}
+		if (pos > ((long) 1 << 32) - 1) {
+			throw new RuntimeException(pos + "is too high. Should be fill into a integer.");
+		}
 		return (((sequenceId) << 32) | (pos & DATA_32_BITS_MASK));
 	}
 

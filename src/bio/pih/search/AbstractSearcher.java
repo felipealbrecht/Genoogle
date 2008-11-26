@@ -72,7 +72,7 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 
 	protected void addHit(int hspNum, Hit hit, ExtendSequences extensionResult,
 			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
-			int queryLength) {
+			int queryLength, int targetLength) {
 
 		hit.addHSP(new HSP(hspNum++, 
 				smithWaterman,

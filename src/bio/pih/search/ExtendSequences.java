@@ -122,8 +122,8 @@ public class ExtendSequences {
 		
 		//http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
 		while (queryPos < queryLength && databankPos < databankLength) {
-			int queryValue = getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
-			int databankValue = getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
+			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
 				if (score >= bestScore) {
@@ -155,8 +155,8 @@ public class ExtendSequences {
 		databankPos = beginDatabankSequenceSegment - 1;
 
 		while (queryPos >= 0 && databankPos >= 0) {
-			int queryValue = getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
-			int databankValue = getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
+			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
 				if (score >= bestScore) {
@@ -176,18 +176,7 @@ public class ExtendSequences {
 				
 		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, encoder);
 	}
-	
-	//TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
-	private static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
-		int posInArray = (pos / subSequenceLength) + 1;
-		int posInInt = (subSequenceLength) - (pos % subSequenceLength) ;
-		int vectorValue = encodedSequence[posInArray]; 		
-		int shift = posInInt * 2;
-		int value = vectorValue >> (shift - 2);
-		return value & 3;
-	}
-	
-	
+		
 	@Override
 	public int hashCode() {
 		return super.hashCode();

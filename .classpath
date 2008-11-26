@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="lib/commons-pool-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/el-api.jar"/>
-	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080321.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-el.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-jdt.jar"/>
 	<classpathentry kind="lib" path="lib/jasper.jar"/>
@@ -33,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar" sourcepath="/home/albrecht/Área de Trabalho/protobuf-2.0.2/java/src/main/java"/>
+	<classpathentry kind="lib" path="/home/albrecht/genoogle/lib/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

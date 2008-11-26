@@ -243,4 +243,14 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		sequence.append(decodeIntegerToString(encodedSequence[i], extra));
 		return sequence.toString();
 	}
+	
+	//TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
+	public static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
+		int posInArray = (pos / subSequenceLength) + 1;
+		int posInInt = (subSequenceLength) - (pos % subSequenceLength) ;
+		int vectorValue = encodedSequence[posInArray]; 		
+		int shift = posInInt * 2;
+		int value = vectorValue >> (shift - 2);
+		return value & 3;
+	}
 }

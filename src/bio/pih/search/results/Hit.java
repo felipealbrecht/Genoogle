@@ -97,6 +97,14 @@ public class Hit {
 	public void addHSP(HSP hsp) {
 		this.hsps.add(hsp);
 	}
+
+	/**
+	 * Add a list of HSPs to this Hit.
+	 * @param hsps : {@link List} of {@link HSP}. 
+	 */
+	public void addAllHSP(List<HSP> hsps) {
+		this.hsps.addAll(hsps);
+	}
 	
 	/**
 	 * @return data bank name where the Hit happened.
@@ -124,6 +132,22 @@ public class Hit {
 		sb.append(" ");
 		sb.append(getDatabankName());
 		return sb.toString();
+	}
+	
+	/**
+	 * Verify if the other Hit object is from the same Gi. 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (super.equals(obj) == true) {
+			return true;
+		}
+		if (!(obj instanceof Hit)) {
+			return false;
+		}
+		
+		Hit other = (Hit) obj;
+		return other.gi.equals(gi);
 	}
 
 	/**

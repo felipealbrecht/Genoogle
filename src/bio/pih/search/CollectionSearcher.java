@@ -77,7 +77,7 @@ public class CollectionSearcher extends AbstractSearcher {
 			}
 		}
 
-		status.setActualStep(SearchStep.SELECTING);
+		status.setActualStep(SearchStep.SORTING);
 
 		Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
