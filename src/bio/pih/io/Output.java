@@ -125,7 +125,6 @@ public class Output {
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Element hitElement = factory.createElement("hit");
-		hitElement.addAttribute("num", Integer.toString(hit.getHitNum()));
 		hitElement.addAttribute("id", hit.getId());
 		hitElement.addAttribute("gi", hit.getGi());
 		hitElement.addAttribute("description", hit.getDescription());

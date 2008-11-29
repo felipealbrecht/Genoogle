@@ -8,9 +8,9 @@
 
   <genoogle:search-parameters>
     <genoogle:sub-sequence-min-similarity value="6"/>
-    <genoogle:max-sub-sequence-distance   value="10"/>
-    <genoogle:min-evalue                  value="0.0001" />
-    <genoogle:extend-dropoff              value="5" />
+    <genoogle:max-sub-sequence-distance   value="0"/>
+    <genoogle:min-evalue                  value="1E-5" />
+    <genoogle:extend-dropoff              value="3" />
   </genoogle:search-parameters>
 
   <genoogle:databanks>
@@ -26,16 +26,22 @@
 <!--  		<genoogle:databank name="hs"     path="hs_phase3.fna" storage="memory" />-->
 <!--  	</genoogle:databank-collection>        -->
 
-  	<genoogle:split-databanks name="not_found" path="files/fasta" sub-sequence-length="11" number-of-sub-databanks="1" max-threads="1">
-    	<genoogle:databank name="NotFound"     path="2811101.fna" storage="memory" />
+<!--  	<genoogle:split-databanks name="not_found" path="files/fasta" sub-sequence-length="11" number-of-sub-databanks="1" max-threads="1">-->
+<!--    	<genoogle:databank name="NotFound"     path="2811101.fna" storage="memory" />-->
+<!--  	</genoogle:split-databanks>-->
+  
+	
+<genoogle:split-databanks name="Human" path="files/fasta" number-of-sub-databanks="1" sub-sequence-length="11" max-threads="1">
+		<genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="memory" />
+  		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
+   		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
+    	<genoogle:databank name="Rat"       path="rat.rna.fna"   storage="memory" />
+		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
+    	<genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
+<!--  	   <genoogle:databank name="hs"     path="hs_phase3.fna" storage="memory" />-->
   	</genoogle:split-databanks>
   </genoogle:databanks>  	
-  
-<!--	
-<genoogle:split-databanks name="Human" path="files/fasta" number-of-sub-databanks="4" max-threads="4">
-  	   <genoogle:databank name="hs"     path="hs_phase3.fna" storage="memory" />
-  	</genoogle:split-databanks>
--->
+
 
 
   <!--

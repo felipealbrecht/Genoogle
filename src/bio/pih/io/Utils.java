@@ -29,6 +29,14 @@ public class Utils {
 	     return temp.toString();
 	}
 	
+	public static String invert (StringBuilder s) {
+	     StringBuilder temp = new StringBuilder();
+	     for (int i=s.length()-1; i>=0; i--) {
+	    	 temp.append(s.charAt(i));
+	     }
+	     return temp.toString();
+	}
+	
 	public static String sequenceComplement(String seqString) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < seqString.length(); i++) {
@@ -51,6 +59,20 @@ public class Utils {
 		case 'g': return 'c';
 		default: throw new IllegalStateException(base + " is not a valid DNA base.");		
 		}
+	}
+	
+	public static boolean isIn(int begin, int end, int pos) {
+		if ((pos >= begin) && (pos <= end)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean contains(int seq1Begin, int seq1End, int seq2Begin, int seq2End) {
+		if ((seq2Begin >= seq1Begin) && (seq2End <= seq1End)) {
+			return true;
+		}
+		return false;
 	}
 	
 }

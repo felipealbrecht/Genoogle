@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
  *
  */
 public class Hit {
-	private final int hitNum;
 	private final String id;
 	private final String gi;
 	private final String accession;
@@ -30,22 +29,14 @@ public class Hit {
 	 * @param hitLength
 	 * @param databankName
 	 */
-	public Hit(int hitNum, String id, String gi, String description, String accession, int hitLength, String databankName) {
+	public Hit(String id, String gi, String description, String accession, int hitLength, String databankName) {
 		this.id = id;
 		this.gi = gi;
-		this.hitNum = hitNum;
 		this.accession = accession;
 		this.description = description;
 		this.length = hitLength;
 		this.databankName = databankName;
 		this.hsps = Lists.newLinkedList();
-	}
-	
-	/**
-	 * @return number of the.
-	 */
-	public int getHitNum() {
-		return hitNum;
 	}
 
 	/**

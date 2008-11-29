@@ -83,7 +83,6 @@ public class DNABothDirectionsSearcher extends AbstractSearcher {
 		status.setActualStep(SearchStep.FINISHED);
 		
 		executor.shutdown();
-		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 						
 		return sr;
 	}

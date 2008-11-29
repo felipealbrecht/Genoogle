@@ -70,12 +70,11 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 		return sp.getQuery();
 	}
 
-	protected void addHit(int hspNum, Hit hit, ExtendSequences extensionResult,
+	protected void addHit(Hit hit, ExtendSequences extensionResult,
 			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
 			int queryLength, int targetLength) {
 
-		hit.addHSP(new HSP(hspNum++, 
-				smithWaterman,
+		hit.addHSP(new HSP(smithWaterman,
 				getQueryStart(extensionResult, smithWaterman),
 				getQueryEnd(extensionResult, smithWaterman),
 				getTargetStart(extensionResult, smithWaterman),

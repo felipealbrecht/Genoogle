@@ -49,32 +49,32 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	/**
 	 * A matrix with the size length(alphabet) times length(alphabet)
 	 */
-	protected transient SubstitutionMatrix subMatrix;
+	private transient SubstitutionMatrix subMatrix;
 
 	/**
 	 * Expenses for insterts.
 	 */
-	private int insert;
+	protected int insert;
 
 	/**
 	 * Expenses for deletes.
 	 */
-	private int delete;
+	protected int delete;
 
 	/**
 	 * Expenses for the extension of a gap.
 	 */
-	private int gapExt;
+	protected int gapExt;
 
 	/**
 	 * Expenses for matches.
 	 */
-	private int match;
+	protected int match;
 
 	/**
 	 * Expenses for replaces.
 	 */
-	private int replace;
+	protected int replace;
 
 	/**
 	 * Constructs a new Object with the given parameters based on the Needleman-Wunsch algorithm The alphabet of sequences to be aligned will be taken from the given substitution matrix.
@@ -224,8 +224,8 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * Variables needed for traceback
 	 */
 	int score = Integer.MIN_VALUE;
-	StringBuilder[] align = new StringBuilder[2];
-	StringBuilder path = null;
+	String[] align = new String[2];
+	String path = null;
 	int identitySize;
 	long time;
 
@@ -233,20 +233,20 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @return {@link String} containing the representation of the query aligned.
 	 */
 	public String getQueryAligned() {
-		return align[0].toString();
+		return align[0];
 	}
 	/**
 	 * @return {@link String} containing the representation of the target aligned.
 	 */
 	public String getTargetAligned() {
-		return align[1].toString();
+		return align[1];
 	}
 
 	/**
 	 * @return {@link String} containing the representation of the alignment path.
 	 */
 	public String getPath() {
-		return path.toString();
+		return path;
 	}
 
 	/**
@@ -312,13 +312,11 @@ public class GenoogleNeedlemanWunsch extends GenoogleSequenceAlignment {
 	 * @return The score for the given substitution.
 	 */
 	private int matchReplace(SymbolList query, SymbolList subject, int i, int j) {
-		try {
-			return subMatrix.getValueAt(query.symbolAt(i), subject.symbolAt(j));
-		} catch (Exception exc) {
-			if (query.symbolAt(i).getMatches().contains(subject.symbolAt(j)) || subject.symbolAt(j).getMatches().contains(query.symbolAt(i)))
-				return -match;
+		// Symbols are singletons, so it is possible to use '=='.
+		if (query.symbolAt(i) == subject.symbolAt(j)) {
+			return -match;
+		} else {
 			return -replace;
 		}
 	}
-
 }

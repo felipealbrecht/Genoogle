@@ -14,7 +14,6 @@ public class HSP implements Serializable {
 	private static final long serialVersionUID = -7701610542981141900L;
 
 	private final GenoogleSmithWaterman alignment;
-	private final int num;
 	private final double normalizedScore;
 	private final double eValue;
 
@@ -34,10 +33,9 @@ public class HSP implements Serializable {
 	 * @param normalizedScore
 	 * @param eValue
 	 */
-	public HSP(int num, GenoogleSmithWaterman alignment, 
+	public HSP(GenoogleSmithWaterman alignment, 
 			int queryFrom, int queryTo, int hitFrom, int hitTo, 
 			double normalizedScore, double eValue) {
-		this.num = num;
 		this.alignment = alignment;
 		this.queryFrom = queryFrom;
 		this.queryTo = queryTo;
@@ -45,13 +43,6 @@ public class HSP implements Serializable {
 		this.hitTo = hitTo;
 		this.normalizedScore = normalizedScore;
 		this.eValue = eValue;
-	}
-
-	/**
-	 * @return number of this HSP.
-	 */
-	public int getNum() {
-		return num;
 	}
 	
 	/**

@@ -43,7 +43,8 @@ public class ExtendSequences {
 	 */
 	public SymbolList getQuerySequenceExtended() throws IllegalSymbolException {
 		if (queryExtended == null) {
-			String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);
+			// sequences are from X til y+1 , so the +1 should be removed.
+			String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment - 1);
 			queryExtended = LightweightSymbolList.createDNA(queryExtendedString);			
 		}
 		return queryExtended;
@@ -57,7 +58,8 @@ public class ExtendSequences {
 	 */
 	public SymbolList getTargetSequenceExtended() throws IllegalSymbolException {
 		if (targetExtended == null) {
-			String targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment);
+			// sequences are from X til y+1 , so the +1 should be removed.
+			String targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment - 1);
 			targetExtended = LightweightSymbolList.createDNA(targetExtendedString);
 		}
 		return targetExtended;

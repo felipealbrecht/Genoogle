@@ -19,7 +19,7 @@ import bio.pih.index.ValueOutOfBoundsException;
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
 	
 	private final AbstractSubSequencesInvertedIndex index;
-	private final SimilarSubSequencesIndex similarSubSequencesIndex;
+	//private final SimilarSubSequencesIndex similarSubSequencesIndex;
 
 	private final StorageKind storageKind;
 
@@ -56,7 +56,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, StorageKind storageKind, int subSequenceLength) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		super(name, path, parent, subSequenceLength);
 		this.storageKind = storageKind;
-		this.similarSubSequencesIndex = SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
+		//this.similarSubSequencesIndex = SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
 		
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
@@ -104,7 +104,8 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	}
 
 	public List<Integer> getSimilarSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		return similarSubSequencesIndex.getSimilarSequences(encodedSubSequence);
+		//return similarSubSequencesIndex.getSimilarSequences(encodedSubSequence);
+		return null;
 	}
 
 	@Override
