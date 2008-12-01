@@ -1,5 +1,7 @@
 package bio.pih.encoder;
 
+import java.util.List;
+
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.SymbolList;
 
@@ -80,6 +82,10 @@ public abstract class SequenceEncoder {
 	 */
 	public final static int getSequenceLength(int[] encodedSequence) {
 		return encodedSequence[POSITION_LENGTH];
+	}
+	
+	public final static int getSequenceLength(List<Integer> encodedSequence) {
+		return encodedSequence.get(POSITION_LENGTH);
 	}
 
 	/**

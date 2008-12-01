@@ -46,17 +46,16 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
-	public long[] getMachingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
 	
 	
 
 	/**
-	 * Receive an encodedSubSequence, that is a sub-sequence 8 bases length encoded into a short, 
-	 * and return a Map with the subSequence and a list of integer containing the sequence and position that is <b>similar</b> the subsequence.
+	 * Receive an encodedSubSequence,  
+	 * and return a {@link List} with the subSequence of integer containing the sequence and position that is <b>similar</b> the subsequence.
 	 * 
-	 * <p>For more informations about the threshold and score, take a look into {@link SimilarSubSequencesIndex} and it <code>getDefaultInstance</code> method.
 	 * @param encodedSubSequence  
-	 * @return an array containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it. 
+	 * @return an {@link List} of interger containing the similar sub  sequences.
 	 * @throws ValueOutOfBoundsException
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 

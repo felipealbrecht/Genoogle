@@ -7,7 +7,6 @@ import java.util.List;
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.MemorySubSequencesInvertedIndexInteger;
-import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 
 /**
@@ -99,7 +98,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		}
 	}
 
-	public long[] getMachingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		return index.getMatchingSubSequence(encodedSubSequence);
 	}
 

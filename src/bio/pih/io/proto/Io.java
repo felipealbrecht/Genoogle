@@ -92,13 +92,13 @@ public final class Io {
     public boolean hasType() { return hasType; }
     public bio.pih.io.proto.Io.StoredDatabank.SequenceType getType() { return type_; }
     
-    // optional int64 qtdSequences = 2;
+    // required int64 qtdSequences = 2;
     private boolean hasQtdSequences;
     private long qtdSequences_ = 0L;
     public boolean hasQtdSequences() { return hasQtdSequences; }
     public long getQtdSequences() { return qtdSequences_; }
     
-    // optional int64 qtdBases = 3;
+    // required int64 qtdBases = 3;
     private boolean hasQtdBases;
     private long qtdBases_ = 0L;
     public boolean hasQtdBases() { return hasQtdBases; }
@@ -118,6 +118,8 @@ public final class Io {
     @Override
     public final boolean isInitialized() {
       if (!hasType) return false;
+      if (!hasQtdSequences) return false;
+      if (!hasQtdBases) return false;
       for (bio.pih.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
         if (!element.isInitialized()) return false;
       }
@@ -391,7 +393,7 @@ public final class Io {
         return this;
       }
       
-      // optional int64 qtdSequences = 2;
+      // required int64 qtdSequences = 2;
       public boolean hasQtdSequences() {
         return result.hasQtdSequences();
       }
@@ -409,7 +411,7 @@ public final class Io {
         return this;
       }
       
-      // optional int64 qtdBases = 3;
+      // required int64 qtdBases = 3;
       public boolean hasQtdBases() {
         return result.hasQtdBases();
       }
@@ -834,43 +836,43 @@ public final class Io {
       return bio.pih.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable;
     }
     
-    // optional int32 id = 1;
+    // required int32 id = 1;
     private boolean hasId;
     private int id_ = 0;
     public boolean hasId() { return hasId; }
     public int getId() { return id_; }
     
-    // optional string gi = 2;
+    // required string gi = 2;
     private boolean hasGi;
     private java.lang.String gi_ = "";
     public boolean hasGi() { return hasGi; }
     public java.lang.String getGi() { return gi_; }
     
-    // optional string name = 3;
+    // required string name = 3;
     private boolean hasName;
     private java.lang.String name_ = "";
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // optional string accession = 4;
+    // required string accession = 4;
     private boolean hasAccession;
     private java.lang.String accession_ = "";
     public boolean hasAccession() { return hasAccession; }
     public java.lang.String getAccession() { return accession_; }
     
-    // optional string description = 5;
+    // required string description = 5;
     private boolean hasDescription;
     private java.lang.String description_ = "";
     public boolean hasDescription() { return hasDescription; }
     public java.lang.String getDescription() { return description_; }
     
-    // optional int32 version = 6;
+    // required int32 version = 6;
     private boolean hasVersion;
     private int version_ = 0;
     public boolean hasVersion() { return hasVersion; }
     public int getVersion() { return version_; }
     
-    // optional bytes encodedSequence = 7;
+    // required bytes encodedSequence = 7;
     private boolean hasEncodedSequence;
     private com.google.protobuf.ByteString encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
     public boolean hasEncodedSequence() { return hasEncodedSequence; }
@@ -878,6 +880,13 @@ public final class Io {
     
     @Override
     public final boolean isInitialized() {
+      if (!hasId) return false;
+      if (!hasGi) return false;
+      if (!hasName) return false;
+      if (!hasAccession) return false;
+      if (!hasDescription) return false;
+      if (!hasVersion) return false;
+      if (!hasEncodedSequence) return false;
       return true;
     }
     
@@ -1157,7 +1166,7 @@ public final class Io {
       }
       
       
-      // optional int32 id = 1;
+      // required int32 id = 1;
       public boolean hasId() {
         return result.hasId();
       }
@@ -1175,7 +1184,7 @@ public final class Io {
         return this;
       }
       
-      // optional string gi = 2;
+      // required string gi = 2;
       public boolean hasGi() {
         return result.hasGi();
       }
@@ -1193,7 +1202,7 @@ public final class Io {
         return this;
       }
       
-      // optional string name = 3;
+      // required string name = 3;
       public boolean hasName() {
         return result.hasName();
       }
@@ -1211,7 +1220,7 @@ public final class Io {
         return this;
       }
       
-      // optional string accession = 4;
+      // required string accession = 4;
       public boolean hasAccession() {
         return result.hasAccession();
       }
@@ -1229,7 +1238,7 @@ public final class Io {
         return this;
       }
       
-      // optional string description = 5;
+      // required string description = 5;
       public boolean hasDescription() {
         return result.hasDescription();
       }
@@ -1247,7 +1256,7 @@ public final class Io {
         return this;
       }
       
-      // optional int32 version = 6;
+      // required int32 version = 6;
       public boolean hasVersion() {
         return result.hasVersion();
       }
@@ -1265,7 +1274,7 @@ public final class Io {
         return this;
       }
       
-      // optional bytes encodedSequence = 7;
+      // required bytes encodedSequence = 7;
       public boolean hasEncodedSequence() {
         return result.hasEncodedSequence();
       }
@@ -2276,15 +2285,15 @@ public final class Io {
     java.lang.String descriptorData =
       "\n\010io.proto\022\005proto\"\313\001\n\016StoredDatabank\0220\n\004" +
       "type\030\001 \002(\0162\".proto.StoredDatabank.Sequen" +
-      "ceType\022\024\n\014qtdSequences\030\002 \001(\003\022\020\n\010qtdBases" +
-      "\030\003 \001(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.St" +
+      "ceType\022\024\n\014qtdSequences\030\002 \002(\003\022\020\n\010qtdBases" +
+      "\030\003 \002(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.St" +
       "oredSequenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020" +
       "\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenc" +
       "eInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006len" +
-      "gth\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \001(\005" +
-      "\022\n\n\002gi\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\021\n\taccession\030" +
-      "\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\017\n\007version\030\006 " +
-      "\001(\005\022\027\n\017encodedSequence\030\007 \001(\014\"j\n\036StoredSi" +
+      "gth\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005" +
+      "\022\n\n\002gi\030\002 \002(\t\022\014\n\004name\030\003 \002(\t\022\021\n\taccession\030" +
+      "\004 \002(\t\022\023\n\013description\030\005 \002(\t\022\017\n\007version\030\006 " +
+      "\002(\005\022\027\n\017encodedSequence\030\007 \002(\014\"j\n\036StoredSi" +
       "milarSubSequencesIndex\022H\n\034storedComparat" +
       "ionResultInfos\030\001 \003(\0132\".proto.StoredCompa" +
       "rationResultInfo\"Y\n\033StoredComparationRes" +

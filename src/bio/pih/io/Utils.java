@@ -12,31 +12,31 @@ import com.google.protobuf.ByteString;
  * @author albrecht
  */
 public class Utils {
-	public static int[] getEncodedSequence(StoredSequence storedSequence) {
+
+	public static int[] getEncodedSequenceAsArray(StoredSequence storedSequence) {
 		ByteString encodedSequence = storedSequence.getEncodedSequence();
 		byte[] byteArray = encodedSequence.toByteArray();
-		final int[] ret = new int[byteArray.length/4];
+		final int[] ret = new int[byteArray.length / 4];
 		ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
 		return ret;
 	}
-	
 
-	public static String invert (String s) {
-	     StringBuilder temp = new StringBuilder();
-	     for (int i=s.length()-1; i>=0; i--) {
-	    	 temp.append(s.charAt(i));
-	     }
-	     return temp.toString();
+	public static String invert(String s) {
+		StringBuilder temp = new StringBuilder();
+		for (int i = s.length() - 1; i >= 0; i--) {
+			temp.append(s.charAt(i));
+		}
+		return temp.toString();
 	}
-	
-	public static String invert (StringBuilder s) {
-	     StringBuilder temp = new StringBuilder();
-	     for (int i=s.length()-1; i>=0; i--) {
-	    	 temp.append(s.charAt(i));
-	     }
-	     return temp.toString();
+
+	public static String invert(StringBuilder s) {
+		StringBuilder temp = new StringBuilder();
+		for (int i = s.length() - 1; i >= 0; i--) {
+			temp.append(s.charAt(i));
+		}
+		return temp.toString();
 	}
-	
+
 	public static String sequenceComplement(String seqString) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < seqString.length(); i++) {
@@ -46,21 +46,30 @@ public class Utils {
 		}
 		return sb.toString();
 	}
-	
+
 	public static char getComplement(char base) {
 		switch (base) {
-		case 'A': return 'T';
-		case 'T': return 'A';
-		case 'C': return 'G';
-		case 'G': return 'C';
-		case 'a': return 't';
-		case 't': return 'a';
-		case 'c': return 'g';
-		case 'g': return 'c';
-		default: throw new IllegalStateException(base + " is not a valid DNA base.");		
+		case 'A':
+			return 'T';
+		case 'T':
+			return 'A';
+		case 'C':
+			return 'G';
+		case 'G':
+			return 'C';
+		case 'a':
+			return 't';
+		case 't':
+			return 'a';
+		case 'c':
+			return 'g';
+		case 'g':
+			return 'c';
+		default:
+			throw new IllegalStateException(base + " is not a valid DNA base.");
 		}
 	}
-	
+
 	public static boolean isIn(int begin, int end, int pos) {
 		if ((pos >= begin) && (pos <= end)) {
 			return true;
@@ -74,5 +83,5 @@ public class Utils {
 		}
 		return false;
 	}
-	
+
 }

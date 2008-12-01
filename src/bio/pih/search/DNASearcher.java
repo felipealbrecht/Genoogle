@@ -161,7 +161,7 @@ public class DNASearcher extends AbstractSearcher {
 		return retrievedData;
 	}
 
-	boolean useSimilarSubSequences = false;
+	boolean useSimilarSubSequences = false;;
 
 	private void retrieveIndexPosition(int encodedSubSequence, int threshould,
 			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
@@ -170,13 +170,13 @@ public class DNASearcher extends AbstractSearcher {
 		if (useSimilarSubSequences) {
 			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
 			for (Integer similarSubSequence : similarSubSequences) {
-				long[] indexPositions = databank.getMachingSubSequence(similarSubSequence);
+				long[] indexPositions = databank.getMatchingSubSequence(similarSubSequence);
 				for (long subSequenceIndexInfo : indexPositions) {
 					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 				}
 			}
 		} else {
-			long[] indexPositions = databank.getMachingSubSequence(encodedSubSequence);
+			long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 			for (long subSequenceIndexInfo : indexPositions) {
 				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 			}
@@ -186,8 +186,8 @@ public class DNASearcher extends AbstractSearcher {
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
 		int[] iess = new int[querySequence.length() - (subSequenceLegth - 1)];
 
-		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
-				.getOverlappedFactory()
+		SymbolListWindowIterator symbolListWindowIterator = 
+			SymbolListWindowIteratorFactory.getOverlappedFactory()
 				.newSymbolListWindowIterator(querySequence, subSequenceLegth);
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
@@ -224,7 +224,7 @@ public class DNASearcher extends AbstractSearcher {
 				List<RetrievedArea> retrievedSequenceAreas, StoredSequence storedSequence)
 				throws IllegalSymbolException {
 
-			int[] encodedSequence = Utils.getEncodedSequence(storedSequence);
+			int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 			int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
 
 			List<Hit> hits = Lists.newLinkedList();

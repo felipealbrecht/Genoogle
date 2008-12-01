@@ -56,7 +56,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
 
-
 	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
 	/**
@@ -69,8 +68,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @param parent
 	 * @param readOnly
 	 *            if the data will be read only, no new sequences added.
-	 * @param subSequenceLength 
-	 * @param minEvalueDropOut 
+	 * @param subSequenceLength
+	 * @param minEvalueDropOut
 	 * @throws IOException
 	 */
 	public DNASequenceDataBank(String name, File path,
@@ -105,13 +104,14 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		System.out.println("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
 		System.out.println("Databank with : " + storedDatabank.getQtdBases() + " bases.");
-		System.out.println("Databank with : " + storedDatabank.getQtdBases() / 11 + " sub-sequences bases aprox.");
+		System.out.println("Databank with : " + storedDatabank.getQtdBases() / 11
+				+ " sub-sequences bases aprox.");
 
 		beginSequencesProcessing();
 		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
 			StoredSequence storedSequence = getSequenceFromId(i);
 			numberOfSequences++;
-			final int[] encodedSequence = Utils.getEncodedSequence(storedSequence);
+			final int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 			dataBankSize += SequenceEncoder.getSequenceLength(encodedSequence);
 
 			doSequenceProcessing(storedSequence.getId(), encodedSequence);
@@ -203,10 +203,12 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			IOException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
-		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
+		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true)
+				.getChannel();
 		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDataBankInfoFile(),
 				true).getChannel();
-		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
+		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank
+				.newBuilder();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
 		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
@@ -247,8 +249,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		int id = getNextSequenceId();
 		Builder builder = StoredSequence.newBuilder()
-				.setId(id)
-				.setGi(s.getIdentifier())
+				.setId(id).setGi(s.getIdentifier())
 				.setName(s.getName())
 				.setAccession(s.getAccession())
 				.setVersion(s.getVersion())
@@ -395,7 +396,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 		return parent.getTotalNumberOfSequences();
 	}
-	
+
 	@Override
 	public int getSubSequenceLength() {
 		return subSequenceLength;

@@ -22,7 +22,7 @@ public class LongArray {
 	private int blockSize;
 
 	private static final int DEFAULT_INITIAL_SIZE = 25;
-	private static final int BLOCKS_THRESHOULD = 5;
+	private static final int BLOCKS_THRESHOULD = 100;
 
 	/**
 	 * Default constructor that uses default size for the blocks.

@@ -154,7 +154,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		return sequenceEncoded;
 	}
-
+	
 	/**
 	 * @param encodedSequence
 	 * @return the {@link SymbolList} that is stored in encodedSequence
