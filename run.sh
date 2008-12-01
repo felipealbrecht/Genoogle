@@ -1,2 +1,25 @@
-/usr/lib/jvm/java-6-sun/bin/java -ea -server -Xms768m -Xmx1024m -XX:NewRatio=2 -XX:+UseFastAccessorMethods -cp lib/dom4j-1.6.1.jar:lib/biojava-genoogle.jar:genoogle.jar:lib/google-collect-snapshot-20080321.jar:lib/log4j-1.2.15.jar bio.pih.SOIS -s mutantes_NM_010646.seq RefSeq
-
+#!/bin/sh
+java \
+ -Xmx14196M \
+ -Xms14196M \
+ -Xmn3g \
+ -Xss128k \
+ -verbose:gc \
+ -server \
+ -classpath genoogle.jar:lib/* \
+  bio.pih.web.WebServer \
+  www.pih.bio.br \
+  /home/albrecht/genoogle/webapps/ 8090
+ #-Dcom.sun.management.jmxremote.password.file=jmxremote.password \
+ #-Dcom.sun.management.jmxremote \
+ #-Dcom.sun.management.jmxremote.ssl=false \
+ #-Dcom.sun.management.jmxremote.authenticate=false \
+ #-Dcom.sun.management.jmxremote.port=8090 \
+ #-XX:+UseFastAccessorMethods \
+ #-XX:ParallelGCThreads=20 \
+ #-XX:+UseConcMarkSweepGC \
+ #-XX:+UseParNewGC \
+ #-XX:SurvivorRatio=8 \
+ #-XX:TargetSurvivorRatio=90  \
+ #-XX:MaxTenuringThreshold=31 \
+ #-XX:+AggressiveOpts \

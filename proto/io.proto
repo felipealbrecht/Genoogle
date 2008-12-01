@@ -16,8 +16,8 @@ message StoredDatabank {
   }
   
   required SequenceType type = 1;
-  optional int64 qtdSequences = 2;
-  optional int64 qtdBases = 3;
+  required int64 qtdSequences = 2;
+  required int64 qtdBases = 3;
   repeated StoredSequenceInfo sequencesInfo = 4;  
 }
 
@@ -28,13 +28,13 @@ message StoredSequenceInfo {
 }		
 					
 message StoredSequence {
-  optional int32 id = 1;
-  optional string gi = 2;
-  optional string name = 3;
-  optional string accession = 4;
-  optional string description = 5;
-  optional int32 version = 6;
-  optional bytes encodedSequence = 7;
+  required int32 id = 1;
+  required string gi = 2;
+  required string name = 3;
+  required string accession = 4;
+  required string description = 5;
+  required int32 version = 6;
+  required bytes encodedSequence = 7;
 }
 
 

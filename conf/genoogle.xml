@@ -9,7 +9,7 @@
   <genoogle:search-parameters>
     <genoogle:sub-sequence-min-similarity value="6"/>
     <genoogle:max-sub-sequence-distance   value="0"/>
-    <genoogle:min-evalue                  value="1E-5" />
+    <genoogle:min-evalue                  value="1E-10" />
     <genoogle:extend-dropoff              value="3" />
   </genoogle:search-parameters>
 
