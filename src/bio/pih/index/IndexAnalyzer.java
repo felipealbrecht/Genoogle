@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.biojava.bio.BioException;
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
@@ -26,7 +28,7 @@ import com.google.common.collect.Maps;
 
 public class IndexAnalyzer {
 
-	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		SearchManager sm = XMLConfigurationReader.getSearchManager();
 		IndexAnalyzer analyzer = new IndexAnalyzer();

@@ -9,6 +9,8 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Embedded;
+import org.biojava.bio.BioException;
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.SOIS;
 import bio.pih.index.InvalidHeaderData;
@@ -18,7 +20,7 @@ public class WebServer {
 	private volatile boolean running = true;
 	Embedded embedded = null;
 
-	public WebServer(String defaultHost, int port, String path) throws LifecycleException, InvalidHeaderData {
+	public WebServer(String defaultHost, int port, String path) throws LifecycleException, InvalidHeaderData, IllegalSymbolException, BioException {
 		System.out.println(defaultHost);
 		System.out.println(path);
 		
@@ -56,7 +58,7 @@ public class WebServer {
 		running = false;
 	}
 
-	public static void main(String[] args) throws LifecycleException, InterruptedException, InvalidHeaderData {
+	public static void main(String[] args) throws LifecycleException, InterruptedException, InvalidHeaderData, IllegalSymbolException, BioException {
 		String defaultHost = args[0];
 		String path = args[1];
 		int port = Integer.parseInt(args[2]);

@@ -16,6 +16,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
+import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.InvalidHeaderData;
@@ -99,12 +100,11 @@ public class DNASearcher extends AbstractSearcher {
 				+ querySequence.seqString() + " and min subSequenceLength >= "
 				+ this.statistics.getMinLengthDropOut());
 
-		int[] iess = getEncodedSubSequences(querySequence);
+		int[] iess = getEncodedSubSequences(querySequence, databank.getMaskEncoder());
 		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(querySequence);
-		int threshould = sp.getMinSimilarity();
 
 		long init = System.currentTimeMillis();
-		IndexRetrievedData retrievedData = getIndexPositions(iess, threshould);
+		IndexRetrievedData retrievedData = getIndexPositions(iess);
 
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
@@ -140,6 +140,7 @@ public class DNASearcher extends AbstractSearcher {
 			sr.addAllHits(hits);
 		}
 
+		executor.shutdown();
 		status.setActualStep(SearchStep.SORTING);
 		Collections.sort(sr.getHits(), Hit.COMPARATOR);
 
@@ -148,24 +149,25 @@ public class DNASearcher extends AbstractSearcher {
 		status.setActualStep(SearchStep.FINISHED);
 	}
 
-	private IndexRetrievedData getIndexPositions(int[] iess, int threshould)
-			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	private IndexRetrievedData getIndexPositions(int[] iess) throws ValueOutOfBoundsException,
+			IOException, InvalidHeaderData {
 
+		int subSequenceLength = databank.getMaskEncoder() == null ? databank.getSubSequenceLength()
+				: databank.getMaskEncoder().getPatternLength();
 		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(),
-				sp, statistics.getMinLengthDropOut(), databank.getSubSequenceLength());
+				sp, statistics.getMinLengthDropOut(), subSequenceLength);
 
 		status.setActualStep(SearchStep.INDEX_SEARCH);
 		for (int ss = 0; ss < iess.length; ss++) {
-			retrieveIndexPosition(iess[ss], threshould, retrievedData, ss);
+			retrieveIndexPosition(iess[ss], retrievedData, ss);
 		}
 		return retrievedData;
 	}
 
-	boolean useSimilarSubSequences = false;;
+	boolean useSimilarSubSequences = false;
 
-	private void retrieveIndexPosition(int encodedSubSequence, int threshould,
-			IndexRetrievedData retrievedData, int queryPos) throws ValueOutOfBoundsException,
-			IOException, InvalidHeaderData {
+	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData,
+			int queryPos) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
 		if (useSimilarSubSequences) {
 			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
@@ -186,14 +188,32 @@ public class DNASearcher extends AbstractSearcher {
 	private int[] getEncodedSubSequences(SymbolList querySequence) {
 		int[] iess = new int[querySequence.length() - (subSequenceLegth - 1)];
 
-		SymbolListWindowIterator symbolListWindowIterator = 
-			SymbolListWindowIteratorFactory.getOverlappedFactory()
+		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
+				.getOverlappedFactory()
 				.newSymbolListWindowIterator(querySequence, subSequenceLegth);
 		int pos = -1;
 		while (symbolListWindowIterator.hasNext()) {
 			pos++;
 			SymbolList subSequence = symbolListWindowIterator.next();
 			iess[pos] = encoder.encodeSubSymbolListToInteger(subSequence);
+		}
+		return iess;
+	}
+
+	private int[] getEncodedSubSequences(SymbolList querySequence, DNAMaskEncoder maskEncoder) {
+		if (maskEncoder == null) {
+			return getEncodedSubSequences(querySequence);
+		}
+
+		int[] iess = new int[querySequence.length() - (maskEncoder.getPatternLength() - 1)];
+
+		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
+				.getOverlappedFactory().newSymbolListWindowIterator(querySequence,
+						maskEncoder.getPatternLength());
+		int pos = -1;
+		while (symbolListWindowIterator.hasNext()) {
+			pos++;
+			iess[pos] = maskEncoder.applyMask(symbolListWindowIterator.next());
 		}
 		return iess;
 	}

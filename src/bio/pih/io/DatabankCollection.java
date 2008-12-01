@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.InvalidHeaderData;
@@ -35,6 +36,8 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	private SequenceDataBank parent;
 
+	protected final String mask;
+
 
 
 	/**
@@ -47,12 +50,14 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param minEvalueDropOut 
 	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, File path,
-			SequenceDataBank parent, int subSequenceLength, int maxThreads) {
+			SequenceDataBank parent, int subSequenceLength, int maxThreads, 
+			String mask) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
 		this.parent = parent;
 		this.subSequenceLength = subSequenceLength;
+		this.mask = mask;
 		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.maxThreads = maxThreads;
 		this.collection = new LinkedHashMap<String, T>();
@@ -166,7 +171,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();

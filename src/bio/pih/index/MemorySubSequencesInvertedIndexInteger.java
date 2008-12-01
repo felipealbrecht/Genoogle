@@ -17,8 +17,6 @@ import bio.pih.util.LongArray;
  */
 public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequencesInvertedIndex {
 
-	private static final int BUCKET_SIZE = 10;
-
 	protected LongArray[] tempIndex = null;
 	protected long[][] index = null;
 	
@@ -40,27 +38,13 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 	}
 	
 	@Override
-	// TODO: see if this method is called from where already has the encoded sequence.
-	public void addSequence(int sequenceId, SymbolList sequence) {
-		if (sequence == null) {
-			throw new NullPointerException("Sequence can not be null");
-		}
-
-		addSequence(sequenceId, encoder.encodeSymbolListToIntegerArray(sequence));
-	}
-
-	@Override
-	public void addSequence(int sequenceId, int[] encodedSequence) {
-		if (sequenceId > indexSize) {
-			logger.fatal("Sequence id " + sequenceId);
-			return;
-		}
-
+	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
+		// TODO: Buggy because it gets the incomplete final sub-sequence of the encodedSequence.
 		int length = encodedSequence.length;
 		for (int arrayPos = SequenceEncoder.getPositionBeginBitsVector(); arrayPos < length; arrayPos++) {
-			int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength;
+			int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceOffSet;
 			long longRepresention = EncoderSubSequenceIndexInfo.getSubSequenceInfoLongRepresention(sequenceId, sequencePos);
-			addSubSequenceInfoEncoded(encodedSequence[arrayPos], longRepresention);							
+			addSubSequenceInfoEncoded(encodedSequence[arrayPos], longRepresention);
 		}
 	}
 
@@ -87,7 +71,7 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 		int indexPos = subSequenceEncoded;
 		LongArray indexBucket = tempIndex[indexPos];
 		if (indexBucket == null) {
-			indexBucket = new LongArray(BUCKET_SIZE);
+			indexBucket = new LongArray();
 			tempIndex[indexPos] = indexBucket;
 		}
 		indexBucket.add(subSequenceInfoEncoded);

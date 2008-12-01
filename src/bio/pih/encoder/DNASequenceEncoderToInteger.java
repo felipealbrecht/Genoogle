@@ -41,7 +41,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public DNASequenceEncoderToInteger(int subSequenceLength) throws ValueOutOfBoundsException {
+	protected DNASequenceEncoderToInteger(int subSequenceLength) throws ValueOutOfBoundsException {
 		super(subSequenceLength);
 	}
 
@@ -52,7 +52,9 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @return an int containing the representation of the subsequence
 	 */
 	public int encodeSubSymbolListToInteger(SymbolList subSymbolList) {
-		assert subSymbolList.length() <= subSequenceLength;
+		if (subSymbolList.length() > subSequenceLength) {
+			throw new ValueOutOfBoundsException(subSymbolList + " is bigger than subSequenceLength("+subSequenceLength+")");
+		}
 
 		int encoded = 0;
 

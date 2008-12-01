@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -46,8 +48,10 @@ public class XMLConfigurationReader {
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
 	 * @throws InvalidHeaderData 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(
@@ -105,6 +109,7 @@ public class XMLConfigurationReader {
 			DatabankCollection<? extends DNASequenceDataBank> parent) throws IOException, InvalidHeaderData {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
+		String mask = e.attributeValue("mask");
 		
 		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
 		int subSequenceLength; 
@@ -123,12 +128,13 @@ public class XMLConfigurationReader {
 			logger.fatal("Missing attribute path in element " + e.getName());
 			return null;
 		}
+		
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, maxThreads);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, maxThreads, mask);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -158,7 +164,7 @@ public class XMLConfigurationReader {
 			}
 					
 			try {
-				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind, subSequenceLength);
+				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind, subSequenceLength, mask);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -169,7 +175,7 @@ public class XMLConfigurationReader {
 			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent, subSequenceLength, maxThreads);
+					name, DNATools.getDNA(), new File(path), parent, subSequenceLength, maxThreads, mask);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
@@ -193,16 +199,6 @@ public class XMLConfigurationReader {
 
 	private static Element getSearchParameters() {
 		return doc.getRootElement().element("search-parameters");
-	}
-
-	/**
-	 * @return default subSequenceMinSimilarity specified at the XML
-	 *         configuration file.
-	 */
-	public static int getSubSequenceMinSimilarity() {
-		String value = getSearchParameters().element("sub-sequence-min-similarity").attributeValue(
-				"value");
-		return Integer.parseInt(value);
 	}
 
 	/**

@@ -17,10 +17,11 @@ import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.FiniteAlphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
+import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;
 import bio.pih.io.proto.Io.StoredSequence;
@@ -40,18 +41,18 @@ import com.google.protobuf.ByteString;
  */
 public abstract class DNASequenceDataBank implements SequenceDataBank {
 
-	private final FiniteAlphabet alphabet = DNATools.getDNA();
-	private final String name;
-	private final File file;
-	private final DatabankCollection<? extends DNASequenceDataBank> parent;
-	private final DNASequenceEncoderToInteger encoder;
-	private final int subSequenceLength;
-	private File fullPath = null;
+	protected final FiniteAlphabet alphabet = DNATools.getDNA();
+	protected final String name;
+	protected final File file;
+	protected final DatabankCollection<? extends DNASequenceDataBank> parent;
+	protected final int subSequenceLength;
+	protected File fullPath = null;
+	protected final DNASequenceEncoderToInteger encoder;
 
 	private volatile int nextSequenceId;
 	private int numberOfSequences;
 	private long dataBankSize;
-	protected StoredDatabank storedDatabank;
+	private StoredDatabank storedDatabank;
 
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
@@ -86,7 +87,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	@Override
-	public synchronized void load() throws IOException, ValueOutOfBoundsException {
+	public synchronized void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
 		logger.info("Loading databank from " + getDataBankFile());
 
 		long begin = System.currentTimeMillis();
@@ -110,11 +111,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		beginSequencesProcessing();
 		for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
 			StoredSequence storedSequence = getSequenceFromId(i);
-			numberOfSequences++;
-			final int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
-			dataBankSize += SequenceEncoder.getSequenceLength(encodedSequence);
-
-			doSequenceProcessing(storedSequence.getId(), encodedSequence);
+			this.numberOfSequences++;
+			dataBankSize += doSequenceProcessing(storedSequence.getId(), storedSequence);
 			if (i % 1000 == 0) {
 				System.out.println(i + "/" + storedDatabank.getSequencesInfoCount());
 			}
@@ -122,7 +120,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		dataBankFileChannel.close();
 		finishSequencesProcessing();
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with "
-				+ numberOfSequences + " sequences.");
+				+ this.numberOfSequences + " sequences.");
 	}
 
 	/**
@@ -144,8 +142,10 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * Process a {@link SequenceInformation}
 	 * 
 	 * @param sequenceInformation
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
-	abstract void doSequenceProcessing(int sequenceId, int[] encodedSequence);
+	abstract int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException, BioException;
 
 	/**
 	 * Finish the sequences processing. <br>

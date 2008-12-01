@@ -140,7 +140,7 @@ public class PersistentSubSequencesInvertedIndex extends
 		}
 		indexChannel.close();
 		dataChannel.close();
-	}
+	} 
 
 	private boolean existsChecked = false;
 	private boolean exists = false;
@@ -167,17 +167,9 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public void addSequence(int sequenceId, SymbolList sequence) {
+	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
 		if (temporaryIndex != null) {
-			temporaryIndex.addSequence(sequenceId, sequence);
-		}
-
-	}
-
-	@Override
-	public void addSequence(int sequenceId, int[] encodedSequence) {
-		if (temporaryIndex != null) {
-			temporaryIndex.addSequence(sequenceId, encodedSequence);
+			temporaryIndex.addSequence(sequenceId, encodedSequence, subSequenceOffSet);
 		}
 	}
 

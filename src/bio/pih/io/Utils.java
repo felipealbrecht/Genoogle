@@ -16,7 +16,7 @@ public class Utils {
 	public static int[] getEncodedSequenceAsArray(StoredSequence storedSequence) {
 		ByteString encodedSequence = storedSequence.getEncodedSequence();
 		byte[] byteArray = encodedSequence.toByteArray();
-		final int[] ret = new int[byteArray.length / 4];
+		int[] ret = new int[byteArray.length / 4];
 		ByteBuffer.wrap(byteArray).asIntBuffer().get(ret);
 		return ret;
 	}

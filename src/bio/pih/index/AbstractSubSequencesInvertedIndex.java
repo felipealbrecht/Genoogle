@@ -53,22 +53,15 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @throws IOException 
 	 */
 	abstract public void finishConstruction() throws IOException;
-
-	/**
-	 * Add a {@link SymbolList} into the index
-	 *
-	 * @param sequenceId 
-	 * @param sequence
-	 */
-	abstract public void addSequence(int sequenceId, SymbolList sequence);
 	
 	/**
 	 * Add an encoded sequences into the index
 	 * 
 	 * @param sequenceId
-	 * @param encodedSequence 
+	 * @param encodedSequence
+	 * @param subSequenceOffSet 
 	 */
-	abstract public void addSequence(int sequenceId, int[] encodedSequence);
+	abstract public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet);
 	
 	/**
 	 * @param subSequence

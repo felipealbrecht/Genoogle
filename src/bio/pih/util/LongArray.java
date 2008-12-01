@@ -1,9 +1,6 @@
 package bio.pih.util;
 
 import java.util.Arrays;
-import java.util.List;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author Felipe Albrecht
@@ -15,33 +12,22 @@ import com.google.common.collect.Lists;
 public class LongArray {
 
 	private static long[] EMPTY_ARRAY = new long[0];
-	private List<long[]> blockArrays;
 	private long[] finalArray;
 	private long[] actualBlock;
 	private int actualBockPos;
-	private int blockSize;
 
-	private static final int DEFAULT_INITIAL_SIZE = 25;
-	private static final int BLOCKS_THRESHOULD = 100;
-
-	/**
-	 * Default constructor that uses default size for the blocks.
-	 */
-	public LongArray() {
-		this(DEFAULT_INITIAL_SIZE);
-	}
+	// TODO: put these values as input parameters.
+	private static final int DEFAULT_INITIAL_SIZE = 10;
 
 	/**
 	 * Constructor that gives the block size.
 	 * 
 	 * @param blockSize
 	 */
-	public LongArray(int blockSize) {
+	public LongArray() {
 		this.finalArray = null;
 		this.actualBlock = null;
-		this.blockArrays = null;
 		this.actualBockPos = 0;
-		this.blockSize = blockSize;
 	}
 
 	/**
@@ -55,24 +41,13 @@ public class LongArray {
 	}
 
 	private void ensureCapacity() {
+		if (actualBockPos == DEFAULT_INITIAL_SIZE) {
+			getArray();
+		}
 		if (actualBlock == null) {
-			actualBlock = new long[blockSize];
-			actualBockPos = 0;
-		} else if (actualBockPos == blockSize) {
-			getBlocksArray().add(actualBlock);
-			if ((getBlocksArray().size() & BLOCKS_THRESHOULD) == BLOCKS_THRESHOULD) {
-				getArray();
-			}
-			actualBlock = new long[blockSize];
+			actualBlock = new long[DEFAULT_INITIAL_SIZE];
 			actualBockPos = 0;
 		}
-	}
-
-	private List<long[]> getBlocksArray() {
-		if (blockArrays == null) {
-			blockArrays = Lists.newArrayList();
-		}
-		return blockArrays;
 	}
 
 	/**
@@ -82,7 +57,7 @@ public class LongArray {
 	 */
 	public long[] getArray() {
 		// Special case: no data was added from begin or after the last getArray()
-		if ((actualBockPos == 0) && (blockArrays == null || getBlocksArray().size() == 0)) {
+		if (actualBockPos == 0) {
 			if (finalArray == null) {
 				return EMPTY_ARRAY;
 			}
@@ -93,9 +68,7 @@ public class LongArray {
 		if (finalArray != null) {
 			size += finalArray.length;
 		}
-		if (blockArrays != null) {
-			size += (getBlocksArray().size() * blockSize);
-		}
+
 		size += actualBockPos;
 
 		long[] o = new long[size];
@@ -107,18 +80,10 @@ public class LongArray {
 			pos = finalArray.length;
 		}
 
-		if (blockArrays != null) {
-			for (long[] block : getBlocksArray()) {
-				System.arraycopy(block, 0, o, pos, blockSize);
-				pos += blockSize;
-			}
-		}
-
 		System.arraycopy(actualBlock, 0, o, pos, actualBockPos);
 
 		actualBockPos = 0;
 		actualBlock = null;
-		blockArrays = null;
 		finalArray = o;
 
 		return finalArray;
@@ -152,7 +117,6 @@ public class LongArray {
 	 */
 	public void reset() {
 		actualBockPos = 0;
-		blockArrays = null;
 		finalArray = null;
 	}
 
@@ -162,7 +126,7 @@ public class LongArray {
 	 * @param args
 	 */
 	public static void mainX(String[] args) {
-		LongArray longArray = new LongArray(3);
+		LongArray longArray = new LongArray();
 		longArray.add(1);
 		longArray.add(2);
 		longArray.add(3);

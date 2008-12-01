@@ -17,15 +17,9 @@ public final class SearchParams implements Serializable {
 
 	private final SymbolList query;
 	private final String databankName;
-	private final int minSimilarity;
 	private final int maxSubSequencesDistance;
 	private final int sequencesExtendDropoff;
 	private final double minEvalue;
-
-	/**
-	 * Default similarity threshold at the similar sub-sequences index. 
-	 */
-	public static final int DEFAULT_MIN_SIMILARITY = XMLConfigurationReader.getSubSequenceMinSimilarity();
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence to be considered at same area.
@@ -47,23 +41,21 @@ public final class SearchParams implements Serializable {
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MIN_SIMILARITY, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
+		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
 	}
 
 	/**
 	 * @param query
 	 * @param databankName
-	 * @param minSimilarity
 	 * @param maxSubSequencesDistance 
 	 * @param minMatchAreaLength
 	 * @param minQuerySequenceSubSequence
 	 * @param sequencesExtendDropoff 
 	 * @param minEvalue 
 	 */
-	public SearchParams(SymbolList query, String databankName, int minSimilarity, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
+	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
 		this.query = query;
 		this.databankName = databankName;
-		this.minSimilarity = minSimilarity;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
 		this.minEvalue = minEvalue;
@@ -81,13 +73,6 @@ public final class SearchParams implements Serializable {
 	 */
 	public String getDatabank() {
 		return databankName;
-	}
-
-	/**
-	 * @return similarity threshold at the similar sub-sequences index. 
-	 */
-	public int getMinSimilarity() {
-		return minSimilarity;
 	}
 
 	/**

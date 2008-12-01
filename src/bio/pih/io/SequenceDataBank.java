@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.InvalidHeaderData;
@@ -96,8 +97,10 @@ public interface SequenceDataBank {
 	 * @throws IOException
 	 * @throws ValueOutOfBoundsException  
 	 * @throws InvalidHeaderData 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
-	void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData;	
+	void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException;	
 	
 	/**
 	 * Encode the sequences into a computer legible mode 

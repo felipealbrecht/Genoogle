@@ -100,8 +100,7 @@ public class SimilarSubSequencesIndex {
 			throws ValueOutOfBoundsException {
 		this.subSequenceLength = subSequenceLength;
 		this.deeper = deeper;
-
-		this.encoder = new DNASequenceEncoderToInteger(subSequenceLength);
+		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.maxEncodedSequenceValue = (int) Math.pow(alphabet.size(), subSequenceLength) - 1;
 	}
 

@@ -52,8 +52,10 @@ public class SOIS {
 	/**
 	 * @return SOIS Singleton instance.
 	 * @throws InvalidHeaderData 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
-	public static SOIS getInstance() throws InvalidHeaderData {
+	public static SOIS getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
 		if (singleton == null) {
 			try {
 				singleton = new SOIS();
@@ -72,8 +74,10 @@ public class SOIS {
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
 	 * @throws InvalidHeaderData 
+	 * @throws BioException 
+	 * @throws IllegalSymbolException 
 	 */
-	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
 	}

@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.index.InvalidHeaderData;
@@ -66,8 +67,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 * @param maxThreads number of maximum simultaneous threads
 	 * @param minEvalueDropOut 
 	 */
-	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, int maxThreads) {
-		super(name, DNATools.getDNA(), path, null, subSequenceLength, maxThreads);
+	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, int maxThreads, String mask) {
+		super(name, DNATools.getDNA(), path, null, subSequenceLength, maxThreads, mask);
 		this.qtdSubBases = qtdSubBases;
 	}
 
@@ -90,7 +91,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long subCount = 0;
 
 		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
-				+ subCount, path, this, StorageKind.MEMORY, subSequenceLength);
+				+ subCount, path, this, StorageKind.MEMORY, subSequenceLength, mask);
 		long totalSequences = 0;
 		long totalBases = 0;
 		FileChannel dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
@@ -118,7 +119,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
 					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
-							+ subCount, path, this, StorageKind.MEMORY, subSequenceLength);
+							+ subCount, path, this, StorageKind.MEMORY, subSequenceLength, mask);
 				}
 			}
 		}
@@ -196,12 +197,12 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData {
+	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
-			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength);
+			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
 			subDataBank.load();
 			try {
 				this.addDatabank(subDataBank);
