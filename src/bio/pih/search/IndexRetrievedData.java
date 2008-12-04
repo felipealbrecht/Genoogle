@@ -16,6 +16,7 @@ public class IndexRetrievedData {
 	private final int minLength;
 	private final int subSequenceLength;
 	private int totalAreas = -1;
+	private int totalSequences = -1;
 
 	@SuppressWarnings("unchecked")
 	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength) {
@@ -102,17 +103,24 @@ public class IndexRetrievedData {
 			}
 		}
 		int totalAreas = 0;
+		int totalSequences = 0;
 		for (int i = 0; i < retrievedAreasArray.length; i++) {
 			if (retrievedAreasArray[i] != null) {
 				totalAreas += retrievedAreasArray[i].size();
+				totalSequences++;
 			}
 		}
+		this.totalSequences  = totalSequences;
 		this.totalAreas = totalAreas;
 		return retrievedAreasArray;
 	}
 
 	public int getTotalAreas() {
 		return totalAreas;
+	}
+	
+	public int getTotalSequences() {
+		return totalSequences;
 	}
 
 	public final static class RetrievedArea {

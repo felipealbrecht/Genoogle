@@ -84,7 +84,7 @@ public class SearchResults {
 	 */
 	public void addAllFails(List<Exception> fail) {
 		if (fails == null) {
-			fails = Lists.newLinkedList();
+			fails = Lists.newArrayList();
 		}
 		fails.addAll(fail);
 	}
@@ -96,7 +96,7 @@ public class SearchResults {
 	 */
 	public void addFail(Exception fail) {
 		if (fails == null) {
-			fails = Lists.newLinkedList();
+			fails = Lists.newArrayList();
 		}
 		fails.add(fail);
 	}

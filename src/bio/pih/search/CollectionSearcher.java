@@ -79,14 +79,16 @@ public class CollectionSearcher extends AbstractSearcher {
 
 		status.setActualStep(SearchStep.SORTING);
 
+		long beginSort = System.currentTimeMillis();
 		Collections.sort(sr.getHits(), Hit.COMPARATOR);
+		System.out.println("Sorting time: " + (System.currentTimeMillis() - beginSort));
 
 		status.setResults(sr);
 		status.setActualStep(SearchStep.FINISHED);
 		
 		executor.shutdown();
-		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 
+		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 		return sr;
 	}
 }

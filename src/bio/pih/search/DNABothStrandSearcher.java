@@ -16,39 +16,32 @@ import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
-public class DNABothDirectionsSearcher extends AbstractSearcher {
+public class DNABothStrandSearcher extends AbstractSearcher {
 
 	private DNASearcher searcher;
-	private DNASearcher invertedSearcher;
-	private DNASearcher complementSearcher;
 	private DNASearcher complementInvertedSearcher;
 	
-	private static final Logger logger = Logger.getLogger(DNABothDirectionsSearcher.class.getName());
+	private static final Logger logger = Logger.getLogger(DNABothStrandSearcher.class.getName());
 	private final IndexedDNASequenceDataBank databank;
 
-	public DNABothDirectionsSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
+	public DNABothStrandSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
 		super(id, sp, databank);
 		this.databank = databank;			
 	}
 
 	@Override
-	public SearchResults call() throws Exception {
-		searcher = new DNASearcher(id, sp, databank);		
-		invertedSearcher = new DNAInvertedSearcher(id, sp, databank);
-		complementSearcher = new DNAComplementSearcher(id, sp, databank);
-		complementInvertedSearcher = new DNAComplementInvertedSearcher(id, sp, databank);
-		
-		
-		status.setActualStep(SearchStep.SEARCHING_INNER);
+	public SearchResults call() throws Exception {	
 		long begin = System.currentTimeMillis();
+		searcher = new DNASearcher(id, sp, databank);
+		complementInvertedSearcher = new DNAReverseComplementSearcher(id, sp, databank);
+				
+		status.setActualStep(SearchStep.SEARCHING_INNER);
 		ExecutorService executor = Executors.newFixedThreadPool(2);
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				executor);
 
 		int total = 0;
-		completionService.submit(searcher); total++; 
-		completionService.submit(invertedSearcher); total++;
-		completionService.submit(complementSearcher); total++;
+		completionService.submit(searcher); total++; 	
 		completionService.submit(complementInvertedSearcher); total++;
 		
 		for (int i = 0; i < total; i++) {
@@ -83,7 +76,7 @@ public class DNABothDirectionsSearcher extends AbstractSearcher {
 		status.setActualStep(SearchStep.FINISHED);
 		
 		executor.shutdown();
-						
+		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));						
 		return sr;
 	}
 }

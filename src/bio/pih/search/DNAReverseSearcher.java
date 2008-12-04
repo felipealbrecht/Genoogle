@@ -11,11 +11,11 @@ import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.seq.LightweightSymbolList;
 
-public class DNAInvertedSearcher extends DNASearcher {
+public class DNAReverseSearcher extends DNASearcher {
 
-	private static final Logger logger = Logger.getLogger(DNAInvertedSearcher.class.getName());
+	private static final Logger logger = Logger.getLogger(DNAReverseSearcher.class.getName());
 
-	public DNAInvertedSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
+	public DNAReverseSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
 		super(id, sp, databank);
 	}
 

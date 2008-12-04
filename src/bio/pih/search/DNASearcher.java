@@ -110,42 +110,47 @@ public class DNASearcher extends AbstractSearcher {
 		List<RetrievedArea>[] sequencesRetrievedAreas = retrievedData.getRetrievedAreas();
 		logger.info("[" + this.toString() + "] Index search time:"
 				+ (System.currentTimeMillis() - init) + " with " + retrievedData.getTotalAreas()
-				+ " areas.");
+				+ " areas in " + retrievedData.getTotalSequences() + " sequences.");
 
 		status.setActualStep(SearchStep.EXTENDING);
 
-		ExecutorService executor = Executors.newFixedThreadPool(8);
-		CompletionService<List<Hit>> completionService = new ExecutorCompletionService<List<Hit>>(
-				executor);
-		int total = 0;
+		int threads = Math.min(8, retrievedData.getTotalSequences());
+		if (threads > 0) {
+			ExecutorService executor = Executors.newFixedThreadPool(threads);
+			CompletionService<List<Hit>> completionService = new ExecutorCompletionService<List<Hit>>(
+					executor);
+			int total = 0;
 
-		for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
-			List<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
-			if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
-				continue;
+			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
+				List<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
+				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
+					continue;
+				}
+
+				StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
+
+				status.setActualStep(SearchStep.ALIGNMENT);
+				SequenceAligner sequenceAligner = new SequenceAligner(queryLength, encodedQuery,
+						retrievedSequenceAreas, storedSequence);
+				completionService.submit(sequenceAligner);
+				total++;
 			}
 
-			StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
+			for (int i = 0; i < total; i++) {
+				Future<List<Hit>> future = completionService.take();
+				List<Hit> hits = future.get();
+				sr.addAllHits(hits);
+			}
 
-			status.setActualStep(SearchStep.ALIGNMENT);
-			SequenceAligner sequenceAligner = new SequenceAligner(queryLength, encodedQuery,
-					retrievedSequenceAreas, storedSequence);
-			completionService.submit(sequenceAligner);
-			total++;
+			long sb = System.currentTimeMillis();
+			executor.shutdown();
+			System.out.println((System.currentTimeMillis() - sb) +  " time to shutdown.");
+			status.setActualStep(SearchStep.SORTING);
+			Collections.sort(sr.getHits(), Hit.COMPARATOR);
+
+			status.setResults(sr);
 		}
-
-		for (int i = 0; i < total; i++) {
-			Future<List<Hit>> future = completionService.take();
-			List<Hit> hits = future.get();
-			sr.addAllHits(hits);
-		}
-
-		executor.shutdown();
-		status.setActualStep(SearchStep.SORTING);
-		Collections.sort(sr.getHits(), Hit.COMPARATOR);
-
-		status.setResults(sr);
-		logger.info("[" + this.toString() + "] Search time:" + (System.currentTimeMillis() - init));
+		logger.info("[" + this.toString() + "] Search time:" + (System.currentTimeMillis() - init) + " with " + sr.getHits().size() + " hits.");
 		status.setActualStep(SearchStep.FINISHED);
 	}
 
