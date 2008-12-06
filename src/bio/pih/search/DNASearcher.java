@@ -1,15 +1,11 @@
 package bio.pih.search;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -26,6 +22,7 @@ import bio.pih.io.Utils;
 import bio.pih.io.proto.Io.StoredSequence;
 import bio.pih.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.search.SearchStatus.SearchStep;
+import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 import bio.pih.statistics.Statistics;
@@ -50,8 +47,9 @@ public class DNASearcher extends AbstractSearcher {
 	 * @param sp
 	 * @param databank
 	 */
-	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
-		super(id, sp, databank);
+	public DNASearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
+			ExecutorService executor) {
+		super(id, sp, databank, executor);
 		this.databank = databank;
 	}
 
@@ -114,43 +112,27 @@ public class DNASearcher extends AbstractSearcher {
 
 		status.setActualStep(SearchStep.EXTENDING);
 
-		int threads = Math.min(8, retrievedData.getTotalSequences());
+		int threads = Math.min(32, retrievedData.getTotalSequences());
 		if (threads > 0) {
-			ExecutorService executor = Executors.newFixedThreadPool(threads);
-			CompletionService<List<Hit>> completionService = new ExecutorCompletionService<List<Hit>>(
-					executor);
-			int total = 0;
-
-			for (int sequenceId = 0; sequenceId < sequencesRetrievedAreas.length; sequenceId++) {
+			CountDownLatch countDown = new CountDownLatch(retrievedData.getTotalSequences());
+									
+			for (int sequenceId: retrievedData.getSequencesId()) {
 				List<RetrievedArea> retrievedSequenceAreas = sequencesRetrievedAreas[sequenceId];
 				if (retrievedSequenceAreas == null || retrievedSequenceAreas.size() == 0) {
-					continue;
+					throw new NullPointerException("Was expecting sequenceId: "+ sequenceId +", but null was found.");
 				}
 
 				StoredSequence storedSequence = databank.getSequenceFromId(sequenceId);
-
-				status.setActualStep(SearchStep.ALIGNMENT);
-				SequenceAligner sequenceAligner = new SequenceAligner(queryLength, encodedQuery,
+				SequenceAligner sequenceAligner = new SequenceAligner(countDown, queryLength, encodedQuery,
 						retrievedSequenceAreas, storedSequence);
-				completionService.submit(sequenceAligner);
-				total++;
+				
+				executor.submit(sequenceAligner);
 			}
-
-			for (int i = 0; i < total; i++) {
-				Future<List<Hit>> future = completionService.take();
-				List<Hit> hits = future.get();
-				sr.addAllHits(hits);
-			}
-
-			long sb = System.currentTimeMillis();
-			executor.shutdown();
-			System.out.println((System.currentTimeMillis() - sb) +  " time to shutdown.");
-			status.setActualStep(SearchStep.SORTING);
-			Collections.sort(sr.getHits(), Hit.COMPARATOR);
-
+			countDown.await();
 			status.setResults(sr);
 		}
-		logger.info("[" + this.toString() + "] Search time:" + (System.currentTimeMillis() - init) + " with " + sr.getHits().size() + " hits.");
+		logger.info("[" + this.toString() + "] Search time:" + (System.currentTimeMillis() - init)
+				+ " with " + sr.getHits().size() + " hits.");
 		status.setActualStep(SearchStep.FINISHED);
 	}
 
@@ -223,16 +205,17 @@ public class DNASearcher extends AbstractSearcher {
 		return iess;
 	}
 
-	private class SequenceAligner implements Callable<List<Hit>> {
-
+	private class SequenceAligner implements Runnable {
 		private final int queryLength;
 		private final int[] encodedQuery;
 		private final List<RetrievedArea> retrievedSequenceAreas;
 		private final StoredSequence storedSequence;
+		private final CountDownLatch countDown;
 
-		public SequenceAligner(int queryLength, int[] encodedQuery,
+		public SequenceAligner(CountDownLatch countDown, int queryLength, int[] encodedQuery,
 				List<RetrievedArea> retrievedSequenceAreas, StoredSequence storedSequence)
 				throws IllegalSymbolException {
+			this.countDown = countDown;
 			this.queryLength = queryLength;
 			this.encodedQuery = encodedQuery;
 			this.retrievedSequenceAreas = retrievedSequenceAreas;
@@ -240,21 +223,28 @@ public class DNASearcher extends AbstractSearcher {
 		}
 
 		@Override
-		public List<Hit> call() throws Exception {
-			return extendAndAlignHSPs(this.queryLength, this.encodedQuery,
-					this.retrievedSequenceAreas, this.storedSequence);
+		public void run() {
+			try {
+				extendAndAlignHSPs(this.queryLength, this.encodedQuery,
+						this.retrievedSequenceAreas, this.storedSequence);
+			} catch (IllegalSymbolException e) {
+				sr.addFail(e);
+			} finally {
+				countDown.countDown();
+			}
 		}
 
-		private List<Hit> extendAndAlignHSPs(int queryLength, int[] encodedQuery,
+		private void extendAndAlignHSPs(int queryLength, int[] encodedQuery,
 				List<RetrievedArea> retrievedSequenceAreas, StoredSequence storedSequence)
 				throws IllegalSymbolException {
 
 			int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 			int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
-
-			List<Hit> hits = Lists.newLinkedList();
+			
 			List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
+			
 			for (RetrievedArea retrievedArea : retrievedSequenceAreas) {
+				
 				int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 				int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
 				if (sequenceAreaEnd > targetLength) {
@@ -280,18 +270,18 @@ public class DNASearcher extends AbstractSearcher {
 				extendedSequencesList = mergeExtendedAreas(extendedSequencesList);
 				Hit hit = alignHSPs(queryLength, storedSequence, encodedSequence, targetLength,
 						extendedSequencesList);
-				hits.add(hit);
+				sr.addHit(hit);
 			}
-
-			return hits;
 		}
 
 		private Hit alignHSPs(int queryLength, StoredSequence storedSequence,
 				int[] encodedSequence, int targetLength, List<ExtendSequences> extendedSequencesList)
 				throws IllegalSymbolException {
-			Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence
-					.getDescription(), storedSequence.getAccession(), SequenceEncoder
-					.getSequenceLength(encodedSequence), databank.getName());
+			
+			Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), 
+					storedSequence.getDescription(), storedSequence.getAccession(), 
+					SequenceEncoder.getSequenceLength(encodedSequence), databank.getName());
+			
 			for (ExtendSequences extensionResult : extendedSequencesList) {
 				GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(1, -3, -3, -3, -3);
 				smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
@@ -300,8 +290,9 @@ public class DNASearcher extends AbstractSearcher {
 				double normalizedScore = statistics.nominalToNormalizedScore(smithWaterman
 						.getScore());
 				double evalue = statistics.calculateEvalue(normalizedScore);
-				addHit(hit, extensionResult, smithWaterman, normalizedScore, evalue, queryLength,
+				HSP hsp = createHSP(extensionResult, smithWaterman, normalizedScore, evalue, queryLength,
 						targetLength);
+				hit.addHSP(hsp);
 			}
 			return hit;
 		}

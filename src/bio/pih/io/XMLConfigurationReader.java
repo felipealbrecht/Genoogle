@@ -55,7 +55,8 @@ public class XMLConfigurationReader {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(
-				getMaxSimultaneousSearchs(searchManagerElement));
+				getMaxSimultaneousSearchs(searchManagerElement),
+				getMaxThreads(searchManagerElement));
 
 		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 		for (SequenceDataBank dataBank : dataBanks) {
@@ -71,6 +72,15 @@ public class XMLConfigurationReader {
 	 */
 	private static int getMaxSimultaneousSearchs(Element searchManager) {
 		Element maxSimultaneousSearchs = searchManager.element("max-simultaneous-searchs");
+		String value = maxSimultaneousSearchs.attributeValue("value");
+		return Integer.parseInt(value);
+	}
+	
+	/**
+	 * @return how many simultaneous threads a searchManager can handle.
+	 */
+	private static int getMaxThreads(Element searchManager) {
+		Element maxSimultaneousSearchs = searchManager.element("max-threads");
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}
@@ -132,9 +142,8 @@ public class XMLConfigurationReader {
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
-			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, maxThreads, mask);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, mask);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -170,12 +179,9 @@ public class XMLConfigurationReader {
 			}
 			return null;
 
-		} else if (e.getName().trim().equals("databank-collection")) {
-
-			int maxThreads = Integer.parseInt(e.attributeValue("max-threads"));
-			
+		} else if (e.getName().trim().equals("databank-collection")) {			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent, subSequenceLength, maxThreads, mask);
+					name, DNATools.getDNA(), new File(path), parent, subSequenceLength);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {

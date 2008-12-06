@@ -20,7 +20,6 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
-import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;

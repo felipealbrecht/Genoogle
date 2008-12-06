@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.scheduler.Dispatcher;
 import bio.pih.scheduler.interfaces.CommandLine;

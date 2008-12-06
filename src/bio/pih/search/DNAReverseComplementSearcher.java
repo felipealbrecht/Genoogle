@@ -1,5 +1,7 @@
 package bio.pih.search;
 
+import java.util.concurrent.ExecutorService;
+
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
@@ -10,8 +12,8 @@ import bio.pih.seq.LightweightSymbolList;
 public class DNAReverseComplementSearcher extends DNAReverseSearcher {
 
 	public DNAReverseComplementSearcher(long id, SearchParams sp,
-			IndexedDNASequenceDataBank databank) {
-		super(id, sp, databank);
+			IndexedDNASequenceDataBank databank, ExecutorService executor) {
+		super(id, sp, databank, executor);
 	}
 	
 	@Override

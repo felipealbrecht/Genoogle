@@ -16,13 +16,14 @@ public class IndexRetrievedData {
 	private final int minLength;
 	private final int subSequenceLength;
 	private int totalAreas = -1;
-	private int totalSequences = -1;
+	private List<Integer> sequencesId = null;
 
 	@SuppressWarnings("unchecked")
 	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength) {
 		this.sp = sp;
 		this.minLength = minLength;
 		this.subSequenceLength = subSequenceLength;
+		
 		retrievedAreasArray = new List[size];
 		openedAreasArray = new FuckingArrayList[size];
 	}
@@ -102,16 +103,16 @@ public class IndexRetrievedData {
 				}
 			}
 		}
-		int totalAreas = 0;
-		int totalSequences = 0;
+		this.totalAreas = 0;
+		this.sequencesId = Lists.newLinkedList();
+		
 		for (int i = 0; i < retrievedAreasArray.length; i++) {
 			if (retrievedAreasArray[i] != null) {
-				totalAreas += retrievedAreasArray[i].size();
-				totalSequences++;
+				this.sequencesId.add(i);
+				this.totalAreas += retrievedAreasArray[i].size();
 			}
 		}
-		this.totalSequences  = totalSequences;
-		this.totalAreas = totalAreas;
+
 		return retrievedAreasArray;
 	}
 
@@ -120,7 +121,11 @@ public class IndexRetrievedData {
 	}
 	
 	public int getTotalSequences() {
-		return totalSequences;
+		return this.sequencesId.size();
+	}
+	
+	public List<Integer> getSequencesId() {
+		return sequencesId;
 	}
 
 	public final static class RetrievedArea {

@@ -6,7 +6,6 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
@@ -27,17 +26,10 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
 	private final DatabankCollection<SequenceDataBank> databankCollection;
-
-	/**
-	 * @param code
-	 * @param sp
-	 * @param databank
-	 * @param sm
-	 * @param parent
-	 */
+	
 	public CollectionSearcher(long code, SearchParams sp,
-			DatabankCollection<SequenceDataBank> databank) {
-		super(code, sp, databank);
+			DatabankCollection<SequenceDataBank> databank, ExecutorService executor) {
+		super(code, sp, databank, executor);
 		this.databankCollection = databank;
 	}
 
@@ -45,14 +37,13 @@ public class CollectionSearcher extends AbstractSearcher {
 	public SearchResults call() {
 		status.setActualStep(SearchStep.SEARCHING_INNER);
 		long begin = System.currentTimeMillis();
-		ExecutorService executor = Executors.newFixedThreadPool(databankCollection.getMaxThreads());
-		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
-				executor);
+		CompletionService<SearchResults> completionService = 
+			new ExecutorCompletionService<SearchResults>(executor);
 
 		Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 		while (it.hasNext()) {
 			SequenceDataBank innerBank = it.next();
-			final AbstractSearcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank);
+			final AbstractSearcher searcher = SearcherFactory.getSearcher(-1, sp, innerBank, executor);
 			completionService.submit(searcher);
 		}
 
@@ -86,8 +77,6 @@ public class CollectionSearcher extends AbstractSearcher {
 		status.setResults(sr);
 		status.setActualStep(SearchStep.FINISHED);
 		
-		executor.shutdown();
-
 		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 		return sr;
 	}

@@ -40,13 +40,45 @@ import bio.pih.io.Utils;
  * operation are unequal to the expenses of gap extension. This uses significantly more memory (four
  * times as much) and increases the runtime if swaping is performed.
  * 
- * Some changes by Felipe Albrecht for faster alignment methods
- * 
+ * @author Felipe Albrecht
  * @author Andreas Dr&auml;ger
  * @author Gero Greiner
  * @since 1.5
  */
-public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
+public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
+
+	/**
+	 * Expenses for insterts.
+	 */
+	protected int insert;
+
+	/**
+	 * Expenses for deletes.
+	 */
+	protected int delete;
+
+	/**
+	 * Expenses for the extension of a gap.
+	 */
+	protected int gapExt;
+
+	/**
+	 * Expenses for matches.
+	 */
+	protected int match;
+
+	/**
+	 * Expenses for replaces.
+	 */
+	protected int replace;
+
+	/*
+	 * Variables needed for traceback
+	 */
+	int score = Integer.MIN_VALUE;
+	String[] align = new String[2];
+	String path = null;
+	int identitySize;
 
 	private static final long serialVersionUID = 2884980510887845616L;
 
@@ -73,75 +105,11 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 	 *            the <code>SubstitutionMatrix</code> object to use.
 	 */
 	public GenoogleSmithWaterman(int match, int replace, int insert, int delete, int gapExtend) {
-		super(match, replace, insert, delete, gapExtend, null);
-	}
-
-	/**
-	 * A simpler version of pairwiseAlignment that align SymbolList and return its score.
-	 */
-	@Override
-	public int fastPairwiseAlignment(SymbolList query, SymbolList subject)
-			throws BioRuntimeException {
-
-		int i, j, maxI = 0, maxJ = 0;
-		int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];
-
-		/*
-		 * Use affine gap panalties.
-		 */
-		if ((gapExt != delete) || (gapExt != insert)) {
-			System.out.println("**slow** alignment");
-
-			int[][] E = new int[query.length() + 1][subject.length() + 1]; // Inserts
-			int[][] F = new int[query.length() + 1][subject.length() + 1]; // Deletes
-
-			scoreMatrix[0][0] = 0;
-			E[0][0] = F[0][0] = Integer.MIN_VALUE;
-			for (i = 1; i <= query.length(); i++) {
-				scoreMatrix[i][0] = F[i][0] = 0;
-				E[i][0] = Integer.MIN_VALUE;
-			}
-			for (j = 1; j <= subject.length(); j++) {
-				scoreMatrix[0][j] = E[0][j] = 0;
-				F[0][j] = Integer.MIN_VALUE;
-			}
-			for (i = 1; i <= query.length(); i++)
-				for (j = 1; j <= subject.length(); j++) {
-					E[i][j] = Math.max(E[i][j - 1], scoreMatrix[i][j - 1] + insert) + gapExt;
-					F[i][j] = Math.max(F[i - 1][j], scoreMatrix[i - 1][j] + delete) + gapExt;
-					scoreMatrix[i][j] = max(0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
-							+ matchReplace(query, subject, i, j));
-
-					if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
-						maxI = i;
-						maxJ = j;
-					}
-				}
-
-			/*
-			 * No affine gap penalties to save memory.
-			 */
-		} else {
-			System.out.println("**fast** alignment");
-			for (i = 0; i <= query.length(); i++)
-				scoreMatrix[i][0] = 0;
-			for (j = 0; j <= subject.length(); j++)
-				scoreMatrix[0][j] = 0;
-			for (i = 1; i <= query.length(); i++)
-				for (j = 1; j <= subject.length(); j++) {
-
-					scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete,
-							scoreMatrix[i][j - 1] + insert, scoreMatrix[i - 1][j - 1]
-									+ matchReplace(query, subject, i, j));
-
-					if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
-						maxI = i;
-						maxJ = j;
-					}
-				}
-		}
-
-		return scoreMatrix[maxI][maxJ];
+		this.insert = insert;
+		this.delete = delete;
+		this.gapExt = gapExtend;
+		this.match = match;
+		this.replace = replace;
 	}
 
 	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
@@ -262,13 +230,15 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 			 * No affine gap penalties to save memory.
 			 */
 		} else {
+			int k = 3;
 			for (i = 0; i <= query.length(); i++)
 				scoreMatrix[i][0] = 0;
 			for (j = 0; j <= subject.length(); j++)
 				scoreMatrix[0][j] = 0;
-			for (i = 1; i <= query.length(); i++)
-				for (j = 1; j <= subject.length(); j++) {
-
+			for (i = 1; i <= query.length(); i++) {
+				int from = Math.max(1, i - k);
+				int to = Math.min(subject.length(), i + k);
+				for (j = from; j <= to; j++) {
 					scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete,
 							scoreMatrix[i][j - 1] + insert, scoreMatrix[i - 1][j - 1]
 									+ matchReplace(query, subject, i, j));
@@ -278,6 +248,7 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 						maxJ = j;
 					}
 				}
+			}
 
 			/*
 			 * Here starts the traceback for non-affine gap penalities
@@ -334,24 +305,48 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 		return this.score;
 	}
 
-	@Override
+	/**
+	 * @return {@link String} containing the representation of the query aligned.
+	 */
+	public String getQueryAligned() {
+		return align[0];
+	}
+
+	/**
+	 * @return {@link String} containing the representation of the target aligned.
+	 */
+	public String getTargetAligned() {
+		return align[1];
+	}
+
+	/**
+	 * @return {@link String} containing the representation of the alignment path.
+	 */
+	public String getPath() {
+		return path;
+	}
+
 	public int getQueryStart() {
 		return queryStart + 1;
 	}
 
-	@Override
 	public int getQueryEnd() {
 		return maxI;
 	}
 
-	@Override
 	public int getTargetStart() {
 		return targetStart + 1;
 	}
 
-	@Override
 	public int getTargetEnd() {
 		return maxJ;
+	}
+
+	/**
+	 * @return alignment score.
+	 */
+	public int getScore() {
+		return score;
 	}
 
 	/**
@@ -395,6 +390,10 @@ public class GenoogleSmithWaterman extends GenoogleNeedlemanWunsch {
 		} else {
 			return replace;
 		}
+	}
+
+	public int getIdentitySize() {
+		return identitySize;
 	}
 
 }

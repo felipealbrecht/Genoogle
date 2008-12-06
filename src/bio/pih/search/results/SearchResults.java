@@ -1,5 +1,6 @@
 package bio.pih.search.results;
 
+import java.util.Collections;
 import java.util.List;
 
 import bio.pih.search.SearchParams;
@@ -23,7 +24,8 @@ public class SearchResults {
 	 */
 	public SearchResults(SearchParams params) {
 		this.params = params;
-		this.hits = Lists.newLinkedList();
+		List<Hit> l = Lists.newLinkedList();
+		this.hits = Collections.synchronizedList(l);
 	}
 
 	/**
@@ -40,45 +42,31 @@ public class SearchResults {
 		return hits;
 	}
 
-	/**
-	 * Add a new {@link Hit} to this search result.
-	 * 
-	 * @param id
-	 * @param hit
-	 */
-	public void addHit(Hit hit) {
-		this.hits.add(hit);
-	}
 
+	public void addHit(Hit hit) {
+		hits.add(hit);		
+	}
+	
 	/**
-	 * Merge another Hash of hits into this search results.
+	 * Merge another hits {@link List} into this search results.
 	 * 
 	 * @param newHits
 	 */
 	public void addAllHits(List<Hit> newHits) {
-		for (Hit h: newHits) {			
-			int i = this.hits.indexOf(h);
-			if (i >= 0) {
-				this.hits.get(i).addAllHSP(h.getHSPs());
-			} else {
-				this.addHit(h);
-			}			
-		}
+		this.hits.addAll(newHits);
 	}
 
 	/**
 	 * Check if the search had problems.
 	 * 
-	 * @return <code>true</code> if happened a exception during the search
-	 *         process.
+	 * @return <code>true</code> if happened a exception during the search process.
 	 */
 	public boolean hasFail() {
 		return fails != null;
 	}
 
 	/**
-	 * Add a {@link List} of {@link Exception} that happened during the
-	 * execution.
+	 * Add a {@link List} of {@link Exception} that happened during the execution.
 	 * 
 	 * @param fail
 	 */
@@ -94,25 +82,25 @@ public class SearchResults {
 	 * 
 	 * @param fail
 	 */
-	public void addFail(Exception fail) {
-		if (fails == null) {
-			fails = Lists.newArrayList();
+	public synchronized void addFail(Exception fail) {
+		if (fails == null) { 
+			List<Exception> f =  Lists.newArrayList();
+			fails = Collections.synchronizedList(f);
 		}
 		fails.add(fail);
 	}
 
 	/**
-	 * @return {@link List} of {@link Exception} that happened during the
-	 *         execution.
+	 * @return {@link List} of {@link Exception} that happened during the execution.
 	 */
 	public List<Exception> getFails() {
 		return fails;
 	}
-	
+
 	public void setMinSubSequenceLength(int minSubSequenceLength) {
 		this.minSubSequenceLength = minSubSequenceLength;
 	}
-	
+
 	public int getMinSubSequenceLength() {
 		return minSubSequenceLength;
 	}

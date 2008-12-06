@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import bio.pih.scheduler.communicator.Communicator;
-import bio.pih.scheduler.communicator.SchedulerCommunicator;
 import bio.pih.scheduler.communicator.WorkerInfo;
 import bio.pih.scheduler.communicator.message.Message;
 import bio.pih.scheduler.communicator.message.ResultMessage;

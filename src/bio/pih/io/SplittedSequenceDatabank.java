@@ -58,18 +58,20 @@ import com.google.common.collect.Lists;
 public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASequenceDataBank> {
 
 	private final int qtdSubBases;
+	private final String mask;
 
 	/**
 	 * @param name name of this databank
 	 * @param path directory where it will be
 	 * @param subSequenceLength 
 	 * @param qtdSubBases how many parts will have this sequence databank
-	 * @param maxThreads number of maximum simultaneous threads
 	 * @param minEvalueDropOut 
+	 * @param mask
 	 */
-	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, int maxThreads, String mask) {
-		super(name, DNATools.getDNA(), path, null, subSequenceLength, maxThreads, mask);
+	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask) {
+		super(name, DNATools.getDNA(), path, null, subSequenceLength);
 		this.qtdSubBases = qtdSubBases;
+		this.mask = mask;
 	}
 
 	@Override

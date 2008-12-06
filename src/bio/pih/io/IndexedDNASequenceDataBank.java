@@ -9,12 +9,10 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNAMaskEncoder;
-import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.MemorySubSequencesInvertedIndexInteger;
-import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredSequence;
 

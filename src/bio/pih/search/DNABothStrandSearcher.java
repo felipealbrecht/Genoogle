@@ -5,7 +5,6 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
@@ -24,21 +23,21 @@ public class DNABothStrandSearcher extends AbstractSearcher {
 	private static final Logger logger = Logger.getLogger(DNABothStrandSearcher.class.getName());
 	private final IndexedDNASequenceDataBank databank;
 
-	public DNABothStrandSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) {
-		super(id, sp, databank);
+	public DNABothStrandSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
+			ExecutorService executor) {
+		super(id, sp, databank, executor);
 		this.databank = databank;			
 	}
 
 	@Override
 	public SearchResults call() throws Exception {	
 		long begin = System.currentTimeMillis();
-		searcher = new DNASearcher(id, sp, databank);
-		complementInvertedSearcher = new DNAReverseComplementSearcher(id, sp, databank);
+		searcher = new DNASearcher(id, sp, databank, executor);
+		complementInvertedSearcher = new DNAReverseComplementSearcher(id, sp, databank, executor);
 				
 		status.setActualStep(SearchStep.SEARCHING_INNER);
-		ExecutorService executor = Executors.newFixedThreadPool(2);
-		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
-				executor);
+		CompletionService<SearchResults> completionService = 
+			new ExecutorCompletionService<SearchResults>(executor);
 
 		int total = 0;
 		completionService.submit(searcher); total++; 	
@@ -74,8 +73,7 @@ public class DNABothStrandSearcher extends AbstractSearcher {
 		
 		status.setResults(sr);
 		status.setActualStep(SearchStep.FINISHED);
-		
-		executor.shutdown();
+	
 		logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));						
 		return sr;
 	}

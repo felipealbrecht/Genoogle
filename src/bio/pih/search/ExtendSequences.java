@@ -1,7 +1,6 @@
 package bio.pih.search;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;

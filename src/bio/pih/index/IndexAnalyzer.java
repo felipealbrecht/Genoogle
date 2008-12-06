@@ -28,6 +28,7 @@ import com.google.common.collect.Maps;
 
 public class IndexAnalyzer {
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		SearchManager sm = XMLConfigurationReader.getSearchManager();

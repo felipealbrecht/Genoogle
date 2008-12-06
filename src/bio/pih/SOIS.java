@@ -150,14 +150,13 @@ public class SOIS {
 			SearchParams sp = new SearchParams(sequence, dataBankName);
 			sr = sm.doSyncSearch(sp);
 		} catch (UnknowDataBankException e) {
-			logger.error(e);
+			logger.error(e.getMessage(), e);
 		} catch (IllegalSymbolException e) {
-			logger.error(e);
+			logger.error(e.getMessage(), e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
+			logger.error(e.getMessage(), e);
 		} catch (ExecutionException e) {
-			logger.error(e);
+			logger.error(e.getMessage(), e);			
 		}
 
 		return sr;

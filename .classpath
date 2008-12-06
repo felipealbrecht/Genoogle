@@ -32,6 +32,6 @@
 	<classpathentry kind="lib" path="lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar" sourcepath="/home/albrecht/Área de Trabalho/protobuf-2.0.2/java/src/main/java"/>
-	<classpathentry kind="lib" path="/home/albrecht/genoogle/lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry kind="lib" path="/home/albrecht/genoogle/lib/google-collect-snapshot-20080820.jar" sourcepath="/home/albrecht/java/google-collect-snapshot-20080820/src-snapshot-20080820.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

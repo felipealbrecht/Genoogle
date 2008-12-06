@@ -26,27 +26,34 @@ import com.google.common.collect.Maps;
  */
 public class SearchManager {
 
-	static Logger logger = Logger.getLogger(SearchManager.class.getName());
+	private static Logger logger = Logger.getLogger(SearchManager.class.getName());
 
-	Map<String, SequenceDataBank> databanks;
-	ExecutorService executor = null;
-
+	private Map<String, SequenceDataBank> databanks;
+	private ExecutorService requestsExecutor = null;
+	private ExecutorService internalExecutor = null;
+		
 	/**
 	 * @param maxSimulaneousSearchs
+	 * @param maxThreads 
 	 * 
 	 */
-	public SearchManager(int maxSimulaneousSearchs) {
+	public SearchManager(int maxSimulaneousSearchs, int maxThreads) {
 		databanks = Maps.newHashMap();
-		executor = Executors.newFixedThreadPool(maxSimulaneousSearchs);
+		requestsExecutor = Executors.newFixedThreadPool(maxSimulaneousSearchs);
+		internalExecutor = Executors.newFixedThreadPool(maxThreads);
 	}
 	
 	/**
-	 * Shutdown the search manager.
+	 * Shutdown the search manager.Service
 	 * @throws InterruptedException 
 	 */
 	public void shutdown() throws InterruptedException {
-		executor.shutdown();
-		executor.awaitTermination(100, TimeUnit.MILLISECONDS);			
+		requestsExecutor.shutdown();
+		requestsExecutor.awaitTermination(100, TimeUnit.MILLISECONDS);			
+	}
+	
+	public ExecutorService getInternalExecutor() {
+		return internalExecutor;
 	}
 
 	/**
@@ -71,7 +78,7 @@ public class SearchManager {
 			InterruptedException, ExecutionException {
 
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
-				executor);
+				requestsExecutor);
 
 		for (SearchParams sp : sps) {
 			logger.info("doSearch on " + sp);
@@ -81,7 +88,7 @@ public class SearchManager {
 				throw new UnknowDataBankException(this, sp.getDatabank());
 			}
 			long id = getNextSearchId();
-			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);
+			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank, internalExecutor);
 
 			completionService.submit(searcher);
 		}
@@ -113,10 +120,10 @@ public class SearchManager {
 			throw new UnknowDataBankException(this, sp.getDatabank());
 		}
 		long id = getNextSearchId();
-		final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);
+		final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank, internalExecutor);
 
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
-				executor);
+				requestsExecutor);
 
 		completionService.submit(searcher);
 		return completionService.take().get();

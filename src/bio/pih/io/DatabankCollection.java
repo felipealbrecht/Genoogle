@@ -30,15 +30,10 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	protected final FiniteAlphabet alphabet;
 	protected final LinkedHashMap<String, T> collection;
 	protected final File path;
-	protected final int maxThreads;
 	protected final int subSequenceLength;
 	private final DNASequenceEncoderToInteger encoder;
 
 	private SequenceDataBank parent;
-
-	protected final String mask;
-
-
 
 	/**
 	 * @param name
@@ -50,16 +45,13 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	 * @param minEvalueDropOut 
 	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, File path,
-			SequenceDataBank parent, int subSequenceLength, int maxThreads, 
-			String mask) {
+			SequenceDataBank parent, int subSequenceLength) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.path = path;
 		this.parent = parent;
 		this.subSequenceLength = subSequenceLength;
-		this.mask = mask;
 		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
-		this.maxThreads = maxThreads;
 		this.collection = new LinkedHashMap<String, T>();
 	}
 
@@ -257,13 +249,6 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	@Override
 	public DNASequenceEncoderToInteger getEncoder() {
 		return encoder;
-	}
-
-	/**
-	 * @return the quantity of max threads that this Collection will create.
-	 */
-	public int getMaxThreads() {
-		return maxThreads;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package bio.pih.search;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -10,7 +11,6 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchStatus.SearchStep;
 import bio.pih.search.results.HSP;
-import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
 
 /**
@@ -31,6 +31,9 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	protected final DNASequenceEncoderToInteger encoder;
 	protected final int subSequenceLegth;
 	protected final long id;
+	protected final ExecutorService executor;
+
+	
 
 	/**
 	 * @param id
@@ -38,13 +41,12 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	 *            Parameter of the search
 	 * @param databank 
 	 *            Sequence data bank where the search will be performed.
-	 * @param sm
-	 * @param parent
-	 *            The parent of this search.
 	 */
-	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
+	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank, 
+			ExecutorService executor) {
 		this.id = id;
 		this.sp = sp;
+		this.executor = executor;
 		this.sr = new SearchResults(sp);
 		this.encoder = databank.getEncoder();
 		this.subSequenceLegth = databank.getSubSequenceLength();
@@ -70,16 +72,16 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 		return sp.getQuery();
 	}
 
-	protected void addHit(Hit hit, ExtendSequences extensionResult,
+	protected HSP createHSP(ExtendSequences extensionResult,
 			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
 			int queryLength, int targetLength) {
 
-		hit.addHSP(new HSP(smithWaterman,
+		return new HSP(smithWaterman,
 				getQueryStart(extensionResult, smithWaterman),
 				getQueryEnd(extensionResult, smithWaterman),
 				getTargetStart(extensionResult, smithWaterman),
 				getTargetEnd(extensionResult, smithWaterman),
-				normalizedScore, evalue));
+				normalizedScore, evalue);
 	}
 
 	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
@@ -97,5 +99,4 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
 	}
-	
 }

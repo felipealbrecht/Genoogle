@@ -232,7 +232,7 @@ public class Statistics {
 	}
 
 	public double nominalToNormalizedScore(double nominalScore) {
-		return ((nominalScore * this.lambda) - this.logK) / this.LOG_2;
+		return ((nominalScore * this.lambda) - this.logK) / LOG_2;
 	}
 
 	public double calculateEvalue(double normalizedScore) {
@@ -249,7 +249,6 @@ public class Statistics {
 		return minLength;
 	}
 	
-	private final SymbolList query;
 	private final Map<Integer, Double> probabilities; 
 	private final double lambda;
 	private final double H;
@@ -261,7 +260,6 @@ public class Statistics {
 	private final double lengthAdjust;
 	private final int minLength;
 	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences, double minEvalue) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
-		this.query = query;
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);
