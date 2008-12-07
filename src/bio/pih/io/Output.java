@@ -2,15 +2,20 @@ package bio.pih.io;
 
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.ProcessingInstruction;
 
 import bio.pih.search.SearchParams;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
+
+import com.google.common.collect.Maps;
 
 /**
  * 
@@ -59,6 +64,13 @@ public class Output {
 
 		Document doc = factory.createDocument();
 		doc.setName("genoogle");
+
+		Map<String, String> xslProcessing = Maps.newHashMap();
+		xslProcessing.put("type", "text/xsl");
+		xslProcessing.put("href", "results.xsl");
+		ProcessingInstruction xsltInstruction = DocumentHelper.createProcessingInstruction("xml-stylesheet", xslProcessing);
+		doc.add(xsltInstruction);
+		
 
 		Element output = doc.addElement("genoogle");
 		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);

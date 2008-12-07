@@ -1,24 +1,23 @@
-
-<%@page import="org.dom4j.io.HTMLWriter"%>
-<%@page import="java.lang.management.ThreadInfo"%>
-<%@page import="java.lang.management.ManagementFactory"%>
-<%@page import="java.lang.management.ThreadMXBean"%><%@page import="bio.pih.SOIS"%>
-<%@page import="org.dom4j.Document"%>
-<%@page import="org.dom4j.io.OutputFormat"%>
-<%@page import="org.dom4j.io.XMLWriter"%>
-<%@page import="bio.pih.io.Output"%>
-<%@page import="bio.pih.search.results.SearchResults"%>
-<%@page import="javax.xml.transform.TransformerFactory"%>
-<%@page import="javax.xml.transform.Transformer"%>
-<%@page import="javax.xml.transform.stream.StreamSource"%>
-<%@page import="org.dom4j.io.DocumentResult"%>
-<%@page import="org.dom4j.io.DocumentSource"%>
-<%@page import="javax.xml.transform.TransformerConfigurationException"%>
-<%@page import="javax.xml.transform.TransformerException"%>
-<%@page import="java.io.ByteArrayOutputStream"%>
-<%@page import="org.apache.log4j.Logger"%>
-
-<%
+<%@page import="org.dom4j.io.HTMLWriter"
+%><%@page import="java.lang.management.ThreadInfo"
+%><%@page import="java.lang.management.ManagementFactory"
+%><%@page import="java.lang.management.ThreadMXBean"
+%><%@page import="bio.pih.SOIS"
+%><%@page import="org.dom4j.Document"
+%><%@page import="org.dom4j.io.OutputFormat"
+%><%@page import="org.dom4j.io.XMLWriter"
+%><%@page import="bio.pih.io.Output"
+%><%@page import="bio.pih.search.results.SearchResults"
+%><%@page import="javax.xml.transform.TransformerFactory"
+%><%@page import="javax.xml.transform.Transformer"
+%><%@page import="javax.xml.transform.stream.StreamSource"
+%><%@page import="org.dom4j.io.DocumentResult"
+%><%@page import="org.dom4j.io.DocumentSource"
+%><%@page import="javax.xml.transform.TransformerConfigurationException"
+%><%@page import="javax.xml.transform.TransformerException"
+%><%@page import="java.io.ByteArrayOutputStream"
+%><%@page import="org.apache.log4j.Logger"
+%><%
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	if (request.getParameter("query") != null) {
@@ -72,35 +71,17 @@
 			out.println("</code>");
 			out.println("</body>");
 			
-		} else {
-			Document document = Output.genoogleOutputToXML(sr);
-			document.getRootElement().addElement("infos").addAttribute("search-time", Long.toString(total));
-			
+		} else {		
+			response.setContentType("text/xml; charset=UTF-8");
+			Document resultDocument = Output.genoogleOutputToXML(sr);
+			resultDocument.getRootElement().addElement("infos").addAttribute("search-time", Long.toString(total));
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-			long tBegin = System.currentTimeMillis();
-			try {
-				TransformerFactory factory = TransformerFactory.newInstance();
-				Transformer transformer = factory.newTransformer(new StreamSource(
-						"webapps/genoogle/results.xsl"));
-				DocumentSource source = new DocumentSource(document);
-				DocumentResult result = new DocumentResult();
-				transformer.transform(source, result);
-				System.out.println((System.currentTimeMillis() - tBegin) + " para transformacao");
-				Document resultDocument = result.getDocument();
-				OutputFormat outformat = OutputFormat.createPrettyPrint();
-				outformat.setTrimText(false);
-				HTMLWriter writer = new HTMLWriter(outputStream, outformat);
-				writer.write(resultDocument);
-				out.print(outputStream);
-			} catch (TransformerConfigurationException e) {
-				e.printStackTrace();
-				out.print(e);
-			} catch (TransformerException e) {
-				e.printStackTrace();
-				out.print(e);
-			}
+			OutputFormat outformat = OutputFormat.createPrettyPrint();
+			outformat.setTrimText(false);
+			XMLWriter writer = new XMLWriter(outputStream, outformat);
+			writer.write(resultDocument);
+			out.print(outputStream);
 		}
-
 	}
 %>

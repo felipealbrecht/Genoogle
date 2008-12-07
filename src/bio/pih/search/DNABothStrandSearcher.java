@@ -40,8 +40,10 @@ public class DNABothStrandSearcher extends AbstractSearcher {
 			new ExecutorCompletionService<SearchResults>(executor);
 
 		int total = 0;
-		completionService.submit(searcher); total++; 	
-		completionService.submit(complementInvertedSearcher); total++;
+		Future<SearchResults> searcherFuture = 
+			completionService.submit(searcher); total++; 	
+		Future<SearchResults> complInvertedSearcherFuture = 
+			completionService.submit(complementInvertedSearcher); total++;
 		
 		for (int i = 0; i < total; i++) {
 			Future<SearchResults> future;
