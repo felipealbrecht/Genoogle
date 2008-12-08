@@ -42,7 +42,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 * @return {@link LightweightSymbolList} related with the given seqString.
 	 * @throws IllegalSymbolException
 	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString, boolean cacheResult) throws IllegalSymbolException {		
+	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString, boolean cacheResult) throws IllegalSymbolException {
 		Symbol[] symbols = new Symbol[seqString.length()];
 		
 		SymbolTokenization tokenization = null;
@@ -100,11 +100,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 	
 	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
-		try {
-			return symbols[pos - 1];
-		} catch (IndexOutOfBoundsException e) {
-			throw new IndexOutOfBoundsException("Index must be within [1.." + length() + "] : " + pos);
-		}
+		return symbols[pos - 1];
 	}
 
 	@Override

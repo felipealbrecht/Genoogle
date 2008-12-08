@@ -1,6 +1,7 @@
 package bio.pih.io;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import bio.pih.io.proto.Io.StoredSequence;
 
@@ -22,19 +23,14 @@ public class Utils {
 	}
 
 	public static String invert(String s) {
-		StringBuilder temp = new StringBuilder();
-		for (int i = s.length() - 1; i >= 0; i--) {
-			temp.append(s.charAt(i));
+		char[] cs = s.toCharArray();
+		char[] result = new char[s.length()];
+		int j = 0;
+		int i = s.length() - 1;
+		while (i >= 0) {
+			result[j++] = cs[i--];
 		}
-		return temp.toString();
-	}
-
-	public static String invert(StringBuilder s) {
-		StringBuilder temp = new StringBuilder();
-		for (int i = s.length() - 1; i >= 0; i--) {
-			temp.append(s.charAt(i));
-		}
-		return temp.toString();
+		return new String(result);
 	}
 
 	public static String sequenceComplement(String seqString) {

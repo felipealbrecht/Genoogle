@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.alignment.GenoogleSmithWaterman;
+import bio.pih.alignment.StringGenoogleSmithWaterman;
 import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
@@ -283,9 +282,9 @@ public class DNASearcher extends AbstractSearcher {
 					SequenceEncoder.getSequenceLength(encodedSequence), databank.getName());
 			
 			for (ExtendSequences extensionResult : extendedSequencesList) {
-				GenoogleSmithWaterman smithWaterman = new GenoogleSmithWaterman(1, -3, -3, -3, -3);
-				smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
-						extensionResult.getTargetSequenceExtended());
+				StringGenoogleSmithWaterman smithWaterman = new StringGenoogleSmithWaterman(1, -3, -3, -3, -3);
+				smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended().seqString(),
+						extensionResult.getTargetSequenceExtended().seqString());
 
 				double normalizedScore = statistics.nominalToNormalizedScore(smithWaterman
 						.getScore());

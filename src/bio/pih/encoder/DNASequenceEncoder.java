@@ -30,7 +30,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 		DNASymbolToBitsSubstitionTable.put(DNATools.g(), 0x02);
 		DNASymbolToBitsSubstitionTable.put(DNATools.t(), 0x03);
 
-		DNABitsToSymbolSubstitionTable = new Character[] {'A', 'C', 'G', 'T'};
+		DNABitsToSymbolSubstitionTable = new Character[] {'a', 'c', 'g', 't'};
 	}
 	
 

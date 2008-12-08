@@ -4,7 +4,7 @@
 
   <genoogle:search-manager>
     <genoogle:max-simultaneous-searchs value="3"/>     
-    <genoogle:max-threads value="8"/>
+    <genoogle:max-threads value="16"/>
   </genoogle:search-manager>
 
   <genoogle:search-parameters>
@@ -31,7 +31,7 @@
 <!--    	<genoogle:databank name="NotFound"     path="2811101.fna" storage="memory" />-->
 <!--  	</genoogle:split-databanks>-->
   
-  <genoogle:split-databanks name="Human" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+  <genoogle:split-databanks name="Human_2" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="2" sub-sequence-length="11">
 		<genoogle:databank name="Zebrafish" path="zebrafish.rna.fna"  storage="memory" />
   		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
    		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
