@@ -20,6 +20,7 @@ public final class SearchParams implements Serializable {
 	private final int maxSubSequencesDistance;
 	private final int sequencesExtendDropoff;
 	private final double minEvalue;
+	private final int maxHitsResults;
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence to be considered at same area.
@@ -35,13 +36,18 @@ public final class SearchParams implements Serializable {
 	 * Minimum value for E-Value
 	 */
 	public static final double MIN_EVALUE = XMLConfigurationReader.getMinEvalue();
+	
+	/**
+	 * Quantity of hits that will be processed and shown.
+	 */
+	public static final int MAX_HITS_RESULTS = XMLConfigurationReader.getMaxResults();
 
 	/**
 	 * @param query
 	 * @param databankName
 	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE);
+		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, MAX_HITS_RESULTS);
 	}
 
 	/**
@@ -53,12 +59,13 @@ public final class SearchParams implements Serializable {
 	 * @param sequencesExtendDropoff 
 	 * @param minEvalue 
 	 */
-	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue) {
+	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults) {
 		this.query = query;
 		this.databankName = databankName;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
 		this.minEvalue = minEvalue;
+		this.maxHitsResults = maxHitsResults;
 	}
 
 	/**
@@ -94,5 +101,12 @@ public final class SearchParams implements Serializable {
 	 */
 	public double getMinEvalue() {
 		return minEvalue;
+	}
+	
+	/**
+	 * @return the quantity of hits that will be processed and shown.
+	 */
+	public int getMaxHitsResults() {
+		return maxHitsResults;
 	}
 }

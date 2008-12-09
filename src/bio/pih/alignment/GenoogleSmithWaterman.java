@@ -26,8 +26,6 @@ import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.io.Utils;
-
 /*
  * Created on 05.09.2005
  * 

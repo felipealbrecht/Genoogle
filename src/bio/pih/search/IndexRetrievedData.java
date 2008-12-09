@@ -1,10 +1,13 @@
 package bio.pih.search;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import bio.pih.index.EncoderSubSequenceIndexInfo;
+import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.Utils;
+import bio.pih.io.proto.Io.StoredSequence;
 
 import com.google.common.collect.Lists;
 
@@ -15,15 +18,19 @@ public class IndexRetrievedData {
 	private final SearchParams sp;
 	private final int minLength;
 	private final int subSequenceLength;
+	private int sumLength = -1;
 	private int totalAreas = -1;
-	private List<Integer> sequencesId = null;
+	private final DNAIndexSearcher searcher;
+	private List<SequenceRetrievedAreas> result;
 
 	@SuppressWarnings("unchecked")
-	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength) {
+	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength,
+			DNAIndexSearcher searcher) {
 		this.sp = sp;
 		this.minLength = minLength;
 		this.subSequenceLength = subSequenceLength;
-		
+		this.searcher = searcher;
+
 		retrievedAreasArray = new List[size];
 		openedAreasArray = new FuckingArrayList[size];
 	}
@@ -58,8 +65,7 @@ public class IndexRetrievedData {
 						sp.getMaxSubSequencesDistance(), subSequenceLength)) {
 					merged = true;
 
-					// Check if the area end is away from the actual sequence
-					// pos.
+					// Check if the area end is away from the actual sequence position.
 				} else if (queryPos - openedArea.queryAreaEnd > sp.getMaxSubSequencesDistance()) {
 					// Mark the areas to remove.
 					if (fromIndex == -1) {
@@ -89,7 +95,7 @@ public class IndexRetrievedData {
 		}
 	}
 
-	public List<RetrievedArea>[] getRetrievedAreas() {
+	public void finish() {
 		for (int sequenceId = 0; sequenceId < openedAreasArray.length; sequenceId++) {
 			List<RetrievedArea> openedAreaList = openedAreasArray[sequenceId];
 			if (openedAreaList != null) {
@@ -103,29 +109,84 @@ public class IndexRetrievedData {
 				}
 			}
 		}
+
 		this.totalAreas = 0;
-		this.sequencesId = Lists.newLinkedList();
-		
+		this.sumLength = 0;
+
+		this.result = Lists.newLinkedList();
 		for (int i = 0; i < retrievedAreasArray.length; i++) {
 			if (retrievedAreasArray[i] != null) {
-				this.sequencesId.add(i);
 				this.totalAreas += retrievedAreasArray[i].size();
+				SequenceRetrievedAreas sequenceRetrievedAreas = new SequenceRetrievedAreas(i,
+						searcher, retrievedAreasArray[i]);
+				result.add(sequenceRetrievedAreas);
+				sumLength += sequenceRetrievedAreas.getSumLengths();
 			}
 		}
-
-		return retrievedAreasArray;
 	}
 
 	public int getTotalAreas() {
 		return totalAreas;
 	}
-	
+
 	public int getTotalSequences() {
-		return this.sequencesId.size();
+		return this.result.size();
 	}
-	
-	public List<Integer> getSequencesId() {
-		return sequencesId;
+
+	public List<SequenceRetrievedAreas> getSequencesRetrievedAreas() {
+		return result;
+	}
+
+	public int getSumLength() {
+		return sumLength;
+	}
+
+	public final static class SequenceRetrievedAreas {
+		final int sequenceId;
+		final int sumLengths;
+		final DNAIndexSearcher indexSearcher;
+		final List<RetrievedArea> retrievedAreas;
+
+		public SequenceRetrievedAreas(int sequenceId, DNAIndexSearcher indexSearcher,
+				List<RetrievedArea> retrievedAreas) {
+			this.sequenceId = sequenceId;
+			this.indexSearcher = indexSearcher;
+			this.retrievedAreas = retrievedAreas;
+			this.sumLengths = sumTotalLengths(retrievedAreas);
+		}
+
+		private int sumTotalLengths(List<RetrievedArea> areas) {
+			int total = 0;
+			for (RetrievedArea area : areas) {
+				total += area.length();
+			}
+			return total;
+		}
+
+		public int getSumLengths() {
+			return sumLengths;
+		}
+
+		public List<RetrievedArea> getRetrievedAreas() {
+			return retrievedAreas;
+		}
+
+		public int getSequenceId() {
+			return sequenceId;
+		}
+
+		public StoredSequence getStoredSequence() throws IOException {
+			return indexSearcher.getDatabank().getSequenceFromId(sequenceId);
+		}
+
+		public IndexedDNASequenceDataBank getDatabank() {
+			return indexSearcher.getDatabank();
+		}
+
+		public DNAIndexSearcher getIndexSearcher() {
+			return indexSearcher;
+		}
+		
 	}
 
 	public final static class RetrievedArea {
@@ -175,7 +236,7 @@ public class IndexRetrievedData {
 		@Override
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("([");
+			sb.append("(");
 			sb.append(queryAreaBegin);
 			sb.append(",");
 			sb.append(queryAreaEnd);
@@ -184,7 +245,7 @@ public class IndexRetrievedData {
 			sb.append(sequenceAreaBegin);
 			sb.append(",");
 			sb.append(sequenceAreaEnd);
-			sb.append("])");
+			sb.append(")");
 
 			return sb.toString();
 		}

@@ -1,10 +1,8 @@
 package bio.pih.search;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.seq.LightweightSymbolList;
 
 /**
  * Extend sequences by its similarity to the right and to the left.
@@ -35,33 +33,31 @@ public class ExtendSequences {
 		this.encoder = encoder;		
 	}
 		
-	SymbolList queryExtended = null;
+	String queryExtendedString = null;
 	/**
 	 * @return extended query.
 	 * @throws IllegalSymbolException 
 	 */
-	public SymbolList getQuerySequenceExtended() throws IllegalSymbolException {
-		if (queryExtended == null) {
-			// sequences are from X til y+1 , so the +1 should be removed.
-			String queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment - 1);
-			queryExtended = LightweightSymbolList.createDNA(queryExtendedString);			
+	public String getQuerySequenceExtended() {
+		if (queryExtendedString == null) {
+			// sequences are from X until y+1 , so the +1 should be removed.
+			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment - 1);			
 		}
-		return queryExtended;
+		return queryExtendedString;
 	}
 
 	
-	SymbolList targetExtended = null;
+	String targetExtendedString = null;
 	/**
 	 * @return extended target.
 	 * @throws IllegalSymbolException 
 	 */
-	public SymbolList getTargetSequenceExtended() throws IllegalSymbolException {
-		if (targetExtended == null) {
-			// sequences are from X til y+1 , so the +1 should be removed.
-			String targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment - 1);
-			targetExtended = LightweightSymbolList.createDNA(targetExtendedString);
+	public String getTargetSequenceExtended() {
+		if (targetExtendedString == null) {
+			// sequences are from X until y+1 , so the +1 should be removed.
+			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment - 1);
 		}
-		return targetExtended;
+		return targetExtendedString;
 	}
 
 	public int getBeginQuerySegment() {
@@ -221,6 +217,4 @@ public class ExtendSequences {
 				
 		return true;
 	}
-	
-	
 }

@@ -59,6 +59,7 @@ public class Statistics {
 			}
 		}
 
+
 		final double sum = 1000.00;
 
 		for (int i = dismatch; i <= match; i++) {
@@ -259,7 +260,7 @@ public class Statistics {
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
 	private final int minLength;
-	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences, double minEvalue) throws IndexOutOfBoundsException, IllegalSymbolException, BioException {
+	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences, double minEvalue) throws IndexOutOfBoundsException, BioException{
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);

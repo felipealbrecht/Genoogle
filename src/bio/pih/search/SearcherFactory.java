@@ -3,7 +3,6 @@ package bio.pih.search;
 import java.util.concurrent.ExecutorService;
 
 import bio.pih.io.DatabankCollection;
-import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.SequenceDataBank;
 
 /**
@@ -24,10 +23,6 @@ public class SearcherFactory {
 	@SuppressWarnings("unchecked")
 	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank, 
 			ExecutorService executor) {
-		if (databank instanceof IndexedDNASequenceDataBank) {
-			//return new DNASearcher(id, sp, (IndexedDNASequenceDataBank) databank);
-			return new DNABothStrandSearcher(id, sp, (IndexedDNASequenceDataBank) databank, executor);
-		}
 
 		if (databank instanceof DatabankCollection) {
 			return new CollectionSearcher(id, sp, (DatabankCollection<SequenceDataBank>) databank, executor);

@@ -31,7 +31,7 @@ public class SearchManager {
 	private Map<String, SequenceDataBank> databanks;
 	private ExecutorService requestsExecutor = null;
 	private ExecutorService internalExecutor = null;
-		
+
 	/**
 	 * @param maxSimulaneousSearchs
 	 * @param maxThreads 

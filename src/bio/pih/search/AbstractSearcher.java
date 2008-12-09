@@ -3,14 +3,7 @@ package bio.pih.search;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
-
-import bio.pih.alignment.GenoogleSmithWaterman;
-import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.SearchStatus.SearchStep;
-import bio.pih.search.results.HSP;
 import bio.pih.search.results.SearchResults;
 
 /**
@@ -25,16 +18,11 @@ import bio.pih.search.results.SearchResults;
  */
 public abstract class AbstractSearcher implements Callable<SearchResults> {
 
-	protected final SearchStatus status;
+	protected final long id;
 	protected final SearchParams sp;
 	protected final SearchResults sr;
-	protected final DNASequenceEncoderToInteger encoder;
-	protected final int subSequenceLegth;
-	protected final long id;
 	protected final ExecutorService executor;
-
 	
-
 	/**
 	 * @param id
 	 * @param sp
@@ -48,17 +36,6 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 		this.sp = sp;
 		this.executor = executor;
 		this.sr = new SearchResults(sp);
-		this.encoder = databank.getEncoder();
-		this.subSequenceLegth = databank.getSubSequenceLength();
-		status = new SearchStatus(id, sp, databank);
-		status.setActualStep(SearchStep.NOT_INITIALIZED);
-	}
-
-	/**
-	 * @return {@link SearchStatus} of this Search
-	 */
-	public SearchStatus getStatus() {
-		return status;
 	}
 		
 	/**
@@ -66,37 +43,5 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	 */
 	public SearchResults getSearchResults() {
 		return sr;
-	}
-	
-	protected SymbolList getQuery() throws IllegalSymbolException {
-		return sp.getQuery();
-	}
-
-	protected HSP createHSP(ExtendSequences extensionResult,
-			GenoogleSmithWaterman smithWaterman, double normalizedScore, double evalue, 
-			int queryLength, int targetLength) {
-
-		return new HSP(smithWaterman,
-				getQueryStart(extensionResult, smithWaterman),
-				getQueryEnd(extensionResult, smithWaterman),
-				getTargetStart(extensionResult, smithWaterman),
-				getTargetEnd(extensionResult, smithWaterman),
-				normalizedScore, evalue);
-	}
-
-	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
-		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart();
-	}
-	
-	private int getQueryEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
-		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd();
-	}
-
-	private int getTargetStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
-		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
-	}
-	
-	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
-		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
 	}
 }

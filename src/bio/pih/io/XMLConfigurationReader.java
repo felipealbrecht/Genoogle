@@ -84,7 +84,7 @@ public class XMLConfigurationReader {
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}
-
+	
 	/**
 	 * @return {@link List} of {@link SequenceDataBank} that are configured in
 	 *         the XML file.
@@ -232,6 +232,14 @@ public class XMLConfigurationReader {
 	public static double getMinEvalue() {
 		String value = getSearchParameters().element("min-evalue").attributeValue("value");
 		return Double.parseDouble(value);
+	}
+	
+	/**
+	 * @return how many Hits results. 
+	 */
+	public static int getMaxResults() {
+		String value = getSearchParameters().element("max-hits-results").attributeValue("value");
+		return Integer.parseInt(value);
 	}
 
 	private static String readPath(String path) {
