@@ -1,9 +1,9 @@
 package bio.pih.search;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -12,10 +12,12 @@ import org.apache.log4j.Logger;
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.SequenceDataBank;
-import bio.pih.search.IndexRetrievedData.SequenceRetrievedAreas;
+import bio.pih.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
+
+import com.google.common.collect.Lists;
 
 /**
  * A searcher that does search operation at each data bank of its collection.
@@ -38,9 +40,9 @@ public class CollectionSearcher extends AbstractSearcher {
 	public SearchResults call() {
 		long begin = System.currentTimeMillis();
 
-		int indexSearchers = databankCollection.size() * 2;
+		int indexSearchers = databankCollection.size();
 		// scatter the results of the index searcher into this array. 
-		IndexRetrievedData[] irds = new IndexRetrievedData[indexSearchers];
+		List<BothStrandSequenceAreas>[] retrievedAreas = new List[indexSearchers];
 		CountDownLatch searchersCountDown = new CountDownLatch(indexSearchers);
 
 		int pos = 0;
@@ -48,7 +50,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		while (it.hasNext()) {
 			SequenceDataBank innerBank = it.next();
 			final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp,
-					(IndexedDNASequenceDataBank) innerBank, executor, searchersCountDown, irds, pos++);
+					(IndexedDNASequenceDataBank) innerBank, executor, searchersCountDown, retrievedAreas, pos++);
 			executor.submit(indexSearcher);
 		}
 
@@ -59,39 +61,28 @@ public class CollectionSearcher extends AbstractSearcher {
 			return sr;
 		}
 
-		int totalAreas = 0;
-		long totalSumAreas = 0;
-		int totalSequences = 0;
-		for (IndexRetrievedData indexRetrievedData : irds) {
-			totalAreas += indexRetrievedData.getTotalAreas();
-			totalSumAreas += indexRetrievedData.getSumLength();
-			totalSequences += indexRetrievedData.getTotalSequences();
+		
+		List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
+
+		for (List<BothStrandSequenceAreas> indexRetrievedData : retrievedAreas) {
+			sequencesRetrievedAreas.addAll(indexRetrievedData);
 		}
 
-		ArrayList<SequenceRetrievedAreas> sequencesRetrievedAreas = new ArrayList<SequenceRetrievedAreas>(
-				totalSequences);
-
-		for (IndexRetrievedData indexRetrievedData : irds) {
-			sequencesRetrievedAreas.addAll(indexRetrievedData.getSequencesRetrievedAreas());
-		}
-
-		Collections.sort(sequencesRetrievedAreas, new Comparator<SequenceRetrievedAreas>() {
+		Collections.sort(sequencesRetrievedAreas, new Comparator<BothStrandSequenceAreas>() {
 			@Override
-			public int compare(SequenceRetrievedAreas o1, SequenceRetrievedAreas o2) {
+			public int compare(BothStrandSequenceAreas o1, BothStrandSequenceAreas o2) {
 				return o2.getSumLengths() - o1.getSumLengths();
 			}
 		});
 
-		System.out.println(totalSequences);
-		System.out.println(totalAreas);
-		System.out.println(totalSumAreas);
-
 		int MAX = sp.getMaxHitsResults()>0?sp.getMaxHitsResults():sequencesRetrievedAreas.size();
-
+		MAX = Math.min(MAX, sequencesRetrievedAreas.size());
+		
+		System.out.println("MAX: " + MAX);
 		CountDownLatch alignnmentsCountDown = new CountDownLatch(MAX);
 		try {
 			for (int i = 0; i < MAX; i++) {
-				SequenceRetrievedAreas retrievedArea = sequencesRetrievedAreas.get(i);
+				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner;
 				sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
 				executor.submit(sequenceAligner);

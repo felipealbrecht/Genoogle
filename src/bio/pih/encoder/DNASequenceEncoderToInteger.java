@@ -83,28 +83,21 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 */
 	public SymbolList decodeIntegerToSymbolList(int encoded) throws IllegalSymbolException,
 			BioException {
-		String sequenceString = decodeIntegerToString(encoded);
+		String sequenceString = decodeIntegerToString(encoded, subSequenceLength);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
 	}
-
-	/**
-	 * Decode a int to a {@link SymbolList}
-	 * 
-	 * @param encoded
-	 * @param length
-	 * @return a array with the symbols that are represented in that encoded value
-	 */
+	
 	private String decodeIntegerToString(int encoded, int length) {
 		StringBuilder sb = new StringBuilder(length);
-		for (int i = subSequenceLength - 1; i >= subSequenceLength - length; i--) {
-			int shift = i * bitsByAlphabetSize;
-			int mask = bitsMask << shift;
-			int value = encoded & mask;
-			int symbolValue = value >> shift;
-			sb.append(getSymbolFromBits(symbolValue));
+		for (int i = 0; i < length; i++) {
+			int value = encoded & 3;
+			sb.append(getSymbolFromBits(value));
+			encoded >>= bitsByAlphabetSize;
 		}
+		sb.reverse();
 		return sb.toString();
 	}
+	
 
 	private String decodeIntegerToString(int encoded, int begin, int end) {
 		StringBuilder sb = new StringBuilder((end - begin) + 1);
@@ -195,7 +188,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		int arrayPosLast = end / subSequenceLength;
 		for (; arrayPos <= arrayPosLast; arrayPos++) {
-			sequence.append(decodeIntegerToString(encodedSequence[arrayPos]));
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], subSequenceLength));
 		}
 
 		int posInIntLast = end % subSequenceLength;
@@ -233,14 +226,14 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		if (extra == 0) {
 			for (int i = getPositionBeginBitsVector(); i < encodedSequence.length; i++) {
-				sequence.append(decodeIntegerToString(encodedSequence[i]));
+				sequence.append(decodeIntegerToString(encodedSequence[i], subSequenceLength));
 			}
 			return sequence.toString();
 
 		}
 		int i;
 		for (i = getPositionBeginBitsVector(); i < encodedSequence.length - 1; i++) {
-			sequence.append(decodeIntegerToString(encodedSequence[i]));
+			sequence.append(decodeIntegerToString(encodedSequence[i], subSequenceLength));
 		}
 		sequence.append(decodeIntegerToString(encodedSequence[i], extra));
 		return sequence.toString();

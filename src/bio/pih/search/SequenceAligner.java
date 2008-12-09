@@ -9,11 +9,10 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.alignment.StringGenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.encoder.SequenceEncoder;
 import bio.pih.io.Utils;
 import bio.pih.io.proto.Io.StoredSequence;
+import bio.pih.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.search.IndexRetrievedData.RetrievedArea;
-import bio.pih.search.IndexRetrievedData.SequenceRetrievedAreas;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
 import bio.pih.search.results.SearchResults;
@@ -22,31 +21,22 @@ import com.google.common.collect.Lists;
 
 public class SequenceAligner implements Runnable {
 	private final CountDownLatch countDown;
-	private final SequenceRetrievedAreas retrievedArea;
-	private final DNAIndexSearcher searcher;
+	private final BothStrandSequenceAreas retrievedArea;
 	private final SearchResults sr;
-	private final SearchParams sp;
-	private final int queryLength;
-	private final int[] encodedQuery;
 	private final StoredSequence storedSequence;
 
-	public SequenceAligner(CountDownLatch countDown, SequenceRetrievedAreas retrievedArea,
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedArea,
 			SearchResults sr) throws IllegalSymbolException, IOException {
 		this.countDown = countDown;
 		this.retrievedArea = retrievedArea;
 		this.sr = sr;
-		this.searcher = retrievedArea.getIndexSearcher();
-		this.sp = searcher.getSearchparams();
-		this.queryLength = searcher.getQuery().length();
-		this.encodedQuery = searcher.getEncodedQuery();
 		this.storedSequence = retrievedArea.getStoredSequence();
 	}
 
 	@Override
 	public void run() {
 		try {
-			extendAndAlignHSPs(this.queryLength, this.encodedQuery, this.retrievedArea,
-					this.storedSequence);
+			extendAndAlignHSPs(this.retrievedArea, this.storedSequence);
 		} catch (IllegalSymbolException e) {
 			sr.addFail(e);
 		} finally {
@@ -54,16 +44,49 @@ public class SequenceAligner implements Runnable {
 		}
 	}
 
-	private void extendAndAlignHSPs(int queryLength, int[] encodedQuery,
-			SequenceRetrievedAreas sequenceRetrievedAreas, StoredSequence storedSequence)
-			throws IllegalSymbolException {
+	private void extendAndAlignHSPs(BothStrandSequenceAreas retrievedAreas,
+			StoredSequence storedSequence) throws IllegalSymbolException {
 
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
 
-		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
+		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
+		int queryLength = searcher.getQuery().length();
 
-		for (RetrievedArea retrievedArea : sequenceRetrievedAreas.getRetrievedAreas()) {
+		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence
+				.getDescription(), storedSequence.getAccession(), targetLength, searcher
+				.getDatabank().getName());
+
+		List<RetrievedArea> areas = retrievedAreas.getAreas();
+		if (areas.size() > 0) {
+			int[] encodedQuery = searcher.getEncodedQuery();
+			List<ExtendSequences> extendedSequences = extendAndAlignAreas(encodedSequence,
+					targetLength, queryLength, encodedQuery, areas, searcher);
+			extendedSequences = mergeExtendedAreas(extendedSequences);
+			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength,
+					extendedSequences, searcher);
+		}
+
+		List<RetrievedArea> reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
+		if (reverseComplementAreas.size() > 0) {
+			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
+			DNAIndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
+			List<ExtendSequences> rcExtendedSequences = extendAndAlignAreas(encodedSequence,
+					targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas,
+					rcSearcher);
+			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
+			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength,
+					rcExtendedSequences, rcSearcher);
+		}
+
+		sr.addHit(hit);
+	}
+
+	private List<ExtendSequences> extendAndAlignAreas(int[] encodedSequence, int targetLength,
+			int queryLength, int[] encodedQuery, List<RetrievedArea> areas,
+			DNAIndexSearcher searcher) {
+		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
+		for (RetrievedArea retrievedArea : areas) {
 			int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
 			int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
 			if (sequenceAreaEnd > targetLength) {
@@ -77,31 +100,22 @@ public class SequenceAligner implements Runnable {
 
 			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
 					queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
-					sequenceAreaEnd, sp.getSequencesExtendDropoff(), searcher.getDatabank()
-							.getSubSequenceLength(), searcher.getDatabank().getEncoder());
+					sequenceAreaEnd, searcher.getSearchParams().getSequencesExtendDropoff(),
+					searcher.getDatabank().getSubSequenceLength(), searcher.getDatabank()
+							.getEncoder());
 
 			if (extendedSequencesList.contains(extensionResult)) {
 				continue;
 			}
-			
-			extendedSequencesList.add(extensionResult);
 
-			if (extendedSequencesList.size() > 0) {
-				extendedSequencesList = mergeExtendedAreas(extendedSequencesList);
-				Hit hit = alignHSPs(queryLength, storedSequence, encodedSequence, targetLength,
-						extendedSequencesList);
-				sr.addHit(hit);
-			}
+			extendedSequencesList.add(extensionResult);
 		}
+		return extendedSequencesList;
 	}
 
-	private Hit alignHSPs(int queryLength, StoredSequence storedSequence, int[] encodedSequence,
-			int targetLength, List<ExtendSequences> extendedSequencesList)
-			throws IllegalSymbolException {
-
-		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence
-				.getDescription(), storedSequence.getAccession(), SequenceEncoder
-				.getSequenceLength(encodedSequence), searcher.getDatabank().getName());
+	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence,
+			int[] encodedSequence, int targetLength, List<ExtendSequences> extendedSequencesList,
+			DNAIndexSearcher searcher) throws IllegalSymbolException {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
 			StringGenoogleSmithWaterman smithWaterman = new StringGenoogleSmithWaterman(1, -3, -3,
@@ -116,7 +130,6 @@ public class SequenceAligner implements Runnable {
 					queryLength, targetLength);
 			hit.addHSP(hsp);
 		}
-		return hit;
 	}
 
 	private List<ExtendSequences> mergeExtendedAreas(List<ExtendSequences> extendedSequences) {

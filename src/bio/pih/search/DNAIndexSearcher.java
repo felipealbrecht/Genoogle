@@ -3,7 +3,6 @@ package bio.pih.search;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
@@ -16,6 +15,7 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedDNASequenceDataBank;
+import bio.pih.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.search.results.HSP;
 import bio.pih.statistics.Statistics;
 import bio.pih.util.SymbolListWindowIterator;
@@ -27,7 +27,7 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
  * 
  * @author albrecht
  */
-public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
+public class DNAIndexSearcher implements Callable<List<RetrievedArea>[]> {
 
 	private static final Logger logger = Logger.getLogger(DNAIndexSearcher.class.getName());
 
@@ -40,10 +40,6 @@ public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
 	private final Statistics statistics;
 	private int[] encodedQuery;
 
-	private final CountDownLatch countDown;
-	private final IndexRetrievedData[] retrievedDatas;
-	private final int resultPos;
-
 	/**
 	 * @param id
 	 * @param sp
@@ -53,14 +49,11 @@ public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
 	 * @param countDown 
 	 * @throws BioException
 	 */
-	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, CountDownLatch countDown, IndexRetrievedData[] retrievedDatas, int resultPos )
+	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank)
 			throws BioException {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
-		this.countDown = countDown;
-		this.retrievedDatas = retrievedDatas;
-		this.resultPos = resultPos;		
 		this.subSequenceLegth = databank.getSubSequenceLength();
 		this.encoder = databank.getEncoder();
 		this.querySequence = getQuery();
@@ -76,7 +69,7 @@ public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
 	}
 
 	@Override
-	public IndexRetrievedData call() throws Exception {
+	public List<RetrievedArea>[] call() throws Exception {
 		int queryLength = querySequence.length();
 		if (queryLength < databank.getSubSequenceLength()) {
 			throw new RuntimeException("Sequence: \"" + querySequence.seqString()
@@ -98,14 +91,11 @@ public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
 		IndexRetrievedData retrievedData = getIndexPositions(iess);
 
 		retrievedData.finish();
-		retrievedDatas[resultPos] = retrievedData;
-		countDown.countDown();
-		
-		logger.info("[" + this.toString() + "] Index search time:"
-				+ (System.currentTimeMillis() - init) + " with " + retrievedData.getTotalAreas()
-				+ " areas in " + retrievedData.getTotalSequences() + " sequences.");
 
-		return retrievedData;
+		logger.info("[" + this.toString() + "] Index search time:"
+				+ (System.currentTimeMillis() - init) + ".");
+
+		return retrievedData.getRetrievedAreasArray();
 	}
 
 	private IndexRetrievedData getIndexPositions(int[] iess) throws ValueOutOfBoundsException,
@@ -188,7 +178,7 @@ public class DNAIndexSearcher implements Callable<IndexRetrievedData> {
 		return databank;
 	}
 	
-	public SearchParams getSearchparams() {
+	public SearchParams getSearchParams() {
 		return sp;
 	}
 	

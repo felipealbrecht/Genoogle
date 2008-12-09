@@ -1,7 +1,5 @@
 package bio.pih.search;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -13,9 +11,8 @@ import bio.pih.seq.LightweightSymbolList;
 public class DNAIndexReverseComplementSearcher extends DNAIndexReverseSearcher {
 
 	public DNAIndexReverseComplementSearcher(long id, SearchParams sp,
-			IndexedDNASequenceDataBank databank, CountDownLatch countDown,
-			IndexRetrievedData[] retrievedDatas, int pos) throws BioException {
-		super(id, sp, databank, countDown, retrievedDatas, pos);
+			IndexedDNASequenceDataBank databank) throws BioException {
+		super(id, sp, databank);
 	}
 
 	@Override
