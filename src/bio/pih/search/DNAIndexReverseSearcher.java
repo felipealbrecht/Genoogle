@@ -1,19 +1,23 @@
 package bio.pih.search;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
 import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.io.Utils;
+import bio.pih.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.search.results.HSP;
-import bio.pih.seq.LightweightSymbolList;
+import bio.pih.statistics.Statistics;
 
 public class DNAIndexReverseSearcher extends DNAIndexSearcher {
 
-	public DNAIndexReverseSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank) throws BioException {
-		super(id, sp, databank);
+	public DNAIndexReverseSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
+			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, 
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 
+			CountDownLatch countDown, List<Exception> fails) {
+		super(id, sp, databank, sliceQuery, offset, query, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 	}
 
 	@Override
@@ -48,10 +52,5 @@ public class DNAIndexReverseSearcher extends DNAIndexSearcher {
 	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman,
 			int targetLength) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
-	}
-
-	@Override
-	protected SymbolList getQuery() throws IllegalSymbolException {
-		return LightweightSymbolList.createDNA(Utils.invert(sp.getQuery().seqString()));
 	}
 }

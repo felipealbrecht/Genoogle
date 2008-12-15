@@ -37,7 +37,7 @@ public class SequenceAligner implements Runnable {
 	public void run() {
 		try {
 			extendAndAlignHSPs(this.retrievedArea, this.storedSequence);
-		} catch (IllegalSymbolException e) {
+		} catch (Exception e) {
 			sr.addFail(e);
 		} finally {
 			countDown.countDown();
@@ -45,10 +45,12 @@ public class SequenceAligner implements Runnable {
 	}
 
 	private void extendAndAlignHSPs(BothStrandSequenceAreas retrievedAreas,
-			StoredSequence storedSequence) throws IllegalSymbolException {
+			StoredSequence storedSequence) throws Exception {
 
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
+		
+		
 
 		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().length();

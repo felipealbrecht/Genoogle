@@ -1,7 +1,5 @@
 package bio.pih.encoder;
 
-import java.util.BitSet;
-
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
@@ -11,19 +9,19 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
 
 public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
-	private final BitSet mask;
+	private final boolean[] mask;
 	private final int patternLength;
 	private final int resultLength;
 
 	public DNAMaskEncoder(String mask, int subSequenceLength) {
 		super(subSequenceLength);
 
-		this.mask = new BitSet();
 		this.patternLength = mask.length();
+		this.mask = new boolean[patternLength];
 		int length = 0;
 		for (int i = 0; i < this.patternLength; i++) {
 			if (mask.charAt(i) == '1') {
-				this.mask.set(i);
+				this.mask[i] = true;
 				length++;
 			}
 		}
@@ -42,10 +40,28 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 	public int applyMask(SymbolList symbolList) {
 		int encoded = 0;
 		int offset = 0;
+		int length = symbolList.length();
+		
+		for (int i = 1; i <= length; i++) {			
+			if (this.mask[i - 1]) {
+				encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
+			} else {
+				offset++;
+			}
+		}
 
-		for (int i = 1; i <= symbolList.length(); i++) {
-			if (this.mask.get(i - 1)) {
-				encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) * bitsByAlphabetSize));
+		return encoded;
+	}
+	
+	
+	public int applyMask(String subSequence) {
+		int encoded = 0;
+		int offset = 0;
+		int length = subSequence.length();
+		
+		for (int i = 0; i < length; i++) {			
+			if (this.mask[i]) {
+				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (i - offset + 1)) << 1));
 			} else {
 				offset++;
 			}
@@ -84,7 +100,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		StringBuilder sb = new StringBuilder("Pattern: ");
 		sb.append("\"");
 		for (int i = 0; i < patternLength; i++) {
-			if (this.mask.get(i)) {
+			if (this.mask[i]) {
 				sb.append('X');
 			} else {
 				sb.append(' ');

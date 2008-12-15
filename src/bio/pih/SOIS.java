@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
@@ -97,6 +98,14 @@ public class SOIS {
 			InterruptedException, ExecutionException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
+	}
+	
+	public Collection<SequenceDataBank> getDatabanks() {
+		return sm.getDatabanks();
+	}
+	
+	public String getDefaultDatabank() {
+		return sm.getDefaultDataBankName();
 	}
 
 	/**

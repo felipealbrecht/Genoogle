@@ -108,7 +108,7 @@ public class IndexRetrievedData {
 
 		return retrievedAreasArray;
 	}
-	
+
 	public List<RetrievedArea>[] getRetrievedAreasArray() {
 		return retrievedAreasArray;
 	}
@@ -124,16 +124,15 @@ public class IndexRetrievedData {
 		@SuppressWarnings("unchecked")
 		public BothStrandSequenceAreas(int sequenceId, DNAIndexSearcher indexSearcher,
 				DNAIndexReverseComplementSearcher reverseComplementIndexSearcher,
-				List<RetrievedArea> areas,
-				List<RetrievedArea> rcAreas) {
+				List<RetrievedArea> areas, List<RetrievedArea> rcAreas) {
 			this.sequenceId = sequenceId;
 			this.indexSearcher = indexSearcher;
 			this.reverseComplementIndexSearcher = reverseComplementIndexSearcher;
-			this.areas = areas!=null?areas:Collections.EMPTY_LIST;
-			this.rcAreas = rcAreas!=null?rcAreas:Collections.EMPTY_LIST;			
+			this.areas = areas != null ? areas : Collections.EMPTY_LIST;
+			this.rcAreas = rcAreas != null ? rcAreas : Collections.EMPTY_LIST;
 			this.sumLengths = sumTotalLengths(this.areas) + sumTotalLengths(this.rcAreas);
 		}
-		
+
 		private int sumTotalLengths(List<RetrievedArea> areas) {
 			int total = 0;
 			for (RetrievedArea area : areas) {
@@ -141,38 +140,38 @@ public class IndexRetrievedData {
 			}
 			return total;
 		}
-		
+
 		public List<RetrievedArea> getAreas() {
 			return areas;
 		}
-		
+
 		public List<RetrievedArea> getReverseComplementAreas() {
 			return rcAreas;
 		}
-		
+
 		public int getSumLengths() {
 			return sumLengths;
 		}
-		
+
 		public int getSequenceId() {
 			return sequenceId;
 		}
-		
+
 		public StoredSequence getStoredSequence() throws IOException {
 			return indexSearcher.getDatabank().getSequenceFromId(sequenceId);
 		}
-		
+
 		public IndexedDNASequenceDataBank getDatabank() {
 			return indexSearcher.getDatabank();
 		}
-		
+
 		public DNAIndexSearcher getIndexSearcher() {
 			return indexSearcher;
 		}
-		
+
 		public DNAIndexSearcher getReverIndexSearcher() {
 			return reverseComplementIndexSearcher;
-		}		
+		}
 	}
 
 	public final static class RetrievedArea {

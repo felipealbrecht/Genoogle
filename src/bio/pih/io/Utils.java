@@ -1,7 +1,6 @@
 package bio.pih.io;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import bio.pih.io.proto.Io.StoredSequence;
 

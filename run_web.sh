@@ -17,4 +17,9 @@ java \
  -classpath genoogle.jar:lib/* \
   bio.pih.web.WebServer \
   www.pih.bio.br \
-  /home/albrecht/genoogle/webapps/ 8090
+  /home/albrecht/genoogle/webapps/ 8080
+# -Dcom.sun.management.jmxremote \
+#-Dcom.sun.management.jmxremote.password.file=jmxremote.password \
+#-Dcom.sun.management.jmxremote.ssl=false \
+#-Dcom.sun.management.jmxremote.authenticate=false \
+#-Dcom.sun.management.jmxremote.port=8090 \

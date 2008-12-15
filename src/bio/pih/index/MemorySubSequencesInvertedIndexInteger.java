@@ -82,7 +82,7 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 		if (subSequence.length() != subSequenceLength) {
 			throw new ValueOutOfBoundsException("The length (" + subSequence.length() + ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
-		int encodedSubSequence = encoder.encodeSubSymbolListToInteger(subSequence);
+		int encodedSubSequence = encoder.encodeSubSequenceToInteger(subSequence);
 		return getMatchingSubSequence(encodedSubSequence);
 	}
 

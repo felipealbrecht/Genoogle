@@ -1,25 +1,20 @@
 package bio.pih.search;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.io.Utils;
-import bio.pih.seq.LightweightSymbolList;
+import bio.pih.search.IndexRetrievedData.RetrievedArea;
+import bio.pih.statistics.Statistics;
 
 public class DNAIndexReverseComplementSearcher extends DNAIndexReverseSearcher {
 
-	public DNAIndexReverseComplementSearcher(long id, SearchParams sp,
-			IndexedDNASequenceDataBank databank) throws BioException {
-		super(id, sp, databank);
-	}
-
-	@Override
-	protected SymbolList getQuery() throws IllegalSymbolException {
-		String inverted = Utils.invert(sp.getQuery().seqString());
-		String complement = Utils.sequenceComplement(inverted);
-		return LightweightSymbolList.createDNA(complement);
+	public DNAIndexReverseComplementSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
+			String rcSliceQuery, int offset, SymbolList rcQuery, int[] rcEncodedQuery, 
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Exception> fails) {
+		super(id, sp, databank, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 	}
 
 	@Override

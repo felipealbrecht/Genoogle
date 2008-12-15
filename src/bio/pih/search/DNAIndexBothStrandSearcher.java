@@ -1,23 +1,29 @@
 package bio.pih.search;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
+import org.biojava.bio.BioException;
+import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
+
+import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.io.IndexedDNASequenceDataBank;
+import bio.pih.io.Utils;
+import bio.pih.search.IndexRetrievedData.BothStrandSequenceAreas;
+import bio.pih.search.IndexRetrievedData.RetrievedArea;
+import bio.pih.seq.LightweightSymbolList;
+import bio.pih.statistics.Statistics;
 
 import com.google.common.collect.Lists;
 
-import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.search.IndexRetrievedData.BothStrandSequenceAreas;
-import bio.pih.search.IndexRetrievedData.RetrievedArea;
-
-public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSequenceAreas>> {
+public class DNAIndexBothStrandSearcher implements Runnable {
 
 	private DNAIndexSearcher searcher;
-	private DNAIndexReverseComplementSearcher complementInvertedSearcher;
+	private DNAIndexReverseComplementSearcher crSearcher;
 
 	private static final Logger logger = Logger.getLogger(DNAIndexBothStrandSearcher.class
 			.getName());
@@ -27,54 +33,127 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 	private final CountDownLatch countDown;
 	private final ExecutorService executor;
 	private final List<BothStrandSequenceAreas>[] retrievedDatas;
-	private final int pos;
+	private final int indexDataPos;
+	private final List<RetrievedArea>[] retrievedAreas;
+	private final List<RetrievedArea>[] rcRetrievedAreas;
+	private final List<Exception> fails;
 
-	public DNAIndexBothStrandSearcher(long id, SearchParams sp,	IndexedDNASequenceDataBank databank, 
-			ExecutorService executor, CountDownLatch countDown,
-			List<BothStrandSequenceAreas>[] retrievedDatas, int pos) {
+	@SuppressWarnings("unchecked")
+	public DNAIndexBothStrandSearcher(long id, SearchParams sp,
+			IndexedDNASequenceDataBank databank, ExecutorService executor,
+			CountDownLatch countDown, List<BothStrandSequenceAreas>[] retrievedDatas,
+			int indexDataPos, List<Exception> fails) {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
 		this.executor = executor;
 		this.countDown = countDown;
 		this.retrievedDatas = retrievedDatas;
-		this.pos = pos;		
+		this.indexDataPos = indexDataPos;
+		this.fails = fails;
+		this.retrievedAreas = new ArrayList[databank.getNumberOfSequences()];
+		this.rcRetrievedAreas = new ArrayList[databank.getNumberOfSequences()];
 	}
 
 	@Override
-	public List<BothStrandSequenceAreas> call() throws Exception {
-		long begin = System.currentTimeMillis();
-
-		searcher = new DNAIndexSearcher(id, sp, databank);
-		complementInvertedSearcher = new DNAIndexReverseComplementSearcher(id, sp, databank);
-		
-		Future<List<RetrievedArea>[]> submit = executor.submit(searcher);
-		Future<List<RetrievedArea>[]> submit2 = executor.submit(complementInvertedSearcher);
-		
-		List<RetrievedArea>[] indexRetrievedData = submit.get();
-		List<RetrievedArea>[] indexRetrievedData2 = submit2.get();		
-		
-		List<BothStrandSequenceAreas> results = Lists.newLinkedList();
-		
-		int numberOfSequences = databank.getNumberOfSequences();
-		for (int i = 0; i < numberOfSequences; i++) {
-			List<RetrievedArea> areas1 = indexRetrievedData[i];
-			List<RetrievedArea> areas2 = indexRetrievedData2[i];
+	public void run() {
+		long searchBegin = System.currentTimeMillis();
+		try {			
+			SymbolList query = sp.getQuery();
 			
-			if (areas1 != null||areas2 != null) {
-				BothStrandSequenceAreas retrievedAreas = new BothStrandSequenceAreas(i,
-						searcher, complementInvertedSearcher, 
-						areas1, areas2);
-				results.add(retrievedAreas);				
-			}						
+			Statistics statistics = new Statistics(1, -3, query, databank.getTotalDataBaseSize(),
+					databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+			
+			String seqString = query.seqString();
+
+			DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(11);
+			int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
+			String inverted = Utils.invert(query.seqString());
+			String rcString = Utils.sequenceComplement(inverted);
+			SymbolList rcQuery = null;
+			try {
+				rcQuery = LightweightSymbolList.createDNA(rcString);
+			} catch (IllegalSymbolException e) {
+				e.printStackTrace();
+			}
+			int[] rcEncodedQuery = encoder.encodeSymbolListToIntegerArray(rcQuery);
+
+			int length = seqString.length();
+			int nThreads = 4;
+			
+			int sliceSize = length / nThreads;
+			while (sliceSize < databank.getMaskEncoder().getPatternLength() * 6 && nThreads != 1) {
+				nThreads--;
+				sliceSize = length / nThreads;
+			}
+			
+			CountDownLatch indexSearchersCountDown = new CountDownLatch(nThreads * 2);
+
+
+			logger.info("("+id + ") "+ nThreads + " threads at query with " + length + " bases.");
+			for (int i = 0; i < nThreads; i++) {
+				int begin = (sliceSize * i) - statistics.getMinLengthDropOut();
+				if (begin < 0) {
+					begin = 0;
+				}
+				int end = (sliceSize * i) + sliceSize + statistics.getMinLengthDropOut();
+				if (end > length) {
+					end = length;
+				}
+				logger.info("("+id + ") "+ i + " ["+begin + " - " + end+ "].");
+				String sliceQuery = seqString.substring(begin, end);
+				String rcSliceQuery = rcString.substring(begin, end);
+				submitSearch(sliceQuery, begin, query, encodedQuery, statistics, indexSearchersCountDown);
+				submitRCSearch(rcSliceQuery, begin, rcQuery, rcEncodedQuery, statistics, indexSearchersCountDown);
+			}
+
+
+			indexSearchersCountDown.await();
+
+			logger.info(this.toString() + " is merging areas.");
+
+			if (fails.size() > 0) {
+				return;
+			}
+
+			List<BothStrandSequenceAreas> results = Lists.newLinkedList();
+
+			int numberOfSequences = databank.getNumberOfSequences();
+			for (int i = 0; i < numberOfSequences; i++) {
+				List<RetrievedArea> areas1 = retrievedAreas[i];
+				List<RetrievedArea> areas2 = rcRetrievedAreas[i];
+
+				if (areas1 != null || areas2 != null) {
+					BothStrandSequenceAreas retrievedAreas = new BothStrandSequenceAreas(i,
+							searcher, crSearcher, areas1, areas2);
+					results.add(retrievedAreas);
+				}
+			}
+
+			retrievedDatas[indexDataPos] = results;
+
+			logger.info("("+id + ") "+ "Total Time of " + (System.currentTimeMillis() - searchBegin));
+
+		} catch (Exception e) {
+			fails.add(e);
+		} finally {
+			countDown.countDown();
 		}
-		
-		retrievedDatas[pos] = results;	
-				
-		logger.info("Total Time of " + this.toString() + " "
-						+ (System.currentTimeMillis() - begin));
-		
-		countDown.countDown();
-		return results;
+	}
+
+	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery,
+			int[] encodedQuery, Statistics statistics, CountDownLatch countDown)
+			throws BioException {
+		searcher = new DNAIndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery,
+				encodedQuery, retrievedAreas, statistics, countDown, fails);
+		executor.submit(searcher);
+	}
+
+	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery,
+			int[] encodedQuery, Statistics statistics, CountDownLatch countDown)
+			throws BioException {
+		crSearcher = new DNAIndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset,
+				fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+		executor.submit(crSearcher);
 	}
 }

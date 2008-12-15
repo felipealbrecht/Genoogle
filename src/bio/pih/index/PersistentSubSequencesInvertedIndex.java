@@ -191,7 +191,7 @@ public class PersistentSubSequencesInvertedIndex extends
 							+ subSequenceLength + ")");
 		}
 		int encodedSubSequence = encoder
-				.encodeSubSymbolListToInteger(subSequence);
+				.encodeSubSequenceToInteger(subSequence);
 
 		return getMatchingSubSequence(encodedSubSequence);
 	}

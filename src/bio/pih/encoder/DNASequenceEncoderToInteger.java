@@ -51,7 +51,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @param subSymbolList
 	 * @return an int containing the representation of the subsequence
 	 */
-	public int encodeSubSymbolListToInteger(SymbolList subSymbolList) {
+	public int encodeSubSequenceToInteger(SymbolList subSymbolList) {
 		if (subSymbolList.length() > subSequenceLength) {
 			throw new ValueOutOfBoundsException(subSymbolList + " is bigger than subSequenceLength("+subSequenceLength+")");
 		}
@@ -64,6 +64,21 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		return encoded;
 	}
+	
+	public int encodeSubSequenceToInteger(String subSequence) {
+		if (subSequence.length() > subSequenceLength) {
+			throw new ValueOutOfBoundsException(subSequence + " is bigger than subSequenceLength("+subSequenceLength+")");
+		}
+
+		int encoded = 0;
+
+		for (int i = 1; i <= subSequence.length(); i++) {
+			encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
+		}
+
+		return encoded;
+	}
+
 
 	/**
 	 * Decode an int vector to its sequence string representation
@@ -128,7 +143,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		sequenceEncoded[getPositionLength()] = sequence.length();
 
 		if (sequence.length() < subSequenceLength) {
-			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSymbolListToInteger(sequence
+			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSequenceToInteger(sequence
 					.subList(1, sequence.length()));
 		} else {
 			int pos = getPositionBeginBitsVector();
@@ -137,12 +152,12 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 							this.subSequenceLength);
 			while (symbolListWindowIterator.hasNext()) {
 				SymbolList next = symbolListWindowIterator.next();
-				sequenceEncoded[pos] = encodeSubSymbolListToInteger(next);
+				sequenceEncoded[pos] = encodeSubSequenceToInteger(next);
 				pos++;
 			}
 			if (pos < size) {
 				int from = sequence.length() - extra + 1;
-				sequenceEncoded[pos] = encodeSubSymbolListToInteger(sequence.subList(from, sequence
+				sequenceEncoded[pos] = encodeSubSequenceToInteger(sequence.subList(from, sequence
 						.length()));
 			}
 		}

@@ -44,7 +44,6 @@ public class CommandLine implements Runnable {
 		this.scheduler = scheduler;
 		this.is = is;
 		this.echo = echo;
-
 	}
 
 	public void run() {

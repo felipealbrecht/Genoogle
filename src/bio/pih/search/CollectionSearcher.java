@@ -39,70 +39,76 @@ public class CollectionSearcher extends AbstractSearcher {
 	@Override
 	public SearchResults call() {
 		long begin = System.currentTimeMillis();
-
-		int indexSearchers = databankCollection.size();
-		// scatter the results of the index searcher into this array. 
-		List<BothStrandSequenceAreas>[] retrievedAreas = new List[indexSearchers];
-		CountDownLatch searchersCountDown = new CountDownLatch(indexSearchers);
-
-		int pos = 0;
-		Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
-		while (it.hasNext()) {
-			SequenceDataBank innerBank = it.next();
-			final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp,
-					(IndexedDNASequenceDataBank) innerBank, executor, searchersCountDown, retrievedAreas, pos++);
-			executor.submit(indexSearcher);
-		}
-
+		List<Exception> fails = Lists.newLinkedList();
+		fails = Collections.synchronizedList(fails);
 		try {
-			searchersCountDown.await();
-		} catch (InterruptedException e1) {
-			sr.addFail(e1);
-			return sr;
-		}
+			int indexSearchers = databankCollection.size();
+			// scatter the results of the index searcher into this array.
+			List<BothStrandSequenceAreas>[] retrievedAreas = new List[indexSearchers];
+			CountDownLatch searchersCountDown = new CountDownLatch(indexSearchers);
 
-		
-		List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
-
-		for (List<BothStrandSequenceAreas> indexRetrievedData : retrievedAreas) {
-			sequencesRetrievedAreas.addAll(indexRetrievedData);
-		}
-
-		Collections.sort(sequencesRetrievedAreas, new Comparator<BothStrandSequenceAreas>() {
-			@Override
-			public int compare(BothStrandSequenceAreas o1, BothStrandSequenceAreas o2) {
-				return o2.getSumLengths() - o1.getSumLengths();
+			int pos = 0;
+			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
+			while (it.hasNext()) {
+				SequenceDataBank innerBank = it.next();
+				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id,
+						sp, (IndexedDNASequenceDataBank) innerBank, executor, searchersCountDown,
+						retrievedAreas, pos++, fails);
+				executor.submit(indexSearcher);
 			}
-		});
 
-		int MAX = sp.getMaxHitsResults()>0?sp.getMaxHitsResults():sequencesRetrievedAreas.size();
-		MAX = Math.min(MAX, sequencesRetrievedAreas.size());
-		
-		System.out.println("MAX: " + MAX);
-		CountDownLatch alignnmentsCountDown = new CountDownLatch(MAX);
-		try {
-			for (int i = 0; i < MAX; i++) {
+				searchersCountDown.await();
+
+			if (fails.size() > 0) {
+				sr.addAllFails(fails);
+				return sr;
+			}
+
+			logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
+					+ (System.currentTimeMillis() - begin));
+
+			long alignmentBegin = System.currentTimeMillis();
+			List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
+
+			for (List<BothStrandSequenceAreas> indexRetrievedData : retrievedAreas) {
+				sequencesRetrievedAreas.addAll(indexRetrievedData);
+			}
+
+			Collections.sort(sequencesRetrievedAreas, new Comparator<BothStrandSequenceAreas>() {
+				@Override
+				public int compare(BothStrandSequenceAreas o1, BothStrandSequenceAreas o2) {
+					return o2.getSumLengths() - o1.getSumLengths();
+				}
+			});
+
+			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults()
+					: sequencesRetrievedAreas.size();
+			maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
+
+			CountDownLatch alignnmentsCountDown = new CountDownLatch(maxHits);
+
+			for (int i = 0; i < maxHits; i++) {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner;
 				sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
 				executor.submit(sequenceAligner);
 			}
 			alignnmentsCountDown.await();
+
+			for (Hit hit : sr.getHits()) {
+				Collections.sort(hit.getHSPs(), HSP.COMPARATOR);
+			}
+
+			Collections.sort(sr.getHits(), Hit.COMPARATOR);
+			logger.info("Alignments total Time of " + this.toString() + " "
+					+ (System.currentTimeMillis() - alignmentBegin));
+			logger.info("Total Time of " + this.toString() + " "
+					+ (System.currentTimeMillis() - begin));
+
 		} catch (Exception e) {
-			sr.addFail(e);
-			return sr;
+			sr.addFail(e);		
 		}
-
-		for (Hit hit : sr.getHits()) {
-			Collections.sort(hit.getHSPs(), HSP.COMPARATOR);
-		}
-
-		Collections.sort(sr.getHits(), Hit.COMPARATOR);
-
-		logger
-				.info("Total Time of " + this.toString() + " "
-						+ (System.currentTimeMillis() - begin));
-
+		
 		return sr;
 	}
 

@@ -7,7 +7,6 @@ import java.util.Map;
 import org.biojava.bio.BioException;
 import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 

@@ -36,13 +36,13 @@
 			return;
 		}
 
-		if (query.length() < 20) {
-			out.print("Query too short, should be at least 20 bases");
+		if (query.length() < 18) {
+			out.print("Query too short, should be at least 18 bases");
 			return;
 		}
 
-		if (query.length() > 2000) {
-			out.print("Query too long, should be until 2000 bases, someday it will be solved :-)");
+		if (query.length() > 40000) {
+			out.print("Query too long, should be until 40000 bases, someday it will be solved :-)");
 			return;
 		}
 

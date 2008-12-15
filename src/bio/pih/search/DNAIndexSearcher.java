@@ -2,11 +2,10 @@ package bio.pih.search;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.alignment.GenoogleSmithWaterman;
@@ -18,8 +17,8 @@ import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.search.results.HSP;
 import bio.pih.statistics.Statistics;
-import bio.pih.util.SymbolListWindowIterator;
-import bio.pih.util.SymbolListWindowIteratorFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * Interface witch defines methods for search for similar DNA sequences and checks the status of the
@@ -27,40 +26,59 @@ import bio.pih.util.SymbolListWindowIteratorFactory;
  * 
  * @author albrecht
  */
-public class DNAIndexSearcher implements Callable<List<RetrievedArea>[]> {
+public class DNAIndexSearcher implements Runnable {
 
 	private static final Logger logger = Logger.getLogger(DNAIndexSearcher.class.getName());
 
 	protected final long id;
 	protected final SearchParams sp;
-	protected final int subSequenceLegth;
 	protected final DNASequenceEncoderToInteger encoder;
 	protected final IndexedDNASequenceDataBank databank;
-	protected final SymbolList querySequence;
 	private final Statistics statistics;
-	private int[] encodedQuery;
+	private final List<RetrievedArea>[] globalRetrievedAreas;
+	private final CountDownLatch countDown;
+
+	private final int subSequenceLength;
+	private final SymbolList query;
+	private final int offset;
+	private final int[] encodedQuery;
+	private final String sliceQuery;
+
+	private final List<Exception> fails;
 
 	/**
 	 * @param id
 	 * @param sp
 	 * @param databank
-	 * @param i 
-	 * @param retrievedDatas 
-	 * @param countDown 
+	 * @param encodedQuery
+	 * @param countDown
+	 * @param retrievedAreas2
+	 * @param i
+	 * @param retrievedDatas
+	 * @param countDown
 	 * @throws BioException
 	 */
-	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank)
-			throws BioException {
+	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
+			String sliceQuery, int offset, SymbolList query, int[] encodedQuery,
+			List<RetrievedArea>[] retrievedAreas, Statistics statistics, CountDownLatch countDown,
+			List<Exception> fails) {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
-		this.subSequenceLegth = databank.getSubSequenceLength();
+		this.sliceQuery = sliceQuery;
+		this.offset = offset;
+		this.query = query;
+		this.encodedQuery = encodedQuery;
+		this.globalRetrievedAreas = retrievedAreas;
+		this.statistics = statistics;
+		this.countDown = countDown;
+		this.fails = fails;
 		this.encoder = databank.getEncoder();
-		this.querySequence = getQuery();
-		this.statistics = new Statistics(1, -3, querySequence, databank.getTotalDataBaseSize(),
-				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+		this.subSequenceLength = databank.getMaskEncoder() == null ? databank
+				.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength();
+
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(Long.toString(id));
@@ -69,45 +87,76 @@ public class DNAIndexSearcher implements Callable<List<RetrievedArea>[]> {
 	}
 
 	@Override
-	public List<RetrievedArea>[] call() throws Exception {
-		int queryLength = querySequence.length();
-		if (queryLength < databank.getSubSequenceLength()) {
-			throw new RuntimeException("Sequence: \"" + querySequence.seqString()
-					+ "\" is too short");
+	public void run() {
+		try {
+			int queryLength = sliceQuery.length();
+			if (queryLength < databank.getSubSequenceLength()) {
+				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short");
+			}
+
+			logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
+							+ " with the sequence with " + sliceQuery.length()
+							+ "bases and min subSequenceLength >= "
+							+ this.statistics.getMinLengthDropOut());
+
+			long bMask = System.currentTimeMillis();
+			int[] iess = getEncodedSubSequences(sliceQuery, databank.getMaskEncoder());
+			logger.info("[" + this.toString() + "]" + (System.currentTimeMillis() - bMask)
+					+ " to apply mask.");
+
+			long init = System.currentTimeMillis();
+			IndexRetrievedData retrievedData = getIndexPositions(iess, offset);
+
+			retrievedData.finish();
+
+			List<RetrievedArea>[] retrievedAreasArray = retrievedData.getRetrievedAreasArray();
+
+			int totalHits = 0;
+			synchronized (globalRetrievedAreas) {
+				int length = retrievedAreasArray.length;
+				for (int i = 0; i < length; i++) {
+					List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
+					if (localRetrievedAreas != null) {
+						totalHits += localRetrievedAreas.size();
+						List<RetrievedArea> globalRetrievedAreasList = globalRetrievedAreas[i];
+						if (globalRetrievedAreasList == null) {
+							globalRetrievedAreas[i] = localRetrievedAreas;
+						} else {
+							List<RetrievedArea> toAdd = Lists.newArrayList();
+							for (RetrievedArea existingArea : globalRetrievedAreasList) {
+								for (RetrievedArea newArea : localRetrievedAreas) {
+									if (!existingArea.setTestAndSet(newArea.queryAreaBegin,
+											newArea.sequenceAreaBegin, sp
+													.getMaxSubSequencesDistance(),
+											subSequenceLength)) {
+										toAdd.add(newArea);
+									}
+								}
+							}
+							globalRetrievedAreasList.addAll(toAdd);
+						}
+					}
+				}
+			}
+			
+			logger.info("[" + this.toString() + "] Index search time:"
+					+ (System.currentTimeMillis() - init) + " and " + totalHits + " hits.");
+		} catch (Exception e) {
+			logger.fatal(e);
+			fails.add(e);
+		} finally {
+			countDown.countDown();
 		}
-		
-		this.encodedQuery = encoder.encodeSymbolListToIntegerArray(querySequence);
-
-		// sr.setMinSubSequenceLength(this.statistics.getMinLengthDropOut());
-
-		logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
-				+ " with the sequence with " + querySequence.length() + "bases "
-				+ querySequence.seqString() + " and min subSequenceLength >= "
-				+ this.statistics.getMinLengthDropOut());
-
-		int[] iess = getEncodedSubSequences(querySequence, databank.getMaskEncoder());		
-
-		long init = System.currentTimeMillis();
-		IndexRetrievedData retrievedData = getIndexPositions(iess);
-
-		retrievedData.finish();
-
-		logger.info("[" + this.toString() + "] Index search time:"
-				+ (System.currentTimeMillis() - init) + ".");
-
-		return retrievedData.getRetrievedAreasArray();
 	}
 
-	private IndexRetrievedData getIndexPositions(int[] iess) throws ValueOutOfBoundsException,
+	private IndexRetrievedData getIndexPositions(int[] iess, int offset) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
-		int subSequenceLength = databank.getMaskEncoder() == null ? databank.getSubSequenceLength()
-				: databank.getMaskEncoder().getPatternLength();
 		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(),
 				sp, statistics.getMinLengthDropOut(), subSequenceLength, this);
 
 		for (int ss = 0; ss < iess.length; ss++) {
-			retrieveIndexPosition(iess[ss], retrievedData, ss);
+			retrieveIndexPosition(iess[ss], retrievedData, ss+offset);
 		}
 		return retrievedData;
 	}
@@ -133,41 +182,38 @@ public class DNAIndexSearcher implements Callable<List<RetrievedArea>[]> {
 		}
 	}
 
-	private int[] getEncodedSubSequences(SymbolList querySequence) {
-		int[] iess = new int[querySequence.length() - (subSequenceLegth - 1)];
+	private int[] getEncodedSubSequences(String querySequence) {
+		int size = querySequence.length() - subSequenceLength;
+		int[] iess = new int[size];
 
-		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
-				.getOverlappedFactory()
-				.newSymbolListWindowIterator(querySequence, subSequenceLegth);
-		int pos = -1;
-		while (symbolListWindowIterator.hasNext()) {
-			pos++;
-			SymbolList subSequence = symbolListWindowIterator.next();
-			iess[pos] = encoder.encodeSubSymbolListToInteger(subSequence);
+		for (int i = 0; i < size; i++) {
+			String subSequence = querySequence.substring(i, i + subSequenceLength);
+			iess[i] = encoder.encodeSubSequenceToInteger(subSequence);
 		}
 		return iess;
 	}
 
-	private int[] getEncodedSubSequences(SymbolList querySequence, DNAMaskEncoder maskEncoder) {
+	private int[] getEncodedSubSequences(String querySequence, DNAMaskEncoder maskEncoder) {
 		if (maskEncoder == null) {
 			return getEncodedSubSequences(querySequence);
 		}
 
-		int[] iess = new int[querySequence.length() - (maskEncoder.getPatternLength() - 1)];
+		int size = querySequence.length() - maskEncoder.getPatternLength();
+		int[] iess = new int[size];
 
-		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
-				.getOverlappedFactory().newSymbolListWindowIterator(querySequence,
-						maskEncoder.getPatternLength());
-		int pos = -1;
-		while (symbolListWindowIterator.hasNext()) {
-			pos++;
-			iess[pos] = maskEncoder.applyMask(symbolListWindowIterator.next());
+		for (int i = 0; i < size; i++) {
+			String subSequence = querySequence.substring(i, i + maskEncoder.getPatternLength());
+			iess[i] = maskEncoder.applyMask(subSequence);
 		}
 		return iess;
 	}
 
-	protected SymbolList getQuery() throws IllegalSymbolException {
-		return sp.getQuery();
+	public SymbolList getQuery() {
+		return query;
+	}
+
+	public int[] getEncodedQuery() {
+		return encodedQuery;
 	}
 
 	public Statistics getStatistics() {
@@ -177,15 +223,11 @@ public class DNAIndexSearcher implements Callable<List<RetrievedArea>[]> {
 	public IndexedDNASequenceDataBank getDatabank() {
 		return databank;
 	}
-	
+
 	public SearchParams getSearchParams() {
 		return sp;
 	}
-	
-	public int[] getEncodedQuery() {
-		return encodedQuery;
-	}
-		
+
 	protected HSP createHSP(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman,
 			double normalizedScore, double evalue, int queryLength, int targetLength) {
 

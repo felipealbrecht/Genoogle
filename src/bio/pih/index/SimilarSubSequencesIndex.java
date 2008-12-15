@@ -213,7 +213,7 @@ public class SimilarSubSequencesIndex {
 			for (String similar : similarSequences) {
 				LightweightSymbolList similarSequence = (LightweightSymbolList) LightweightSymbolList
 						.createDNA(similar);
-				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
+				int encodedSimilar = getEncoder().encodeSubSequenceToInteger(similarSequence);
 				String decodeIntegerToString = encoder.decodeIntegerToString(encodedSimilar);
 				assert decodeIntegerToString.equals(similar);
 				resultsString.add(similar);
@@ -409,7 +409,7 @@ public class SimilarSubSequencesIndex {
 			List<String> similarSequences = generateSimilar(sequence.seqString(), deeper, ALPHABET);
 			for (String similar : similarSequences) {
 				SymbolList similarSequence = LightweightSymbolList.createDNA(similar);
-				int encodedSimilar = getEncoder().encodeSubSymbolListToInteger(similarSequence);
+				int encodedSimilar = getEncoder().encodeSubSequenceToInteger(similarSequence);
 				similarSubSequencesBuilder.addSimilarSequence(encodedSimilar);
 			}
 
