@@ -21,6 +21,10 @@ public final class SearchParams implements Serializable {
 	private final int sequencesExtendDropoff;
 	private final double minEvalue;
 	private final int maxHitsResults;
+
+	private int maxThreadsIndexSearch;
+
+	private int minQuerySliceLength;
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence to be considered at same area.
@@ -41,31 +45,25 @@ public final class SearchParams implements Serializable {
 	 * Quantity of hits that will be processed and shown.
 	 */
 	public static final int MAX_HITS_RESULTS = XMLConfigurationReader.getMaxResults();
+	
+	public static final int MAX_THREADS_INDEX_SEARCH = XMLConfigurationReader.getMaxThreadsIndexSearch();
+	
+	public static final int MIN_QUERY_SLICE_LENGTH = XMLConfigurationReader.getMinQuerySliceLength();
 
-	/**
-	 * @param query
-	 * @param databankName
-	 */
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, MAX_HITS_RESULTS);
+		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
+				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH);
 	}
 
-	/**
-	 * @param query
-	 * @param databankName
-	 * @param maxSubSequencesDistance 
-	 * @param minMatchAreaLength
-	 * @param minQuerySequenceSubSequence
-	 * @param sequencesExtendDropoff 
-	 * @param minEvalue 
-	 */
-	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults) {
+	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength) {
 		this.query = query;
 		this.databankName = databankName;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
 		this.minEvalue = minEvalue;
 		this.maxHitsResults = maxHitsResults;
+		this.maxThreadsIndexSearch = maxThreadsIndexSearch;
+		this.minQuerySliceLength = minQuerySliceLength;
 	}
 
 	/**
@@ -108,5 +106,13 @@ public final class SearchParams implements Serializable {
 	 */
 	public int getMaxHitsResults() {
 		return maxHitsResults;
+	}
+
+	public int getMaxThreadsIndexSearch() {
+		return maxThreadsIndexSearch;
+	}
+
+	public int getMinQuerySliceLength() {
+		return minQuerySliceLength;
 	}
 }

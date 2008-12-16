@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.catalina.Context;
@@ -120,6 +119,9 @@ class Console implements Runnable {
 		try {
 			while ((line = lineReader.readLine()) != null) {
 				line = line.trim();
+				if (line.length() == 0) {
+					continue;
+				}
 				String[] commands = line.split(" ");
 				if (commands[0].equals(SEARCH)) {
 					if (commands.length == 3) {
@@ -135,9 +137,7 @@ class Console implements Runnable {
 					} else {
 						System.out.println("SEARCH DB QUERY_FILE");
 					}
-					
-				
-					
+														
 				} else if (commands[0].equals(GC)) {
 					System.gc();
 					

@@ -56,7 +56,7 @@ public class SOIS {
 	 * @throws BioException 
 	 * @throws IllegalSymbolException 
 	 */
-	public static SOIS getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
+	public synchronized static SOIS getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
 		if (singleton == null) {
 			try {
 				singleton = new SOIS();

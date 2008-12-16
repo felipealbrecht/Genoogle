@@ -189,11 +189,9 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 		Iterator<T> iterator = this.collection.values().iterator();
 		sb.append("Databank Collection: ");
 		sb.append(this.getName());
-		sb.append("[");
+		sb.append(" [");
 		while (iterator.hasNext()) {
-			sb.append(" ");
 			sb.append(iterator.next().toString());
-			sb.append(" ");
 		}
 		sb.append("]");
 

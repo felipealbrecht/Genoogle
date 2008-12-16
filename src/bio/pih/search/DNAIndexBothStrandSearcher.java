@@ -66,7 +66,7 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 			
 			String seqString = query.seqString();
 
-			DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(11);
+			DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(databank.getSubSequenceLength());
 			int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
 			String inverted = Utils.invert(query.seqString());
 			String rcString = Utils.sequenceComplement(inverted);
@@ -79,18 +79,19 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 			int[] rcEncodedQuery = encoder.encodeSymbolListToIntegerArray(rcQuery);
 
 			int length = seqString.length();
-			int nThreads = 4;
 			
+			int nThreads = sp.getMaxThreadsIndexSearch();
+			int minLength = sp.getMinQuerySliceLength();
 			int sliceSize = length / nThreads;
-			while (sliceSize < databank.getMaskEncoder().getPatternLength() * 6 && nThreads != 1) {
+						
+			while (sliceSize < minLength && nThreads != 1) {
 				nThreads--;
 				sliceSize = length / nThreads;
 			}
 			
 			CountDownLatch indexSearchersCountDown = new CountDownLatch(nThreads * 2);
 
-
-			logger.info("("+id + ") "+ nThreads + " threads at query with " + length + " bases.");
+			logger.info("("+id + ") "+ nThreads + " threads at slice query with " + length + " bases.");
 			for (int i = 0; i < nThreads; i++) {
 				int begin = (sliceSize * i) - statistics.getMinLengthDropOut();
 				if (begin < 0) {

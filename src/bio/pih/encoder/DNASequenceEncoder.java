@@ -48,21 +48,35 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	
 
 	protected static int getBitsFromSymbol(Symbol symbol) {
-		Integer b = DNASymbolToBitsSubstitionTable.get(symbol);
-		if (b == null) {
-			return defaultWildcharValue ;
-		} 
-		
-		return b.byteValue();		
+		if (symbol == DNATools.a()) {
+			return 0;
+		}
+		if (symbol == DNATools.c()) {
+			return 1;
+		}
+		if (symbol == DNATools.g()) {
+			return 2;
+		}
+		if (symbol == DNATools.t()) {
+			return 3;
+		}
+		return 0;						
 	}
 	
 	protected static int getBitsFromChar(char symbol) {
-		Integer b = DNACharToBitsSubstitionTable.get(symbol);
-		if (b == null) {
-			return defaultWildcharValue ;
-		} 
-		
-		return b.byteValue();
+		if (symbol == 'A' || symbol == 'a') {
+			return 0;
+		}
+		if (symbol == 'C' || symbol == 'c') {
+			return 1;
+		}
+		if (symbol == 'G' || symbol == 'g') {
+			return 2;
+		}
+		if (symbol == 'T' || symbol == 't') {
+			return 3;
+		}
+		return 0;
 	}
 	
 	

@@ -242,8 +242,21 @@ public class XMLConfigurationReader {
 		return Integer.parseInt(value);
 	}
 
+	/**
+	 * @return Max number of threads that will search an index.
+	 */
+	public static int getMaxThreadsIndexSearch() {
+		String value = getSearchParameters().element("max-threads-index-search").attributeValue("value");
+		return Integer.parseInt(value);
+	}
+	
+	public static int getMinQuerySliceLength() {
+		String value = getSearchParameters().element("min-query-slice-length").attributeValue("value");
+		return Integer.parseInt(value);
+	}
+	
+	
 	private static String readPath(String path) {
 		return path.replace('/', File.separatorChar);
 	}
-
 }
