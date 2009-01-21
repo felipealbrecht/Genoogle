@@ -40,8 +40,7 @@ public class ExtendSequences {
 	 */
 	public String getQuerySequenceExtended() {
 		if (queryExtendedString == null) {
-			// sequences are from X until y+1 , so the +1 should be removed.
-			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment - 1);			
+			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);			
 		}
 		return queryExtendedString;
 	}
@@ -54,8 +53,7 @@ public class ExtendSequences {
 	 */
 	public String getTargetSequenceExtended() {
 		if (targetExtendedString == null) {
-			// sequences are from X until y+1 , so the +1 should be removed.
-			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment - 1);
+			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment);
 		}
 		return targetExtendedString;
 	}

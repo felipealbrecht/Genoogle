@@ -66,7 +66,8 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 			
 			String seqString = query.seqString();
 
-			DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(databank.getSubSequenceLength());
+			int subSequenceLength = databank.getSubSequenceLength();
+			DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 			int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
 			String inverted = Utils.invert(query.seqString());
 			String rcString = Utils.sequenceComplement(inverted);
@@ -93,11 +94,12 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 
 			logger.info("("+id + ") "+ nThreads + " threads at slice query with " + length + " bases.");
 			for (int i = 0; i < nThreads; i++) {
-				int begin = (sliceSize * i) - statistics.getMinLengthDropOut();
-				if (begin < 0) {
-					begin = 0;
-				}
-				int end = (sliceSize * i) + sliceSize + statistics.getMinLengthDropOut();
+//				int begin = (sliceSize * i) - statistics.getMinLengthDropOut();
+//				if (begin < 0) {
+//					begin = 0;
+//				}
+				int begin = (sliceSize * i);
+				int end = (sliceSize * i) + sliceSize + (statistics.getMinLengthDropOut() - subSequenceLength);
 				if (end > length) {
 					end = length;
 				}

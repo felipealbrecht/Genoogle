@@ -115,6 +115,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					finalizeSubDatabankConstruction(totalSequences, totalBases,
 							dataBankFileChannel, storedSequenceInfoChannel, storedDatabankBuilder);
 					subCount++;
+					logger.info("Wrote " + subCount + " of " + qtdSubBases + " sub databanks.");
 					totalSequences = 0;
 					totalBases = 0;
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
@@ -127,6 +128,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		}
 		finalizeSubDatabankConstruction(totalSequences, totalBases, dataBankFileChannel,
 				storedSequenceInfoChannel, storedDatabankBuilder);
+		logger.info("Wrote " + (subCount+1) + " of " + qtdSubBases + " sub databanks.");
 	}
 
 	private File getStoredDatabakFileName(long subCount) {

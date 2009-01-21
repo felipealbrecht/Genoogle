@@ -13,7 +13,7 @@
     <genoogle:extend-dropoff              value="3" />
     <genoogle:max-hits-results            value="50" />
     <genoogle:max-threads-index-search    value="4" />
-    <genoogle:min-query-slice-length      value="200" />
+    <genoogle:min-query-slice-length      value="250" />
   </genoogle:search-parameters>
 
   <genoogle:databanks>
@@ -33,7 +33,7 @@
   	</genoogle:split-databanks> 
 -->
   
-<genoogle:split-databanks name="Err" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="1" sub-sequence-length="9">
+<genoogle:split-databanks name="Err" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="4" sub-sequence-length="9">
    		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
   		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
 		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
