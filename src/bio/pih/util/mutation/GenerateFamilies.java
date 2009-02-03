@@ -15,6 +15,7 @@ public class GenerateFamilies {
 		generateSequenceFamilyTree("AAACAATCTCGATTCTAAATTGAAACGAACGCAGCATTTCAGGGACTGGATGAGGAGCTTACGGTTTTTTACAGAATCATCAATATCTTGGAAGAAAAAGAATGTTAAGAAATAACAAAACAATAATTATTAAGTACTTTCTTAATCTCATTAATGGAGC",10, 3, 0, 4);		
 	}
 			
+	
 	static List<List<SequenceInfo>> generateSequenceFamilyTree(String parent, int totalGenerations, int sequencesBygeneration, int generationCount, int sequenceFraction) {
 		List<List<SequenceInfo>> sequences = Lists.newLinkedList();
 				

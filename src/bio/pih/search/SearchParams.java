@@ -1,6 +1,7 @@
 package bio.pih.search;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.biojava.bio.symbol.SymbolList;
 
@@ -17,13 +18,11 @@ public final class SearchParams implements Serializable {
 
 	private final SymbolList query;
 	private final String databankName;
-	private final int maxSubSequencesDistance;
-	private final int sequencesExtendDropoff;
-	private final double minEvalue;
-	private final int maxHitsResults;
-
+	private int maxSubSequencesDistance;
+	private int sequencesExtendDropoff;
+	private double minEvalue;
+	private int maxHitsResults;
 	private int maxThreadsIndexSearch;
-
 	private int minQuerySliceLength;
 	
 	/**
@@ -54,6 +53,67 @@ public final class SearchParams implements Serializable {
 		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
 				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH);
 	}
+	
+	public enum Parameter {
+		MAX_SUB_SEQUENCE_DISTANCE("MaxSubSequenceDistance", Integer.class),
+		SEQUENCES_EXTEND_DROPOFF("SequencesExtendDropoff", Integer.class),
+		MIN_EVALUE("MinEvalue", Double.class),
+		MAX_HITS_RESULTS("MaxHitsResults", Integer.class),
+		MAX_THREADS_INDEX_SEARCH("MaxThreadsIndexSearch", Integer.class),
+		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class);
+		
+		String name;
+		Class clazz;
+		
+		Parameter(String name, Class clazz) {
+			this.name = name;
+			this.clazz = clazz;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public Class getClazz() {
+			return clazz;
+		}
+		
+		public static Parameter getParameterByName(String name) {
+			for (Parameter param: values()) {
+				if (param.getName().equals(name)) {
+					return param;
+				}
+			}
+			return null;
+		}
+		
+		public Object convertValue(String value) {
+			if (this.getClazz().equals(Integer.class)) {
+				return new Integer(value);
+			} else if (this.getClazz().equals(Double.class)) {
+				return new Double(value);
+			}
+			return null;
+		}
+	}
+	
+	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
+		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
+				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH);
+				
+		for (Parameter param: parameters.keySet()) {
+			Object v = parameters.get(param);
+			System.out.println(param.getName()+"="+v);
+			switch (param) {
+			case MAX_SUB_SEQUENCE_DISTANCE: this.maxSubSequencesDistance = (Integer) v; break;
+			case SEQUENCES_EXTEND_DROPOFF: this.sequencesExtendDropoff = (Integer) v; break;
+			case MIN_EVALUE: this.minEvalue = (Double) v; break;
+			case MAX_HITS_RESULTS: this.maxHitsResults = (Integer) v; break;
+			case MAX_THREADS_INDEX_SEARCH: this.maxThreadsIndexSearch = (Integer) v; break;
+			case MIN_QUERY_SLICE_LENGTH: this.minQuerySliceLength = (Integer) v; break;
+			}
+		}
+	}
 
 	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength) {
 		this.query = query;
@@ -65,7 +125,7 @@ public final class SearchParams implements Serializable {
 		this.maxThreadsIndexSearch = maxThreadsIndexSearch;
 		this.minQuerySliceLength = minQuerySliceLength;
 	}
-
+	
 	/**
 	 * @return the query of the search
 	 */

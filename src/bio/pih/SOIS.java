@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
@@ -31,6 +32,7 @@ import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 import bio.pih.search.SearchParams;
 import bio.pih.search.UnknowDataBankException;
+import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 import bio.pih.seq.LightweightSymbolList;
 
@@ -108,6 +110,10 @@ public class SOIS {
 		return sm.getDefaultDataBankName();
 	}
 
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IllegalSymbolException, IOException, UnknowDataBankException, InterruptedException, ExecutionException {
+		return doBatchSyncSearch(in, databank, null);
+	}
+	
 	/**
 	 * @param in
 	 * @param databank
@@ -118,7 +124,7 @@ public class SOIS {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank)
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank, Map<Parameter, Object> parameters)
 			throws IOException, IllegalSymbolException, UnknowDataBankException,
 			InterruptedException, ExecutionException {
 
@@ -130,7 +136,12 @@ public class SOIS {
 				continue;
 			}
 			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
-			SearchParams sp = new SearchParams(sequence, databank);
+			SearchParams sp;
+			if (parameters == null) {
+				sp = new SearchParams(sequence, databank);
+			} else {
+				sp = new SearchParams(sequence, databank, parameters);
+			}
 			batch.add(sp);
 		}
 		return sm.doSyncSearch(batch);

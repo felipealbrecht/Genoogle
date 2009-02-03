@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/biojava-svn/src/org/biojava/bio/seq"/>
+	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/home/albrecht/java/biojava-1.5/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="lib/bootstrap.jar"/>

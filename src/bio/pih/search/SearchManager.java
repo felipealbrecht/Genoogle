@@ -77,6 +77,7 @@ public class SearchManager {
 	public List<SearchResults> doSyncSearch(List<SearchParams> sps) throws UnknowDataBankException,
 			InterruptedException, ExecutionException {
 
+		long begin = System.currentTimeMillis();
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				requestsExecutor);
 
@@ -100,6 +101,7 @@ public class SearchManager {
 			results.add(future.get());
 		}
 
+		System.out.println((System.currentTimeMillis() - begin) + "ms to execute " + sps.size() + " searchs.");
 		return results;
 	}
 

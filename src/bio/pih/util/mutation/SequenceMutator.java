@@ -1,5 +1,10 @@
 package bio.pih.util.mutation;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -189,13 +194,18 @@ public class SequenceMutator {
 	 * Simple main for test and fast applications.
 	 * 
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if (args.length == 1) {
 			printHelp();			
 		}
 		
-		String sequence = args[0];
+		File sequenceFile = new File(args[0]);
+		if (!sequenceFile.exists()) {
+			throw new FileNotFoundException("File " + args[0] + " was not found.");
+		}
+		String sequence = readSequence(sequenceFile);
 		int generations = Integer.parseInt(args[1]);
 		System.out.println(mutateSequence(sequence, generations, 4, DEFAULT_PROBABILITY_VECTOR));
 		
@@ -204,9 +214,21 @@ public class SequenceMutator {
 	private static void printHelp() {
 		System.out.println("SequenceMutator help:");
 		System.out.println("<sequence> <generations>");
-		System.out.println("Exemple: java SequenceMutator GCTAGCTAGCATGACTGCAGCTGACACGCGGCGATTATTGCATCG 100");
+		System.out.println("Exemple: java SequenceMutator <file name> 100");
 		System.out.println("to change the probabilities values, change at souce code :-)");
 		System.out.println("It's only a main for test propose, please, implement yours application and use this class.");
+	}
+	
+	public static String readSequence(File sequenceFile) throws FileNotFoundException, IOException {
+		BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
+		StringBuilder sb = new StringBuilder();
+		
+		while (br.ready()) {
+			String line = br.readLine().trim();
+			line = line.replaceAll("[\n|\r]", "");
+			sb.append(line);
+		}
+		return sb.toString();
 	}
 
 	/**

@@ -33,10 +33,8 @@
   	</genoogle:split-databanks> 
 -->
   
-<genoogle:split-databanks name="Err" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="4" sub-sequence-length="9">
-   		<genoogle:databank name="Cow"       path="cow.rna.fna"   storage="memory" />
+<genoogle:split-databanks name="Human" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="1" sub-sequence-length="9">
   		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
-		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
   	</genoogle:split-databanks> 
 <!--
   <genoogle:split-databanks name="Genomes_RefSeq"  path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
