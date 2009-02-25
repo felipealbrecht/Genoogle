@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 public class SearchManager {
 
 	private static Logger logger = Logger.getLogger(SearchManager.class.getName());
+	private static Logger profileLogger = Logger.getLogger("profile");
 
 	private Map<String, SequenceDataBank> databanks;
 	private ExecutorService requestsExecutor = null;
@@ -98,10 +99,11 @@ public class SearchManager {
 
 		for (int i = 0; i < sps.size(); i++) {
 			Future<SearchResults> future = completionService.take();
-			results.add(future.get());
+			SearchResults results2 = future.get();
+			results.add(results2);
+			profileLogger.info("  " + (i+1) +"/" +sps.size() + " in " + (System.currentTimeMillis() - begin));
 		}
 
-		System.out.println((System.currentTimeMillis() - begin) + "ms to execute " + sps.size() + " searchs.");
 		return results;
 	}
 

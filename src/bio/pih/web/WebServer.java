@@ -7,12 +7,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -20,6 +19,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Embedded;
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
@@ -31,7 +31,6 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.io.Output;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.SearchParams;
-import bio.pih.search.UnknowDataBankException;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 
@@ -110,15 +109,26 @@ class Console implements Runnable {
 	private static final String GC = "gc";
 	private static final String PARAMETERS = "parameters";
 	private static final String BATCH = "batch";
-	private static String SEARCH = "search";
+	private static final String SEARCH = "search";
+	private static final String PREV = "prev";
+
+	private static Logger profileLogger = Logger.getLogger("profile");
 
 	public void run() {
 		execute(new InputStreamReader(System.in), false);
 	}
-	
+
 	public void execute(InputStreamReader isr, boolean echo) {
 		BufferedReader lineReader = new BufferedReader(isr);
-		String line;
+		PrintStream output = null;
+
+		try {
+			File file = new File("timer_output");
+			output = new PrintStream(file);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		SOIS sois = null;
 		try {
@@ -134,10 +144,17 @@ class Console implements Runnable {
 			e.printStackTrace();
 		}
 
+		boolean executePrev = false;
+		String prev = null;
+		String line = null;
+
 		System.out.print("genoogle console> ");
 
 		try {
-			while ((line = lineReader.readLine()) != null) {
+			while (executePrev || (line = lineReader.readLine()) != null) {
+				long begin = System.currentTimeMillis();
+				long end = -1;
+
 				if (echo) {
 					System.out.println(line);
 				}
@@ -146,19 +163,31 @@ class Console implements Runnable {
 					if (line.length() == 0) {
 						continue;
 					}
+
+					if (executePrev) {
+						if (prev == null) {
+							System.out.println("no previous commands.");
+							executePrev = false;
+							continue;
+						}
+						line = prev;
+						System.out.println(line);
+						executePrev = false;
+					}
+
 					String[] commands = line.split("[ \t]+");
 					if (commands[0].equals(SEARCH)) {
 						if (commands.length >= 4) {
 							String db = commands[1];
 							String queryFile = commands[2];
 							String outputFile = commands[3];
-														
+
 							System.out.println("DB: " + db);
 							System.out.println("Query: " + queryFile);
 							System.out.println("Output: " + outputFile);
-							
+
 							Map<Parameter, Object> parameters = Maps.newHashMap();
-							
+
 							for (int i = 4; i < commands.length; i++) {
 								String command = commands[i];
 								String[] split = command.split("=");
@@ -167,29 +196,33 @@ class Console implements Runnable {
 								}
 								String paramName = split[0];
 								String paramValue = split[1];
-								
+
 								Parameter p = Parameter.getParameterByName(paramName);
 								if (p == null) {
 									System.out.println(paramName + " is an invalid parameter name");
 									continue;
 								}
 								Object value = p.convertValue(paramValue);
-								parameters.put(p, value);								
+								parameters.put(p, value);
 							}
 
-							
 							if (new File(queryFile).exists()) {
 								BufferedReader in = new BufferedReader(new FileReader(queryFile));
-								List<SearchResults> results = sois.doBatchSyncSearch(in, db, parameters);
+								profileLogger.info("<" + line + ">");
+								List<SearchResults> results = sois.doBatchSyncSearch(in, db,
+										parameters);
+								end = System.currentTimeMillis();
+								long total = end - begin;
+								profileLogger.info("</" + line + ":" + total + ">");
 								Document document = Output.genoogleOutputToXML(results);
 								OutputFormat outformat = OutputFormat.createPrettyPrint();
 								outformat.setTrimText(false);
 								outformat.setEncoding("UTF-8");
-								XMLWriter writer = new XMLWriter(new FileOutputStream(new File(outputFile
-										+ ".xml")), outformat);
+								XMLWriter writer = new XMLWriter(new FileOutputStream(new File(
+										outputFile + ".xml")), outformat);
 								writer.write(document);
 								writer.flush();
-								
+
 							} else {
 								System.err.println("query file: " + queryFile + " does not exist.");
 							}
@@ -210,19 +243,23 @@ class Console implements Runnable {
 						System.out.println(sois.getDefaultDatabank());
 
 					} else if (commands[0].equals(PARAMETERS)) {
-						for (SearchParams.Parameter param: SearchParams.Parameter.values()) {
+						for (SearchParams.Parameter param : SearchParams.Parameter.values()) {
 							System.out.println(param.getName());
 						}
-						
+
+					} else if (commands[0].equals(PREV) || commands[0].equals("p")) {
+						executePrev = true;
+						continue;
+
 					} else if (commands[0].endsWith(BATCH)) {
 						if (commands.length != 2) {
 							System.out.println("BATCH <batchfile>");
 						}
-						
+
 						File f = new File(commands[1]);
 						execute(new InputStreamReader(new FileInputStream(f)), true);
-						
-						
+						end = System.currentTimeMillis();
+
 					} else if (commands[0].equals(EXIT)) {
 						System.out.println("Bye.");
 						System.exit(0);
@@ -231,23 +268,13 @@ class Console implements Runnable {
 						System.err.println("Unknow command: " + commands[0]);
 					}
 
+					if (end != -1) {
+						output.println(line + "\t" + begin + "\t" + end + "\t" + (end - begin));
+					}
+
+					prev = line;
 					System.out.print("genoogle console> ");
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalSymbolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnknowDataBankException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExecutionException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -256,6 +283,5 @@ class Console implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Saiu");
 	}
 }

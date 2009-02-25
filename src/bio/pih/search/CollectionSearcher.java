@@ -27,7 +27,9 @@ import com.google.common.collect.Lists;
  */
 public class CollectionSearcher extends AbstractSearcher {
 
-	static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
+	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
+	private	static Logger profileLogger = Logger.getLogger("profile");
+	
 	private final DatabankCollection<SequenceDataBank> databankCollection;
 
 	public CollectionSearcher(long code, SearchParams sp,
