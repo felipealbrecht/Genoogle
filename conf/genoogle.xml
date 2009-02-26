@@ -3,7 +3,7 @@
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
   <genoogle:search-manager>
-    <genoogle:max-simultaneous-searchs value="3"/>     
+    <genoogle:max-simultaneous-searchs value="1"/>     
     <genoogle:max-threads value="16"/>
   </genoogle:search-manager>
 

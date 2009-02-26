@@ -254,6 +254,7 @@ class Console implements Runnable {
 					} else if (commands[0].endsWith(BATCH)) {
 						if (commands.length != 2) {
 							System.out.println("BATCH <batchfile>");
+							continue;
 						}
 
 						File f = new File(commands[1]);

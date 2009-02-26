@@ -97,11 +97,15 @@ public class SearchManager {
 
 		List<SearchResults> results = Lists.newLinkedList();
 
+		long prev = System.currentTimeMillis();		
 		for (int i = 0; i < sps.size(); i++) {
 			Future<SearchResults> future = completionService.take();
 			SearchResults results2 = future.get();
 			results.add(results2);
-			profileLogger.info("  " + (i+1) +"/" +sps.size() + " in " + (System.currentTimeMillis() - begin));
+			long c = System.currentTimeMillis();
+			long total = c - prev;
+			prev = c;
+			profileLogger.info("  " + (i+1) +"/" +sps.size() + " in " + (total) + " and total is " + (c - begin));
 		}
 
 		return results;
