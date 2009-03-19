@@ -54,9 +54,7 @@ public class XMLConfigurationReader {
 	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
-		SearchManager searchManager = new SearchManager(
-				getMaxSimultaneousSearchs(searchManagerElement),
-				getMaxThreads(searchManagerElement));
+		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));
 
 		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 		for (SequenceDataBank dataBank : dataBanks) {
@@ -72,15 +70,6 @@ public class XMLConfigurationReader {
 	 */
 	private static int getMaxSimultaneousSearchs(Element searchManager) {
 		Element maxSimultaneousSearchs = searchManager.element("max-simultaneous-searchs");
-		String value = maxSimultaneousSearchs.attributeValue("value");
-		return Integer.parseInt(value);
-	}
-	
-	/**
-	 * @return how many simultaneous threads a searchManager can handle.
-	 */
-	private static int getMaxThreads(Element searchManager) {
-		Element maxSimultaneousSearchs = searchManager.element("max-threads");
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}

@@ -90,14 +90,10 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 				sliceSize = length / nThreads;
 			}
 			
-			CountDownLatch indexSearchersCountDown = new CountDownLatch(nThreads * 2);
+			CountDownLatch indexSearchersCountDown = new CountDownLatch(nThreads);
 
 			logger.info("("+id + ") "+ nThreads + " threads at slice query with " + length + " bases.");
 			for (int i = 0; i < nThreads; i++) {
-//				int begin = (sliceSize * i) - statistics.getMinLengthDropOut();
-//				if (begin < 0) {
-//					begin = 0;
-//				}
 				int begin = (sliceSize * i);
 				int end = (sliceSize * i) + sliceSize + (statistics.getMinLengthDropOut() - subSequenceLength);
 				if (end > length) {
@@ -107,7 +103,7 @@ public class DNAIndexBothStrandSearcher implements Runnable {
 				String sliceQuery = seqString.substring(begin, end);
 				String rcSliceQuery = rcString.substring(begin, end);
 				submitSearch(sliceQuery, begin, query, encodedQuery, statistics, indexSearchersCountDown);
-				submitRCSearch(rcSliceQuery, begin, rcQuery, rcEncodedQuery, statistics, indexSearchersCountDown);
+//				submitRCSearch(rcSliceQuery, begin, rcQuery, rcEncodedQuery, statistics, indexSearchersCountDown);
 			}
 
 

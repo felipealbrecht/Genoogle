@@ -15,10 +15,10 @@ java \
  -verbose:gc \
  -server \
  -classpath genoogle.jar:lib/* \
+ -Dcom.sun.management.jmxremote \
   bio.pih.web.WebServer \
   www.pih.bio.br \
   /home/albrecht/genoogle/webapps/ 8080
-# -Dcom.sun.management.jmxremote \
 #-Dcom.sun.management.jmxremote.password.file=jmxremote.password \
 #-Dcom.sun.management.jmxremote.ssl=false \
 #-Dcom.sun.management.jmxremote.authenticate=false \

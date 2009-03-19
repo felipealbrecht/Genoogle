@@ -21,11 +21,10 @@ public class SearcherFactory {
 	 * @return {@link Searcher} related with the data bank given.
 	 */
 	@SuppressWarnings("unchecked")
-	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank, 
-			ExecutorService executor) {
+	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank) {
 
 		if (databank instanceof DatabankCollection) {
-			return new CollectionSearcher(id, sp, (DatabankCollection<SequenceDataBank>) databank, executor);
+			return new CollectionSearcher(id, sp, (DatabankCollection<SequenceDataBank>) databank);
 		}
 
 		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName()

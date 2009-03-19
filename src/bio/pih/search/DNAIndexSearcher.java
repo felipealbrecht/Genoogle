@@ -35,11 +35,11 @@ public class DNAIndexSearcher implements Runnable {
 	protected final DNASequenceEncoderToInteger encoder;
 	protected final IndexedDNASequenceDataBank databank;
 	private final Statistics statistics;
-	private final List<RetrievedArea>[] globalRetrievedAreas;
+	private final List<RetrievedArea>[] retrievedAreas;
 	private final CountDownLatch countDown;
 
 	private final int subSequenceLength;
-	private final SymbolList query;
+	private final SymbolList fullQuery;
 	private final int offset;
 	private final int[] encodedQuery;
 	private final String sliceQuery;
@@ -59,7 +59,7 @@ public class DNAIndexSearcher implements Runnable {
 	 * @throws BioException
 	 */
 	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
-			String sliceQuery, int offset, SymbolList query, int[] encodedQuery,
+			String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			List<RetrievedArea>[] retrievedAreas, Statistics statistics, CountDownLatch countDown,
 			List<Exception> fails) {
 		this.id = id;
@@ -67,9 +67,9 @@ public class DNAIndexSearcher implements Runnable {
 		this.databank = databank;
 		this.sliceQuery = sliceQuery;
 		this.offset = offset;
-		this.query = query;
+		this.fullQuery = fullQuery;
 		this.encodedQuery = encodedQuery;
-		this.globalRetrievedAreas = retrievedAreas;
+		this.retrievedAreas = retrievedAreas;
 		this.statistics = statistics;
 		this.countDown = countDown;
 		this.fails = fails;
@@ -106,39 +106,39 @@ public class DNAIndexSearcher implements Runnable {
 
 			long init = System.currentTimeMillis();
 			IndexRetrievedData retrievedData = getIndexPositions(iess, offset);
-
+			
 			retrievedData.finish();
 
 			List<RetrievedArea>[] retrievedAreasArray = retrievedData.getRetrievedAreasArray();
 
 			int totalHits = 0;
-			synchronized (globalRetrievedAreas) {
-				int length = retrievedAreasArray.length;
-				for (int i = 0; i < length; i++) {
-					List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
-					if (localRetrievedAreas != null) {
-						totalHits += localRetrievedAreas.size();
-						List<RetrievedArea> globalRetrievedAreasList = globalRetrievedAreas[i];
-						if (globalRetrievedAreasList == null) {
-							globalRetrievedAreas[i] = localRetrievedAreas;
-						} else {
-							List<RetrievedArea> toAdd = Lists.newArrayList();
-							for (RetrievedArea existingArea : globalRetrievedAreasList) {
-								for (RetrievedArea newArea : localRetrievedAreas) {
-									if (!existingArea.setTestAndSet(newArea.queryAreaBegin,
-											newArea.sequenceAreaBegin, sp
-													.getMaxSubSequencesDistance(),
-											subSequenceLength)) {
-										toAdd.add(newArea);
-									}
+			
+			int length = retrievedAreasArray.length;
+			for (int i = 0; i < length; i++) {
+				List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
+				if (localRetrievedAreas != null) {
+					totalHits += localRetrievedAreas.size();
+					List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
+					if (retrievedAreasList == null) {
+						retrievedAreas[i] = localRetrievedAreas;
+					} else {
+						// TODO: the flow cannot comes here!
+						List<RetrievedArea> toAdd = Lists.newArrayList();
+						for (RetrievedArea existingArea : retrievedAreasList) {
+							for (RetrievedArea newArea : localRetrievedAreas) {
+								if (!existingArea.setTestAndSet(newArea.queryAreaBegin,
+										newArea.sequenceAreaBegin, sp
+												.getMaxSubSequencesDistance(),
+										subSequenceLength)) {
+									toAdd.add(newArea);
 								}
 							}
-							globalRetrievedAreasList.addAll(toAdd);
 						}
+						retrievedAreasList.addAll(toAdd);
 					}
 				}
 			}
-			
+						
 			logger.info("[" + this.toString() + "] Index search time:"
 					+ (System.currentTimeMillis() - init) + " and " + totalHits + " hits.");
 		} catch (Exception e) {
@@ -161,25 +161,25 @@ public class DNAIndexSearcher implements Runnable {
 		return retrievedData;
 	}
 
-	boolean useSimilarSubSequences = false;
+//	final boolean useSimilarSubSequences = false;
 
 	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData,
 			int queryPos) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
-		if (useSimilarSubSequences) {
-			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
-			for (Integer similarSubSequence : similarSubSequences) {
-				long[] indexPositions = databank.getMatchingSubSequence(similarSubSequence);
-				for (long subSequenceIndexInfo : indexPositions) {
-					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
-				}
-			}
-		} else {
+//		if (useSimilarSubSequences) {
+//			List<Integer> similarSubSequences = databank.getSimilarSubSequence(encodedSubSequence);
+//			for (Integer similarSubSequence : similarSubSequences) {
+//				long[] indexPositions = databank.getMatchingSubSequence(similarSubSequence);
+//				for (long subSequenceIndexInfo : indexPositions) {
+//					retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
+//				}
+//			}
+//		} else {
 			long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 			for (long subSequenceIndexInfo : indexPositions) {
 				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 			}
-		}
+//		}
 	}
 
 	private int[] getEncodedSubSequences(String querySequence) {
@@ -209,7 +209,7 @@ public class DNAIndexSearcher implements Runnable {
 	}
 
 	public SymbolList getQuery() {
-		return query;
+		return fullQuery;
 	}
 
 	public int[] getEncodedQuery() {

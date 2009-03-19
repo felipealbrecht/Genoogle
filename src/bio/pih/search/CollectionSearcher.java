@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -32,9 +33,8 @@ public class CollectionSearcher extends AbstractSearcher {
 	
 	private final DatabankCollection<SequenceDataBank> databankCollection;
 
-	public CollectionSearcher(long code, SearchParams sp,
-			DatabankCollection<SequenceDataBank> databank, ExecutorService executor) {
-		super(code, sp, databank, executor);
+	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<SequenceDataBank> databank) {
+		super(code, sp, databank);
 		this.databankCollection = databank;
 	}
 
@@ -51,21 +51,28 @@ public class CollectionSearcher extends AbstractSearcher {
 
 			int pos = 0;
 			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
+			ExecutorService indexSearcherExecutor = Executors.newFixedThreadPool(indexSearchers);
+			
+			ExecutorService subDatabanksExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
+			
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
 				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id,
-						sp, (IndexedDNASequenceDataBank) innerBank, executor, searchersCountDown,
+						sp, (IndexedDNASequenceDataBank) innerBank, subDatabanksExecutor, searchersCountDown,
 						retrievedAreas, pos++, fails);
-				executor.submit(indexSearcher);
+				indexSearcherExecutor.submit(indexSearcher);
 			}
 
-				searchersCountDown.await();
+			searchersCountDown.await();
+			indexSearcherExecutor.shutdown();
+			subDatabanksExecutor.shutdown();
 
 			if (fails.size() > 0) {
 				sr.addAllFails(fails);
 				return sr;
 			}
 
+			
 			logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
 					+ (System.currentTimeMillis() - begin));
 
@@ -83,6 +90,8 @@ public class CollectionSearcher extends AbstractSearcher {
 				}
 			});
 
+			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
+			
 			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults()
 					: sequencesRetrievedAreas.size();
 			maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
@@ -93,9 +102,10 @@ public class CollectionSearcher extends AbstractSearcher {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner;
 				sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
-				executor.submit(sequenceAligner);
+				alignerExecutor.submit(sequenceAligner);
 			}
 			alignnmentsCountDown.await();
+			alignerExecutor.shutdown();
 
 			for (Hit hit : sr.getHits()) {
 				Collections.sort(hit.getHSPs(), HSP.COMPARATOR);

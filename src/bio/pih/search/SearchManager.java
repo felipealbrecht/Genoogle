@@ -31,17 +31,14 @@ public class SearchManager {
 
 	private Map<String, SequenceDataBank> databanks;
 	private ExecutorService requestsExecutor = null;
-	private ExecutorService internalExecutor = null;
 
 	/**
 	 * @param maxSimulaneousSearchs
-	 * @param maxThreads 
 	 * 
 	 */
-	public SearchManager(int maxSimulaneousSearchs, int maxThreads) {
+	public SearchManager(int maxSimulaneousSearchs) {
 		databanks = Maps.newHashMap();
 		requestsExecutor = Executors.newFixedThreadPool(maxSimulaneousSearchs);
-		internalExecutor = Executors.newFixedThreadPool(maxThreads);
 	}
 	
 	/**
@@ -53,10 +50,6 @@ public class SearchManager {
 		requestsExecutor.awaitTermination(100, TimeUnit.MILLISECONDS);			
 	}
 	
-	public ExecutorService getInternalExecutor() {
-		return internalExecutor;
-	}
-
 	/**
 	 * @param databank
 	 */
@@ -90,7 +83,7 @@ public class SearchManager {
 				throw new UnknowDataBankException(this, sp.getDatabank());
 			}
 			long id = getNextSearchId();
-			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank, internalExecutor);
+			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);
 
 			completionService.submit(searcher);
 		}
@@ -128,7 +121,7 @@ public class SearchManager {
 			throw new UnknowDataBankException(this, sp.getDatabank());
 		}
 		long id = getNextSearchId();
-		final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank, internalExecutor);
+		final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);
 
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				requestsExecutor);

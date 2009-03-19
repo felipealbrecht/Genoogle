@@ -1,7 +1,6 @@
 package bio.pih.search;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 
 import bio.pih.io.SequenceDataBank;
 import bio.pih.search.results.SearchResults;
@@ -21,7 +20,6 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	protected final long id;
 	protected final SearchParams sp;
 	protected final SearchResults sr;
-	protected final ExecutorService executor;
 	
 	/**
 	 * @param id
@@ -30,11 +28,9 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	 * @param databank 
 	 *            Sequence data bank where the search will be performed.
 	 */
-	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank, 
-			ExecutorService executor) {
+	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
 		this.id = id;
 		this.sp = sp;
-		this.executor = executor;
 		this.sr = new SearchResults(sp);
 	}
 		
