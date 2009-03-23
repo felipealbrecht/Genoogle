@@ -24,6 +24,8 @@ public final class SearchParams implements Serializable {
 	private int maxHitsResults;
 	private int maxThreadsIndexSearch;
 	private int minQuerySliceLength;
+	private int querySplitQuantity;
+
 	
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence to be considered at same area.
@@ -48,10 +50,12 @@ public final class SearchParams implements Serializable {
 	public static final int MAX_THREADS_INDEX_SEARCH = XMLConfigurationReader.getMaxThreadsIndexSearch();
 	
 	public static final int MIN_QUERY_SLICE_LENGTH = XMLConfigurationReader.getMinQuerySliceLength();
+	
+	public static final int QUERY_SPLIT_QUANTITY  = XMLConfigurationReader.getQuerySplitQuantity();
 
 	public SearchParams(SymbolList query, String databankName) {
 		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
-				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH);
+				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 	}
 	
 	public enum Parameter {
@@ -60,7 +64,8 @@ public final class SearchParams implements Serializable {
 		MIN_EVALUE("MinEvalue", Double.class),
 		MAX_HITS_RESULTS("MaxHitsResults", Integer.class),
 		MAX_THREADS_INDEX_SEARCH("MaxThreadsIndexSearch", Integer.class),
-		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class);
+		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class),
+		QUERY_SPLIT_QUANTITY("QuerySplitQuantity", Integer.class);
 		
 		String name;
 		Class clazz;
@@ -99,7 +104,7 @@ public final class SearchParams implements Serializable {
 	
 	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
 		this(query, databankName, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
-				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH);
+				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 				
 		for (Parameter param: parameters.keySet()) {
 			Object v = parameters.get(param);
@@ -115,7 +120,7 @@ public final class SearchParams implements Serializable {
 		}
 	}
 
-	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength) {
+	public SearchParams(SymbolList query, String databankName, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
 		this.query = query;
 		this.databankName = databankName;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
@@ -124,6 +129,7 @@ public final class SearchParams implements Serializable {
 		this.maxHitsResults = maxHitsResults;
 		this.maxThreadsIndexSearch = maxThreadsIndexSearch;
 		this.minQuerySliceLength = minQuerySliceLength;
+		this.querySplitQuantity = querySplitQuantity;
 	}
 	
 	/**
@@ -170,6 +176,10 @@ public final class SearchParams implements Serializable {
 
 	public int getMaxThreadsIndexSearch() {
 		return maxThreadsIndexSearch;
+	}
+	
+	public int getQuerySplitQuantity() {
+		return querySplitQuantity;
 	}
 
 	public int getMinQuerySliceLength() {

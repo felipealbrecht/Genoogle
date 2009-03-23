@@ -126,8 +126,8 @@ public class DNAIndexSearcher implements Runnable {
 						List<RetrievedArea> toAdd = Lists.newArrayList();
 						for (RetrievedArea existingArea : retrievedAreasList) {
 							for (RetrievedArea newArea : localRetrievedAreas) {
-								if (!existingArea.setTestAndSet(newArea.queryAreaBegin,
-										newArea.sequenceAreaBegin, sp
+								if (!existingArea.testAndSet(newArea.getQueryAreaBegin(),
+										newArea.getSequenceAreaBegin(), sp
 												.getMaxSubSequencesDistance(),
 										subSequenceLength)) {
 									toAdd.add(newArea);
@@ -149,7 +149,7 @@ public class DNAIndexSearcher implements Runnable {
 		}
 	}
 
-	private IndexRetrievedData getIndexPositions(int[] iess, int offset) throws ValueOutOfBoundsException,
+	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
 		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(),
@@ -175,6 +175,7 @@ public class DNAIndexSearcher implements Runnable {
 //				}
 //			}
 //		} else {
+
 			long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 			for (long subSequenceIndexInfo : indexPositions) {
 				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);

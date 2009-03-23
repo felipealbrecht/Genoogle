@@ -16,30 +16,31 @@ public class IndexRetrievedData {
 
 	private final List<RetrievedArea>[] retrievedAreasArray;
 	private final FuckingArrayList<RetrievedArea>[] openedAreasArray;
-	private final SearchParams sp;
 	private final int minLength;
 	private final int subSequenceLength;
+	private final int maxSubSequenceDistance;
 
-	@SuppressWarnings("unchecked")
 	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength,
 			DNAIndexSearcher searcher) {
-		this.sp = sp;
+
 		this.minLength = minLength;
 		this.subSequenceLength = subSequenceLength;
+		this.maxSubSequenceDistance = sp.getMaxSubSequencesDistance();
 
 		retrievedAreasArray = new List[size];
 		openedAreasArray = new FuckingArrayList[size];
 	}
 
-	void addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
-		int start = EncoderSubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
+	final void  addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
+		int sequencePos = EncoderSubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
 		int sequenceId = EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoIntRepresention);
-
-		mergeOrRemoveOrNew(queryPos, start, sequenceId);
+		
+		mergeOrRemoveOrNew(queryPos, sequencePos, sequenceId);
 	}
 
-	private void mergeOrRemoveOrNew(int queryPos, int sequencePos, int sequenceId) {
+	private final void mergeOrRemoveOrNew(int queryPos, int sequencePos, int sequenceId) {
 		boolean merged = false;
+		
 		FuckingArrayList<RetrievedArea> openedList = openedAreasArray[sequenceId];
 
 		if (openedList == null) {
@@ -47,7 +48,7 @@ public class IndexRetrievedData {
 			openedAreasArray[sequenceId] = openedList;
 			RetrievedArea retrievedArea = new RetrievedArea(queryPos, sequencePos,
 					subSequenceLength);
-			openedList.add(retrievedArea);
+			openedList.add(retrievedArea);	
 
 		} else {
 			int fromIndex = -1;
@@ -55,14 +56,14 @@ public class IndexRetrievedData {
 
 			int size = openedList.size();
 			for (int pos = 0; pos < size; pos++) {
-				RetrievedArea openedArea = openedList.get(pos);
+				final RetrievedArea openedArea = openedList.get(pos);
 				// Try merge with previous area.
-				if (openedArea.setTestAndSet(queryPos, sequencePos,
-						sp.getMaxSubSequencesDistance(), subSequenceLength)) {
+				if (openedArea.testAndSet(queryPos, sequencePos,
+						maxSubSequenceDistance, subSequenceLength)) {
 					merged = true;
 
 					// Check if the area end is away from the actual sequence position.
-				} else if (queryPos - openedArea.queryAreaEnd > sp.getMaxSubSequencesDistance()) {
+				} else if (queryPos - openedArea.queryAreaEnd > maxSubSequenceDistance) {
 					// Mark the areas to remove.
 					if (fromIndex == -1) {
 						fromIndex = pos;
@@ -175,11 +176,11 @@ public class IndexRetrievedData {
 	}
 
 	public final static class RetrievedArea {
-		int queryAreaBegin;
-		int queryAreaEnd;
-		int sequenceAreaBegin;
-		int sequenceAreaEnd;
-		int length;
+		private final int queryAreaBegin;
+		private int queryAreaEnd;
+		private final int sequenceAreaBegin;
+		private int sequenceAreaEnd;
+		private int length;
 
 		public RetrievedArea(int queryAreaBegin, int sequenceAreaBegin, int subSequenceLength) {
 			this.queryAreaBegin = queryAreaBegin;
@@ -193,8 +194,8 @@ public class IndexRetrievedData {
 			return this.length;
 		}
 
-		public boolean setTestAndSet(int newQueryPos, int newSequencePos,
-				int maxSubSequenceDistance, int subSequenceLength) {
+		public boolean testAndSet(final int newQueryPos, final int newSequencePos,
+				final int maxSubSequenceDistance, final int subSequenceLength) {
 
 			if (Utils.isIn(queryAreaBegin, queryAreaEnd + maxSubSequenceDistance, newQueryPos)) {
 				if (Utils.isIn(sequenceAreaBegin, sequenceAreaEnd + maxSubSequenceDistance,
@@ -233,6 +234,22 @@ public class IndexRetrievedData {
 			sb.append(")");
 
 			return sb.toString();
+		}
+
+		public int getQueryAreaBegin() {
+			return queryAreaBegin;
+		}
+		
+		public int getQueryAreaEnd() {
+			return queryAreaEnd;
+		}
+		
+		public int getSequenceAreaBegin() {
+			return sequenceAreaBegin;
+		}
+		
+		public int getSequenceAreaEnd() {
+			return sequenceAreaEnd;
 		}
 	}
 

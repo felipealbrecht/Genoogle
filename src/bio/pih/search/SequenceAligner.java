@@ -89,13 +89,13 @@ public class SequenceAligner implements Runnable {
 			DNAIndexSearcher searcher) {
 		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
 		for (RetrievedArea retrievedArea : areas) {
-			int sequenceAreaBegin = retrievedArea.sequenceAreaBegin;
-			int sequenceAreaEnd = retrievedArea.sequenceAreaEnd;
+			int sequenceAreaBegin = retrievedArea.getSequenceAreaBegin();
+			int sequenceAreaEnd = retrievedArea.getSequenceAreaEnd();
 			if (sequenceAreaEnd > targetLength) {
 				sequenceAreaEnd = targetLength;
 			}
-			int queryAreaBegin = retrievedArea.queryAreaBegin;
-			int queryAreaEnd = retrievedArea.queryAreaEnd;
+			int queryAreaBegin = retrievedArea.getQueryAreaBegin();
+			int queryAreaEnd = retrievedArea.getQueryAreaEnd();
 			if (queryAreaEnd > queryLength) {
 				queryAreaBegin = queryLength;
 			}

@@ -244,8 +244,13 @@ public class XMLConfigurationReader {
 		return Integer.parseInt(value);
 	}
 	
+	public static int getQuerySplitQuantity() {
+		String value = getSearchParameters().element("query-split-quantity").attributeValue("value");
+		return Integer.parseInt(value);
+	}
 	
 	private static String readPath(String path) {
 		return path.replace('/', File.separatorChar);
 	}
+
 }

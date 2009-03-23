@@ -38,7 +38,7 @@ public class SearchManager {
 	 */
 	public SearchManager(int maxSimulaneousSearchs) {
 		databanks = Maps.newHashMap();
-		requestsExecutor = Executors.newFixedThreadPool(maxSimulaneousSearchs);
+		requestsExecutor = Executors.newFixedThreadPool(maxSimulaneousSearchs);		
 	}
 	
 	/**

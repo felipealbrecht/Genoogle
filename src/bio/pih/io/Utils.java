@@ -11,9 +11,9 @@ import com.google.protobuf.ByteString;
  * 
  * @author albrecht
  */
-public class Utils {
+public final class Utils {
 
-	public static int[] getEncodedSequenceAsArray(StoredSequence storedSequence) {
+	public static int[] getEncodedSequenceAsArray(final StoredSequence storedSequence) {
 		ByteString encodedSequence = storedSequence.getEncodedSequence();
 		byte[] byteArray = encodedSequence.toByteArray();
 		int[] ret = new int[byteArray.length / 4];
@@ -21,7 +21,7 @@ public class Utils {
 		return ret;
 	}
 
-	public static String invert(String s) {
+	public static String invert(final String s) {
 		char[] cs = s.toCharArray();
 		char[] result = new char[s.length()];
 		int j = 0;
@@ -32,7 +32,7 @@ public class Utils {
 		return new String(result);
 	}
 
-	public static String sequenceComplement(String seqString) {
+	public static String sequenceComplement(final String seqString) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < seqString.length(); i++) {
 			char base = seqString.charAt(i);
@@ -42,7 +42,7 @@ public class Utils {
 		return sb.toString();
 	}
 
-	public static char getComplement(char base) {
+	public static char getComplement(final char base) {
 		switch (base) {
 		case 'A':
 			return 'T';
@@ -65,14 +65,14 @@ public class Utils {
 		}
 	}
 
-	public static boolean isIn(int begin, int end, int pos) {
+	public static boolean isIn(final int begin, final int end, final int pos) {
 		if ((pos >= begin) && (pos <= end)) {
 			return true;
 		}
 		return false;
 	}
 
-	public static boolean contains(int seq1Begin, int seq1End, int seq2Begin, int seq2End) {
+	public static boolean contains(final int seq1Begin, final int seq1End, final int seq2Begin, final int seq2End) {
 		if ((seq2Begin >= seq1Begin) && (seq2End <= seq1End)) {
 			return true;
 		}

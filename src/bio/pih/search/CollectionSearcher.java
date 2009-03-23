@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,7 +31,6 @@ import com.google.common.collect.Lists;
 public class CollectionSearcher extends AbstractSearcher {
 
 	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
-	private	static Logger profileLogger = Logger.getLogger("profile");
 	
 	private final DatabankCollection<SequenceDataBank> databankCollection;
 
@@ -45,43 +46,37 @@ public class CollectionSearcher extends AbstractSearcher {
 		fails = Collections.synchronizedList(fails);
 		try {
 			int indexSearchers = databankCollection.size();
-			// scatter the results of the index searcher into this array.
-			List<BothStrandSequenceAreas>[] retrievedAreas = new List[indexSearchers];
-			CountDownLatch searchersCountDown = new CountDownLatch(indexSearchers);
 
-			int pos = 0;
-			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
-			ExecutorService indexSearcherExecutor = Executors.newFixedThreadPool(indexSearchers);
+			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();		
+			ExecutorService subDatabanksExecutor = Executors.newFixedThreadPool(indexSearchers);
+			CompletionService<List<BothStrandSequenceAreas> > subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(subDatabanksExecutor);
 			
-			ExecutorService subDatabanksExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
+			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 			
+						
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id,
-						sp, (IndexedDNASequenceDataBank) innerBank, subDatabanksExecutor, searchersCountDown,
-						retrievedAreas, pos++, fails);
-				indexSearcherExecutor.submit(indexSearcher);
+				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp, 
+						(IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
+				subDataBanksCS.submit(indexSearcher);
 			}
-
-			searchersCountDown.await();
-			indexSearcherExecutor.shutdown();
-			subDatabanksExecutor.shutdown();
-
+			
 			if (fails.size() > 0) {
 				sr.addAllFails(fails);
 				return sr;
 			}
+			
+			List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
+			for (int i = 0; i < indexSearchers; i++) {				
+				sequencesRetrievedAreas.addAll(subDataBanksCS.take().get());				
+			}
 
+			subDatabanksExecutor.shutdown();
 			
 			logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
 					+ (System.currentTimeMillis() - begin));
 
 			long alignmentBegin = System.currentTimeMillis();
-			List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
-
-			for (List<BothStrandSequenceAreas> indexRetrievedData : retrievedAreas) {
-				sequencesRetrievedAreas.addAll(indexRetrievedData);
-			}
 
 			Collections.sort(sequencesRetrievedAreas, new Comparator<BothStrandSequenceAreas>() {
 				@Override
