@@ -7,11 +7,11 @@
   </genoogle:search-manager>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="12"/>
-    <genoogle:min-evalue                  value="1E-10" />
-    <genoogle:extend-dropoff              value="3" />
-    <genoogle:max-hits-results            value="50" />
-    <genoogle:max-threads-index-search    value="4" />
+    <genoogle:max-sub-sequence-distance   value="30"/>
+    <genoogle:min-evalue                  value="1E-5" />
+    <genoogle:extend-dropoff              value="5" />
+    <genoogle:max-hits-results            value="100" />
+    <genoogle:max-threads-index-search    value="2" />
     <genoogle:min-query-slice-length      value="250" />
     <genoogle:query-split-quantity        value="1" />
   </genoogle:search-parameters>
@@ -31,12 +31,16 @@
 		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
     	<genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
   	</genoogle:split-databanks> 
--->
   
-<genoogle:split-databanks name="Human" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="1" sub-sequence-length="9">
+<genoogle:split-databanks name="Human" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
   		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		
   	</genoogle:split-databanks> 
-<!--
+-->
+  	
+<!--  	<genoogle:split-databanks name="Human_2" path="files/fasta" mask="101010010100110110" number-of-sub-databanks="2" sub-sequence-length="9">-->
+<!--  		<genoogle:databank name="Human"     path="human.rna.fna" storage="memory" />  		-->
+<!--  	</genoogle:split-databanks>-->
+
   <genoogle:split-databanks name="Genomes_RefSeq"  path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
 		<genoogle:databank name="Anaeromyxobacter_K" path="CP001131.fna"  storage="memory" />
  		<genoogle:databank name="Aquifex_aeolicus" path="AE000657.fna" storage="memory" />
@@ -48,7 +52,7 @@
 		<genoogle:databank name="Frog"      path="frog.rna.fna"  storage="memory" /> 
     	<genoogle:databank name="Mouse"     path="mouse.rna.fna" storage="memory" />
   </genoogle:split-databanks> 
--->
+
 
   </genoogle:databanks>  	
 </genoogle:conf>

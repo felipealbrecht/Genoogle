@@ -90,8 +90,8 @@ public class DNAIndexSearcher implements Runnable {
 	public void run() {
 		try {
 			int queryLength = sliceQuery.length();
-			if (queryLength < databank.getSubSequenceLength()) {
-				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short");
+			if (queryLength < subSequenceLength) {
+				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short. Its length is " + queryLength + " but should to be at least " + subSequenceLength + ".");
 			}
 
 			logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
@@ -142,6 +142,7 @@ public class DNAIndexSearcher implements Runnable {
 			logger.info("[" + this.toString() + "] Index search time:"
 					+ (System.currentTimeMillis() - init) + " and " + totalHits + " hits.");
 		} catch (Exception e) {
+			System.out.println(e);
 			logger.fatal(e);
 			fails.add(e);
 		} finally {
@@ -176,10 +177,10 @@ public class DNAIndexSearcher implements Runnable {
 //			}
 //		} else {
 
-			long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
-			for (long subSequenceIndexInfo : indexPositions) {
-				retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
-			}
+		long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
+		for (long subSequenceIndexInfo : indexPositions) {
+			retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
+		}
 //		}
 	}
 

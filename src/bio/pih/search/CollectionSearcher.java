@@ -31,10 +31,11 @@ import com.google.common.collect.Lists;
 public class CollectionSearcher extends AbstractSearcher {
 
 	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
-	
+
 	private final DatabankCollection<SequenceDataBank> databankCollection;
 
-	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<SequenceDataBank> databank) {
+	public CollectionSearcher(long code, SearchParams sp,
+			DatabankCollection<SequenceDataBank> databank) {
 		super(code, sp, databank);
 		this.databankCollection = databank;
 	}
@@ -47,32 +48,38 @@ public class CollectionSearcher extends AbstractSearcher {
 		try {
 			int indexSearchers = databankCollection.size();
 
-			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();		
+			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			ExecutorService subDatabanksExecutor = Executors.newFixedThreadPool(indexSearchers);
-			CompletionService<List<BothStrandSequenceAreas> > subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(subDatabanksExecutor);
-			
-			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
-			
-						
+			CompletionService<List<BothStrandSequenceAreas>> subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(
+					subDatabanksExecutor);
+
+			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp
+					.getMaxThreadsIndexSearch());
+
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp, 
-						(IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
+				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id,
+						sp, (IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
 				subDataBanksCS.submit(indexSearcher);
 			}
-			
+
 			if (fails.size() > 0) {
 				sr.addAllFails(fails);
 				return sr;
 			}
-			
+
 			List<BothStrandSequenceAreas> sequencesRetrievedAreas = Lists.newLinkedList();
-			for (int i = 0; i < indexSearchers; i++) {				
-				sequencesRetrievedAreas.addAll(subDataBanksCS.take().get());				
+			for (int i = 0; i < indexSearchers; i++) {
+				List<BothStrandSequenceAreas> list = subDataBanksCS.take().get();
+				if (list == null) {
+					logger.error("Results from searcher " + i + " was empty.");
+				} else {
+					sequencesRetrievedAreas.addAll(list);
+				}
 			}
 
 			subDatabanksExecutor.shutdown();
-			
+
 			logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
 					+ (System.currentTimeMillis() - begin));
 
@@ -85,8 +92,9 @@ public class CollectionSearcher extends AbstractSearcher {
 				}
 			});
 
-			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
-			
+			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp
+					.getMaxThreadsIndexSearch());
+
 			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults()
 					: sequencesRetrievedAreas.size();
 			maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
@@ -113,9 +121,9 @@ public class CollectionSearcher extends AbstractSearcher {
 					+ (System.currentTimeMillis() - begin));
 
 		} catch (Exception e) {
-			sr.addFail(e);		
+			sr.addFail(e);
 		}
-		
+
 		return sr;
 	}
 

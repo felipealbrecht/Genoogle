@@ -1,8 +1,7 @@
 #!/bin/sh
-java \
+/home/albrecht/jrmc-3.0.3-1.6.0/bin/java \
  -Xms2048m \
  -Xmx2048m \
- -Xmn1g \
  -Xss128k \
  -XX:ParallelGCThreads=5 \
  -XX:+UseConcMarkSweepGC \
@@ -13,6 +12,7 @@ java \
  -XX:+UseFastAccessorMethods \
  -XX:+AggressiveOpts \
  -verbose:gc \
+ -ea \
  -server \
  -classpath genoogle.jar:lib/* \
  -Dcom.sun.management.jmxremote \

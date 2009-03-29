@@ -85,6 +85,11 @@ public class Output {
 	 */
 	public static Element searchResultToXML(SearchResults searchResult) {
 		assert searchResult != null;
+		if (searchResult.hasFail()) {
+			for (Exception e: searchResult.getFails()) {
+				e.printStackTrace(System.err);
+			}
+		}
 		DocumentFactory factory = DocumentFactory.getInstance();
 		Element resultsElement = factory.createElement("results");
 		resultsElement.add(paramsToXML(searchResult.getParams()));

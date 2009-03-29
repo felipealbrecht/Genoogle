@@ -1,7 +1,6 @@
 package bio.pih.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,13 +8,15 @@ import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.Utils;
 import bio.pih.io.proto.Io.StoredSequence;
+import bio.pih.util.CircularArrayList;
+import bio.pih.util.CircularArrayList.Iterator;
 
 import com.google.common.collect.Lists;
 
 public class IndexRetrievedData {
 
 	private final List<RetrievedArea>[] retrievedAreasArray;
-	private final FuckingArrayList<RetrievedArea>[] openedAreasArray;
+	private final CircularArrayList[] openedAreasArray;
 	private final int minLength;
 	private final int subSequenceLength;
 	private final int maxSubSequenceDistance;
@@ -28,75 +29,80 @@ public class IndexRetrievedData {
 		this.maxSubSequenceDistance = sp.getMaxSubSequencesDistance();
 
 		retrievedAreasArray = new List[size];
-		openedAreasArray = new FuckingArrayList[size];
+		openedAreasArray = new CircularArrayList[size];
 	}
 
-	final void  addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
+	final void addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
 		int sequencePos = EncoderSubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
 		int sequenceId = EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoIntRepresention);
-		
+
 		mergeOrRemoveOrNew(queryPos, sequencePos, sequenceId);
 	}
 
 	private final void mergeOrRemoveOrNew(int queryPos, int sequencePos, int sequenceId) {
+
 		boolean merged = false;
-		
-		FuckingArrayList<RetrievedArea> openedList = openedAreasArray[sequenceId];
+
+		CircularArrayList openedList = openedAreasArray[sequenceId];
 
 		if (openedList == null) {
-			openedList = new FuckingArrayList<RetrievedArea>();
+			openedList = new CircularArrayList();
 			openedAreasArray[sequenceId] = openedList;
-			RetrievedArea retrievedArea = new RetrievedArea(queryPos, sequencePos,
-					subSequenceLength);
-			openedList.add(retrievedArea);	
+			openedList.addFast(queryPos, sequencePos, subSequenceLength);
 
 		} else {
 			int fromIndex = -1;
 			int toIndex = -1;
 
 			int size = openedList.size();
-			for (int pos = 0; pos < size; pos++) {
-				final RetrievedArea openedArea = openedList.get(pos);
-				// Try merge with previous area.
-				if (openedArea.testAndSet(queryPos, sequencePos,
-						maxSubSequenceDistance, subSequenceLength)) {
-					merged = true;
+			if (size == 0) {
+				merged = false;
+			} else {
+				Iterator iterator = openedList.getIterator();
+				while (iterator.hasNext()) {
+					final RetrievedArea openedArea = iterator.next();
+					// Try merge with previous area.
+					if (openedArea.testAndSet(queryPos, sequencePos, maxSubSequenceDistance,
+							subSequenceLength)) {
+						merged = true;
 
-					// Check if the area end is away from the actual sequence position.
-				} else if (queryPos - openedArea.queryAreaEnd > maxSubSequenceDistance) {
-					// Mark the areas to remove.
-					if (fromIndex == -1) {
-						fromIndex = pos;
-						toIndex = pos;
-					} else {
-						toIndex = pos;
-					}
-					if (openedArea.length() >= minLength) {
-						if (retrievedAreasArray[sequenceId] == null) {
-							retrievedAreasArray[sequenceId] = Lists.newArrayList();
+						// Check if the area end is away from the actual sequence position.
+					} else if (queryPos - openedArea.queryAreaEnd > maxSubSequenceDistance) {
+						// Mark the areas to remove.
+						if (fromIndex == -1) {
+							fromIndex = iterator.getPos();
+							toIndex = fromIndex;
+						} else {
+							toIndex = iterator.getPos();
 						}
-						retrievedAreasArray[sequenceId].add(openedArea);
+						if (openedArea.length() >= minLength) {
+							if (retrievedAreasArray[sequenceId] == null) {
+								retrievedAreasArray[sequenceId] = Lists.newArrayList();
+							}
+							retrievedAreasArray[sequenceId].add(openedArea);
+						}
 					}
 				}
 			}
 
 			if (fromIndex != -1) {
-				openedList.removeRange(fromIndex, toIndex + 1);
+				openedList.removeElements(fromIndex, toIndex + 1);
 			}
 
 			if (!merged) {
-				RetrievedArea retrievedArea = new RetrievedArea(queryPos, sequencePos,
-						subSequenceLength);
-				openedList.add(retrievedArea);
+				openedList.add(queryPos, sequencePos, subSequenceLength);
 			}
 		}
 	}
 
 	public List<RetrievedArea>[] finish() {
 		for (int sequenceId = 0; sequenceId < openedAreasArray.length; sequenceId++) {
-			List<RetrievedArea> openedAreaList = openedAreasArray[sequenceId];
+			CircularArrayList openedAreaList = openedAreasArray[sequenceId];
 			if (openedAreaList != null) {
-				for (RetrievedArea openedArea : openedAreaList) {
+				Iterator iterator = openedAreaList.getIterator();
+				while (iterator.hasNext()) {
+					RetrievedArea openedArea = iterator.next();
+					assert(openedArea != null);
 					if (openedArea.length() >= minLength) {
 						if (retrievedAreasArray[sequenceId] == null) {
 							retrievedAreasArray[sequenceId] = Lists.newArrayList();
@@ -176,13 +182,17 @@ public class IndexRetrievedData {
 	}
 
 	public final static class RetrievedArea {
-		private final int queryAreaBegin;
+		private int queryAreaBegin;
 		private int queryAreaEnd;
-		private final int sequenceAreaBegin;
+		private int sequenceAreaBegin;
 		private int sequenceAreaEnd;
 		private int length;
 
 		public RetrievedArea(int queryAreaBegin, int sequenceAreaBegin, int subSequenceLength) {
+			reset(queryAreaBegin, sequenceAreaBegin, subSequenceLength);
+		}
+
+		public void reset(int queryAreaBegin, int sequenceAreaBegin, int subSequenceLength) {
 			this.queryAreaBegin = queryAreaBegin;
 			this.queryAreaEnd = queryAreaBegin + subSequenceLength;
 			this.sequenceAreaBegin = sequenceAreaBegin;
@@ -226,8 +236,8 @@ public class IndexRetrievedData {
 			sb.append(queryAreaBegin);
 			sb.append(",");
 			sb.append(queryAreaEnd);
-			sb.append("]");
-			sb.append("[");
+			sb.append(")");
+			sb.append("(");
 			sb.append(sequenceAreaBegin);
 			sb.append(",");
 			sb.append(sequenceAreaEnd);
@@ -239,30 +249,18 @@ public class IndexRetrievedData {
 		public int getQueryAreaBegin() {
 			return queryAreaBegin;
 		}
-		
+
 		public int getQueryAreaEnd() {
 			return queryAreaEnd;
 		}
-		
+
 		public int getSequenceAreaBegin() {
 			return sequenceAreaBegin;
 		}
-		
+
 		public int getSequenceAreaEnd() {
 			return sequenceAreaEnd;
 		}
+
 	}
-
-	private static class FuckingArrayList<E> extends ArrayList<E> {
-		private static final long serialVersionUID = -7142636234255880892L;
-
-		public FuckingArrayList() {
-		}
-
-		@Override
-		public void removeRange(int fromIndex, int toIndex) {
-			super.removeRange(fromIndex, toIndex);
-		}
-	}
-
 }
