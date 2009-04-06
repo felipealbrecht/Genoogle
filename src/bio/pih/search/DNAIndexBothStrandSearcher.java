@@ -53,15 +53,17 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 		SymbolList query = sp.getQuery();
 
+		long s = System.currentTimeMillis();
 		Statistics statistics = new Statistics(1, -3, query, databank.getTotalDataBaseSize(),
 				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+		System.out.println(System.currentTimeMillis() - s);
 
 		String seqString = query.seqString();
 
 		int subSequenceLength = databank.getSubSequenceLength();
 		DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger
 				.getEncoder(subSequenceLength);
-//TODO: complement e inverter num unico comando. 
+
 		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
 		String inverted = Utils.invert(query.seqString());
 		String rcString = Utils.sequenceComplement(inverted);
@@ -82,9 +84,9 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 		}
 
 		CountDownLatch indexSearchersCountDown = new CountDownLatch(querySplitQuantity * 2);
-
-		logger.info("(" + id + ") Preprocessing: " + (System.currentTimeMillis() - searchBegin));
-		logger.info("(" + id + ") " + querySplitQuantity + " threads at slice query with " + length
+		
+		logger.info("(" + id + ") Preprocessing time: " + (System.currentTimeMillis() - searchBegin));
+		logger.info("(" + id + ") " + querySplitQuantity + " threads with slice query with " + length
 				+ " bases.");
 		for (int i = 0; i < querySplitQuantity; i++) {
 			int begin = (sliceSize * i);
@@ -103,8 +105,6 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 		}
 
 		indexSearchersCountDown.await();
-		logger.info("(" + id + ") " + "Index search time: "
-				+ (System.currentTimeMillis() - searchBegin));
 
 		if (fails.size() > 0) {
 			return null;
@@ -124,7 +124,8 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 			}
 		}
 
-		logger.info("(" + id + ") " + "Total Time: " + (System.currentTimeMillis() - searchBegin));
+		logger.info("(" + id + ") " + "Index search time: "
+				+ (System.currentTimeMillis() - searchBegin));
 
 		return results;
 	}

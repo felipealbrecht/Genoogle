@@ -116,6 +116,7 @@ public final class SearchParams implements Serializable {
 			case MAX_HITS_RESULTS: this.maxHitsResults = (Integer) v; break;
 			case MAX_THREADS_INDEX_SEARCH: this.maxThreadsIndexSearch = (Integer) v; break;
 			case MIN_QUERY_SLICE_LENGTH: this.minQuerySliceLength = (Integer) v; break;
+			case QUERY_SPLIT_QUANTITY: this.querySplitQuantity = (Integer) v; break;
 			}
 		}
 	}

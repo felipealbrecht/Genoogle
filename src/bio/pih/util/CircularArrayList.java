@@ -10,7 +10,7 @@ public class CircularArrayList {
 	private Iterator it = new Iterator();
 
 	public CircularArrayList() {
-		this(4);
+		this(10);
 	}
 
 	public CircularArrayList(int size) {
@@ -60,7 +60,7 @@ public class CircularArrayList {
 		}
 		tail = (tail + 1) % elementData.length;
 		size++;
-		assert(tail > head);
+		assert((head + size) % elementData.length == tail);
 		return true;
 
 	}
@@ -72,9 +72,22 @@ public class CircularArrayList {
 		assert(tail > head);
 		return true;
 	}
+	
+	public void rePos(RetrievedArea openedArea, int pos) {
+		assert(elementData[pos] == openedArea);
+		int prev = pos; 
+		pos = (pos +1) % elementData.length;		
+		while (pos != tail && elementData[pos] != null && openedArea.getQueryAreaEnd() > elementData[pos].getQueryAreaEnd()) {
+			elementData[prev] = elementData[pos];
+			elementData[pos] = openedArea;
+			prev = pos;
+			pos = (pos +1) % elementData.length;
+		}
+	}
 
-	public void removeElements(int from, int to) {
-		int total = Math.max(from, to) - Math.min(from, to);
+
+	public void removeElements(int total) {
+
 		size = size - total;
 		if (size == 0) {
 			tail = 0;
@@ -82,10 +95,10 @@ public class CircularArrayList {
 		} else {
 			head = (head + total) % elementData.length;  
 		}
+		assert((head + size) % elementData.length == tail);
 		assert(size >= 0);
 		assert(tail >= 0);
 		assert(head >= 0);
-		assert(tail >= head);
 	}
 
 	public void clear() {
@@ -98,27 +111,25 @@ public class CircularArrayList {
 	}
 
 	public class Iterator {
-		int pos = 0;
+		int pos = -1;
 
 		public boolean hasNext() {
-			return pos < size;
+			return pos+1 < size;
 		}
 
 		public RetrievedArea next() {
-			assert(pos >= 0);
-			RetrievedArea retrievedArea = elementData[pos];
-			pos = (pos+1) % elementData.length;
+			pos++;
+			RetrievedArea retrievedArea = elementData[(pos+head) % elementData.length];
 			return retrievedArea;
 		}
 
 		public void reset() {
-			pos = 0;
+			pos = -1;
 		}
 
 		public int getPos() {
-			return pos-1;
+			return (pos + head) % elementData.length;
 		}
 
 	}
-
 }

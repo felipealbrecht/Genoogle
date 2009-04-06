@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.biojava.bio.symbol.IllegalSymbolException;
 
-import bio.pih.alignment.StringGenoogleSmithWaterman;
+import bio.pih.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.io.Utils;
 import bio.pih.io.proto.Io.StoredSequence;
@@ -39,6 +39,8 @@ public class SequenceAligner implements Runnable {
 			extendAndAlignHSPs(this.retrievedArea, this.storedSequence);
 		} catch (Exception e) {
 			sr.addFail(e);
+		} catch (AssertionError ae) {
+			ae.printStackTrace();
 		} finally {
 			countDown.countDown();
 		}
@@ -49,9 +51,7 @@ public class SequenceAligner implements Runnable {
 
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
-		
-		
-
+				
 		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().length();
 
@@ -62,7 +62,7 @@ public class SequenceAligner implements Runnable {
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {
 			int[] encodedQuery = searcher.getEncodedQuery();
-			List<ExtendSequences> extendedSequences = extendAndAlignAreas(encodedSequence,
+			List<ExtendSequences> extendedSequences = extendAreas(encodedSequence,
 					targetLength, queryLength, encodedQuery, areas, searcher);
 			extendedSequences = mergeExtendedAreas(extendedSequences);
 			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength,
@@ -73,7 +73,7 @@ public class SequenceAligner implements Runnable {
 		if (reverseComplementAreas.size() > 0) {
 			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
 			DNAIndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
-			List<ExtendSequences> rcExtendedSequences = extendAndAlignAreas(encodedSequence,
+			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedSequence,
 					targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas,
 					rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
@@ -84,11 +84,12 @@ public class SequenceAligner implements Runnable {
 		sr.addHit(hit);
 	}
 
-	private List<ExtendSequences> extendAndAlignAreas(int[] encodedSequence, int targetLength,
+	private List<ExtendSequences> extendAreas(int[] encodedSequence, int targetLength,
 			int queryLength, int[] encodedQuery, List<RetrievedArea> areas,
 			DNAIndexSearcher searcher) {
 		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
-		for (RetrievedArea retrievedArea : areas) {
+		for (int i = 0; i < areas.size(); i++) {
+			RetrievedArea retrievedArea = areas.get(i);			
 			int sequenceAreaBegin = retrievedArea.getSequenceAreaBegin();
 			int sequenceAreaEnd = retrievedArea.getSequenceAreaEnd();
 			if (sequenceAreaEnd > targetLength) {
@@ -120,8 +121,9 @@ public class SequenceAligner implements Runnable {
 			DNAIndexSearcher searcher) throws IllegalSymbolException {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
-			StringGenoogleSmithWaterman smithWaterman = new StringGenoogleSmithWaterman(1, -3, -3,
-					-3, -3);
+			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(1, -3, -3,
+					-3, -3, 2000);
+			
 			smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 					extensionResult.getTargetSequenceExtended());
 

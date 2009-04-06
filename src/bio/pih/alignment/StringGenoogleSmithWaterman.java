@@ -60,9 +60,7 @@ public class StringGenoogleSmithWaterman extends GenoogleSmithWaterman {
 	 * @param delete
 	 *            expenses for a gap opening in the target sequence
 	 * @param gapExtend
-	 *            expenses for the extension of a gap which was started earlier.
-	 * @param matrix
-	 *            the <code>SubstitutionMatrix</code> object to use.
+	 *            expenses for the extension of a gap which was started earlier.y
 	 */
 	public StringGenoogleSmithWaterman(int match, int replace, int insert, int delete, int gapExtend) {
 		super(match, replace, insert, delete, gapExtend);

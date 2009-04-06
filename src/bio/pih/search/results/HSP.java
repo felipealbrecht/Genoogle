@@ -3,6 +3,7 @@ package bio.pih.search.results;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import bio.pih.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.alignment.GenoogleSmithWaterman;
 
 /**
@@ -13,7 +14,7 @@ public class HSP implements Serializable {
 
 	private static final long serialVersionUID = -7701610542981141900L;
 
-	private final GenoogleSmithWaterman alignment;
+	private final DividedStringGenoogleSmithWaterman alignment;
 	private final double normalizedScore;
 	private final double eValue;
 
@@ -33,7 +34,7 @@ public class HSP implements Serializable {
 	 * @param normalizedScore
 	 * @param eValue
 	 */
-	public HSP(GenoogleSmithWaterman alignment, 
+	public HSP(DividedStringGenoogleSmithWaterman alignment, 
 			int queryFrom, int queryTo, int hitFrom, int hitTo, 
 			double normalizedScore, double eValue) {
 		this.alignment = alignment;
@@ -118,7 +119,7 @@ public class HSP implements Serializable {
 	/**
 	 * @return {@link GenoogleSmithWaterman} containing the alignment informations.
 	 */
-	public GenoogleSmithWaterman getAlignment() {
+	public DividedStringGenoogleSmithWaterman getAlignment() {
 		return alignment; 
 	}
 	
@@ -143,8 +144,8 @@ public class HSP implements Serializable {
 	public static final Comparator<HSP> COMPARATOR = new Comparator<HSP>() {
 		@Override
 		public int compare(HSP o1, HSP o2) {
-			GenoogleSmithWaterman osw1 = o1.getAlignment();
-			GenoogleSmithWaterman osw2 = o2.getAlignment();
+			DividedStringGenoogleSmithWaterman osw1 = o1.getAlignment();
+			DividedStringGenoogleSmithWaterman osw2 = o2.getAlignment();
 			return Double.compare(osw2.getScore(), osw1.getScore());
 		}
 	};

@@ -2,7 +2,6 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -109,13 +108,8 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		}
 	}
 
-	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData {
 		return index.getMatchingSubSequence(encodedSubSequence);
-	}
-
-	public List<Integer> getSimilarSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		//return similarSubSequencesIndex.getSimilarSequences(encodedSubSequence);
-		return null;
 	}
 
 	@Override

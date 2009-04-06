@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.alignment.GenoogleSmithWaterman;
+import bio.pih.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.search.results.HSP;
@@ -28,7 +28,7 @@ public class DNAIndexReverseSearcher extends DNAIndexSearcher {
 	}
 
 	@Override
-	protected HSP createHSP(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman,
+	protected HSP createHSP(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman,
 			double normalizedScore, double evalue, int queryLength, int targetLength) {
 		return new HSP(smithWaterman, getQueryStart(extensionResult, smithWaterman), getQueryEnd(
 				extensionResult, smithWaterman), getTargetStart(extensionResult, smithWaterman,
@@ -36,20 +36,20 @@ public class DNAIndexReverseSearcher extends DNAIndexSearcher {
 				normalizedScore, evalue);
 	}
 
-	private int getQueryStart(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+	private int getQueryStart(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart();
 	}
 
-	private int getQueryEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman) {
+	private int getQueryEnd(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd();
 	}
 
 	private int getTargetStart(ExtendSequences extensionResult,
-			GenoogleSmithWaterman smithWaterman, int targetLength) {
+			DividedStringGenoogleSmithWaterman smithWaterman, int targetLength) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
 	}
 
-	private int getTargetEnd(ExtendSequences extensionResult, GenoogleSmithWaterman smithWaterman,
+	private int getTargetEnd(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman,
 			int targetLength) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
 	}

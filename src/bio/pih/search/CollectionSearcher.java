@@ -34,8 +34,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	private final DatabankCollection<SequenceDataBank> databankCollection;
 
-	public CollectionSearcher(long code, SearchParams sp,
-			DatabankCollection<SequenceDataBank> databank) {
+	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<SequenceDataBank> databank) {
 		super(code, sp, databank);
 		this.databankCollection = databank;
 	}
@@ -48,18 +47,15 @@ public class CollectionSearcher extends AbstractSearcher {
 		try {
 			int indexSearchers = databankCollection.size();
 
-			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			ExecutorService subDatabanksExecutor = Executors.newFixedThreadPool(indexSearchers);
-			CompletionService<List<BothStrandSequenceAreas>> subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(
-					subDatabanksExecutor);
+			CompletionService<List<BothStrandSequenceAreas>> subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(subDatabanksExecutor);
 
-			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp
-					.getMaxThreadsIndexSearch());
+			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 
+			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
 				SequenceDataBank innerBank = it.next();
-				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id,
-						sp, (IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
+				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp, (IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
 				subDataBanksCS.submit(indexSearcher);
 			}
 
@@ -78,6 +74,7 @@ public class CollectionSearcher extends AbstractSearcher {
 				}
 			}
 
+			queryExecutor.shutdown();
 			subDatabanksExecutor.shutdown();
 
 			logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
@@ -92,19 +89,16 @@ public class CollectionSearcher extends AbstractSearcher {
 				}
 			});
 
-			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp
-					.getMaxThreadsIndexSearch());
+			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 
-			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults()
-					: sequencesRetrievedAreas.size();
+			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : sequencesRetrievedAreas.size();
 			maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
 
 			CountDownLatch alignnmentsCountDown = new CountDownLatch(maxHits);
 
 			for (int i = 0; i < maxHits; i++) {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
-				SequenceAligner sequenceAligner;
-				sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
+				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
 				alignerExecutor.submit(sequenceAligner);
 			}
 			alignnmentsCountDown.await();
@@ -117,8 +111,7 @@ public class CollectionSearcher extends AbstractSearcher {
 			Collections.sort(sr.getHits(), Hit.COMPARATOR);
 			logger.info("Alignments total Time of " + this.toString() + " "
 					+ (System.currentTimeMillis() - alignmentBegin));
-			logger.info("Total Time of " + this.toString() + " "
-					+ (System.currentTimeMillis() - begin));
+			logger.info("Total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
 
 		} catch (Exception e) {
 			sr.addFail(e);

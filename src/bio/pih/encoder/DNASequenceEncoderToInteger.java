@@ -72,8 +72,8 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		int encoded = 0;
 
-		for (int i = 1; i <= subSequence.length(); i++) {
-			encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
+		for (int i = 0; i < subSequence.length(); i++) {
+			encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((subSequenceLength - (i + 1)) * bitsByAlphabetSize));
 		}
 
 		return encoded;

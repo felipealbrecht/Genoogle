@@ -21,8 +21,8 @@ public class IndexRetrievedData {
 	private final int subSequenceLength;
 	private final int maxSubSequenceDistance;
 
-	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength,
-			DNAIndexSearcher searcher) {
+	@SuppressWarnings("unchecked")
+	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength, DNAIndexSearcher searcher) {
 
 		this.minLength = minLength;
 		this.subSequenceLength = subSequenceLength;
@@ -51,42 +51,37 @@ public class IndexRetrievedData {
 			openedList.addFast(queryPos, sequencePos, subSequenceLength);
 
 		} else {
-			int fromIndex = -1;
-			int toIndex = -1;
+			int totalRemove = 0;
 
 			int size = openedList.size();
 			if (size == 0) {
 				merged = false;
-			} else {
+			} else {				
 				Iterator iterator = openedList.getIterator();
 				while (iterator.hasNext()) {
 					final RetrievedArea openedArea = iterator.next();
 					// Try merge with previous area.
-					if (openedArea.testAndSet(queryPos, sequencePos, maxSubSequenceDistance,
-							subSequenceLength)) {
+					if (openedArea.testAndSet(queryPos, sequencePos, maxSubSequenceDistance, subSequenceLength)) {
 						merged = true;
+
+						openedList.rePos(openedArea, iterator.getPos());
 
 						// Check if the area end is away from the actual sequence position.
 					} else if (queryPos - openedArea.queryAreaEnd > maxSubSequenceDistance) {
-						// Mark the areas to remove.
-						if (fromIndex == -1) {
-							fromIndex = iterator.getPos();
-							toIndex = fromIndex;
-						} else {
-							toIndex = iterator.getPos();
-						}
+						// Count areas to remove.
+						totalRemove++;
 						if (openedArea.length() >= minLength) {
 							if (retrievedAreasArray[sequenceId] == null) {
 								retrievedAreasArray[sequenceId] = Lists.newArrayList();
 							}
-							retrievedAreasArray[sequenceId].add(openedArea);
+							retrievedAreasArray[sequenceId].add(openedArea.copy());
 						}
 					}
 				}
 			}
 
-			if (fromIndex != -1) {
-				openedList.removeElements(fromIndex, toIndex + 1);
+			if (totalRemove != 0) {
+				openedList.removeElements(totalRemove);
 			}
 
 			if (!merged) {
@@ -102,7 +97,7 @@ public class IndexRetrievedData {
 				Iterator iterator = openedAreaList.getIterator();
 				while (iterator.hasNext()) {
 					RetrievedArea openedArea = iterator.next();
-					assert(openedArea != null);
+					assert (openedArea != null);
 					if (openedArea.length() >= minLength) {
 						if (retrievedAreasArray[sequenceId] == null) {
 							retrievedAreasArray[sequenceId] = Lists.newArrayList();
@@ -130,8 +125,8 @@ public class IndexRetrievedData {
 
 		@SuppressWarnings("unchecked")
 		public BothStrandSequenceAreas(int sequenceId, DNAIndexSearcher indexSearcher,
-				DNAIndexReverseComplementSearcher reverseComplementIndexSearcher,
-				List<RetrievedArea> areas, List<RetrievedArea> rcAreas) {
+				DNAIndexReverseComplementSearcher reverseComplementIndexSearcher, List<RetrievedArea> areas,
+				List<RetrievedArea> rcAreas) {
 			this.sequenceId = sequenceId;
 			this.indexSearcher = indexSearcher;
 			this.reverseComplementIndexSearcher = reverseComplementIndexSearcher;
@@ -181,7 +176,7 @@ public class IndexRetrievedData {
 		}
 	}
 
-	public final static class RetrievedArea {
+	public final static class RetrievedArea implements Cloneable {
 		private int queryAreaBegin;
 		private int queryAreaEnd;
 		private int sequenceAreaBegin;
@@ -192,6 +187,15 @@ public class IndexRetrievedData {
 			reset(queryAreaBegin, sequenceAreaBegin, subSequenceLength);
 		}
 
+		private RetrievedArea(int queryAreaBegin, int queryAreaEnd, int sequenceAreaBegin, int sequenceAreaEnd,
+				int length) {
+			this.queryAreaBegin = queryAreaBegin;
+			this.queryAreaEnd = queryAreaEnd;
+			this.sequenceAreaBegin = sequenceAreaBegin;
+			this.sequenceAreaEnd = sequenceAreaEnd;
+			this.length = length;
+		}
+
 		public void reset(int queryAreaBegin, int sequenceAreaBegin, int subSequenceLength) {
 			this.queryAreaBegin = queryAreaBegin;
 			this.queryAreaEnd = queryAreaBegin + subSequenceLength;
@@ -200,16 +204,19 @@ public class IndexRetrievedData {
 			this.length = subSequenceLength;
 		}
 
+		public RetrievedArea copy() {
+			return new RetrievedArea(queryAreaBegin, queryAreaEnd, sequenceAreaBegin, sequenceAreaEnd, length);
+		}
+
 		public int length() {
 			return this.length;
 		}
 
-		public boolean testAndSet(final int newQueryPos, final int newSequencePos,
-				final int maxSubSequenceDistance, final int subSequenceLength) {
+		public boolean testAndSet(final int newQueryPos, final int newSequencePos, final int maxSubSequenceDistance,
+				final int subSequenceLength) {
 
 			if (Utils.isIn(queryAreaBegin, queryAreaEnd + maxSubSequenceDistance, newQueryPos)) {
-				if (Utils.isIn(sequenceAreaBegin, sequenceAreaEnd + maxSubSequenceDistance,
-						newSequencePos)) {
+				if (Utils.isIn(sequenceAreaBegin, sequenceAreaEnd + maxSubSequenceDistance, newSequencePos)) {
 
 					int newQueryPosEnd = newQueryPos + subSequenceLength;
 					if (newQueryPosEnd > this.queryAreaEnd) {
@@ -221,8 +228,7 @@ public class IndexRetrievedData {
 						this.sequenceAreaEnd = newSequencePosEnd;
 					}
 
-					this.length = Math.min(queryAreaEnd - queryAreaBegin, sequenceAreaEnd
-							- sequenceAreaBegin);
+					this.length = Math.min(queryAreaEnd - queryAreaBegin, sequenceAreaEnd - sequenceAreaBegin);
 					return true;
 				}
 			}
@@ -232,15 +238,17 @@ public class IndexRetrievedData {
 		@Override
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("(");
+			sb.append("([");
 			sb.append(queryAreaBegin);
 			sb.append(",");
 			sb.append(queryAreaEnd);
-			sb.append(")");
-			sb.append("(");
+			sb.append("]");
+			sb.append("[");
 			sb.append(sequenceAreaBegin);
 			sb.append(",");
 			sb.append(sequenceAreaEnd);
+			sb.append("]:");
+			sb.append(length);
 			sb.append(")");
 
 			return sb.toString();

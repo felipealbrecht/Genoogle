@@ -1,17 +1,15 @@
 package bio.pih.io;
 
 import java.io.IOException;
-import java.util.List;
 
 import bio.pih.index.AbstractSubSequencesInvertedIndex;
 import bio.pih.index.EncoderSubSequenceIndexInfo;
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.SimilarSubSequencesIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 
 
 /**
- * This interface works like a Façade for the DataBank access the {@link AbstractSubSequencesInvertedIndex} with the {@link SimilarSubSequencesIndex}
+ * This interface defines how is the access to the DataBank {@link AbstractSubSequencesInvertedIndex}
  * 
  * @author albrecht
  */
@@ -46,22 +44,7 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
-	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
-	
-	
-
-	/**
-	 * Receive an encodedSubSequence,  
-	 * and return a {@link List} with the subSequence of integer containing the sequence and position that is <b>similar</b> the subsequence.
-	 * 
-	 * @param encodedSubSequence  
-	 * @return an {@link List} of interger containing the similar sub  sequences.
-	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData 
-	 * @throws IOException 
-	 */
-	public List<Integer> getSimilarSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
-	
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;	
 	
 	/**
 	 * Write the respective inverted index into a file.
