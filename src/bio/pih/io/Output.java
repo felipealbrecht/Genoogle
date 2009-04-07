@@ -176,7 +176,7 @@ public class Output {
 		assert hsp != null;
 		DocumentFactory factory = DocumentFactory.getInstance();
 
-		Element hspElement = factory.createElement("hsp").addAttribute("xml:space","preserve");;
+		Element hspElement = factory.createElement("hsp");
 		hspElement.addAttribute("score", Double.toString(hsp.getScore()));
 		hspElement.addAttribute("normalized-score", Double.toString(hsp.getNormalizedScore()));
 		hspElement.addAttribute("e-value", Double.toString(hsp.getEValue()));

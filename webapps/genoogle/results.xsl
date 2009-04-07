@@ -39,10 +39,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	Gi: <xsl:value-of select="@gi"/>
 	description: <b><xsl:value-of select="@description"/></b>
 	length: <xsl:value-of select="@length"/>	 
-	 <a>	   
-	   <xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=nuccore&amp;id=<xsl:value-of select="@gi"/>am</xsl:attribute>
-	   More info
-	 </a>
+	 <a><xsl:attribute name="href">http://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=nuccore&amp;id=<xsl:value-of select="@gi"/></xsl:attribute>More info</a>
 	 
 	<xsl:apply-templates/>
 	</p>

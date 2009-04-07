@@ -53,10 +53,8 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 		SymbolList query = sp.getQuery();
 
-		long s = System.currentTimeMillis();
 		Statistics statistics = new Statistics(1, -3, query, databank.getTotalDataBaseSize(),
 				databank.getTotalNumberOfSequences(), sp.getMinEvalue());
-		System.out.println(System.currentTimeMillis() - s);
 
 		String seqString = query.seqString();
 
