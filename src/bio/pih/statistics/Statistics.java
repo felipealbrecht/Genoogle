@@ -1,14 +1,13 @@
 package bio.pih.statistics;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.biojava.bio.BioException;
-import org.biojava.bio.alignment.SubstitutionMatrix;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
+
+import bio.pih.encoder.DNASequenceEncoder;
 
 import com.google.common.collect.Maps;
 
@@ -31,43 +30,97 @@ public class Statistics {
 
 	private Map<Integer, Double> scoreProbabilities(int dismatch, int match, SymbolList query)
 			throws IndexOutOfBoundsException, BioException {
-		SubstitutionMatrix matrix = new SubstitutionMatrix(DNATools.getDNA(), match, dismatch);
+		
+		int[][] baseValue = new int[4][4];
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (i == j) {
+					baseValue[i][j] = match;
+				} else {
+					baseValue[i][j] = dismatch;
+				}
+			}
+		}
 
-		HashMap<Integer, Double> scoreProbabilities = Maps.newHashMap();
-		for (int i = dismatch; i <= match; i++) {
-			scoreProbabilities.put(i, 0.0);
+
+		int min = Math.min(dismatch, match);
+		int max = Math.max(dismatch, match);
+		int delta;
+		if (min < 0) {
+			delta = Math.abs(min);
+		} else {
+			delta = -min;
+		}
+		
+		int scoreProbabilitiesSize = (min + delta) + (max + delta) + 1; 
+		
+		double[] scoreProbabilities = new double[scoreProbabilitiesSize];
+		for (int i = dismatch + delta; i <= match + delta; i++) {
+			scoreProbabilities[i] = 0.0;
 		}
 
 		int numRegularLettersInQuery = 0;
-		for (int i = 1; i <= query.length(); i++) {
-			if (query.symbolAt(i).getMatches().getAlphabets().size() == 1) {
+		int length = query.length();
+		for (int i = 1; i <= length; i++) {
+			if (checkSymbol(query.symbolAt(i))) {
 				numRegularLettersInQuery++;
 			}
 		}
 
-		for (int i = 1; i <= query.length(); i++) {
-			if (query.symbolAt(i).getMatches().getAlphabets().size() == 1) {
-				Iterator iterator = DNATools.getDNA().iterator();
-				while (iterator.hasNext()) {
-					Symbol symbol = (Symbol) iterator.next();
-					double probability = 250.00 / numRegularLettersInQuery;
-					int score = matrix.getValueAt(query.symbolAt(i), symbol);
-					Double value = scoreProbabilities.get(score);
-					scoreProbabilities.put(score, value += probability);
+		for (int i = 1; i <= length; i++) {
+			if (checkSymbol(query.symbolAt(i))) {
+				double probability = 250.00 / numRegularLettersInQuery;				
+				int querySymbolValue = DNASequenceEncoder.getBitsFromSymbol(query.symbolAt(i));
+				
+				{
+					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.a());
+					int score = baseValue[querySymbolValue][symbolValue];					
+					scoreProbabilities[score+delta] += probability;
 				}
+				{
+					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.c());
+					int score = baseValue[querySymbolValue][symbolValue];					
+					scoreProbabilities[score+delta] += probability;
+				}	
+				{
+					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.g());
+					int score = baseValue[querySymbolValue][symbolValue];					
+					scoreProbabilities[score+delta] += probability;
+				}	
+				{
+					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.t());
+					int score = baseValue[querySymbolValue][symbolValue];					
+					scoreProbabilities[score+delta] += probability;
+				}	
 			}
 		}
 
 
 		final double sum = 1000.00;
 
-		for (int i = dismatch; i <= match; i++) {
-			Double probability = scoreProbabilities.get(i);
-			scoreProbabilities.put(i, probability / sum);
+		for (int i = dismatch+delta; i <= match+delta; i++) {
+			double probability = scoreProbabilities[i];
+			scoreProbabilities[i] = probability / sum;
 		}
 
-		return scoreProbabilities;
+		Map<Integer, Double> scoreProbabilitiesMap = Maps.newHashMap();
+		for (int i = dismatch; i <= match; i++) {
+			scoreProbabilitiesMap.put(i, scoreProbabilities[i+delta]);			
+		}
+		
+		return scoreProbabilitiesMap;
 	}
+
+
+
+	private boolean checkSymbol(Symbol s) {
+		if (s == DNATools.a() || s == DNATools.c() || s == DNATools.g() || s == DNATools.t()) {
+			return true;
+		}
+		return false;
+	}
+	
+	
 
 	private Double calculateLambda(Map<Integer, Double> prob, int mismatch, int match) {
 		if (!checkScoreRange(mismatch, match)) {

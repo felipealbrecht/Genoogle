@@ -47,7 +47,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	}
 	
 
-	protected static int getBitsFromSymbol(Symbol symbol) {
+	public static int getBitsFromSymbol(Symbol symbol) {
 		if (symbol == DNATools.a()) {
 			return 0;
 		}
@@ -63,7 +63,7 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 		return 0;						
 	}
 	
-	protected static int getBitsFromChar(char symbol) {
+	public static int getBitsFromChar(char symbol) {
 		if (symbol == 'A' || symbol == 'a') {
 			return 0;
 		}

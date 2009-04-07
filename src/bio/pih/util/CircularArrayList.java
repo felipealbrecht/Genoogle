@@ -10,7 +10,7 @@ public class CircularArrayList {
 	private Iterator it = new Iterator();
 
 	public CircularArrayList() {
-		this(10);
+		this(5);
 	}
 
 	public CircularArrayList(int size) {
