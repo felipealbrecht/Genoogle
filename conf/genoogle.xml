@@ -7,7 +7,7 @@
   </genoogle:search-manager>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="20"/>
+    <genoogle:max-sub-sequence-distance   value="30"/>
     <genoogle:min-evalue                  value="1E-5" />
     <genoogle:extend-dropoff              value="3" />
     <genoogle:max-hits-results            value="50" />

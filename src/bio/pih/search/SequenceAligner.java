@@ -25,8 +25,8 @@ public class SequenceAligner implements Runnable {
 	private final SearchResults sr;
 	private final StoredSequence storedSequence;
 
-	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedArea,
-			SearchResults sr) throws IllegalSymbolException, IOException {
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedArea, SearchResults sr)
+			throws IllegalSymbolException, IOException {
 		this.countDown = countDown;
 		this.retrievedArea = retrievedArea;
 		this.sr = sr;
@@ -46,50 +46,44 @@ public class SequenceAligner implements Runnable {
 		}
 	}
 
-	private void extendAndAlignHSPs(BothStrandSequenceAreas retrievedAreas,
-			StoredSequence storedSequence) throws Exception {
+	private void extendAndAlignHSPs(BothStrandSequenceAreas retrievedAreas, StoredSequence storedSequence)
+			throws Exception {
 
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
-				
+
 		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().length();
 
-		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence
-				.getDescription(), storedSequence.getAccession(), targetLength, searcher
-				.getDatabank().getName());
+		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getName());
 
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {
 			int[] encodedQuery = searcher.getEncodedQuery();
-			List<ExtendSequences> extendedSequences = extendAreas(encodedSequence,
-					targetLength, queryLength, encodedQuery, areas, searcher);
+			List<ExtendSequences> extendedSequences = extendAreas(encodedSequence, targetLength, queryLength,
+					encodedQuery, areas, searcher);
 			extendedSequences = mergeExtendedAreas(extendedSequences);
-			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength,
-					extendedSequences, searcher);
+			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength, extendedSequences, searcher);
 		}
 
 		List<RetrievedArea> reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
 		if (reverseComplementAreas.size() > 0) {
 			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
 			DNAIndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
-			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedSequence,
-					targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas,
-					rcSearcher);
+			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedSequence, targetLength, queryLength,
+					reverseEncodedQuery, reverseComplementAreas, rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
-			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength,
-					rcExtendedSequences, rcSearcher);
+			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength, rcExtendedSequences, rcSearcher);
 		}
 
 		sr.addHit(hit);
 	}
 
-	private List<ExtendSequences> extendAreas(int[] encodedSequence, int targetLength,
-			int queryLength, int[] encodedQuery, List<RetrievedArea> areas,
-			DNAIndexSearcher searcher) {
+	private List<ExtendSequences> extendAreas(int[] encodedSequence, int targetLength, int queryLength,
+			int[] encodedQuery, List<RetrievedArea> areas, DNAIndexSearcher searcher) {
 		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
 		for (int i = 0; i < areas.size(); i++) {
-			RetrievedArea retrievedArea = areas.get(i);			
+			RetrievedArea retrievedArea = areas.get(i);
 			int sequenceAreaBegin = retrievedArea.getSequenceAreaBegin();
 			int sequenceAreaEnd = retrievedArea.getSequenceAreaEnd();
 			if (sequenceAreaEnd > targetLength) {
@@ -101,11 +95,10 @@ public class SequenceAligner implements Runnable {
 				queryAreaBegin = queryLength;
 			}
 
-			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery,
-					queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin,
-					sequenceAreaEnd, searcher.getSearchParams().getSequencesExtendDropoff(),
-					searcher.getDatabank().getSubSequenceLength(), searcher.getDatabank()
-							.getEncoder());
+			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery, queryAreaBegin, queryAreaEnd,
+					encodedSequence, sequenceAreaBegin, sequenceAreaEnd,
+					searcher.getSearchParams().getSequencesExtendDropoff(),
+					searcher.getDatabank().getSubSequenceLength(), searcher.getDatabank().getEncoder());
 
 			if (extendedSequencesList.contains(extensionResult)) {
 				continue;
@@ -116,22 +109,20 @@ public class SequenceAligner implements Runnable {
 		return extendedSequencesList;
 	}
 
-	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence,
-			int[] encodedSequence, int targetLength, List<ExtendSequences> extendedSequencesList,
-			DNAIndexSearcher searcher) throws IllegalSymbolException {
+	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence, int[] encodedSequence,
+			int targetLength, List<ExtendSequences> extendedSequencesList, DNAIndexSearcher searcher)
+			throws IllegalSymbolException {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
-			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(1, -3, -3,
-					-3, -3, 2000);
-			
+			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(1, -3, -3, -3, -3, 75);
+
 			smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 					extensionResult.getTargetSequenceExtended());
 
-			double normalizedScore = searcher.getStatistics().nominalToNormalizedScore(
-					smithWaterman.getScore());
+			double normalizedScore = searcher.getStatistics().nominalToNormalizedScore(smithWaterman.getScore());
 			double evalue = searcher.getStatistics().calculateEvalue(normalizedScore);
-			HSP hsp = searcher.createHSP(extensionResult, smithWaterman, normalizedScore, evalue,
-					queryLength, targetLength);
+			HSP hsp = searcher.createHSP(extensionResult, smithWaterman, normalizedScore, evalue, queryLength,
+					targetLength);
 			hit.addHSP(hsp);
 		}
 	}
@@ -140,8 +131,7 @@ public class SequenceAligner implements Runnable {
 		ListIterator<ExtendSequences> iterator1 = extendedSequences.listIterator();
 		while (iterator1.hasNext()) {
 			ExtendSequences extSeqs1 = iterator1.next();
-			ListIterator<ExtendSequences> iterator2 = extendedSequences.listIterator(iterator1
-					.nextIndex());
+			ListIterator<ExtendSequences> iterator2 = extendedSequences.listIterator(iterator1.nextIndex());
 			while (iterator2.hasNext()) {
 				ExtendSequences extSeqs2 = iterator2.next();
 				ExtendSequences merged = tryToMerge(extSeqs1, extSeqs2);
@@ -174,9 +164,8 @@ public class SequenceAligner implements Runnable {
 				|| Utils.contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
 			if ((Utils.isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin))
 					|| Utils.isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
-						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
-						seq2TargetBegin), targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math.min(seq1QueryBegin,
+						seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin, seq2TargetBegin), targetEnd, seq1.getEncoder());
 			}
 		}
 
@@ -184,20 +173,17 @@ public class SequenceAligner implements Runnable {
 				|| Utils.contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
 			if ((Utils.isIn(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin))
 					|| Utils.isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
-						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
-						seq2TargetBegin), targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math.min(seq1QueryBegin,
+						seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin, seq2TargetBegin), targetEnd, seq1.getEncoder());
 			}
 		}
 
 		if ((Utils.isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin))
 				|| Utils.isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
 			if (Utils.contains(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin, seq1TargetEnd)
-					|| Utils.contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin,
-							seq2TargetEnd)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
-						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
-						seq2TargetBegin), targetEnd, seq1.getEncoder());
+					|| Utils.contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math.min(seq1QueryBegin,
+						seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin, seq2TargetBegin), targetEnd, seq1.getEncoder());
 			}
 		}
 
@@ -205,9 +191,8 @@ public class SequenceAligner implements Runnable {
 				|| Utils.isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
 			if (Utils.contains(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin, seq2QueryEnd)
 					|| Utils.contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
-						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
-						seq2TargetBegin), targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math.min(seq1QueryBegin,
+						seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin, seq2TargetBegin), targetEnd, seq1.getEncoder());
 			}
 		}
 
@@ -215,23 +200,20 @@ public class SequenceAligner implements Runnable {
 				|| Utils.contains(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin, seq2TargetEnd)) {
 			if (Utils.contains(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin, seq2QueryEnd)
 					|| Utils.contains(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin, seq1QueryEnd)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math
-						.min(seq1QueryBegin, seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin,
-						seq2TargetBegin), targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq2.getEncodedTarget(), Math.min(seq1QueryBegin,
+						seq2QueryBegin), queryEnd, Math.min(seq1TargetBegin, seq2TargetBegin), targetEnd, seq1.getEncoder());
 			}
 		}
 
 		if (Utils.isIn(seq1QueryBegin, seq1QueryEnd, seq2QueryBegin)) {
 			if (Utils.isIn(seq1TargetBegin, seq1TargetEnd, seq2TargetBegin)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(),
-						seq1QueryBegin, queryEnd, seq1TargetBegin, targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(), seq1QueryBegin, queryEnd, seq1TargetBegin, targetEnd, seq1.getEncoder());
 			}
 		}
 
 		if (Utils.isIn(seq2QueryBegin, seq2QueryEnd, seq1QueryBegin)) {
 			if (Utils.isIn(seq2TargetBegin, seq2TargetEnd, seq1TargetBegin)) {
-				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(),
-						seq2QueryBegin, queryEnd, seq2TargetBegin, targetEnd, seq1.getEncoder());
+				return new ExtendSequences(seq1.getEncodedQuery(), seq1.getEncodedTarget(), seq2QueryBegin, queryEnd, seq2TargetBegin, targetEnd, seq1.getEncoder());
 			}
 		}
 
