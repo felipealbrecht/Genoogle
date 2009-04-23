@@ -203,8 +203,7 @@ public class DNAIndexSearcher implements Runnable {
 		int[] iess = new int[size];
 
 		for (int i = 0; i < size; i++) {
-			String subSequence = querySequence.substring(i, i + maskEncoder.getPatternLength());
-			iess[i] = maskEncoder.applyMask(subSequence);
+			iess[i] = maskEncoder.applyMask(i, i + maskEncoder.getPatternLength(), querySequence);
 		}
 		return iess;
 	}

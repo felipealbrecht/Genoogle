@@ -52,16 +52,31 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 		return encoded;
 	}
-	
-	
-	public int applyMask(String subSequence) {
+
+    public int applyMask(String subSequence) {
 		int encoded = 0;
 		int offset = 0;
 		int length = subSequence.length();
-		
-		for (int i = 0; i < length; i++) {			
+
+		for (int i = 0; i < length; i++) {
 			if (this.mask[i]) {
 				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (i - offset + 1)) << 1));
+			} else {
+				offset++;
+			}
+		}
+
+		return encoded;
+    }
+	
+	public int applyMask(int begin, int end, String subSequence) {
+		int encoded = 0;
+		int offset = 0;
+		
+		for (int i = begin; i < end; i++) {
+            int pos = i-begin;
+			if (this.mask[pos]) {
+				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - ( pos - offset + 1)) << 1));
 			} else {
 				offset++;
 			}

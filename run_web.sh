@@ -8,6 +8,7 @@
  -XX:+UseTLAB \
  -XXaggressive \
  -XXtlaSize:min=4096k \
+ -Dcom.sun.management.jmxremote \
  -classpath genoogle.jar:lib/* \
   bio.pih.web.WebServer \
   www.pih.bio.br \
@@ -20,6 +21,5 @@
 # -XX:+PrintTLAB \
 # -Xloggc:gc_details -XX:+PrintGCDetails \
 # -Xss128k \
-# -Dcom.sun.management.jmxremote \
 # java \
 # -XX:TLABSize=1024k \
