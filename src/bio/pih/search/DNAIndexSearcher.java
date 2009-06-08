@@ -117,6 +117,7 @@ public class DNAIndexSearcher implements Runnable {
 			int totalHits = 0;
 
 			int length = retrievedAreasArray.length;
+			// TODO: here has a synchronization problem. It should has a lock for each 'i' position. 
 			for (int i = 0; i < length; i++) {
 				List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
 				if (localRetrievedAreas != null) {
@@ -145,17 +146,20 @@ public class DNAIndexSearcher implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(e);
-			logger.fatal(e);
+			logger.fatal(e);			
+			logger.fatal(e.getStackTrace());
 			fails.add(e);
 		} catch (AssertionError ae) {
 			ae.printStackTrace();
 			System.out.println(ae);
 			logger.fatal(ae);
+			logger.fatal(ae.getStackTrace());
 			ae.printStackTrace();
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.out.println(t);
 			logger.fatal(t);
+			logger.fatal(t.getStackTrace());
 			t.printStackTrace();
 		} finally {
 			countDown.countDown();

@@ -6,7 +6,7 @@
  -XX:+UseFastAccessorMethods \
  -XX:+AggressiveOpts \
  -XX:+UseTLAB \
- -XXaggressive \
+ -XXaggressive:opt \
  -XXtlaSize:min=4096k \
  -Dcom.sun.management.jmxremote \
  -classpath genoogle.jar:lib/* \
