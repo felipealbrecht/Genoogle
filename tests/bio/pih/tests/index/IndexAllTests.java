@@ -16,9 +16,7 @@ public class IndexAllTests extends TestSuite {
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite("IndexAllTests");
 		
-		suite.addTestSuite(PontuationSchemaTest.class);
 		suite.addTestSuite(SubSequencesArrayIndexTest.class);
-		suite.addTestSuite(SubSequenceComparerTest.class);
 
 		return suite;
 	}

@@ -1,4 +1,4 @@
-package bio.pih.tests.compressor;
+package bio.pih.tests.encoder;
 
 import java.io.IOException;
 

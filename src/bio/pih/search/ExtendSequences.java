@@ -10,7 +10,7 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
  * @author albrecht
  */
 public class ExtendSequences {
-	
+
 	private final int[] encodedQuery;
 	private final int[] encodedTarget;
 	private final int beginQuerySegment;
@@ -19,10 +19,8 @@ public class ExtendSequences {
 	private final int endTargetSegment;
 	private final DNASequenceEncoderToInteger encoder;
 
-
-	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, 
-			int beginQuerySegment, int endQuerySegment, int beginTargetSegment, int endTargetSegment,
-			DNASequenceEncoderToInteger encoder) {
+	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, int beginQuerySegment, int endQuerySegment,
+			int beginTargetSegment, int endTargetSegment, DNASequenceEncoderToInteger encoder) {
 		this.encodedQuery = encodedQuery;
 		this.encodedTarget = encodedTarget;
 
@@ -30,30 +28,32 @@ public class ExtendSequences {
 		this.endQuerySegment = endQuerySegment;
 		this.beginTargetSegment = beginTargetSegment;
 		this.endTargetSegment = endTargetSegment;
-		this.encoder = encoder;		
+		this.encoder = encoder;
 	}
-		
+
 	String queryExtendedString = null;
+
 	/**
 	 * @return extended query.
-	 * @throws IllegalSymbolException 
+	 * @throws IllegalSymbolException
 	 */
 	public String getQuerySequenceExtended() {
 		if (queryExtendedString == null) {
-			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);			
+			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);
 		}
 		return queryExtendedString;
 	}
 
-	
 	String targetExtendedString = null;
+
 	/**
 	 * @return extended target.
-	 * @throws IllegalSymbolException 
+	 * @throws IllegalSymbolException
 	 */
 	public String getTargetSequenceExtended() {
 		if (targetExtendedString == null) {
-			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment, endTargetSegment);
+			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment,
+					endTargetSegment);
 		}
 		return targetExtendedString;
 	}
@@ -61,31 +61,31 @@ public class ExtendSequences {
 	public int getBeginQuerySegment() {
 		return beginQuerySegment;
 	}
-	
+
 	public int getEndQuerySegment() {
 		return endQuerySegment;
 	}
-	
+
 	public int getBeginTargetSegment() {
 		return beginTargetSegment;
 	}
-	
+
 	public int getEndTargetSegment() {
 		return endTargetSegment;
 	}
-	
+
 	public int[] getEncodedQuery() {
 		return encodedQuery;
 	}
-	
+
 	public int[] getEncodedTarget() {
 		return encodedTarget;
 	}
-	
+
 	public DNASequenceEncoderToInteger getEncoder() {
 		return encoder;
 	}
-		
+
 	/**
 	 * @param encodedQuerySequence
 	 * @param beginQuerySegment
@@ -95,11 +95,15 @@ public class ExtendSequences {
 	 * @param endDatabankSequenceSegment
 	 * @param dropoff
 	 * @param subSequenceLength
-	 * @param encoder 
+	 * @param encoder
+	 * 
+	 * TODO: Remove the param subSequenceLength and get from the encoder.
+	 * 
 	 * @return {@link ExtendSequences} of the extended sequences.
 	 */
-	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment, 
-			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment, int dropoff, int subSequenceLength, DNASequenceEncoderToInteger encoder) {
+	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
+			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
+			int dropoff, int subSequenceLength, DNASequenceEncoderToInteger encoder) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -114,11 +118,13 @@ public class ExtendSequences {
 
 		int queryLength = encodedQuerySequence[0];
 		int databankLength = encodedDatabankSequence[0];
-		
-		//http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
+
+		// http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
 		while (queryPos < queryLength && databankPos < databankLength) {
-			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
-			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos,
+					subSequenceLength);
+			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos,
+					subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
 				if (score >= bestScore) {
@@ -135,7 +141,7 @@ public class ExtendSequences {
 			queryPos++;
 			databankPos++;
 		}
-		
+
 		int rightBestQueryPos = bestQueryPos;
 		int rightBestDatabankPos = bestDatabankPos;
 
@@ -150,8 +156,10 @@ public class ExtendSequences {
 		databankPos = beginDatabankSequenceSegment - 1;
 
 		while (queryPos >= 0 && databankPos >= 0) {
-			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
-			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
+			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos,
+					subSequenceLength);
+			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos,
+					subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
 				if (score >= bestScore) {
@@ -168,51 +176,51 @@ public class ExtendSequences {
 			queryPos--;
 			databankPos--;
 		}
-				
+
 		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, encoder);
 	}
-		
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object anObject) {
 		if (super.equals(anObject)) {
 			return true;
 		}
-		
+
 		if (!(anObject instanceof ExtendSequences)) {
 			return false;
 		}
-		
+
 		ExtendSequences other = (ExtendSequences) anObject;
-		
+
 		if (this.getBeginQuerySegment() != other.getBeginQuerySegment()) {
 			return false;
 		}
-		
+
 		if (this.getBeginTargetSegment() != other.getBeginTargetSegment()) {
 			return false;
 		}
-		
+
 		if (this.getEndQuerySegment() != other.getEndQuerySegment()) {
 			return false;
 		}
-		
+
 		if (this.getEndTargetSegment() != other.getEndTargetSegment()) {
 			return false;
 		}
-		
+
 		if (!(this.encodedQuery == other.getEncodedQuery())) {
 			return false;
 		}
-		
+
 		if (!(this.encodedTarget == other.getEncodedTarget())) {
 			return false;
 		}
-				
+
 		return true;
 	}
 }

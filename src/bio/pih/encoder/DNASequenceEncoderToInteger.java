@@ -103,17 +103,13 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	}
 	
 	private String decodeIntegerToString(int encoded, int length) {
-		StringBuilder sb = new StringBuilder(length);
-		for (int i = 0; i < length; i++) {
-			int value = encoded & 3;
-			sb.append(getSymbolFromBits(value));
-			encoded >>= bitsByAlphabetSize;
-		}
-		sb.reverse();
-		return sb.toString();
+		return decodeIntegerToString(encoded, 0, length-1);
 	}
 	
 
+	/**
+	 * TODO: Optimize this function using a constant masks table.
+	 */
 	private String decodeIntegerToString(int encoded, int begin, int end) {
 		StringBuilder sb = new StringBuilder((end - begin) + 1);
 		for (int pos = begin; pos <= end; pos++) {

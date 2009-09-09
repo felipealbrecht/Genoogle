@@ -114,7 +114,7 @@ public class SequenceAligner implements Runnable {
 			throws IllegalSymbolException {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
-			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(1, -3, -3, -3, -3, 75);
+			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(1, -3, -3, -3, -3, 2000);
 
 			smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 					extensionResult.getTargetSequenceExtended());

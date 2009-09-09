@@ -33,6 +33,13 @@ public class CollectionSearcher extends AbstractSearcher {
 	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
 
 	private final DatabankCollection<SequenceDataBank> databankCollection;
+	
+	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
+		@Override
+		public int compare(final BothStrandSequenceAreas o1, final BothStrandSequenceAreas o2) {
+			return o2.getSumLengths() - o1.getSumLengths();
+		}
+	};
 
 	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<SequenceDataBank> databank) {
 		super(code, sp, databank);
@@ -81,13 +88,8 @@ public class CollectionSearcher extends AbstractSearcher {
 					+ (System.currentTimeMillis() - begin));
 
 			long alignmentBegin = System.currentTimeMillis();
-
-			Collections.sort(sequencesRetrievedAreas, new Comparator<BothStrandSequenceAreas>() {
-				@Override
-				public int compare(BothStrandSequenceAreas o1, BothStrandSequenceAreas o2) {
-					return o2.getSumLengths() - o1.getSumLengths();
-				}
-			});
+	
+			Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
 
 			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 

@@ -1,4 +1,4 @@
-package bio.pih.tests.compressor;
+package bio.pih.tests.encoder;
 
 import junit.framework.TestSuite;
 import bio.pih.encoder.SequenceEncoder;
@@ -17,7 +17,7 @@ public class SequenceCompressorAllTests extends TestSuite {
 		TestSuite suite = new TestSuite("SequenceCompressorAllTests");
 		
 		suite.addTestSuite(SequenceCompressorTest.class);
-		suite.addTestSuite(DNASequenceCompressorToShortTest.class);
+		suite.addTestSuite(DNASequenceEncoderToIntegerTest.class);
 	
 		return suite;
 	}

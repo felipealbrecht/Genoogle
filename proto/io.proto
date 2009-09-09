@@ -8,6 +8,21 @@ option optimize_for = SPEED;
 // Inverted Index Stuffs
 /////////////////////////////////////////////////////////////////////
 
+message InvertedIndexBuck {
+	repeated int64 buck = 1;
+}
+
+message SerializedInvertedIndex {
+	required int32 qtdEntries = 1;
+	repeated InvertedIndexBuck bucks = 2;
+}
+	
+
+
+/////////////////////////////////////////////////////////////////////
+// Databank Stuffs
+/////////////////////////////////////////////////////////////////////
+
 message StoredDatabank {
   enum SequenceType {
   	DNA = 0;

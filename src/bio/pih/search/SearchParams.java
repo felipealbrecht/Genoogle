@@ -68,9 +68,9 @@ public final class SearchParams implements Serializable {
 		QUERY_SPLIT_QUANTITY("QuerySplitQuantity", Integer.class);
 		
 		String name;
-		Class clazz;
+		Class<?> clazz;
 		
-		Parameter(String name, Class clazz) {
+		Parameter(String name, Class<?> clazz) {
 			this.name = name;
 			this.clazz = clazz;
 		}
@@ -79,7 +79,7 @@ public final class SearchParams implements Serializable {
 			return name;
 		}
 		
-		public Class getClazz() {
+		public Class<?> getClazz() {
 			return clazz;
 		}
 		
