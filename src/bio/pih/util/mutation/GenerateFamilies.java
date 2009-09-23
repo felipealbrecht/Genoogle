@@ -54,15 +54,7 @@ public class GenerateFamilies {
 		
 		public String getSequence() {
 			return sequence;
-		}
-		
-		public int getDeep() {
-			return deep;
-		}
-		
-		public int getNum() {
-			return num;
-		}
+		}		
 		
 		@Override
 		public String toString() {

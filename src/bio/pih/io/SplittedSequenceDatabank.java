@@ -251,10 +251,6 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			return qtdBases;
 		}
 
-		public long getQtdSequences() {
-			return qtdSequences;
-		}
-
 		public File getFastaFile() {
 			return fastaFile;
 		}

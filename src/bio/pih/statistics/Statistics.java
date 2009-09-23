@@ -328,7 +328,7 @@ public class Statistics {
 		this.minLength = (int) Math.floor(gappedEvalueToNominal(minEvalue) / match);
 	}
 
-	private void print_values(int match) {
+	public void print_values(int match) {
 		System.out.println((int) Math.floor(gappedEvalueToNominal(100) / match));
 		System.out.println(calculateEvalue(nominalToNormalizedScore(Math.floor(gappedEvalueToNominal(100)))));
 		System.out.println((int) Math.floor(gappedEvalueToNominal(10) / match));

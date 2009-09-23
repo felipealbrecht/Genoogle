@@ -195,14 +195,14 @@ public class Output {
 		return hspElement;
 	}
 	
-	private static String doubleToString(double value) {
+	public static String doubleToString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
 		formatter.format(SIMPLE_DOUBLE_FORMAT, value);
 		return sb.toString();
 	}
 	
-	private static String doubleToScientificString(double value) {
+	public static String doubleToScientificString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
 		formatter.format(SCIENTIFIC_DOUBLE_FORMAT, value);

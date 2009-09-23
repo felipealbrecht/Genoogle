@@ -1,7 +1,5 @@
 package bio.pih.search;
 
-import java.util.concurrent.ExecutorService;
-
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.SequenceDataBank;
 
