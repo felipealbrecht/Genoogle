@@ -94,7 +94,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_"
 				+ subCount, path, this, StorageKind.MEMORY, subSequenceLength, mask);
-		long totalSequences = 0;
+		int totalSequences = 0;
 		long totalBases = 0;
 		FileChannel dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
@@ -153,7 +153,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		return this.getName() + "_sub_" + subCount;
 	}
 
-	private void finalizeSubDatabankConstruction(long totalSequences, long totalBases,
+	private void finalizeSubDatabankConstruction(int totalSequences, long totalBases,
 			FileChannel dataBankFileChannel, FileChannel storedSequenceInfoChannel,
 			bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder) throws IOException {
 		StoredDatabank storedDatabank = buildStoredDatabank(totalSequences, totalBases,
@@ -163,7 +163,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		dataBankFileChannel.close();
 	}
 
-	private StoredDatabank buildStoredDatabank(long totalSequences, long totalBases,
+	private StoredDatabank buildStoredDatabank(int totalSequences, long totalBases,
 			bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder) {
 		storedDatabankBuilder.setType(SequenceType.DNA);
 		storedDatabankBuilder.setQtdSequences(totalSequences);

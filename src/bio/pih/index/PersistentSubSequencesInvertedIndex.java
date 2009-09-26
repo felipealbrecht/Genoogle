@@ -66,7 +66,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public void load() throws IOException {
+	public void loadFromFile() throws IOException {
 		this.indexOffsets = new long[TOTAL_SUB_SEQUENCES];
 		this.indexQtd = new int[TOTAL_SUB_SEQUENCES];
 
@@ -84,7 +84,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public void check() throws IOException {
+	public void checkFile() throws IOException {
 		RandomAccessFile indexRAF = new RandomAccessFile(getIndexIndexFile(),
 				"r");
 		RandomAccessFile dataRAF = new RandomAccessFile(getIndexDataFile(), "r");
@@ -112,7 +112,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	}
 
 	@Override
-	public void write() throws IOException {
+	public void saveToFile() throws IOException {
 		File indexFile = new File(indexIndexFileName);
 		File dataFile = new File(indexDataFileName);
 
@@ -147,7 +147,7 @@ public class PersistentSubSequencesInvertedIndex extends
 	private FileChannel indexDataFileChannel;
 
 	@Override
-	public boolean exists() {
+	public boolean fileExists() {
 		if (existsChecked == false) {
 			if (getIndexDataFile().exists() && getIndexIndexFile().exists()) {
 				exists = true;
@@ -175,9 +175,9 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	@Override
 	public void finishConstruction() throws IOException {
-		this.write();
+		this.saveToFile();
 		this.temporaryIndex = null;
-		this.load();
+		this.loadFromFile();
 	}
 
 	@Override

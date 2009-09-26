@@ -287,61 +287,64 @@ public final class Io {
     }
   }
   
-  public static final class SerializedInvertedIndex extends
+  public static final class InvertedIndexFilePositions extends
       com.google.protobuf.GeneratedMessage {
-    // Use SerializedInvertedIndex.newBuilder() to construct.
-    private SerializedInvertedIndex() {}
+    // Use InvertedIndexFilePositions.newBuilder() to construct.
+    private InvertedIndexFilePositions() {}
     
-    private static final SerializedInvertedIndex defaultInstance = new SerializedInvertedIndex();
-    public static SerializedInvertedIndex getDefaultInstance() {
+    private static final InvertedIndexFilePositions defaultInstance = new InvertedIndexFilePositions();
+    public static InvertedIndexFilePositions getDefaultInstance() {
       return defaultInstance;
     }
     
-    public SerializedInvertedIndex getDefaultInstanceForType() {
+    public InvertedIndexFilePositions getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return bio.pih.io.proto.Io.internal_static_proto_SerializedInvertedIndex_descriptor;
+      return bio.pih.io.proto.Io.internal_static_proto_InvertedIndexFilePositions_descriptor;
     }
     
     @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.io.proto.Io.internal_static_proto_SerializedInvertedIndex_fieldAccessorTable;
+      return bio.pih.io.proto.Io.internal_static_proto_InvertedIndexFilePositions_fieldAccessorTable;
     }
     
-    // required int32 qtdEntries = 1;
-    private boolean hasQtdEntries;
-    private int qtdEntries_ = 0;
-    public boolean hasQtdEntries() { return hasQtdEntries; }
-    public int getQtdEntries() { return qtdEntries_; }
+    // required int32 size = 1;
+    private boolean hasSize;
+    private int size_ = 0;
+    public boolean hasSize() { return hasSize; }
+    public int getSize() { return size_; }
     
-    // repeated .proto.InvertedIndexBuck bucks = 2;
-    private java.util.List<bio.pih.io.proto.Io.InvertedIndexBuck> bucks_ =
+    // repeated .proto.InvertedIndexBuckPosition position = 2;
+    private java.util.List<bio.pih.io.proto.Io.InvertedIndexBuckPosition> position_ =
       java.util.Collections.emptyList();
-    public java.util.List<bio.pih.io.proto.Io.InvertedIndexBuck> getBucksList() {
-      return bucks_;
+    public java.util.List<bio.pih.io.proto.Io.InvertedIndexBuckPosition> getPositionList() {
+      return position_;
     }
-    public int getBucksCount() { return bucks_.size(); }
-    public bio.pih.io.proto.Io.InvertedIndexBuck getBucks(int index) {
-      return bucks_.get(index);
+    public int getPositionCount() { return position_.size(); }
+    public bio.pih.io.proto.Io.InvertedIndexBuckPosition getPosition(int index) {
+      return position_.get(index);
     }
     
     @Override
     public final boolean isInitialized() {
-      if (!hasQtdEntries) return false;
+      if (!hasSize) return false;
+      for (bio.pih.io.proto.Io.InvertedIndexBuckPosition element : getPositionList()) {
+        if (!element.isInitialized()) return false;
+      }
       return true;
     }
     
     @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (hasQtdEntries()) {
-        output.writeInt32(1, getQtdEntries());
+      if (hasSize()) {
+        output.writeInt32(1, getSize());
       }
-      for (bio.pih.io.proto.Io.InvertedIndexBuck element : getBucksList()) {
+      for (bio.pih.io.proto.Io.InvertedIndexBuckPosition element : getPositionList()) {
         output.writeMessage(2, element);
       }
       getUnknownFields().writeTo(output);
@@ -354,11 +357,11 @@ public final class Io {
       if (size != -1) return size;
     
       size = 0;
-      if (hasQtdEntries()) {
+      if (hasSize()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, getQtdEntries());
+          .computeInt32Size(1, getSize());
       }
-      for (bio.pih.io.proto.Io.InvertedIndexBuck element : getBucksList()) {
+      for (bio.pih.io.proto.Io.InvertedIndexBuckPosition element : getPositionList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, element);
       }
@@ -367,46 +370,46 @@ public final class Io {
       return size;
     }
     
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(byte[] data)
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(java.io.InputStream input)
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static bio.pih.io.proto.Io.SerializedInvertedIndex parseFrom(
+    public static bio.pih.io.proto.Io.InvertedIndexFilePositions parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistry extensionRegistry)
         throws java.io.IOException {
@@ -416,25 +419,25 @@ public final class Io {
     
     public static Builder newBuilder() { return new Builder(); }
     public Builder newBuilderForType() { return new Builder(); }
-    public static Builder newBuilder(bio.pih.io.proto.Io.SerializedInvertedIndex prototype) {
+    public static Builder newBuilder(bio.pih.io.proto.Io.InvertedIndexFilePositions prototype) {
       return new Builder().mergeFrom(prototype);
     }
     
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      // Construct using bio.pih.io.proto.Io.SerializedInvertedIndex.newBuilder()
+      // Construct using bio.pih.io.proto.Io.InvertedIndexFilePositions.newBuilder()
       private Builder() {}
       
-      bio.pih.io.proto.Io.SerializedInvertedIndex result = new bio.pih.io.proto.Io.SerializedInvertedIndex();
+      bio.pih.io.proto.Io.InvertedIndexFilePositions result = new bio.pih.io.proto.Io.InvertedIndexFilePositions();
       
       @Override
-      protected bio.pih.io.proto.Io.SerializedInvertedIndex internalGetResult() {
+      protected bio.pih.io.proto.Io.InvertedIndexFilePositions internalGetResult() {
         return result;
       }
       
       @Override
       public Builder clear() {
-        result = new bio.pih.io.proto.Io.SerializedInvertedIndex();
+        result = new bio.pih.io.proto.Io.InvertedIndexFilePositions();
         return this;
       }
       
@@ -446,14 +449,14 @@ public final class Io {
       @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.io.proto.Io.SerializedInvertedIndex.getDescriptor();
+        return bio.pih.io.proto.Io.InvertedIndexFilePositions.getDescriptor();
       }
       
-      public bio.pih.io.proto.Io.SerializedInvertedIndex getDefaultInstanceForType() {
-        return bio.pih.io.proto.Io.SerializedInvertedIndex.getDefaultInstance();
+      public bio.pih.io.proto.Io.InvertedIndexFilePositions getDefaultInstanceForType() {
+        return bio.pih.io.proto.Io.InvertedIndexFilePositions.getDefaultInstance();
       }
       
-      public bio.pih.io.proto.Io.SerializedInvertedIndex build() {
+      public bio.pih.io.proto.Io.InvertedIndexFilePositions build() {
         if (!isInitialized()) {
           throw new com.google.protobuf.UninitializedMessageException(
             result);
@@ -461,7 +464,7 @@ public final class Io {
         return buildPartial();
       }
       
-      private bio.pih.io.proto.Io.SerializedInvertedIndex buildParsed()
+      private bio.pih.io.proto.Io.InvertedIndexFilePositions buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         if (!isInitialized()) {
           throw new com.google.protobuf.UninitializedMessageException(
@@ -470,36 +473,36 @@ public final class Io {
         return buildPartial();
       }
       
-      public bio.pih.io.proto.Io.SerializedInvertedIndex buildPartial() {
-        if (result.bucks_ != java.util.Collections.EMPTY_LIST) {
-          result.bucks_ =
-            java.util.Collections.unmodifiableList(result.bucks_);
+      public bio.pih.io.proto.Io.InvertedIndexFilePositions buildPartial() {
+        if (result.position_ != java.util.Collections.EMPTY_LIST) {
+          result.position_ =
+            java.util.Collections.unmodifiableList(result.position_);
         }
-        bio.pih.io.proto.Io.SerializedInvertedIndex returnMe = result;
+        bio.pih.io.proto.Io.InvertedIndexFilePositions returnMe = result;
         result = null;
         return returnMe;
       }
       
       @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof bio.pih.io.proto.Io.SerializedInvertedIndex) {
-          return mergeFrom((bio.pih.io.proto.Io.SerializedInvertedIndex)other);
+        if (other instanceof bio.pih.io.proto.Io.InvertedIndexFilePositions) {
+          return mergeFrom((bio.pih.io.proto.Io.InvertedIndexFilePositions)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(bio.pih.io.proto.Io.SerializedInvertedIndex other) {
-        if (other == bio.pih.io.proto.Io.SerializedInvertedIndex.getDefaultInstance()) return this;
-        if (other.hasQtdEntries()) {
-          setQtdEntries(other.getQtdEntries());
+      public Builder mergeFrom(bio.pih.io.proto.Io.InvertedIndexFilePositions other) {
+        if (other == bio.pih.io.proto.Io.InvertedIndexFilePositions.getDefaultInstance()) return this;
+        if (other.hasSize()) {
+          setSize(other.getSize());
         }
-        if (!other.bucks_.isEmpty()) {
-          if (result.bucks_.isEmpty()) {
-            result.bucks_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuck>();
+        if (!other.position_.isEmpty()) {
+          if (result.position_.isEmpty()) {
+            result.position_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuckPosition>();
           }
-          result.bucks_.addAll(other.bucks_);
+          result.position_.addAll(other.position_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -536,13 +539,13 @@ public final class Io {
               break;
             }
             case 8: {
-              setQtdEntries(input.readInt32());
+              setSize(input.readInt32());
               break;
             }
             case 18: {
-              bio.pih.io.proto.Io.InvertedIndexBuck.Builder subBuilder = bio.pih.io.proto.Io.InvertedIndexBuck.newBuilder();
+              bio.pih.io.proto.Io.InvertedIndexBuckPosition.Builder subBuilder = bio.pih.io.proto.Io.InvertedIndexBuckPosition.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
-              addBucks(subBuilder.buildPartial());
+              addPosition(subBuilder.buildPartial());
               break;
             }
           }
@@ -550,66 +553,397 @@ public final class Io {
       }
       
       
-      // required int32 qtdEntries = 1;
-      public boolean hasQtdEntries() {
-        return result.hasQtdEntries();
+      // required int32 size = 1;
+      public boolean hasSize() {
+        return result.hasSize();
       }
-      public int getQtdEntries() {
-        return result.getQtdEntries();
+      public int getSize() {
+        return result.getSize();
       }
-      public Builder setQtdEntries(int value) {
-        result.hasQtdEntries = true;
-        result.qtdEntries_ = value;
+      public Builder setSize(int value) {
+        result.hasSize = true;
+        result.size_ = value;
         return this;
       }
-      public Builder clearQtdEntries() {
-        result.hasQtdEntries = false;
-        result.qtdEntries_ = 0;
+      public Builder clearSize() {
+        result.hasSize = false;
+        result.size_ = 0;
         return this;
       }
       
-      // repeated .proto.InvertedIndexBuck bucks = 2;
-      public java.util.List<bio.pih.io.proto.Io.InvertedIndexBuck> getBucksList() {
-        return java.util.Collections.unmodifiableList(result.bucks_);
+      // repeated .proto.InvertedIndexBuckPosition position = 2;
+      public java.util.List<bio.pih.io.proto.Io.InvertedIndexBuckPosition> getPositionList() {
+        return java.util.Collections.unmodifiableList(result.position_);
       }
-      public int getBucksCount() {
-        return result.getBucksCount();
+      public int getPositionCount() {
+        return result.getPositionCount();
       }
-      public bio.pih.io.proto.Io.InvertedIndexBuck getBucks(int index) {
-        return result.getBucks(index);
+      public bio.pih.io.proto.Io.InvertedIndexBuckPosition getPosition(int index) {
+        return result.getPosition(index);
       }
-      public Builder setBucks(int index, bio.pih.io.proto.Io.InvertedIndexBuck value) {
-        result.bucks_.set(index, value);
+      public Builder setPosition(int index, bio.pih.io.proto.Io.InvertedIndexBuckPosition value) {
+        result.position_.set(index, value);
         return this;
       }
-      public Builder setBucks(int index, bio.pih.io.proto.Io.InvertedIndexBuck.Builder builderForValue) {
-        result.bucks_.set(index, builderForValue.build());
+      public Builder setPosition(int index, bio.pih.io.proto.Io.InvertedIndexBuckPosition.Builder builderForValue) {
+        result.position_.set(index, builderForValue.build());
         return this;
       }
-      public Builder addBucks(bio.pih.io.proto.Io.InvertedIndexBuck value) {
-        if (result.bucks_.isEmpty()) {
-          result.bucks_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuck>();
+      public Builder addPosition(bio.pih.io.proto.Io.InvertedIndexBuckPosition value) {
+        if (result.position_.isEmpty()) {
+          result.position_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuckPosition>();
         }
-        result.bucks_.add(value);
+        result.position_.add(value);
         return this;
       }
-      public Builder addBucks(bio.pih.io.proto.Io.InvertedIndexBuck.Builder builderForValue) {
-        if (result.bucks_.isEmpty()) {
-          result.bucks_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuck>();
+      public Builder addPosition(bio.pih.io.proto.Io.InvertedIndexBuckPosition.Builder builderForValue) {
+        if (result.position_.isEmpty()) {
+          result.position_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuckPosition>();
         }
-        result.bucks_.add(builderForValue.build());
+        result.position_.add(builderForValue.build());
         return this;
       }
-      public Builder addAllBucks(
-          java.lang.Iterable<? extends bio.pih.io.proto.Io.InvertedIndexBuck> values) {
-        if (result.bucks_.isEmpty()) {
-          result.bucks_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuck>();
+      public Builder addAllPosition(
+          java.lang.Iterable<? extends bio.pih.io.proto.Io.InvertedIndexBuckPosition> values) {
+        if (result.position_.isEmpty()) {
+          result.position_ = new java.util.ArrayList<bio.pih.io.proto.Io.InvertedIndexBuckPosition>();
         }
-        super.addAll(values, result.bucks_);
+        super.addAll(values, result.position_);
         return this;
       }
-      public Builder clearBucks() {
-        result.bucks_ = java.util.Collections.emptyList();
+      public Builder clearPosition() {
+        result.position_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+    
+    static {
+      bio.pih.io.proto.Io.getDescriptor();
+    }
+  }
+  
+  public static final class InvertedIndexBuckPosition extends
+      com.google.protobuf.GeneratedMessage {
+    // Use InvertedIndexBuckPosition.newBuilder() to construct.
+    private InvertedIndexBuckPosition() {}
+    
+    private static final InvertedIndexBuckPosition defaultInstance = new InvertedIndexBuckPosition();
+    public static InvertedIndexBuckPosition getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public InvertedIndexBuckPosition getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.io.proto.Io.internal_static_proto_InvertedIndexBuckPosition_descriptor;
+    }
+    
+    @Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.io.proto.Io.internal_static_proto_InvertedIndexBuckPosition_fieldAccessorTable;
+    }
+    
+    // required int32 buck = 1;
+    private boolean hasBuck;
+    private int buck_ = 0;
+    public boolean hasBuck() { return hasBuck; }
+    public int getBuck() { return buck_; }
+    
+    // required int32 offset = 2;
+    private boolean hasOffset;
+    private int offset_ = 0;
+    public boolean hasOffset() { return hasOffset; }
+    public int getOffset() { return offset_; }
+    
+    // required int32 length = 3;
+    private boolean hasLength;
+    private int length_ = 0;
+    public boolean hasLength() { return hasLength; }
+    public int getLength() { return length_; }
+    
+    @Override
+    public final boolean isInitialized() {
+      if (!hasBuck) return false;
+      if (!hasOffset) return false;
+      if (!hasLength) return false;
+      return true;
+    }
+    
+    @Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasBuck()) {
+        output.writeInt32(1, getBuck());
+      }
+      if (hasOffset()) {
+        output.writeInt32(2, getOffset());
+      }
+      if (hasLength()) {
+        output.writeInt32(3, getLength());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    @Override
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasBuck()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, getBuck());
+      }
+      if (hasOffset()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, getOffset());
+      }
+      if (hasLength()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, getLength());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static bio.pih.io.proto.Io.InvertedIndexBuckPosition parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(bio.pih.io.proto.Io.InvertedIndexBuckPosition prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using bio.pih.io.proto.Io.InvertedIndexBuckPosition.newBuilder()
+      private Builder() {}
+      
+      bio.pih.io.proto.Io.InvertedIndexBuckPosition result = new bio.pih.io.proto.Io.InvertedIndexBuckPosition();
+      
+      @Override
+      protected bio.pih.io.proto.Io.InvertedIndexBuckPosition internalGetResult() {
+        return result;
+      }
+      
+      @Override
+      public Builder clear() {
+        result = new bio.pih.io.proto.Io.InvertedIndexBuckPosition();
+        return this;
+      }
+      
+      @Override
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      @Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.io.proto.Io.InvertedIndexBuckPosition.getDescriptor();
+      }
+      
+      public bio.pih.io.proto.Io.InvertedIndexBuckPosition getDefaultInstanceForType() {
+        return bio.pih.io.proto.Io.InvertedIndexBuckPosition.getDefaultInstance();
+      }
+      
+      public bio.pih.io.proto.Io.InvertedIndexBuckPosition build() {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private bio.pih.io.proto.Io.InvertedIndexBuckPosition buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public bio.pih.io.proto.Io.InvertedIndexBuckPosition buildPartial() {
+        bio.pih.io.proto.Io.InvertedIndexBuckPosition returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      @Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.io.proto.Io.InvertedIndexBuckPosition) {
+          return mergeFrom((bio.pih.io.proto.Io.InvertedIndexBuckPosition)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(bio.pih.io.proto.Io.InvertedIndexBuckPosition other) {
+        if (other == bio.pih.io.proto.Io.InvertedIndexBuckPosition.getDefaultInstance()) return this;
+        if (other.hasBuck()) {
+          setBuck(other.getBuck());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setBuck(input.readInt32());
+              break;
+            }
+            case 16: {
+              setOffset(input.readInt32());
+              break;
+            }
+            case 24: {
+              setLength(input.readInt32());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required int32 buck = 1;
+      public boolean hasBuck() {
+        return result.hasBuck();
+      }
+      public int getBuck() {
+        return result.getBuck();
+      }
+      public Builder setBuck(int value) {
+        result.hasBuck = true;
+        result.buck_ = value;
+        return this;
+      }
+      public Builder clearBuck() {
+        result.hasBuck = false;
+        result.buck_ = 0;
+        return this;
+      }
+      
+      // required int32 offset = 2;
+      public boolean hasOffset() {
+        return result.hasOffset();
+      }
+      public int getOffset() {
+        return result.getOffset();
+      }
+      public Builder setOffset(int value) {
+        result.hasOffset = true;
+        result.offset_ = value;
+        return this;
+      }
+      public Builder clearOffset() {
+        result.hasOffset = false;
+        result.offset_ = 0;
+        return this;
+      }
+      
+      // required int32 length = 3;
+      public boolean hasLength() {
+        return result.hasLength();
+      }
+      public int getLength() {
+        return result.getLength();
+      }
+      public Builder setLength(int value) {
+        result.hasLength = true;
+        result.length_ = value;
+        return this;
+      }
+      public Builder clearLength() {
+        result.hasLength = false;
+        result.length_ = 0;
         return this;
       }
     }
@@ -704,11 +1038,11 @@ public final class Io {
     public boolean hasType() { return hasType; }
     public bio.pih.io.proto.Io.StoredDatabank.SequenceType getType() { return type_; }
     
-    // required int64 qtdSequences = 2;
+    // required int32 qtdSequences = 2;
     private boolean hasQtdSequences;
-    private long qtdSequences_ = 0L;
+    private int qtdSequences_ = 0;
     public boolean hasQtdSequences() { return hasQtdSequences; }
-    public long getQtdSequences() { return qtdSequences_; }
+    public int getQtdSequences() { return qtdSequences_; }
     
     // required int64 qtdBases = 3;
     private boolean hasQtdBases;
@@ -745,7 +1079,7 @@ public final class Io {
         output.writeEnum(1, getType().getNumber());
       }
       if (hasQtdSequences()) {
-        output.writeInt64(2, getQtdSequences());
+        output.writeInt32(2, getQtdSequences());
       }
       if (hasQtdBases()) {
         output.writeInt64(3, getQtdBases());
@@ -769,7 +1103,7 @@ public final class Io {
       }
       if (hasQtdSequences()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, getQtdSequences());
+          .computeInt32Size(2, getQtdSequences());
       }
       if (hasQtdBases()) {
         size += com.google.protobuf.CodedOutputStream
@@ -969,7 +1303,7 @@ public final class Io {
               break;
             }
             case 16: {
-              setQtdSequences(input.readInt64());
+              setQtdSequences(input.readInt32());
               break;
             }
             case 24: {
@@ -1005,21 +1339,21 @@ public final class Io {
         return this;
       }
       
-      // required int64 qtdSequences = 2;
+      // required int32 qtdSequences = 2;
       public boolean hasQtdSequences() {
         return result.hasQtdSequences();
       }
-      public long getQtdSequences() {
+      public int getQtdSequences() {
         return result.getQtdSequences();
       }
-      public Builder setQtdSequences(long value) {
+      public Builder setQtdSequences(int value) {
         result.hasQtdSequences = true;
         result.qtdSequences_ = value;
         return this;
       }
       public Builder clearQtdSequences() {
         result.hasQtdSequences = false;
-        result.qtdSequences_ = 0L;
+        result.qtdSequences_ = 0;
         return this;
       }
       
@@ -2862,10 +3196,15 @@ public final class Io {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_InvertedIndexBuck_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_SerializedInvertedIndex_descriptor;
+    internal_static_proto_InvertedIndexFilePositions_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_proto_SerializedInvertedIndex_fieldAccessorTable;
+      internal_static_proto_InvertedIndexFilePositions_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_InvertedIndexBuckPosition_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_InvertedIndexBuckPosition_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredDatabank_descriptor;
   private static
@@ -2906,27 +3245,29 @@ public final class Io {
   static {
     java.lang.String descriptorData =
       "\n\010io.proto\022\005proto\"!\n\021InvertedIndexBuck\022\014" +
-      "\n\004buck\030\001 \003(\003\"V\n\027SerializedInvertedIndex\022" +
-      "\022\n\nqtdEntries\030\001 \002(\005\022\'\n\005bucks\030\002 \003(\0132\030.pro" +
-      "to.InvertedIndexBuck\"\313\001\n\016StoredDatabank\022" +
-      "0\n\004type\030\001 \002(\0162\".proto.StoredDatabank.Seq" +
-      "uenceType\022\024\n\014qtdSequences\030\002 \002(\003\022\020\n\010qtdBa" +
-      "ses\030\003 \002(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto" +
-      ".StoredSequenceInfo\"-\n\014SequenceType\022\007\n\003D" +
-      "NA\020\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequ" +
-      "enceInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006" +
-      "length\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 " +
-      "\002(\005\022\n\n\002gi\030\002 \002(\t\022\014\n\004name\030\003 \002(\t\022\021\n\taccessi" +
-      "on\030\004 \002(\t\022\023\n\013description\030\005 \002(\t\022\017\n\007version" +
-      "\030\006 \002(\005\022\027\n\017encodedSequence\030\007 \002(\014\"j\n\036Store" +
-      "dSimilarSubSequencesIndex\022H\n\034storedCompa" +
-      "rationResultInfos\030\001 \003(\0132\".proto.StoredCo" +
-      "mparationResultInfo\"Y\n\033StoredComparation" +
-      "ResultInfo\022\032\n\022encodedSubSequence\030\001 \002(\005\022\016" +
-      "\n\006length\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031Stored" +
-      "SimilarSubSequences\022\027\n\017encodedSequence\030\001" +
-      " \002(\005\022\027\n\017similarSequence\030\002 \003(\005B\030\n\020bio.pih" +
-      ".io.protoB\002IoH\001";
+      "\n\004buck\030\001 \003(\003\"^\n\032InvertedIndexFilePositio" +
+      "ns\022\014\n\004size\030\001 \002(\005\0222\n\010position\030\002 \003(\0132 .pro" +
+      "to.InvertedIndexBuckPosition\"I\n\031Inverted" +
+      "IndexBuckPosition\022\014\n\004buck\030\001 \002(\005\022\016\n\006offse" +
+      "t\030\002 \002(\005\022\016\n\006length\030\003 \002(\005\"\313\001\n\016StoredDataba" +
+      "nk\0220\n\004type\030\001 \002(\0162\".proto.StoredDatabank." +
+      "SequenceType\022\024\n\014qtdSequences\030\002 \002(\005\022\020\n\010qt" +
+      "dBases\030\003 \002(\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.pr" +
+      "oto.StoredSequenceInfo\"-\n\014SequenceType\022\007" +
+      "\n\003DNA\020\000\022\007\n\003RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredS" +
+      "equenceInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022" +
+      "\016\n\006length\030\003 \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id" +
+      "\030\001 \002(\005\022\n\n\002gi\030\002 \002(\t\022\014\n\004name\030\003 \002(\t\022\021\n\tacce" +
+      "ssion\030\004 \002(\t\022\023\n\013description\030\005 \002(\t\022\017\n\007vers" +
+      "ion\030\006 \002(\005\022\027\n\017encodedSequence\030\007 \002(\014\"j\n\036St" +
+      "oredSimilarSubSequencesIndex\022H\n\034storedCo" +
+      "mparationResultInfos\030\001 \003(\0132\".proto.Store" +
+      "dComparationResultInfo\"Y\n\033StoredComparat" +
+      "ionResultInfo\022\032\n\022encodedSubSequence\030\001 \002(" +
+      "\005\022\016\n\006length\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031Sto" +
+      "redSimilarSubSequences\022\027\n\017encodedSequenc" +
+      "e\030\001 \002(\005\022\027\n\017similarSequence\030\002 \003(\005B\030\n\020bio." +
+      "pih.io.protoB\002IoH\001";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -2940,16 +3281,24 @@ public final class Io {
               new java.lang.String[] { "Buck", },
               bio.pih.io.proto.Io.InvertedIndexBuck.class,
               bio.pih.io.proto.Io.InvertedIndexBuck.Builder.class);
-          internal_static_proto_SerializedInvertedIndex_descriptor =
+          internal_static_proto_InvertedIndexFilePositions_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_proto_SerializedInvertedIndex_fieldAccessorTable = new
+          internal_static_proto_InvertedIndexFilePositions_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_SerializedInvertedIndex_descriptor,
-              new java.lang.String[] { "QtdEntries", "Bucks", },
-              bio.pih.io.proto.Io.SerializedInvertedIndex.class,
-              bio.pih.io.proto.Io.SerializedInvertedIndex.Builder.class);
-          internal_static_proto_StoredDatabank_descriptor =
+              internal_static_proto_InvertedIndexFilePositions_descriptor,
+              new java.lang.String[] { "Size", "Position", },
+              bio.pih.io.proto.Io.InvertedIndexFilePositions.class,
+              bio.pih.io.proto.Io.InvertedIndexFilePositions.Builder.class);
+          internal_static_proto_InvertedIndexBuckPosition_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_proto_InvertedIndexBuckPosition_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_proto_InvertedIndexBuckPosition_descriptor,
+              new java.lang.String[] { "Buck", "Offset", "Length", },
+              bio.pih.io.proto.Io.InvertedIndexBuckPosition.class,
+              bio.pih.io.proto.Io.InvertedIndexBuckPosition.Builder.class);
+          internal_static_proto_StoredDatabank_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_proto_StoredDatabank_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredDatabank_descriptor,
@@ -2957,7 +3306,7 @@ public final class Io {
               bio.pih.io.proto.Io.StoredDatabank.class,
               bio.pih.io.proto.Io.StoredDatabank.Builder.class);
           internal_static_proto_StoredSequenceInfo_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_proto_StoredSequenceInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredSequenceInfo_descriptor,
@@ -2965,7 +3314,7 @@ public final class Io {
               bio.pih.io.proto.Io.StoredSequenceInfo.class,
               bio.pih.io.proto.Io.StoredSequenceInfo.Builder.class);
           internal_static_proto_StoredSequence_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_proto_StoredSequence_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredSequence_descriptor,
@@ -2973,7 +3322,7 @@ public final class Io {
               bio.pih.io.proto.Io.StoredSequence.class,
               bio.pih.io.proto.Io.StoredSequence.Builder.class);
           internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
@@ -2981,7 +3330,7 @@ public final class Io {
               bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.class,
               bio.pih.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
           internal_static_proto_StoredComparationResultInfo_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredComparationResultInfo_descriptor,
@@ -2989,7 +3338,7 @@ public final class Io {
               bio.pih.io.proto.Io.StoredComparationResultInfo.class,
               bio.pih.io.proto.Io.StoredComparationResultInfo.Builder.class);
           internal_static_proto_StoredSimilarSubSequences_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredSimilarSubSequences_descriptor,

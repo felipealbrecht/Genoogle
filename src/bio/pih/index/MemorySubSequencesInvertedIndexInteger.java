@@ -1,12 +1,22 @@
 package bio.pih.index;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.io.SequenceDataBank;
+import bio.pih.io.proto.Io.InvertedIndexBuck;
+import bio.pih.io.proto.Io.InvertedIndexBuckPosition;
+import bio.pih.io.proto.Io.InvertedIndexFilePositions;
 import bio.pih.util.LongArray;
 
 /**
@@ -60,7 +70,7 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 		}
 		// GC do your work!
 		this.tempIndex = null;
-		loaded = true;
+		this.loaded = true;
 	}
 
 	/**
@@ -109,17 +119,107 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 	}
 	
 	@Override
-	public void write() throws IOException { }
+	public void saveToFile() throws IOException {
+		deleteOldFiles();
+		FileChannel memoryInvertedIndexFileChannel = new FileOutputStream(getMemoryInvertedIndexFileName(), true).getChannel();
+		
+		InvertedIndexFilePositions.Builder invertedIndexFilePositionsBuilder = InvertedIndexFilePositions.newBuilder();
+		invertedIndexFilePositionsBuilder.setSize(indexSize);
+		
+		
+		for (int i = 0; i < indexSize; i++) {
+			long offset = memoryInvertedIndexFileChannel.position();
+			if (offset > Integer.MAX_VALUE) {
+				throw new IOException("The offset position is too big.");
+			}
+			
+			InvertedIndexBuck.Builder buckBuilder = InvertedIndexBuck.newBuilder();
+			for (int j = 0; j < index[i].length; j++) {
+				buckBuilder.addBuck(index[i][j]);
+			}
+			
+			InvertedIndexBuck buck = buckBuilder.build();
+			byte[] buckArray = buck.toByteArray();
+			memoryInvertedIndexFileChannel.write(ByteBuffer.wrap(buckArray));
+			
+			InvertedIndexBuckPosition.Builder buckPositionBuilder = InvertedIndexBuckPosition.newBuilder();
+			buckPositionBuilder.setBuck(i).setOffset((int) offset).setLength(buckArray.length);
+			InvertedIndexBuckPosition buckPosition = buckPositionBuilder.build();
+			invertedIndexFilePositionsBuilder.addPosition(buckPosition);			
+		}
+		memoryInvertedIndexFileChannel.close();
+		InvertedIndexFilePositions indexFilePositions = invertedIndexFilePositionsBuilder.build();
+		
+		FileChannel indexFilePositionsFileChannel = new FileOutputStream(getMemoryInvertedOffsetIndexFileName(), true).getChannel();
+		indexFilePositionsFileChannel.write(ByteBuffer.wrap(indexFilePositions.toByteArray()));
+		indexFilePositionsFileChannel.close();
+	}
 	
 	@Override
-	public void load() throws IOException { }
+	public void loadFromFile() throws IOException { 
+		this.index = new long[indexSize][];
+		
+		File memoryInvertedIndexFile = new File(getMemoryInvertedIndexFileName());
+		FileChannel memoryInvertedIndexFileChannel = new FileInputStream(memoryInvertedIndexFile).getChannel();
+		MappedByteBuffer map = memoryInvertedIndexFileChannel.map(MapMode.READ_ONLY, 0, memoryInvertedIndexFile.length());
+				
+		InvertedIndexFilePositions indexFilePositions =  InvertedIndexFilePositions.parseFrom(new FileInputStream(getMemoryInvertedOffsetIndexFileName()));
+		for (int i = 0; i < indexFilePositions.getPositionCount(); i++) {
+			InvertedIndexBuckPosition inveredIndexBuckPosition = indexFilePositions.getPosition(i);
+			int buck = inveredIndexBuckPosition.getBuck();
+			int offset = inveredIndexBuckPosition.getOffset();
+			int length = inveredIndexBuckPosition.getLength();
+			
+			byte[] data = new byte[length];
+			map.position(offset);
+			map.get(data);
+			
+			InvertedIndexBuck invertedIndexBuck = InvertedIndexBuck.parseFrom(data);
+			
+			long[] entries = new long[invertedIndexBuck.getBuckCount()];
+			for (int j = 0; j < invertedIndexBuck.getBuckCount(); j++) {
+				entries[j] = invertedIndexBuck.getBuck(j);
+			}
+			index[buck] = entries;						
+		}
+		
+		memoryInvertedIndexFileChannel.close();
+		this.loaded = true;	
+	}
+
+	private void deleteOldFiles() {
+		if (memoryInvertedIndexFileExisits()) {
+			new File(getMemoryInvertedIndexFileName()).delete();
+		}
+		
+		if (memoryInvertedOffsetIndexFileExisits()) {
+			new File(getMemoryInvertedOffsetIndexFileName()).delete();
+		}		
+	}
 	
 	@Override
-	public void check() throws IOException { }
+	public void checkFile() throws IOException { }
+	
+	
+	private String getMemoryInvertedIndexFileName() {		
+		return getName() + ".midx";
+	}
+	
+	private String getMemoryInvertedOffsetIndexFileName() {		
+		return getName() + ".oidx";
+	}
 	
 	@Override
-	// Index in memory should always be reloaded.
-	public boolean exists() {
-		return false;
+	public boolean fileExists() {
+		return memoryInvertedIndexFileExisits() && memoryInvertedOffsetIndexFileExisits();
+	}
+
+	private boolean memoryInvertedIndexFileExisits() {
+		return new File(getMemoryInvertedIndexFileName()).exists();
+	}
+	
+	private boolean memoryInvertedOffsetIndexFileExisits() {
+		
+		return new File(getMemoryInvertedOffsetIndexFileName()).exists();
 	}
 }

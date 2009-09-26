@@ -22,9 +22,9 @@ import bio.pih.io.proto.Io.StoredSequence;
  * 
  */
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
-	
+
 	private final AbstractSubSequencesInvertedIndex index;
-	//private final SimilarSubSequencesIndex similarSubSequencesIndex;
+	// private final SimilarSubSequencesIndex similarSubSequencesIndex;
 	protected final DNAMaskEncoder maskEncoder;
 
 	private final StorageKind storageKind;
@@ -35,18 +35,21 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 *            the name of the data bank
 	 * @param path
 	 *            the path where the data bank is/will be stored
-	 * @param parent 
-	 * @param storageKind  
-	 * @param subSequenceLength 
-	 * @param minEvalueDropOut 
+	 * @param parent
+	 * @param storageKind
+	 * @param subSequenceLength
+	 * @param minEvalueDropOut
 	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData 
-	 * @throws IOException 
+	 * @throws InvalidHeaderData
+	 * @throws IOException
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent, StorageKind storageKind, int subSequenceLength, String mask) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent,
+			StorageKind storageKind, int subSequenceLength, String mask) throws ValueOutOfBoundsException, IOException,
+			InvalidHeaderData {
 		super(name, path, parent, subSequenceLength);
 		this.storageKind = storageKind;
-		//this.similarSubSequencesIndex = SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
+		// this.similarSubSequencesIndex =
+		// SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
 		if (mask != null) {
 			maskEncoder = new DNAMaskEncoder(mask, subSequenceLength);
 		} else {
@@ -55,56 +58,52 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
 			index = new MemorySubSequencesInvertedIndexInteger(this, subSequenceLength);
-			
-		} else { //if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
+
+		} else { // if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
 			throw new RuntimeException("Storage Kind DISK is Deprecated");
-			//index = new PersistentSubSequencesInvertedIndex(this, XMLConfigurationReader.getSubSequenceLength());
-		} 
-	}
-	
-	@Override
-	void loadInformations() throws IOException {
-		if (index.exists()) {
-			index.load();
+			// index = new PersistentSubSequencesInvertedIndex(this,
+			// XMLConfigurationReader.getSubSequenceLength());
 		}
 	}
-	
+
+	@Override
+	boolean loadInformations() throws IOException {
+		if (index.fileExists()) {
+			index.loadFromFile();
+			return true;
+		}
+		return false;
+	}
+
 	public DNAMaskEncoder getMaskEncoder() {
 		return maskEncoder;
 	}
-	
+
 	@Override
 	void beginSequencesProcessing() throws IOException, ValueOutOfBoundsException {
-		if (!index.exists()) { 
-			index.constructIndex();
-			if (index.exists()) {
-				index.load();
-			}
-		}
+		index.constructIndex();
 	}
-	
+
 	@Override
 	int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException, BioException {
-		if (!index.exists()) {
-			int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
-			int size = SequenceEncoder.getSequenceLength(encodedSequence);
-			if (maskEncoder == null) {
-				index.addSequence(sequenceId, encodedSequence, subSequenceLength);
-			} else {
-				SymbolList sequence  = encoder.decodeIntegerArrayToSymbolList(encodedSequence);
-				int[] filteredSequence = maskEncoder.applySequenceMask(sequence);
-				index.addSequence(sequenceId, filteredSequence, maskEncoder.getPatternLength());
-			}
-						
-			return size;
+		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
+		int size = SequenceEncoder.getSequenceLength(encodedSequence);
+		if (maskEncoder == null) {
+			index.addSequence(sequenceId, encodedSequence, subSequenceLength);
+		} else {
+			SymbolList sequence = encoder.decodeIntegerArrayToSymbolList(encodedSequence);
+			int[] filteredSequence = maskEncoder.applySequenceMask(sequence);
+			index.addSequence(sequenceId, filteredSequence, maskEncoder.getPatternLength());
 		}
-		return 0;
+
+		return size;
 	}
-	
+
 	@Override
 	void finishSequencesProcessing() throws IOException {
-		if (!index.exists()) {
-			index.finishConstruction();
+		index.finishConstruction();
+		if (!index.fileExists()) {
+			index.saveToFile();
 		}
 	}
 
@@ -116,9 +115,9 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public StorageKind getStorageKind() {
 		return storageKind;
 	}
-	
+
 	@Override
 	public void write() throws IOException {
-		index.write();
+		index.saveToFile();
 	}
 }

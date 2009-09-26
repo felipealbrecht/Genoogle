@@ -21,7 +21,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	protected final long[] EMPTY_ARRAY = new long[0];
 	
 	protected final DNASequenceEncoderToInteger encoder;
-	protected boolean loaded;
+	protected volatile boolean loaded;
 	
 	/**
 	 * @param databank
@@ -89,25 +89,25 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * Write the respective inverted index into a file.
 	 * @throws IOException 
 	 */
-	abstract public void write() throws IOException;
+	abstract public void saveToFile() throws IOException;
 
 	/**
 	 * Load the respective inverted index from a file.
 	 * @throws IOException 
 	 */
-	abstract public void load() throws IOException;
+	abstract public void loadFromFile() throws IOException;
 
 	/**
-	 * Check the index consistency.
+	 * Check the saved index file consistency.
 	 * @throws IOException
 	 */
-	abstract public void check() throws IOException;
+	abstract public void checkFile() throws IOException;
 	
 	/**
-	 * Check if the index data exists.
+	 * Check if the index file data exists.
 	 * @return <code>true</code> if the data exists and do not need be reloaded.
 	 */
-	abstract public boolean exists();
+	abstract public boolean fileExists();
 	
 	/**
 	 * Inform if the index is loaded. 
@@ -115,6 +115,10 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 */
 	public boolean isLoaded() {
 		return loaded;
+	}
+	
+	public String getName() {
+		return databank.getName() + "_SubSequencesInvertedIndex";
 	}
 	
 }

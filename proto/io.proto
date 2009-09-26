@@ -12,12 +12,18 @@ message InvertedIndexBuck {
 	repeated int64 buck = 1;
 }
 
-message SerializedInvertedIndex {
-	required int32 qtdEntries = 1;
-	repeated InvertedIndexBuck bucks = 2;
-}
-	
 
+message InvertedIndexFilePositions {
+	required int32 size = 1;
+	repeated InvertedIndexBuckPosition position = 2;
+}
+
+
+message InvertedIndexBuckPosition {
+	required int32 buck = 1;
+	required int32 offset = 2;
+	required int32 length = 3;
+}
 
 /////////////////////////////////////////////////////////////////////
 // Databank Stuffs
@@ -31,7 +37,7 @@ message StoredDatabank {
   }
   
   required SequenceType type = 1;
-  required int64 qtdSequences = 2;
+  required int32 qtdSequences = 2;
   required int64 qtdBases = 3;
   repeated StoredSequenceInfo sequencesInfo = 4;  
 }
