@@ -13,7 +13,7 @@ import bio.pih.io.SequenceDataBank;
  *  
  * @author albrecht
  */
-public abstract class AbstractSubSequencesInvertedIndex {
+public abstract class AbstractInvertedIndex {
 
 	protected final SequenceDataBank databank;
 	protected final int subSequenceLength;
@@ -28,7 +28,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public AbstractSubSequencesInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public AbstractInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
 		assert (subSequenceLength > 0);
 
 		this.databank = databank;
@@ -44,8 +44,10 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	/**
 	 * Begin the construction of a index.
 	 * @throws ValueOutOfBoundsException 
+	 * @throws IOException 
+	 * @throws  
 	 */
-	abstract public void constructIndex() throws ValueOutOfBoundsException;
+	abstract public void constructIndex() throws ValueOutOfBoundsException, IOException;
 	
 	/**
 	 * Finalize the index construction, doing optimizations and/or store process.  
@@ -65,7 +67,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	
 	/**
 	 * @param subSequence
-	 * @return a list containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it.
+	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
@@ -74,7 +76,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 
 	/**
 	 * @param encodedSubSequence 
-	 * @return a list containing the {@link EncoderSubSequenceIndexInfo} encoded, use {@link EncoderSubSequenceIndexInfo} to decode it.
+	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
@@ -120,5 +122,7 @@ public abstract class AbstractSubSequencesInvertedIndex {
 	public String getName() {
 		return databank.getName() + "_SubSequencesInvertedIndex";
 	}
+	
+	
 	
 }

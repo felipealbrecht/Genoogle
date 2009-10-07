@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import bio.pih.index.EncoderSubSequenceIndexInfo;
+import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.Utils;
 import bio.pih.io.proto.Io.StoredSequence;
@@ -33,8 +33,8 @@ public class IndexRetrievedData {
 	}
 
 	final void addSubSequenceInfoIntRepresention(int queryPos, long subSequenceInfoIntRepresention) {
-		int sequencePos = EncoderSubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
-		int sequenceId = EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoIntRepresention);
+		int sequencePos = SubSequenceIndexInfo.getStart(subSequenceInfoIntRepresention);
+		int sequenceId = SubSequenceIndexInfo.getSequenceId(subSequenceInfoIntRepresention);
 
 		mergeOrRemoveOrNew(queryPos, sequencePos, sequenceId);
 	}

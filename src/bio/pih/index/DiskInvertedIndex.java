@@ -23,8 +23,8 @@ import bio.pih.io.SequenceDataBank;
  * @deprecated Should be converted to use Protocol Buffers
  */
 @Deprecated
-public class PersistentSubSequencesInvertedIndex extends
-		AbstractSubSequencesInvertedIndex {
+public class DiskInvertedIndex extends
+		AbstractInvertedIndex {
 
 	private static final int TOTAL_SUB_SEQUENCES = (int) Math.pow(4, 8);
 	private String indexDataFileName = null;;
@@ -37,14 +37,14 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	RandomAccessFile indexDataRAF = null;
 
-	private MemorySubSequencesInvertedIndexInteger temporaryIndex = null;
+	private MemoryInvertedIndex temporaryIndex = null;
 
 	/**
 	 * @param databank
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public PersistentSubSequencesInvertedIndex(SequenceDataBank databank,
+	public DiskInvertedIndex(SequenceDataBank databank,
 			int subSequenceLength) throws ValueOutOfBoundsException {
 		super(databank, subSequenceLength);
 		indexDataFileName = databank.getFullPath() + ".index.dat";
@@ -161,15 +161,15 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	@Override
 	public void constructIndex() throws ValueOutOfBoundsException {
-		temporaryIndex = new MemorySubSequencesInvertedIndexInteger(this.databank,
+		temporaryIndex = new MemoryInvertedIndex(this.databank,
 				this.subSequenceLength);
 		temporaryIndex.constructIndex();
 	}
 
 	@Override
-	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
+	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceLength) {
 		if (temporaryIndex != null) {
-			temporaryIndex.addSequence(sequenceId, encodedSequence, subSequenceOffSet);
+			temporaryIndex.addSequence(sequenceId, encodedSequence, subSequenceLength);
 		}
 	}
 
@@ -232,7 +232,6 @@ public class PersistentSubSequencesInvertedIndex extends
 
 	@Override
 	public String indexStatus() {
-		return "nao sei >:-(";
+		return this.getName() + " status";
 	}
-
 }

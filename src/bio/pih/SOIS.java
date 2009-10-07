@@ -233,6 +233,7 @@ public class SOIS {
 				if (!dataBank.check()) {
 					System.out.println("Data bank " + dataBank.getName() + " is not encoded.");
 					dataBank.encodeSequences();
+					dataBank.load();
 				}
 			}
 			logger.info("All specified data banks are encoded. You can do yours searchs now.");

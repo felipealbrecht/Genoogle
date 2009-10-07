@@ -9,9 +9,9 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.SequenceEncoder;
-import bio.pih.index.AbstractSubSequencesInvertedIndex;
+import bio.pih.index.AbstractInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
-import bio.pih.index.MemorySubSequencesInvertedIndexInteger;
+import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredSequence;
 
@@ -23,7 +23,7 @@ import bio.pih.io.proto.Io.StoredSequence;
  */
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
 
-	private final AbstractSubSequencesInvertedIndex index;
+	private final AbstractInvertedIndex index;
 	// private final SimilarSubSequencesIndex similarSubSequencesIndex;
 	protected final DNAMaskEncoder maskEncoder;
 
@@ -57,7 +57,7 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		}
 		// TODO: Put it into a factory.
 		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
-			index = new MemorySubSequencesInvertedIndexInteger(this, subSequenceLength);
+			index = new MemoryInvertedIndex(this, subSequenceLength);
 
 		} else { // if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
 			throw new RuntimeException("Storage Kind DISK is Deprecated");

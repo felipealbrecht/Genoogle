@@ -193,7 +193,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	@Override
 	public boolean check() {
 		for (int i = 0; i < qtdSubBases; i++) {
-			if (!getStoredDatabakFileName(i).exists() || getDatabankFile(i).exists()) {			
+			if (!getStoredDatabakFileName(i).exists() || !getDatabankFile(i).exists()) {			
 				return false;
 			}
 		}

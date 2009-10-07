@@ -96,8 +96,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 					+ this.getFullPath());
 		}
 
-		//loadInformations();
-
 		this.storedDatabank = StoredDatabank.parseFrom(new FileInputStream(getStoredDataBankInfoFile()));
 
 		logger.info("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");

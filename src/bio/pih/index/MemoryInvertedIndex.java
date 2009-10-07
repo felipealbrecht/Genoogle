@@ -21,13 +21,13 @@ import bio.pih.util.LongArray;
 
 /**
  * An inverted sub-sequences index stored in the memory.
- * Faster than {@link PersistentSubSequencesInvertedIndex}, but requires much more memory.
+ * Faster than {@link DiskInvertedIndex}, but requires much more memory.
  *  
  * @author albrecht
  */
-public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequencesInvertedIndex {
+public class MemoryInvertedIndex extends AbstractInvertedIndex {
 
-	protected LongArray[] tempIndex = null;
+	private LongArray[] tempIndex = null;
 	protected long[][] index = null;
 	
 	
@@ -38,28 +38,31 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public MemorySubSequencesInvertedIndexInteger(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public MemoryInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
 		super(databank, subSequenceLength);
 	}
 		
 	@Override
-	public void constructIndex() {		
+	public void constructIndex() throws IndexConstructionException {
+		if (tempIndex != null) {
+			throw new IndexConstructionException("The index is already being build.");
+		}
 		this.tempIndex = new LongArray[indexSize];
 	}
 	
 	@Override
-	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
+	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceLength) {
 		// TODO: Buggy because it gets the incomplete final sub-sequence of the encodedSequence.
 		int length = encodedSequence.length;
 		for (int arrayPos = SequenceEncoder.getPositionBeginBitsVector(); arrayPos < length; arrayPos++) {
-			int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceOffSet;
-			long longRepresention = EncoderSubSequenceIndexInfo.getSubSequenceInfoLongRepresention(sequenceId, sequencePos);
+			int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceLength;
+			long longRepresention = SubSequenceIndexInfo.newIndexInfo(sequenceId, sequencePos);
 			addSubSequenceInfoEncoded(encodedSequence[arrayPos], longRepresention);
 		}
 	}
 
 	@Override
-	public void finishConstruction() throws IOException {
+	public void finishConstruction() {
 		this.index = new long[indexSize][];
 		for (int i = 0; i < indexSize; i++) {
 			if (tempIndex[i] != null) {
@@ -108,9 +111,9 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 			if (bucket != null) {
 				for (long subSequenceInfoEncoded : bucket) {
 					sb.append("\t");
-					sb.append(EncoderSubSequenceIndexInfo.getSequenceId(subSequenceInfoEncoded));
+					sb.append(SubSequenceIndexInfo.getSequenceId(subSequenceInfoEncoded));
 					sb.append(": ");
-					sb.append(EncoderSubSequenceIndexInfo.getStart(subSequenceInfoEncoded));
+					sb.append(SubSequenceIndexInfo.getStart(subSequenceInfoEncoded));
 					sb.append("\n");
 				}
 			}
@@ -121,7 +124,7 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 	@Override
 	public void saveToFile() throws IOException {
 		deleteOldFiles();
-		FileChannel memoryInvertedIndexFileChannel = new FileOutputStream(getMemoryInvertedIndexFileName(), true).getChannel();
+		FileChannel memoryInvertedIndexFileChannel = new FileOutputStream(getMemoryInvertedIndexFile(), true).getChannel();
 		
 		InvertedIndexFilePositions.Builder invertedIndexFilePositionsBuilder = InvertedIndexFilePositions.newBuilder();
 		invertedIndexFilePositionsBuilder.setSize(indexSize);
@@ -145,12 +148,12 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 			InvertedIndexBuckPosition.Builder buckPositionBuilder = InvertedIndexBuckPosition.newBuilder();
 			buckPositionBuilder.setBuck(i).setOffset((int) offset).setLength(buckArray.length);
 			InvertedIndexBuckPosition buckPosition = buckPositionBuilder.build();
-			invertedIndexFilePositionsBuilder.addPosition(buckPosition);			
+			invertedIndexFilePositionsBuilder.addPosition(buckPosition);				
 		}
 		memoryInvertedIndexFileChannel.close();
 		InvertedIndexFilePositions indexFilePositions = invertedIndexFilePositionsBuilder.build();
 		
-		FileChannel indexFilePositionsFileChannel = new FileOutputStream(getMemoryInvertedOffsetIndexFileName(), true).getChannel();
+		FileChannel indexFilePositionsFileChannel = new FileOutputStream(getMemoryInvertedOffsetIndexFile(), true).getChannel();
 		indexFilePositionsFileChannel.write(ByteBuffer.wrap(indexFilePositions.toByteArray()));
 		indexFilePositionsFileChannel.close();
 	}
@@ -159,11 +162,11 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 	public void loadFromFile() throws IOException { 
 		this.index = new long[indexSize][];
 		
-		File memoryInvertedIndexFile = new File(getMemoryInvertedIndexFileName());
+		File memoryInvertedIndexFile = getMemoryInvertedIndexFile();
 		FileChannel memoryInvertedIndexFileChannel = new FileInputStream(memoryInvertedIndexFile).getChannel();
 		MappedByteBuffer map = memoryInvertedIndexFileChannel.map(MapMode.READ_ONLY, 0, memoryInvertedIndexFile.length());
 				
-		InvertedIndexFilePositions indexFilePositions =  InvertedIndexFilePositions.parseFrom(new FileInputStream(getMemoryInvertedOffsetIndexFileName()));
+		InvertedIndexFilePositions indexFilePositions =  InvertedIndexFilePositions.parseFrom(new FileInputStream(getMemoryInvertedOffsetIndexFile()));
 		for (int i = 0; i < indexFilePositions.getPositionCount(); i++) {
 			InvertedIndexBuckPosition inveredIndexBuckPosition = indexFilePositions.getPosition(i);
 			int buck = inveredIndexBuckPosition.getBuck();
@@ -180,7 +183,12 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 			for (int j = 0; j < invertedIndexBuck.getBuckCount(); j++) {
 				entries[j] = invertedIndexBuck.getBuck(j);
 			}
-			index[buck] = entries;						
+			
+			index[buck] = entries;	
+			
+			if (i % 10000 == 0) {
+				System.out.println(i + "/" + indexSize);
+			}
 		}
 		
 		memoryInvertedIndexFileChannel.close();
@@ -189,37 +197,37 @@ public class MemorySubSequencesInvertedIndexInteger extends AbstractSubSequences
 
 	private void deleteOldFiles() {
 		if (memoryInvertedIndexFileExisits()) {
-			new File(getMemoryInvertedIndexFileName()).delete();
+			getMemoryInvertedIndexFile().delete();
 		}
 		
 		if (memoryInvertedOffsetIndexFileExisits()) {
-			new File(getMemoryInvertedOffsetIndexFileName()).delete();
+			getMemoryInvertedOffsetIndexFile().delete();
 		}		
 	}
 	
 	@Override
 	public void checkFile() throws IOException { }
-	
-	
-	private String getMemoryInvertedIndexFileName() {		
-		return getName() + ".midx";
-	}
-	
-	private String getMemoryInvertedOffsetIndexFileName() {		
-		return getName() + ".oidx";
-	}
-	
+		
 	@Override
 	public boolean fileExists() {
 		return memoryInvertedIndexFileExisits() && memoryInvertedOffsetIndexFileExisits();
 	}
 
 	private boolean memoryInvertedIndexFileExisits() {
-		return new File(getMemoryInvertedIndexFileName()).exists();
+		return getMemoryInvertedIndexFile().exists();
 	}
 	
 	private boolean memoryInvertedOffsetIndexFileExisits() {
 		
-		return new File(getMemoryInvertedOffsetIndexFileName()).exists();
+		return getMemoryInvertedOffsetIndexFile().exists();
+	}
+	
+	protected File getMemoryInvertedIndexFile() {
+		return new File(databank.getFullPath()+".midx");
+		
+	}
+
+	protected File getMemoryInvertedOffsetIndexFile() {
+		return new File(databank.getFullPath()+".oidx");
 	}
 }

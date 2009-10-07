@@ -155,10 +155,10 @@ public class XMLConfigurationReader {
 		if (e.getName().trim().equals("databank")) {
 			StorageKind storageKind = null;
 			String storage = e.attributeValue("storage");
-			if (storage == null || storage.equals("disk")) {
-				storageKind = StorageKind.DISK;
-			} else {
+			if (storage == null || storage.equals("memory")) {
 				storageKind = StorageKind.MEMORY;
+			} else {
+				storageKind = StorageKind.DISK;
 			}
 					
 			try {
