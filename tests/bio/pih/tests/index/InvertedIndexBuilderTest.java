@@ -3,6 +3,8 @@ package bio.pih.tests.index;
 import java.io.File;
 import java.io.IOException;
 
+import junit.framework.TestCase;
+
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
@@ -10,11 +12,12 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
-import bio.pih.index.SortBasedMemoryInvertedIndex;
+import bio.pih.index.MemoryInvertedIndex;
+import bio.pih.index.builder.InvertedIndexBuilder;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.seq.LightweightSymbolList;
 
-public class SortBasedMemoryInvertedIndexTest {
+public class InvertedIndexBuilderTest extends TestCase {
 
 	private static int SUB_SEQUENCE_LENGTH = 10;
 	private static DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getEncoder(SUB_SEQUENCE_LENGTH);
@@ -32,7 +35,8 @@ public class SortBasedMemoryInvertedIndexTest {
 	public void testBeginEnd() throws IllegalSymbolException, IOException {
 		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
 
-		SortBasedMemoryInvertedIndex index = new SortBasedMemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
+		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
+		InvertedIndexBuilder index = new InvertedIndexBuilder(memoryInvertedIndex);
 		index.constructIndex();
 		index.finishConstruction();
 	}
@@ -40,8 +44,9 @@ public class SortBasedMemoryInvertedIndexTest {
 	@Test
 	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException {
 		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
-
-		SortBasedMemoryInvertedIndex index = new SortBasedMemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
+		
+		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
+		InvertedIndexBuilder index = new InvertedIndexBuilder(memoryInvertedIndex);
 		index.constructIndex();
 
 		SymbolList seq = LightweightSymbolList.createDNA("ACTGCCAGTAACTGCCAGTAACTGCCAGTAACTGCCAGTAACTGCCAGTA");

@@ -40,30 +40,15 @@ public abstract class AbstractInvertedIndex {
 		
 		this.loaded = false;
 	}
+			
+	public SequenceDataBank getDatabank() {
+		return databank;
+	}
 	
-	/**
-	 * Begin the construction of a index.
-	 * @throws ValueOutOfBoundsException 
-	 * @throws IOException 
-	 * @throws  
-	 */
-	abstract public void constructIndex() throws ValueOutOfBoundsException, IOException;
+	public int getIndexSize() {
+		return indexSize;
+	}
 	
-	/**
-	 * Finalize the index construction, doing optimizations and/or store process.  
-	 * Should be called <b>after</b> all sequences was added into index. 
-	 * @throws IOException 
-	 */
-	abstract public void finishConstruction() throws IOException;
-	
-	/**
-	 * Add an encoded sequences into the index
-	 * 
-	 * @param sequenceId
-	 * @param encodedSequence
-	 * @param subSequenceOffSet 
-	 */
-	abstract public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet);
 	
 	/**
 	 * @param subSequence
@@ -88,22 +73,10 @@ public abstract class AbstractInvertedIndex {
 	abstract public String indexStatus();
 	
 	/**
-	 * Write the respective inverted index into a file.
-	 * @throws IOException 
-	 */
-	abstract public void saveToFile() throws IOException;
-
-	/**
 	 * Load the respective inverted index from a file.
 	 * @throws IOException 
 	 */
 	abstract public void loadFromFile() throws IOException;
-
-	/**
-	 * Check the saved index file consistency.
-	 * @throws IOException
-	 */
-	abstract public void checkFile() throws IOException;
 	
 	/**
 	 * Check if the index file data exists.

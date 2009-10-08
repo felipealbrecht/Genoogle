@@ -12,19 +12,6 @@ message InvertedIndexBuck {
 	repeated int64 buck = 1;
 }
 
-
-message InvertedIndexFilePositions {
-	required int32 size = 1;
-	repeated InvertedIndexBuckPosition position = 2;
-}
-
-
-message InvertedIndexBuckPosition {
-	required int32 buck = 1;
-	required int32 offset = 2;
-	required int32 length = 3;
-}
-
 /////////////////////////////////////////////////////////////////////
 // Databank Stuffs
 /////////////////////////////////////////////////////////////////////

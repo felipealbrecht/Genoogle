@@ -1,5 +1,5 @@
 #!/bin/sh
-/home/albrecht/jrmc-3.0.3-1.6.0/bin/java \
+/home/albrecht/java/jrmc-3.0.3-1.6.0/bin/java \
  -Xms1024m \
  -Xmx2048m \
  -server \

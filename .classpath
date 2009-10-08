@@ -35,6 +35,6 @@
 	<classpathentry kind="lib" path="lib/easymock-2.5.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/easymock-2.5.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/easymock-2.5.2.jar" sourcepath="/home/albrecht/java/easymock-2.5.2/easymock-2.5.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar" sourcepath="/home/albrecht/java/google-collect-snapshot-20080820/src-snapshot-20080820.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

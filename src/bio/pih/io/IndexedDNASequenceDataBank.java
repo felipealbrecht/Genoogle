@@ -2,6 +2,7 @@ package bio.pih.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -9,10 +10,10 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.SequenceEncoder;
-import bio.pih.index.AbstractInvertedIndex;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.index.builder.InvertedIndexBuilder;
 import bio.pih.io.proto.Io.StoredSequence;
 
 /**
@@ -23,8 +24,8 @@ import bio.pih.io.proto.Io.StoredSequence;
  */
 public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
 
-	private final AbstractInvertedIndex index;
-	// private final SimilarSubSequencesIndex similarSubSequencesIndex;
+	private final MemoryInvertedIndex index;
+	private InvertedIndexBuilder indexBuilder;
 	protected final DNAMaskEncoder maskEncoder;
 
 	private final StorageKind storageKind;
@@ -55,56 +56,50 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		} else {
 			maskEncoder = null;
 		}
-		// TODO: Put it into a factory.
-		if (storageKind == IndexedSequenceDataBank.StorageKind.MEMORY) {
-			index = new MemoryInvertedIndex(this, subSequenceLength);
 
-		} else { // if (storageKind == IndexedSequenceDataBank.StorageKind.DISK){
-			throw new RuntimeException("Storage Kind DISK is Deprecated");
-			// index = new PersistentSubSequencesInvertedIndex(this,
-			// XMLConfigurationReader.getSubSequenceLength());
-		}
+		index = new MemoryInvertedIndex(this, subSequenceLength);
 	}
 
 	@Override
-	boolean loadInformations() throws IOException {
-		if (index.fileExists()) {
-			index.loadFromFile();
-			return true;
-		}
-		return false;
+	public synchronized void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+		super.load();
+		index.loadFromFile();
 	}
 
-	public DNAMaskEncoder getMaskEncoder() {
-		return maskEncoder;
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
+		beginIndexBuild();
+		super.encodeSequences();
+		endIndexBuild();
+	}
+
+	public void beginIndexBuild() {
+		indexBuilder = new InvertedIndexBuilder(index);
+		indexBuilder.constructIndex();
+	}
+
+	public void endIndexBuild() {
+		indexBuilder.finishConstruction();
+		indexBuilder = null;
 	}
 
 	@Override
-	void beginSequencesProcessing() throws IOException, ValueOutOfBoundsException {
-		index.constructIndex();
-	}
-
-	@Override
-	int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException, BioException {
+	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException,
+			BioException {
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		if (maskEncoder == null) {
-			index.addSequence(sequenceId, encodedSequence, subSequenceLength);
+			indexBuilder.addSequence(sequenceId, encodedSequence, subSequenceLength);
 		} else {
 			SymbolList sequence = encoder.decodeIntegerArrayToSymbolList(encodedSequence);
 			int[] filteredSequence = maskEncoder.applySequenceMask(sequence);
-			index.addSequence(sequenceId, filteredSequence, maskEncoder.getPatternLength());
+			indexBuilder.addSequence(sequenceId, filteredSequence, maskEncoder.getPatternLength());
 		}
 
 		return size;
 	}
 
-	@Override
-	void finishSequencesProcessing() throws IOException {
-		index.finishConstruction();
-		if (!index.fileExists()) {
-			index.saveToFile();
-		}
+	public DNAMaskEncoder getMaskEncoder() {
+		return maskEncoder;
 	}
 
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData {
@@ -114,10 +109,5 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	@Override
 	public StorageKind getStorageKind() {
 		return storageKind;
-	}
-
-	@Override
-	public void write() throws IOException {
-		index.saveToFile();
 	}
 }

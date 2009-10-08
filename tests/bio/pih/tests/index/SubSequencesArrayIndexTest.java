@@ -18,6 +18,7 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
+import bio.pih.index.builder.InvertedIndexBuilder;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.io.IndexedSequenceDataBank.StorageKind;
@@ -37,7 +38,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		SequenceDataBank dataBank = new IndexedDNASequenceDataBank("dummy", null, null, StorageKind.MEMORY, 8, "11111111");
+		SequenceDataBank dataBank = new IndexedDNASequenceDataBank("dummy", File.createTempFile(this.getName(), ".tmp"), null, StorageKind.MEMORY, 8, "11111111");
 		index = new MemoryInvertedIndex (dataBank, SUB_SEQUENCE_LENGTH);
 		encoder = DNASequenceEncoderToInteger.getEncoder(8);
 	}
@@ -48,67 +49,70 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	}
 
 	private void populateNonSoRandomSequences(MemoryInvertedIndex  index) throws IllegalSymbolException, IOException {
-		index.constructIndex();
+		InvertedIndexBuilder indexBuilder = new InvertedIndexBuilder(index);
+		
+		indexBuilder.constructIndex();
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
 		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
 		SimpleSequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
-		index.addSequence(1, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(1, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence 2", null);
-		index.addSequence(2, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(2, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence 3", null);
-		index.addSequence(3, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(3, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence A", null);
-		index.addSequence(4, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(4, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence T", null);
-		index.addSequence(5, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(5, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence C", null);
-		index.addSequence(6, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(6, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence G", null);
-		index.addSequence(7, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(7, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence ACTGGTCA", null);
-		index.addSequence(8, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(8, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence R1", null);
-		index.addSequence(9, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(9, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
-		index.addSequence(10, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(10, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence R3", null);
-		index.addSequence(11, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.addSequence(11, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		
 		stringSequence = "ACGTAGCTTACTATTGATATGAGTCGTGACGACTGACTACGTACGTACGACTGACTACGTATCGTCAGCTGCGTCATGCATTACTGACTGACTGAGTCTGATCATGACTTGACTGACTGACTGGTACTACGTGTACTACGTGTACTACGTAGCTACGACGTACGTACTGGTACTGACTGACGTGTACGCTAGCATGCATCGATGACGTACGTGATCTACTGACTGTACTGACTGGTACGACTACGTACGACTGACTGACTGACTACGATGCTGACTGACGTTGACGTACTGAC";
 		symbolList = LightweightSymbolList.createDNA(stringSequence);
 		ss = new SimpleSequence(symbolList, null, "Sequence R4", null);
-		index.addSequence(12, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
-		index.finishConstruction();
+		indexBuilder.addSequence(12, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
+		indexBuilder.finishConstruction();
+		index.loadFromFile();
 	}
 	
 	/**
@@ -168,13 +172,16 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		
 		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
 				
+		InvertedIndexBuilder indexBuilder = new InvertedIndexBuilder(index);
+		
 		int code = 0;
-		index.constructIndex();
+		indexBuilder.constructIndex();
 		for(Sequence sequence: population) {
-			index.addSequence(code, encoder.encodeSymbolListToIntegerArray(sequence), SUB_SEQUENCE_LENGTH);
+			indexBuilder.addSequence(code, encoder.encodeSymbolListToIntegerArray(sequence), SUB_SEQUENCE_LENGTH);
 			code++;
 		}
-		index.finishConstruction();
+		indexBuilder.finishConstruction();
+		index.loadFromFile();
 		
 		long[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCTTGCCC"));
 		assertEquals(2, matchingSubSequence.length);

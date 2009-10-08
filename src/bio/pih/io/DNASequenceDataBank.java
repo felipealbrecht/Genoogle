@@ -87,7 +87,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 	@Override
 	public synchronized void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
-		logger.info("Loading databank from " + getDataBankFile());
+		logger.info("Loading DNASequenceDataBank from " + getDataBankFile());
 
 		long begin = System.currentTimeMillis();
 		if (!getDataBankFile().exists() || !getStoredDataBankInfoFile().exists()) {
@@ -101,60 +101,13 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		logger.info("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() + " bases.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() / 11 + " sub-sequences bases aprox.");
-		
-		this.numberOfSequences = storedDatabank.getQtdSequences();
-		this.dataBankSize = storedDatabank.getQtdBases();		
 
-		if (loadInformations()) {
-			logger.info("Inverted index loaded from file.");
-		} else {
-			beginSequencesProcessing();
-			for (int i = 0; i < storedDatabank.getSequencesInfoCount(); i++) {
-				StoredSequence storedSequence = getSequenceFromId(i);
-				doSequenceProcessing(storedSequence.getId(), storedSequence);
-				if (i % 1000 == 0) {
-					System.out.println(i + "/" + storedDatabank.getSequencesInfoCount());
-				}
-			}
-			finishSequencesProcessing();
-		}
+		this.numberOfSequences = storedDatabank.getQtdSequences();
+		this.dataBankSize = storedDatabank.getQtdBases();
+
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " + this.numberOfSequences
 				+ " sequences.");
 	}
-
-	/**
-	 * Load informations previously the data bank is loaded.
-	 * 
-	 * @return <code>true</code> if the index was loaded.
-	 * @throws IOException
-	 */
-	abstract boolean loadInformations() throws IOException;
-
-	/**
-	 * Inform that the sequences processing is beginning.
-	 * 
-	 * @throws IOException
-	 * @throws ValueOutOfBoundsException
-	 */
-	abstract void beginSequencesProcessing() throws IOException, ValueOutOfBoundsException;
-
-	/**
-	 * Process a {@link SequenceInformation}
-	 * 
-	 * @param sequenceInformation
-	 * @throws BioException
-	 * @throws IllegalSymbolException
-	 */
-	abstract int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException,
-			BioException;
-
-	/**
-	 * Finish the sequences processing. <br>
-	 * After this point no more sequences can be added to the data bank.
-	 * 
-	 * @throws IOException
-	 */
-	abstract void finishSequencesProcessing() throws IOException;
 
 	/**
 	 * @param sequenceId
@@ -194,9 +147,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			throw new IOException("File " + getDataBankFile()
 					+ " already exists. Please remove it before creating another file.");
 		}
-		beginSequencesProcessing();
 		addFastaFile(getFullPath());
-		finishSequencesProcessing();
 	}
 
 	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
@@ -251,6 +202,8 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
+		
+		doSequenceProcessing(numberOfSequences, storedSequence);
 
 		numberOfSequences++;
 
@@ -271,6 +224,9 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 
 		return byteBuf.array();
 	}
+
+	abstract public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence)
+			throws IllegalSymbolException, BioException;
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {
@@ -389,4 +345,5 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	public int getSubSequenceLength() {
 		return subSequenceLength;
 	}
+
 }

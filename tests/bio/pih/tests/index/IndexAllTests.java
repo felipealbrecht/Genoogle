@@ -17,6 +17,7 @@ public class IndexAllTests extends TestSuite {
 		TestSuite suite = new TestSuite("IndexAllTests");
 		
 		suite.addTestSuite(SubSequencesArrayIndexTest.class);
+		suite.addTestSuite(InvertedIndexBuilderTest.class);
 
 		return suite;
 	}

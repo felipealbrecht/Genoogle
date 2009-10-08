@@ -17,7 +17,7 @@ public class LongArray {
 	private int actualBockPos;
 
 	// TODO: put these values as input parameters.
-	private static final int DEFAULT_INITIAL_SIZE = 10;
+	private static final int DEFAULT_INITIAL_SIZE = 5;
 
 	/**
 	 * Constructor that gives the block size.
