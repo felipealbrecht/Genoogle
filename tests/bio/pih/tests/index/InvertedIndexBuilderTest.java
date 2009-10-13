@@ -12,6 +12,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.builder.InvertedIndexBuilder;
 import bio.pih.io.SequenceDataBank;
@@ -32,7 +33,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 	}
 
 	@Test
-	public void testBeginEnd() throws IllegalSymbolException, IOException {
+	public void testBeginEnd() throws IllegalSymbolException, IOException, IndexConstructionException {
 		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
 
 		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
@@ -42,7 +43,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 	}
 
 	@Test
-	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException {
+	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException, IndexConstructionException {
 		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
 		
 		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);

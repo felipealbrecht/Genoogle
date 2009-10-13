@@ -39,8 +39,7 @@ import bio.pih.seq.LightweightSymbolList;
 import com.google.common.collect.Lists;
 
 /**
- * Genoogle non distributed and no server implementation. For tests and
- * validation propose.
+ * Genoogle non distributed and no server implementation. For tests and validation propose.
  * 
  * 
  * @author albrecht
@@ -54,9 +53,9 @@ public class SOIS {
 
 	/**
 	 * @return SOIS Singleton instance.
-	 * @throws InvalidHeaderData 
-	 * @throws BioException 
-	 * @throws IllegalSymbolException 
+	 * @throws InvalidHeaderData
+	 * @throws BioException
+	 * @throws IllegalSymbolException
 	 */
 	public synchronized static SOIS getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
 		if (singleton == null) {
@@ -64,8 +63,10 @@ public class SOIS {
 				singleton = new SOIS();
 			} catch (IOException e) {
 				logger.fatal(e.getMessage());
+				return null;
 			} catch (ValueOutOfBoundsException e) {
 				logger.fatal(e.getMessage());
+				return null;
 			}
 		}
 		return singleton;
@@ -76,15 +77,16 @@ public class SOIS {
 	 * 
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException
-	 * @throws InvalidHeaderData 
-	 * @throws BioException 
-	 * @throws IllegalSymbolException 
+	 * @throws InvalidHeaderData
+	 * @throws BioException
+	 * @throws IllegalSymbolException
 	 */
-	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
+	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
+			BioException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
 	}
-	
+
 	/**
 	 * @param in
 	 * @param databank
@@ -95,25 +97,25 @@ public class SOIS {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in)
-			throws IOException, IllegalSymbolException, UnknowDataBankException,
-			InterruptedException, ExecutionException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, IllegalSymbolException,
+			UnknowDataBankException, InterruptedException, ExecutionException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
-	
+
 	public Collection<SequenceDataBank> getDatabanks() {
 		return sm.getDatabanks();
 	}
-	
+
 	public String getDefaultDatabank() {
 		return sm.getDefaultDataBankName();
 	}
 
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IllegalSymbolException, IOException, UnknowDataBankException, InterruptedException, ExecutionException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IllegalSymbolException,
+			IOException, UnknowDataBankException, InterruptedException, ExecutionException {
 		return doBatchSyncSearch(in, databank, null);
 	}
-	
+
 	/**
 	 * @param in
 	 * @param databank
@@ -125,8 +127,8 @@ public class SOIS {
 	 * @throws ExecutionException
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank, Map<Parameter, Object> parameters)
-			throws IOException, IllegalSymbolException, UnknowDataBankException,
-			InterruptedException, ExecutionException {
+			throws IOException, IllegalSymbolException, UnknowDataBankException, InterruptedException,
+			ExecutionException {
 
 		List<SearchParams> batch = Lists.newLinkedList();
 		while (in.ready()) {
@@ -150,13 +152,12 @@ public class SOIS {
 	/**
 	 * @param seqString
 	 * @return {@link SearchResults} of the search using the default databank.
-	 */	
+	 */
 	public SearchResults doSyncSearch(String seqString) {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doSyncSearch(seqString, defaultDataBankName);
 	}
-	
-	
+
 	/**
 	 * @param seqString
 	 * @param dataBankName
@@ -176,7 +177,7 @@ public class SOIS {
 		} catch (InterruptedException e) {
 			logger.error(e.getMessage(), e);
 		} catch (ExecutionException e) {
-			logger.error(e.getMessage(), e);			
+			logger.error(e.getMessage(), e);
 		}
 
 		return sr;
@@ -206,12 +207,12 @@ public class SOIS {
 	 * @throws TransformerException
 	 * @throws ExecutionException
 	 * @throws InterruptedException
-	 * @throws InvalidHeaderData 
+	 * @throws InvalidHeaderData
 	 * @throws DocumentException
 	 */
-	public static void main(String[] args) throws IOException, NoSuchElementException,
-			BioException, UnknowDataBankException, ValueOutOfBoundsException, TransformerException,
-			InterruptedException, ExecutionException, InvalidHeaderData {
+	public static void main(String[] args) throws IOException, NoSuchElementException, BioException,
+			UnknowDataBankException, ValueOutOfBoundsException, TransformerException, InterruptedException,
+			ExecutionException, InvalidHeaderData {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		logger.info("SOIS - Search Over Indexed Sequences.");
 		logger.info("Authors: Felipe Felipe Albrecht, Raquel Coelho Gomes Pinto and Claudia Justel.");
@@ -232,8 +233,13 @@ public class SOIS {
 			for (SequenceDataBank dataBank : dataBanks) {
 				if (!dataBank.check()) {
 					dataBank.delete();
-					System.out.println("Data bank " + dataBank.getName() + " is not encoded.");
-					dataBank.encodeSequences();
+					logger.info("Data bank " + dataBank.getName() + " is not encoded.");
+					try {
+						dataBank.encodeSequences();
+					} catch (Exception e) {
+						logger.fatal(e);
+						return;
+					}
 				}
 			}
 			logger.info("All specified data banks are encoded. You can do yours searchs now.");
@@ -274,8 +280,7 @@ public class SOIS {
 			OutputFormat outformat = OutputFormat.createPrettyPrint();
 			outformat.setTrimText(false);
 			outformat.setEncoding("UTF-8");
-			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(inputFile
-					+ "_results.xml")), outformat);
+			XMLWriter writer = new XMLWriter(new FileOutputStream(new File(inputFile + "_results.xml")), outformat);
 			writer.write(document);
 			writer.flush();
 		} else {

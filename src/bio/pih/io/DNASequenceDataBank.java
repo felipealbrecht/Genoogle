@@ -21,6 +21,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;
 import bio.pih.io.proto.Io.StoredSequence;
@@ -141,8 +142,9 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @throws BioException
 	 * @throws NoSuchElementException
 	 * @throws ValueOutOfBoundsException
+	 * @throws IndexConstructionException 
 	 */
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, IndexConstructionException {
 		if (getDataBankFile().exists()) {
 			throw new IOException("File " + getDataBankFile()
 					+ " already exists. Please remove it before creating another file.");
@@ -150,7 +152,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		addFastaFile(getFullPath());
 	}
 
-	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException {
+	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException, IndexConstructionException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
@@ -179,7 +181,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException,
-			IOException {
+			IOException, IndexConstructionException {
 		if (!s.getAlphabet().equals(this.alphabet)) {
 			throw new BioException("Invalid alphabet for sequence " + s.getName());
 		}
@@ -226,7 +228,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	}
 
 	abstract public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence)
-			throws IllegalSymbolException, BioException;
+			throws IllegalSymbolException, BioException, IndexConstructionException;
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {

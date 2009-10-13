@@ -5,9 +5,9 @@ import java.util.Arrays;
 /**
  * @author Felipe Albrecht
  * 
- * KISS !
+ *         KISS !
  * 
- * TODO: junits!
+ *         TODO: junits!
  */
 public class LongArray {
 
@@ -18,6 +18,15 @@ public class LongArray {
 
 	// TODO: put these values as input parameters.
 	private static final int DEFAULT_INITIAL_SIZE = 5;
+
+	/**
+	 * Minimum quantity of memory used by each instance of this class.
+	 */
+	public static final int MINIMUM_MEMORY_USED = 8 /* class instance */
+			+ 8 /* final arrayArray */
+			+ 8 /* actualBlock */
+			+ 4 /* actualBlockPos */
+			+ 8 * DEFAULT_INITIAL_SIZE; /* array */
 
 	/**
 	 * Constructor that gives the block size.
@@ -51,8 +60,9 @@ public class LongArray {
 	}
 
 	/**
-	 * Get the data as a long array. It returns the internal array reference, do not a copy, for performance reasons.
-	 * It is also used to compress the buckets into a unique array.
+	 * Get the data as a long array. It returns the internal array reference, do not a copy, for
+	 * performance reasons. It is also used to compress the buckets into a unique array.
+	 * 
 	 * @return the array, without empty fields.
 	 */
 	public long[] getArray() {
@@ -113,7 +123,7 @@ public class LongArray {
 	}
 
 	/**
-	 * Saving space. Do not create a new LongArray neither a new actualBlock. 
+	 * Saving space. Do not create a new LongArray neither a new actualBlock.
 	 */
 	public void reset() {
 		actualBockPos = 0;

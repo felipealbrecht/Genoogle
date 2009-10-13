@@ -18,6 +18,7 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.IndexedSequenceDataBank.StorageKind;
@@ -77,7 +78,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException,
-			InvalidHeaderData {
+			InvalidHeaderData, IndexConstructionException {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (SequenceDataBank sequence : collection.values()) {
@@ -249,13 +250,10 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile));
 			LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
-			System.out.println("Reading informations from " + fastaFile);
+			logger.info("Reading informations from " + fastaFile);
 			while (readFastaDNA.hasNext()) {
 				RichSequence sequence = readFastaDNA.nextRichSequence();
 				qtdBases += sequence.length();
-				if (qtdSequences % 10000 == 0) {
-					System.out.println(qtdSequences);
-				}
 				qtdSequences++;
 			}
 		}

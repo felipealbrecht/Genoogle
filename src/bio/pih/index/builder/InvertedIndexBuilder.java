@@ -13,6 +13,7 @@ import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -27,7 +28,6 @@ import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.io.SequenceDataBank;
 import bio.pih.io.proto.Io.InvertedIndexBuck;
-import bio.pih.util.LongArray;
 
 import com.google.common.collect.Lists;
 
@@ -39,13 +39,14 @@ import com.google.common.collect.Lists;
  */
 public class InvertedIndexBuilder {
 
+	private static final int MEMORY_CHUCK = 64 * 1024 * 1024; // 64 MEGABYTES.
+
 	Logger logger = Logger.getLogger("bio.pih.index.builder.InvertedIndexBuilder");
 
-	private static final int DISK_SPACE_BY_ENTRY = 4 * 3; // 4 bytes by int.
-	private static final int MEMORY_BY_ENTRY = 20; // 8 for the class, 12 for the 3 ints.
 	private static final int MINIMUM_ENTRY_SET = 10;
 
-	private int totalSortMemory = 128 * 1024 * 1024; // 128 MEGABYTES.
+	private int memoryChuck = MEMORY_CHUCK;
+	private int totalMemoryUsedToStoreSubSequences;
 
 	private File entriesTempFilePhase1;
 	private DataOutputStream entriesOutputPhase1;
@@ -60,19 +61,25 @@ public class InvertedIndexBuilder {
 	private SequenceDataBank databank;
 	private int indexSize;
 
+	private List<SequenceInfo> sequencesToAdd = Lists.newArrayList();
+	private long totalMemorytoAdd;
+	private int totalSubSequencesToAdd;
+
 	public InvertedIndexBuilder(MemoryInvertedIndex memoryInvertedIndex) {
 		this.memoryInvertedIndex = memoryInvertedIndex;
 		this.databank = memoryInvertedIndex.getDatabank();
 		this.indexSize = memoryInvertedIndex.getIndexSize();
+		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;
 
 	}
 
-	public InvertedIndexBuilder(MemoryInvertedIndex memoryInvertedIndex, int totalSortMemory) {
+	public InvertedIndexBuilder(MemoryInvertedIndex memoryInvertedIndex, int totalSortMemory)
+			throws IndexConstructionException {
 		this(memoryInvertedIndex);
 		this.setTotalSortMemory(totalSortMemory);
 	}
 
-	public void constructIndex() {
+	public void constructIndex() throws IndexConstructionException {
 		if (entriesOutputPhase1 != null) {
 			throw new IndexConstructionException("The index is already being build [1].");
 		}
@@ -103,7 +110,7 @@ public class InvertedIndexBuilder {
 		totalEntries = 0;
 	}
 
-	private void resetFilePhase1() throws IOException {
+	private void resetFilePhase1() throws IOException, IndexConstructionException {
 		if (entriesTempFilePhase1 != null && entriesTempFilePhase1.exists()) {
 			entriesTempFilePhase1.delete();
 		}
@@ -116,7 +123,7 @@ public class InvertedIndexBuilder {
 		entriesInputPhase1 = new DataInputStream(new BufferedInputStream(fileInputStream));
 	}
 
-	private void resetFilePhase2() throws IOException {
+	private void resetFilePhase2() throws IOException, IndexConstructionException {
 		if (entriesTempFilePhase2 != null && entriesTempFilePhase2.exists()) {
 			entriesTempFilePhase2.delete();
 		}
@@ -128,64 +135,60 @@ public class InvertedIndexBuilder {
 		entriesInputStreamPhase2 = new DataInputStream(new BufferedInputStream(fileInputStream));
 	}
 
-	private DataOutputStream getEntriesOutpuPhase1() {
+	private DataOutputStream getEntriesOutpuPhase1() throws IndexConstructionException {
 		if (entriesOutputPhase1 == null) {
 			throw new IndexConstructionException("The index structure was not initialized.");
 		}
 		return entriesOutputPhase1;
 	}
 
-	private DataInputStream getEntriesInputPhase1() {
+	private DataInputStream getEntriesInputPhase1() throws IndexConstructionException {
 		if (entriesInputPhase1 == null) {
 			throw new IndexConstructionException("The index structure was not initialized.");
 		}
 		return entriesInputPhase1;
 	}
 
-	private File getEntriesFilePhase1() {
+	private File getEntriesFilePhase1() throws IndexConstructionException {
 		if (entriesTempFilePhase1 == null) {
 			throw new IndexConstructionException("The index structure was not initialized");
 		}
 		return entriesTempFilePhase1;
 	}
 
-	private DataOutputStream getEntriesOutpuPhase2() {
+	private DataOutputStream getEntriesOutpuPhase2() throws IndexConstructionException {
 		if (entriesOutputStreamPhase2 == null) {
 			throw new IndexConstructionException("The index structure was not initialized.");
 		}
 		return entriesOutputStreamPhase2;
 	}
 
-	private File getEntriesFilePhase2() {
+	private File getEntriesFilePhase2() throws IndexConstructionException {
 		if (entriesTempFilePhase2 == null) {
 			throw new IndexConstructionException("The index structure was not initialized");
 		}
 		return entriesTempFilePhase2;
 	}
 
-	public void setTotalSortMemory(int size) {
-		if (size < MINIMUM_ENTRY_SET * MEMORY_BY_ENTRY) {
+	public void setTotalSortMemory(int size) throws IndexConstructionException {
+		if (size < MINIMUM_ENTRY_SET * Entry.INSTANCE_SIZE) {
 			throw new IndexConstructionException("The sort memory size is too small.");
 		}
-		this.totalSortMemory = size;
+		this.memoryChuck = size;
 	}
 
-	List<SequenceInfo> sequencesToAdd = Lists.newArrayList();
-	long totalMemorytoAdd = 0;
-	int totalSubSequencesToAdd = 0;
-
-	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
+	public void addSequence(int sequenceId, int[] encodedSequence, int subSequenceOffSet)
+			throws IndexConstructionException {
 		SequenceInfo sequenceInfo = new SequenceInfo(sequenceId, encodedSequence, subSequenceOffSet);
 		totalMemorytoAdd += sequenceMemoryConsumption(sequenceId, encodedSequence, subSequenceOffSet);
 		totalSubSequencesToAdd += encodedSequence.length - 1;
 		sequencesToAdd.add(sequenceInfo);
 
-		if (totalMemorytoAdd > totalSortMemory / 16) {
+		if (totalMemorytoAdd > totalMemoryUsedToStoreSubSequences) {
 			try {
 				addSequences(sequencesToAdd);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new IndexConstructionException(e);
 			}
 			sequencesToAdd = Lists.newLinkedList();
 			totalMemorytoAdd = 0;
@@ -194,26 +197,15 @@ public class InvertedIndexBuilder {
 
 	}
 
-	private static class SequenceInfo {
-		int sequenceId;
-		int subSequenceOffSet;
-		int[] encodedSequence;
-
-		public SequenceInfo(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
-			this.sequenceId = sequenceId;
-			this.subSequenceOffSet = subSequenceOffSet;
-			this.encodedSequence = encodedSequence;
-		}
-	}
-
 	final private static int sequenceMemoryConsumption(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
 		return (8 + 8 + 4 + 4) + 4 * encodedSequence.length;
 	}
 
-	public void addSequences(List<SequenceInfo> toAddSequences) throws IOException {
-		logger.info("Adding " + toAddSequences.size() + "sequences with " + totalSubSequencesToAdd + " subSequences.");
-		SubSequenceEntries[] entries = new SubSequenceEntries[indexSize];
-		int totalAdded = 0;
+	private void addSequences(List<SequenceInfo> toAddSequences) throws IndexConstructionException, IOException {
+		logger.info("Adding " + toAddSequences.size() + " sequences with " + totalSubSequencesToAdd + " sub sequences.");
+		int indexDiv = getIndexDiv();
+		int entriesArraySize = indexSize / indexDiv;
+		List<Entry>[] entries = new ArrayList[entriesArraySize];
 		long p = System.currentTimeMillis();
 
 		for (SequenceInfo sequenceInfo : toAddSequences) {
@@ -224,42 +216,44 @@ public class InvertedIndexBuilder {
 			int length = encodedSequence.length;
 			for (int arrayPos = SequenceEncoder.getPositionBeginBitsVector(); arrayPos < length; arrayPos++) {
 				int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceOffSet;
+				int subSequence = encodedSequence[arrayPos];
 
-				if (entries[encodedSequence[arrayPos]] == null) {
-					entries[encodedSequence[arrayPos]] = new SubSequenceEntries(encodedSequence[arrayPos]);
+				if (entries[subSequence % entriesArraySize] == null) {
+					entries[subSequence % entriesArraySize] = new ArrayList<Entry>(5);
 				}
-				entries[encodedSequence[arrayPos]].addEntry(SubSequenceIndexInfo.newIndexInfo(sequenceId, sequencePos));
-				totalAdded++;
-				if (totalAdded % 1000000 == 0) {
-					logger.info("Total added: " + totalAdded + "/" + totalSubSequencesToAdd + " | "
-							+ (System.currentTimeMillis() - p) / 1000);
-					p = System.currentTimeMillis();
-				}
+				entries[subSequence % entriesArraySize].add(new Entry(subSequence, sequenceId, sequencePos));
 			}
 		}
 
 		DataOutputStream stream = getEntriesOutpuPhase1();
-		for (int i = 0; i < indexSize; i++) {
-			SubSequenceEntries subSequenceEntries = entries[i];
+		for (int i = 0; i < entriesArraySize; i++) {
+			List<Entry> subSequenceEntries = entries[i];
 			if (subSequenceEntries != null) {
-				int subSequence = subSequenceEntries.getSubSequence();
-				for (long subSequenceIndexInfo : subSequenceEntries.getEntries()) {
-					// try {
-					int sequenceId = SubSequenceIndexInfo.getSequenceId(subSequenceIndexInfo);
-					int position = SubSequenceIndexInfo.getStart(subSequenceIndexInfo);
+				for (Entry entry : subSequenceEntries) {
+					int subSequence = entry.subSequence;
+					int sequenceId = entry.sequenceId;
+					int position = entry.position;
 					Entry.writeTo(subSequence, sequenceId, position, stream);
 					totalEntries++;
-					// } catch (IOException e) {
-					// throw new IndexConstructionException(e);
-					// }
-					if (totalEntries % 1000000 == 0) {
-						logger.info("Total wrote: " + totalEntries + " " + (System.currentTimeMillis() - p) / 1000);
-						p = System.currentTimeMillis();
-					}
 				}
 			}
 		}
-		logger.info("Added " + toAddSequences.size() + "sequences with " + totalSubSequencesToAdd + " subSequences.");
+	}
+
+	private int getIndexDiv() {
+		// the memory used if each possible subSequence has 5 entries.
+		int estimedSize = indexSize * (8 /* ArrayList instance */
+		+ 8 /* Internal Array */
+		+ (5 * Entry.INSTANCE_SIZE)) /* entries by index */
+				+ 4; /* ArrayList.size member */
+
+		int div = 1;
+
+		while (estimedSize / div > totalMemoryUsedToStoreSubSequences) {
+			div++;
+		}
+
+		return div;
 	}
 
 	private static Comparator<Entry> ENTRY_COMPARATOR = new Comparator<Entry>() {
@@ -277,7 +271,7 @@ public class InvertedIndexBuilder {
 		}
 	};
 
-	public void finishConstruction() {
+	public void finishConstruction() throws IndexConstructionException {
 		List<SortedEntriesInfo> sortedEntriesInfos = Lists.newLinkedList();
 		if (!sequencesToAdd.isEmpty()) {
 
@@ -288,22 +282,25 @@ public class InvertedIndexBuilder {
 				totalSubSequencesToAdd = 0;
 				getEntriesOutpuPhase1().flush();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new IndexConstructionException(e);
 			}
 		}
 
 		try {
+			logger.info("Index Construction phase 2.");
 			indexConstructionPhase2(sortedEntriesInfos);
+			logger.info("Index Construction phase 3.");
 			indexConstructionPhase3(sortedEntriesInfos);
+			logger.info("Index Construction phase 4.");
 			indexConstructionPhase4();
+			logger.info("Index Construction finished.");
 		} catch (IOException e) {
 			throw new IndexConstructionException(e);
 		}
 	}
 
-	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException {
-		int totalMemory = 0;
+	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
+		int totalUsedMemory = 0;
 		int offset = 0;
 		int beginOffset = 0;
 		int processedEntries = 0;
@@ -312,17 +309,17 @@ public class InvertedIndexBuilder {
 
 			List<Entry> allEntries = Lists.newArrayList();
 			beginOffset = offset;
-			totalMemory = 0;
+			totalUsedMemory = 0;
 
-			while (totalMemory < totalSortMemory && processedEntries < totalEntries) {
+			while (totalUsedMemory < memoryChuck && processedEntries < totalEntries) {
 				allEntries.add(Entry.newFrom(getEntriesInputPhase1()));
 				processedEntries++;
-				totalMemory += MEMORY_BY_ENTRY;
-				offset += DISK_SPACE_BY_ENTRY;
+				totalUsedMemory += Entry.INSTANCE_SIZE;
+				offset += Entry.DISK_SPACE;
 			}
 
 			Collections.sort(allEntries, ENTRY_COMPARATOR);
-			sortedEntriesInfos.add(new SortedEntriesInfo(beginOffset, allEntries.size() * DISK_SPACE_BY_ENTRY));
+			sortedEntriesInfos.add(new SortedEntriesInfo(beginOffset, allEntries.size() * Entry.DISK_SPACE));
 
 			for (Entry entry : allEntries) {
 				entry.write(getEntriesOutpuPhase2());
@@ -332,7 +329,7 @@ public class InvertedIndexBuilder {
 		getEntriesOutpuPhase2().flush();
 	}
 
-	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException {
+	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
 		{
 			List<SortedEntriesBufferManager> entryBufferManagers = Lists.newArrayList();
 
@@ -367,7 +364,7 @@ public class InvertedIndexBuilder {
 		getEntriesOutpuPhase1().flush();
 	}
 
-	private void indexConstructionPhase4() throws IOException {
+	private void indexConstructionPhase4() throws IOException, IndexConstructionException {
 		FileChannel memoryInvertedIndexFileChannel = new FileOutputStream(memoryInvertedIndex.getMemoryInvertedIndexFile(), true).getChannel();
 
 		ReadSortedEntriesFromFile entriesFromFile = new ReadSortedEntriesFromFile(getEntriesInputPhase1(), totalEntries);
@@ -402,7 +399,28 @@ public class InvertedIndexBuilder {
 
 	}
 
+	private static class SequenceInfo {
+		int sequenceId;
+		int subSequenceOffSet;
+		int[] encodedSequence;
+
+		public SequenceInfo(int sequenceId, int[] encodedSequence, int subSequenceOffSet) {
+			this.sequenceId = sequenceId;
+			this.subSequenceOffSet = subSequenceOffSet;
+			this.encodedSequence = encodedSequence;
+		}
+	}
+
 	private static class Entry {
+		public static int INSTANCE_SIZE = 8 /* Instance */
+		+ 4 /* subSequence */
+		+ 4 /* sequenceId */
+		+ 4; /* position */
+
+		private static final int DISK_SPACE = 4 /* subSequence */
+		+ 4 /* sequenceId */
+		+ 4; /* position */
+
 		final int subSequence;
 		final int sequenceId;
 		final int position;
@@ -459,29 +477,6 @@ public class InvertedIndexBuilder {
 		public String toString() {
 			return "{" + DNASequenceEncoderToInteger.getEncoder(10).decodeIntegerToString(subSequence) + ":"
 					+ sequenceId + ":" + position + "}";
-		}
-	}
-
-	private static class SubSequenceEntries {
-		int subSequence;
-		LongArray entries;
-
-		public SubSequenceEntries(int subSequence) {
-			this.subSequence = subSequence;
-			entries = new LongArray();
-
-		}
-
-		private void addEntry(long position) {
-			entries.add(position);
-		}
-
-		public int getSubSequence() {
-			return subSequence;
-		}
-
-		public long[] getEntries() {
-			return entries.getArray();
 		}
 	}
 

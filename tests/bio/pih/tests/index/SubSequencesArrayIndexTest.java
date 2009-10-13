@@ -15,6 +15,7 @@ import org.biojava.bio.symbol.SymbolList;
 import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
@@ -48,7 +49,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		index = null;
 	}
 
-	private void populateNonSoRandomSequences(MemoryInvertedIndex  index) throws IllegalSymbolException, IOException {
+	private void populateNonSoRandomSequences(MemoryInvertedIndex  index) throws IllegalSymbolException, IOException, IndexConstructionException {
 		InvertedIndexBuilder indexBuilder = new InvertedIndexBuilder(index);
 		
 		indexBuilder.constructIndex();
@@ -120,9 +121,10 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	 * @throws BioException
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException 
+	 * @throws IndexConstructionException 
 	 */
 	//@Test
-	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException, IOException {
+	public void testIfFindSubSequences() throws IllegalSymbolException, BioException, ValueOutOfBoundsException, IOException, IndexConstructionException {
 		populateNonSoRandomSequences(index);
 		
 		long[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("AAAAAAAA"));
@@ -166,9 +168,10 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	 * @throws ValueOutOfBoundsException 
 	 * @throws BioException 
 	 * @throws IllegalSymbolException 
+	 * @throws IndexConstructionException 
 	 */
 	@Test
-	public void test_DNA_1000_200_700_sequences() throws FileNotFoundException, IOException, ClassNotFoundException, IllegalSymbolException, BioException, ValueOutOfBoundsException {
+	public void test_DNA_1000_200_700_sequences() throws FileNotFoundException, IOException, ClassNotFoundException, IllegalSymbolException, BioException, ValueOutOfBoundsException, IndexConstructionException {
 		
 		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
 				

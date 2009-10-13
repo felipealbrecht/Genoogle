@@ -1,21 +1,19 @@
 package bio.pih.index;
 
-public class IndexConstructionException extends RuntimeException {
+public class IndexConstructionException extends Exception {
 
 	private static final long serialVersionUID = 3385806705266172005L;
-	String cause;
-	Throwable root;
+	
 
-	public IndexConstructionException(String cause) {
-		this.cause = cause;
+	public IndexConstructionException(String message) {
+		super(message);
 	}
 	
-	public IndexConstructionException(Throwable root) {
-		this.root = root;
+	public IndexConstructionException(Throwable cause) {
+		super(cause);
 	}
 	
-	public IndexConstructionException(String cause, Throwable root) {
-		this.root = root;
-		this.cause = cause;
+	public IndexConstructionException(String message, Throwable cause) {
+		super(message, cause);
 	}	
 }

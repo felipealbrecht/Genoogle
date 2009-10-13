@@ -10,6 +10,7 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
@@ -88,8 +89,9 @@ public interface SequenceDataBank {
 	 * @throws NoSuchElementException
 	 * @throws BioException
 	 * @throws IOException
+	 * @throws IndexConstructionException 
 	 */
-	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException, IOException;
+	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException, IOException, IndexConstructionException;
 
 	/**
 	 * Load this sequence bank
@@ -109,8 +111,9 @@ public interface SequenceDataBank {
 	 * @throws NoSuchElementException 
 	 * @throws ValueOutOfBoundsException 
 	 * @throws InvalidHeaderData 
+	 * @throws IndexConstructionException 
 	 */
-	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData;
+	void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException;
 	
 	/**
 	 * @return the parent of this {@link SequenceDataBank} or <code>null</code> if it do not have parent 

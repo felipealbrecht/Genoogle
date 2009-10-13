@@ -25,7 +25,7 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 
 	protected long[][] index = null;
 
-	Logger logger = Logger.getLogger(this.getClass().getCanonicalName());
+	private static Logger logger = Logger.getLogger(MemoryInvertedIndex.class.getCanonicalName());
 
 	/**
 	 * @param databank

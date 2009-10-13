@@ -10,6 +10,7 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNAMaskEncoder;
 import bio.pih.encoder.SequenceEncoder;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.ValueOutOfBoundsException;
@@ -66,25 +67,25 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 		index.loadFromFile();
 	}
 
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException {
+	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, IndexConstructionException {
 		beginIndexBuild();
 		super.encodeSequences();
 		endIndexBuild();
 	}
 
-	public void beginIndexBuild() {
+	public void beginIndexBuild() throws IndexConstructionException {
 		indexBuilder = new InvertedIndexBuilder(index);
 		indexBuilder.constructIndex();
 	}
 
-	public void endIndexBuild() {
+	public void endIndexBuild() throws IndexConstructionException {
 		indexBuilder.finishConstruction();
 		indexBuilder = null;
 	}
 
 	@Override
 	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException,
-			BioException {
+			BioException, IndexConstructionException {
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		if (maskEncoder == null) {

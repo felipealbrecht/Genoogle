@@ -38,6 +38,8 @@ import com.google.common.collect.Maps;
 
 public class WebServer implements Runnable {
 
+	private static Logger logger = Logger.getLogger(WebServer.class.getCanonicalName());
+	
 	private volatile boolean running = true;
 	Embedded embedded = null;
 
@@ -102,7 +104,8 @@ public class WebServer implements Runnable {
 }
 
 class Console implements Runnable {
-
+	private static Logger logger = Logger.getLogger(Console.class.getCanonicalName());
+	
 	private static final String EXIT = "exit";
 	private static final String DEFAULT = "default";
 	private static final String LIST = "list";
@@ -133,15 +136,9 @@ class Console implements Runnable {
 		SOIS sois = null;
 		try {
 			sois = SOIS.getInstance();
-		} catch (IllegalSymbolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidHeaderData e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BioException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.fatal(e);
+			return;
 		}
 
 		boolean executePrev = false;

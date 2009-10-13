@@ -13,6 +13,7 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
+import bio.pih.index.IndexConstructionException;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
@@ -219,7 +220,7 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException, InvalidHeaderData {
+			ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.collection.values().iterator();
