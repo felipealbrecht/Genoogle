@@ -110,4 +110,19 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	public StorageKind getStorageKind() {
 		return storageKind;
 	}
+	
+	@Override
+	public boolean check() {
+		if (!index.check()) {
+			return false;
+		}
+		return super.check();
+	}
+	
+	@Override
+	public void delete() {
+		super.delete();
+		index.delete();
+	}
+	
 }

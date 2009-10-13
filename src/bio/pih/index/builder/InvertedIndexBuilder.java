@@ -45,7 +45,7 @@ public class InvertedIndexBuilder {
 	private static final int MEMORY_BY_ENTRY = 20; // 8 for the class, 12 for the 3 ints.
 	private static final int MINIMUM_ENTRY_SET = 10;
 
-	private int totalSortMemory = 256 * 1024 * 1024; // 64 MEGABYTES.
+	private int totalSortMemory = 128 * 1024 * 1024; // 128 MEGABYTES.
 
 	private File entriesTempFilePhase1;
 	private DataOutputStream entriesOutputPhase1;
@@ -180,7 +180,7 @@ public class InvertedIndexBuilder {
 		totalSubSequencesToAdd += encodedSequence.length - 1;
 		sequencesToAdd.add(sequenceInfo);
 
-		if (totalMemorytoAdd > totalSortMemory / 4) {
+		if (totalMemorytoAdd > totalSortMemory / 16) {
 			try {
 				addSequences(sequencesToAdd);
 			} catch (IOException e) {

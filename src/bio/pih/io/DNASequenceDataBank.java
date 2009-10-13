@@ -308,12 +308,25 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return this.name + "@" + this.getFullPath();
 	}
 
-	public boolean check() {
-		if (getDataBankFile().exists()) {
+	public boolean check() {		
+		if (getDataBankFile().exists() && getStoredDataBankInfoFile().exists()) {
 			return true;
 		}
 		return false;
 	}
+	
+	@Override
+	public void delete() {
+		if (getDataBankFile().exists()) {
+			getDataBankFile().delete();			
+		}
+		
+		if (getStoredDataBankInfoFile().exists()) {
+			getStoredDataBankInfoFile().delete();
+		}
+		
+	}
+
 
 	@Override
 	public DNASequenceEncoderToInteger getEncoder() {
@@ -345,5 +358,4 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	public int getSubSequenceLength() {
 		return subSequenceLength;
 	}
-
 }

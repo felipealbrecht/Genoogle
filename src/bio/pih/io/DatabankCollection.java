@@ -290,4 +290,11 @@ public class DatabankCollection<T extends SequenceDataBank> implements SequenceD
 	public int getSubSequenceLength() {
 		return subSequenceLength;
 	}
+
+	@Override
+	public void delete() {
+		for (SequenceDataBank dataBank: collection.values()) {
+			dataBank.delete();			
+		}		
+	}
 }

@@ -192,12 +192,31 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	@Override
 	public boolean check() {
 		for (int i = 0; i < qtdSubBases; i++) {
-			if (!getStoredDatabakFileName(i).exists() || !getDatabankFile(i).exists()) {
+			try {
+				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
+				if (!actualSequenceDatank.check()) {
+					return false;
+				}
+			} catch (Exception e) {
+				logger.fatal(e);
 				return false;
 			}
 		}
 		return true;
-	}
+	}	
+	
+	@Override
+	public void delete() {
+		for (int i = 0; i < qtdSubBases; i++) {
+			try {
+				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
+				actualSequenceDatank.delete();
+			} catch (Exception e) {
+				logger.fatal(e);
+			}
+		}
+	}	
+
 
 	@Override
 	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,

@@ -136,4 +136,21 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 	public File getMemoryInvertedOffsetIndexFile() {
 		return new File(databank.getFullPath() + ".oidx");
 	}
+
+	public boolean check() {
+		if (getMemoryInvertedIndexFile().exists() && getMemoryInvertedOffsetIndexFile().exists()) {
+			return true;
+		}
+		return false;
+	}
+
+	public void delete() {
+		if (getMemoryInvertedIndexFile().exists()) {
+			getMemoryInvertedIndexFile().delete();
+		}
+		
+		if (getMemoryInvertedOffsetIndexFile().exists()) {
+			getMemoryInvertedOffsetIndexFile().delete();
+		}		
+	}
 }

@@ -32,7 +32,7 @@
   Genoogle is the Ms.C. thesis project of the <a href="http://www.pih.bio.br">Felipe Albrecht</a> which aims to create a fast and scalable search engine for bio-molecular sequences. 
   </br> Last update: October 8<sup>th</sup>, 2009. </br>
   It is currently being developed and it is only a alpha version.</p>
- This prototype is running in a Linode virtual machine with 300Megabytes of memory and shared cpu. It is loaded with the humann (120MBytes) fna sequences from RefSeq databank. </br>
+ This prototype is running in a Linode virtual machine with 300Megabytes of memory and shared cpu. It is loaded with the humann (120MBytes) dna sequences from RefSeq databank. </br>
  Keep in mind that it is a prototype, the output is really ugly, I only care about the speed of the search, the correctness and the memory consumption. </br>
   Genoogle log at: <a href="http://www.pih.bio.br/genoogle.log">www.pih.bio.br/genoogle.log</a> for debuging propose. </br>
   Genoogle do <b>not</b> have any affiliation with Google. I just think 'genoogle' is a cool name and better than 'Genhooo' or 'Genuil' or 'Gensn' :-) </br>

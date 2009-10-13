@@ -131,4 +131,10 @@ public interface SequenceDataBank {
 	 * @return length of the sub sequences stored in this data bank.
 	 */
 	public int getSubSequenceLength();
+
+	
+	/**
+	 * Delete all file informations of this data bank.
+	 */
+	void delete();
 }

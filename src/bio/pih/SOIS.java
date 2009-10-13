@@ -231,6 +231,7 @@ public class SOIS {
 
 			for (SequenceDataBank dataBank : dataBanks) {
 				if (!dataBank.check()) {
+					dataBank.delete();
 					System.out.println("Data bank " + dataBank.getName() + " is not encoded.");
 					dataBank.encodeSequences();
 				}
