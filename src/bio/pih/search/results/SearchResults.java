@@ -16,7 +16,7 @@ public class SearchResults {
 
 	private final SearchParams params;
 	private final List<Hit> hits;
-	private List<Exception> fails = null;
+	private List<Throwable> fails = null;
 	private int minSubSequenceLength;
 
 	/**
@@ -70,7 +70,7 @@ public class SearchResults {
 	 * 
 	 * @param fail
 	 */
-	public void addAllFails(List<Exception> fail) {
+	public void addAllFails(List<Throwable> fail) {
 		if (fails == null) {
 			fails = Lists.newArrayList();
 		}
@@ -82,9 +82,9 @@ public class SearchResults {
 	 * 
 	 * @param fail
 	 */
-	public synchronized void addFail(Exception fail) {
+	public synchronized void addFail(Throwable fail) {
 		if (fails == null) { 
-			List<Exception> f =  Lists.newArrayList();
+			List<Throwable> f =  Lists.newArrayList();
 			fails = Collections.synchronizedList(f);
 		}
 		fails.add(fail);
@@ -93,7 +93,7 @@ public class SearchResults {
 	/**
 	 * @return {@link List} of {@link Exception} that happened during the execution.
 	 */
-	public List<Exception> getFails() {
+	public List<Throwable> getFails() {
 		return fails;
 	}
 

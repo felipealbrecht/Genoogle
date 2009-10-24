@@ -37,8 +37,6 @@ import bio.pih.search.results.SearchResults;
 import com.google.common.collect.Maps;
 
 public class WebServer implements Runnable {
-
-	private static Logger logger = Logger.getLogger(WebServer.class.getCanonicalName());
 	
 	private volatile boolean running = true;
 	Embedded embedded = null;

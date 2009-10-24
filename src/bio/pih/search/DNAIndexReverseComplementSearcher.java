@@ -13,7 +13,7 @@ public class DNAIndexReverseComplementSearcher extends DNAIndexReverseSearcher {
 
 	public DNAIndexReverseComplementSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
 			String rcSliceQuery, int offset, SymbolList rcQuery, int[] rcEncodedQuery, 
-			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Exception> fails) {
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		super(id, sp, databank, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 	}
 

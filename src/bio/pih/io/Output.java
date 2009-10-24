@@ -86,7 +86,7 @@ public class Output {
 	public static Element searchResultToXML(SearchResults searchResult) {
 		assert searchResult != null;
 		if (searchResult.hasFail()) {
-			for (Exception e: searchResult.getFails()) {
+			for (Throwable e: searchResult.getFails()) {
 				e.printStackTrace(System.err);
 			}
 		}

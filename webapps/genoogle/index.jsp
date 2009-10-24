@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">  <head>
-    <title>Genoogle - beta - 0.55</title>
+    <title>Genoogle - beta - 0.56</title>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
  <font size=-1>
  <p>The quantity of genetics sequences available is growing, soon will be possible to sequence coding sequences of a person for one thousand dollars, we have to organize all these informations! </br>
   Genoogle is the Ms.C. thesis project of the <a href="http://www.pih.bio.br">Felipe Albrecht</a> which aims to create a fast and scalable search engine for bio-molecular sequences. 
-  </br> Last update: October 8<sup>th</sup>, 2009. </br>
+  </br> Last update: October 23<sup>th</sup>, 2009. </br>
   It is currently being developed and it is only a alpha version.</p>
  This prototype is running in a Linode virtual machine with 300Megabytes of memory and shared cpu. It is loaded with the humann (120MBytes) dna sequences from RefSeq databank. </br>
  Keep in mind that it is a prototype, the output is really ugly, I only care about the speed of the search, the correctness and the memory consumption. </br>

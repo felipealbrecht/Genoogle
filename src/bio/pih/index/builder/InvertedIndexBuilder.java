@@ -201,12 +201,12 @@ public class InvertedIndexBuilder {
 		return (8 + 8 + 4 + 4) + 4 * encodedSequence.length;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addSequences(List<SequenceInfo> toAddSequences) throws IndexConstructionException, IOException {
 		logger.info("Adding " + toAddSequences.size() + " sequences with " + totalSubSequencesToAdd + " sub sequences.");
 		int indexDiv = getIndexDiv();
 		int entriesArraySize = indexSize / indexDiv;
 		List<Entry>[] entries = new ArrayList[entriesArraySize];
-		long p = System.currentTimeMillis();
 
 		for (SequenceInfo sequenceInfo : toAddSequences) {
 			int sequenceId = sequenceInfo.sequenceId;

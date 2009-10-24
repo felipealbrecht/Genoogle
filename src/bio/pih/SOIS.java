@@ -264,7 +264,7 @@ public class SOIS {
 			for (SearchResults result : results) {
 				if (result.hasFail()) {
 					hasError = true;
-					for (Exception e : result.getFails()) {
+					for (Throwable e : result.getFails()) {
 						logger.fatal("Fail while doing searching process", e);
 					}
 				}

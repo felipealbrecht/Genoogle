@@ -130,8 +130,8 @@ public class IndexRetrievedData {
 			this.sequenceId = sequenceId;
 			this.indexSearcher = indexSearcher;
 			this.reverseComplementIndexSearcher = reverseComplementIndexSearcher;
-			this.areas = areas != null ? areas : Collections.EMPTY_LIST;
-			this.rcAreas = rcAreas != null ? rcAreas : Collections.EMPTY_LIST;
+			this.areas = areas.size() > 0 ? areas : Collections.EMPTY_LIST;
+			this.rcAreas = rcAreas.size() > 0 ? rcAreas : Collections.EMPTY_LIST;
 			this.sumLengths = sumTotalLengths(this.areas) + sumTotalLengths(this.rcAreas);
 		}
 

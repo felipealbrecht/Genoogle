@@ -49,7 +49,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	@Override
 	public SearchResults call() {
 		long begin = System.currentTimeMillis();
-		List<Exception> fails = Lists.newLinkedList();
+		List<Throwable> fails = Lists.newLinkedList();
 		fails = Collections.synchronizedList(fails);
 		try {
 			int indexSearchers = databankCollection.size();

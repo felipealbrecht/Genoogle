@@ -16,7 +16,7 @@ public class DNAIndexReverseSearcher extends DNAIndexSearcher {
 	public DNAIndexReverseSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
 			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, 
 			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 
-			CountDownLatch countDown, List<Exception> fails) {
+			CountDownLatch countDown, List<Throwable> fails) {
 		super(id, sp, databank, sliceQuery, offset, query, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 	}
 

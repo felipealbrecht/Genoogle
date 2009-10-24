@@ -31,19 +31,24 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 	private final IndexedDNASequenceDataBank databank;
 	private final List<RetrievedArea>[] retrievedAreas;
 	private final List<RetrievedArea>[] rcRetrievedAreas;
-	private final List<Exception> fails;
+	private final List<Throwable> fails;
 	private final ExecutorService executor;
 
 	@SuppressWarnings("unchecked")
 	public DNAIndexBothStrandSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
-			ExecutorService executor, List<Exception> fails) {
+			ExecutorService executor, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
 		this.executor = executor;
 		this.fails = fails;
-		this.retrievedAreas = new ArrayList[databank.getNumberOfSequences()];
-		this.rcRetrievedAreas = new ArrayList[databank.getNumberOfSequences()];
+		int numberOfSequences = databank.getNumberOfSequences();
+		this.retrievedAreas = new ArrayList[numberOfSequences];
+		this.rcRetrievedAreas = new ArrayList[numberOfSequences];
+		for (int i = 0; i < numberOfSequences; i++) {
+			retrievedAreas[i] = new ArrayList<RetrievedArea>(0);
+			rcRetrievedAreas[i] = new ArrayList<RetrievedArea>(0);
+		}
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 			List<RetrievedArea> areas1 = retrievedAreas[i];
 			List<RetrievedArea> areas2 = rcRetrievedAreas[i];
 
-			if (areas1 != null || areas2 != null) {
+			if (areas1.size() > 0 || areas2.size() > 0) {
 				BothStrandSequenceAreas retrievedAreas = new BothStrandSequenceAreas(i, searcher, crSearcher, areas1, areas2);
 				results.add(retrievedAreas);
 			}

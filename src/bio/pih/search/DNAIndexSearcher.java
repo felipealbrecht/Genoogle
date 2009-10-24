@@ -44,7 +44,7 @@ public class DNAIndexSearcher implements Runnable {
 	private final int[] encodedQuery;
 	private final String sliceQuery;
 
-	private final List<Exception> fails;
+	private final List<Throwable> fails;
 
 	/**
 	 * @param id
@@ -58,10 +58,9 @@ public class DNAIndexSearcher implements Runnable {
 	 * @param countDown
 	 * @throws BioException
 	 */
-	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
-			String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			List<RetrievedArea>[] retrievedAreas, Statistics statistics, CountDownLatch countDown,
-			List<Exception> fails) {
+	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, String sliceQuery,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
+			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
@@ -74,8 +73,8 @@ public class DNAIndexSearcher implements Runnable {
 		this.countDown = countDown;
 		this.fails = fails;
 		this.encoder = databank.getEncoder();
-		this.subSequenceLength = databank.getMaskEncoder() == null ? databank
-				.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength();
+		this.subSequenceLength = databank.getMaskEncoder() == null ? databank.getSubSequenceLength()
+				: databank.getMaskEncoder().getPatternLength();
 
 	}
 
@@ -91,21 +90,17 @@ public class DNAIndexSearcher implements Runnable {
 		try {
 			int queryLength = sliceQuery.length();
 			if (queryLength < subSequenceLength) {
-				throw new RuntimeException("Sequence: \"" + sliceQuery
-						+ "\" is too short. Its length is " + queryLength
-						+ " but should to be at least " + subSequenceLength + ".");
+				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short. Its length is "
+						+ queryLength + " but should to be at least " + subSequenceLength + ".");
 			}
 
-			logger
-					.info("[" + this.toString() + "] Begining the search at " + databank.getName()
-							+ " with the sequence with " + sliceQuery.length()
-							+ "bases and min subSequenceLength >= "
-							+ this.statistics.getMinLengthDropOut());
+			logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
+					+ " with the sequence with " + sliceQuery.length() + "bases and min subSequenceLength >= "
+					+ this.statistics.getMinLengthDropOut());
 
 			long bMask = System.currentTimeMillis();
 			int[] iess = getEncodedSubSequences(sliceQuery, databank.getMaskEncoder());
-			logger.info("[" + this.toString() + "]" + (System.currentTimeMillis() - bMask)
-					+ " to apply mask.");
+			logger.info("[" + this.toString() + "]" + (System.currentTimeMillis() - bMask) + " to apply mask.");
 
 			long init = System.currentTimeMillis();
 			IndexRetrievedData retrievedData = getIndexPositions(iess, offset);
@@ -115,62 +110,53 @@ public class DNAIndexSearcher implements Runnable {
 			List<RetrievedArea>[] retrievedAreasArray = retrievedData.getRetrievedAreasArray();
 
 			int totalHits = 0;
+			final int length = retrievedAreasArray.length;
 
-			int length = retrievedAreasArray.length;
-			// TODO: here has a synchronization problem. It should has a lock for each 'i' position. 
 			for (int i = 0; i < length; i++) {
 				List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
 				if (localRetrievedAreas != null) {
 					totalHits += localRetrievedAreas.size();
 					List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
-					if (retrievedAreasList == null) {
-						retrievedAreas[i] = localRetrievedAreas;
-					} else {
-						List<RetrievedArea> toAdd = Lists.newArrayList();
-						for (RetrievedArea existingArea : retrievedAreasList) {
-							for (RetrievedArea newArea : localRetrievedAreas) {
-								if (!existingArea.testAndSet(newArea.getQueryAreaBegin(), newArea
-										.getSequenceAreaBegin(), sp.getMaxSubSequencesDistance(),
-										subSequenceLength)) {
-									toAdd.add(newArea);
+					synchronized (retrievedAreasList) {
+
+						if (retrievedAreasList.size() == 0) {
+							retrievedAreasList.addAll(localRetrievedAreas);
+						}
+
+						else {
+							List<RetrievedArea> toAdd = Lists.newArrayList();
+							for (RetrievedArea existingArea : retrievedAreasList) {
+								for (RetrievedArea newArea : localRetrievedAreas) {
+									if (!existingArea.testAndSet(newArea.getQueryAreaBegin(),
+											newArea.getSequenceAreaBegin(), sp.getMaxSubSequencesDistance(),
+											subSequenceLength)) {
+										toAdd.add(newArea);
+									}
 								}
 							}
+							retrievedAreasList.addAll(toAdd);
 						}
-						retrievedAreasList.addAll(toAdd);
 					}
 				}
 			}
 
-			logger.info("[" + this.toString() + "] Index search time:"
-					+ (System.currentTimeMillis() - init) + " and " + totalHits + " hits.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(e);
-			logger.fatal(e);			
-			logger.fatal(e.getStackTrace());
-			fails.add(e);
-		} catch (AssertionError ae) {
-			ae.printStackTrace();
-			System.out.println(ae);
-			logger.fatal(ae);
-			logger.fatal(ae.getStackTrace());
-			ae.printStackTrace();
+			logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " and "
+					+ totalHits + " hits.");
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.out.println(t);
 			logger.fatal(t);
 			logger.fatal(t.getStackTrace());
-			t.printStackTrace();
+			fails.add(t);
 		} finally {
 			countDown.countDown();
 		}
 	}
 
-	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset)
-			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset) throws ValueOutOfBoundsException,
+			IOException, InvalidHeaderData {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(),
-				sp, statistics.getMinLengthDropOut(), subSequenceLength, this);
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, statistics.getMinLengthDropOut(), subSequenceLength, this);
 
 		for (int ss = 0; ss < iess.length; ss++) {
 			retrieveIndexPosition(iess[ss], retrievedData, ss + offset);
@@ -178,8 +164,8 @@ public class DNAIndexSearcher implements Runnable {
 		return retrievedData;
 	}
 
-	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData,
-			int queryPos) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData, int queryPos)
+			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 
 		long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 		for (long subSequenceIndexInfo : indexPositions) {
@@ -232,32 +218,27 @@ public class DNAIndexSearcher implements Runnable {
 		return sp;
 	}
 
-	protected HSP createHSP(ExtendSequences extensionResult,
-			DividedStringGenoogleSmithWaterman smithWaterman, double normalizedScore,
-			double evalue, int queryLength, int targetLength) {
+	protected HSP createHSP(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman,
+			double normalizedScore, double evalue, int queryLength, int targetLength) {
 
-		return new HSP(smithWaterman, getQueryStart(extensionResult, smithWaterman), getQueryEnd(
-				extensionResult, smithWaterman), getTargetStart(extensionResult, smithWaterman),
-				getTargetEnd(extensionResult, smithWaterman), normalizedScore, evalue);
+		return new HSP(smithWaterman, getQueryStart(extensionResult, smithWaterman), getQueryEnd(extensionResult,
+				smithWaterman), getTargetStart(extensionResult, smithWaterman), getTargetEnd(extensionResult,
+				smithWaterman), normalizedScore, evalue);
 	}
 
-	private int getQueryStart(ExtendSequences extensionResult,
-			DividedStringGenoogleSmithWaterman smithWaterman) {
+	private int getQueryStart(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryStart();
 	}
 
-	private int getQueryEnd(ExtendSequences extensionResult,
-			DividedStringGenoogleSmithWaterman smithWaterman) {
+	private int getQueryEnd(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginQuerySegment() + smithWaterman.getQueryEnd();
 	}
 
-	private int getTargetStart(ExtendSequences extensionResult,
-			DividedStringGenoogleSmithWaterman smithWaterman) {
+	private int getTargetStart(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetStart();
 	}
 
-	private int getTargetEnd(ExtendSequences extensionResult,
-			DividedStringGenoogleSmithWaterman smithWaterman) {
+	private int getTargetEnd(ExtendSequences extensionResult, DividedStringGenoogleSmithWaterman smithWaterman) {
 		return extensionResult.getBeginTargetSegment() + smithWaterman.getTargetEnd();
 	}
 }
