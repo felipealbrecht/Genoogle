@@ -80,7 +80,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	int identitySize;
 
 	private static final long serialVersionUID = 2884980510887845616L;
-
+	
 	/**
 	 * Constructs the new SmithWaterman alignment object. Alignments are only performed, if the
 	 * alphabet of the given <code>SubstitutionMatrix</code> equals the alpabet of both the query
@@ -284,6 +284,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 			throws IllegalSymbolException {
 		int i;
 		int j;
+		
 		j = maxJ;
 		for (i = maxI; i > 0;) {
 			do {

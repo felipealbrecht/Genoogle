@@ -54,94 +54,110 @@ public class DividedStringGenoogleSmithWaterman {
 			return this.score;
 		}
 
-		int querySplit = query.length() / lengthThreshould;
-		int subjectSplit = target.length() / lengthThreshould;
+		int m = query.length() / lengthThreshould;
+		int n = target.length() / lengthThreshould;
+		
+		int mRest = query.length() % lengthThreshould;
+		if (mRest != 0)  {
+			m++;
+		}
+		
+		int nRest = query.length() % lengthThreshould;
+		if (nRest != 0) {
+			n++;
+		}
+		
+		int c = Math.min(m, n);
+		int queryLength = query.length() / c;
+		int targetLength = target.length() / c;
 
-		// int pieces = (querySplit + subjectSplit) / 2;
-		int pieces = Math.min(querySplit, subjectSplit);
-
-		int queryLength = query.length() / pieces;
-		int subjectLenth = target.length() / pieces;
-
-		int queryRest = query.length() % pieces;
-		int subjectRest = target.length() % pieces;
-
-		// TODO: arrumar o resto da divisao e por no ultimo alinhamento.
-
-		int queryBegin = 0;
-		int subjectBegin = 0;
+		int queryPos = 0;
+		int targetPos = 0;
+		int queryDiff = 0;
+		int targetDiff = 0;
 
 		queryAlignedBuilder = new StringBuilder();
 		targetAlignedBuilder = new StringBuilder();
 		pathAlignedBuilder = new StringBuilder();
 		score = 0;
 
-		for (int i = 0; i < pieces; i++) {
-			if (i == pieces - 1) {
-				queryLength += queryRest;
-				subjectLenth += subjectRest;
+		for (int s = 0; s < c; s++) {
+			int endQueryPiece; 
+			int endTargetPiece;
+			
+			if (s == c - 1) {
+				endQueryPiece = query.length();
+				endTargetPiece = target.length();
+			} else {
+				endQueryPiece = queryPos + queryLength + queryDiff;
+				endTargetPiece  = targetPos + targetLength + targetDiff;
 			}
-			String queryPiece = query.substring(queryBegin, queryBegin + queryLength);
-			String targetPiece = target.substring(subjectBegin, subjectBegin + subjectLenth);
-			queryBegin += queryLength;
-			subjectBegin += subjectLenth;
+			
+			String queryPiece = query.substring(queryPos, endQueryPiece);
+			String targetPiece = target.substring(targetPos, endTargetPiece);
 
 			StringGenoogleSmithWaterman aligner = new StringGenoogleSmithWaterman(match, replace, insert, delete, gapExtend);
 			aligner.pairwiseAlignment(queryPiece, targetPiece);
 			score += aligner.getScore();
+			identitySize += aligner.getIdentitySize();
 
-			int initGap = Math.max(aligner.getQueryStart(), aligner.getTargetStart());
-			int maxLength = Math.max(queryPiece.length(), targetPiece.length());
-
-			for (int p = 0; p < initGap; p++) {
-				if (p < aligner.getQueryStart()) {
-					queryAlignedBuilder.append(queryPiece.charAt(p));
-				} else {
-					queryAlignedBuilder.append('-');
-				}
+			if (s == 0) {
+				this.queryStart = aligner.getQueryStart();
+				this.targetStart = aligner.getTargetStart();
+			} else {
+				setBeginSubAlignment(queryPiece, targetPiece, aligner);
 			}
+
 			queryAlignedBuilder.append(aligner.getQueryAligned());
-			for (int p = aligner.getQueryEnd(); p < maxLength; p++) {
-				if (p < queryPiece.length()) {
-					queryAlignedBuilder.append(queryPiece.charAt(p));
-				} else {
-					queryAlignedBuilder.append('-');
-				}
-			}
-
-			for (int p = 0; p < initGap; p++) {
-				if (p < aligner.getTargetStart()) {
-					targetAlignedBuilder.append(targetPiece.charAt(p));
-				} else {
-					targetAlignedBuilder.append('-');
-				}
-			}
 			targetAlignedBuilder.append(aligner.getTargetAligned());
-			for (int p = aligner.getTargetEnd(); p < maxLength; p++) {
-				if (p < targetPiece.length()) {
-					targetAlignedBuilder.append(targetPiece.charAt(p));					
-				} else {
-					targetAlignedBuilder.append('-');
-				}
-			}
-
-			int min = Math.min(aligner.getQueryStart(), aligner.getTargetEnd());
-			for (int p = 1; p < min; p++) {
-				pathAlignedBuilder.append(' ');
-			}
 			pathAlignedBuilder.append(aligner.getPath());
-			for (int p = aligner.getPath().length(); p < maxLength; p++) {
-				pathAlignedBuilder.append(' ');
-			}
+
+			queryPos = queryPos + aligner.getQueryEnd();
+			targetPos = targetPos + aligner.getTargetEnd();
+
+			queryDiff = queryLength - aligner.getQueryEnd();
+			targetDiff = targetLength - aligner.getTargetEnd();
+
 		}
 
-		this.queryStart = 0;
 		this.queryEnd = query.length();
-		this.targetStart = 0;
 		this.targetEnd = target.length();
 
 		return this.score;
+	}
 
+	private void setBeginSubAlignment(String queryPiece, String targetPiece, StringGenoogleSmithWaterman aligner) {
+		int i;
+		for (i = 1; i < aligner.getQueryStart() && i < aligner.getTargetStart(); i++) {
+			char queryChar = queryPiece.charAt(i);
+			char targetChar = targetPiece.charAt(i);
+
+			queryAlignedBuilder.append(queryChar);
+			targetAlignedBuilder.append(targetChar);
+			if (queryChar == targetChar) {
+				pathAlignedBuilder.append('|');
+				score += match;
+				identitySize++;
+			} else {
+				pathAlignedBuilder.append(' ');
+				score += replace;
+			}
+
+		}
+		while (i < aligner.getQueryStart() || i < aligner.getTargetStart()) {
+			if (i < aligner.getQueryStart()) {
+				queryAlignedBuilder.append(queryPiece.charAt(i-1));
+				targetAlignedBuilder.append('-');
+				pathAlignedBuilder.append(' ');
+				score += insert;
+			} else {
+				queryAlignedBuilder.append('-');
+				targetAlignedBuilder.append(targetPiece.charAt(i-1));
+				pathAlignedBuilder.append(' ');
+				score += insert;
+			}
+			i++;
+		}
 	}
 
 	public String getQueryAligned() {
