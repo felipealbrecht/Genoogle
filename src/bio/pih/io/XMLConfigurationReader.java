@@ -64,7 +64,7 @@ public class XMLConfigurationReader {
 
 		return searchManager;
 	}
-
+	
 	/**
 	 * @return how many simultaneous searchs a searchManager can handle.
 	 */
@@ -73,6 +73,35 @@ public class XMLConfigurationReader {
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}
+	
+	
+	private static Integer match = null;
+	private static Integer dismatch = null;
+	
+	public static int getMatchScore() {
+		if (match == null) {
+			Element rootElement = doc.getRootElement();
+			Element scoreElement = rootElement.element("score");
+			Element matchElement = scoreElement.element("match");
+			String value = matchElement.attributeValue("value");
+			match = Integer.parseInt(value);
+		}		
+
+		return match.intValue();
+	}
+	
+	public static int getDismatchScore() {
+		if (dismatch == null) {
+			Element rootElement = doc.getRootElement();
+			Element scoreElement = rootElement.element("score");
+			Element dismatchElement = scoreElement.element("dismatch");
+			String value = dismatchElement.attributeValue("value");
+			dismatch = Integer.parseInt(value);
+		}		
+
+		return dismatch.intValue();
+	}
+	
 	
 	/**
 	 * @return {@link List} of {@link SequenceDataBank} that are configured in

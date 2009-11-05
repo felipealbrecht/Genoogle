@@ -4,12 +4,10 @@ import java.util.Map;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoder;
-import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Maps;
 

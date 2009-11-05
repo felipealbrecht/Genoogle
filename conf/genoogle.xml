@@ -5,6 +5,11 @@
   <genoogle:search-manager>
     <genoogle:max-simultaneous-searchs value="1"/>     
   </genoogle:search-manager>
+  
+  <genoogle:score>
+    <genoogle:match value="1"/>
+    <genoogle:dismatch value="-3" />
+  </genoogle:score>
 
   <genoogle:search-parameters>
     <genoogle:max-sub-sequence-distance   value="30"/>
