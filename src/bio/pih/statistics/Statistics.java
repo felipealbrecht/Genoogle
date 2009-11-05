@@ -4,33 +4,77 @@ import java.util.Map;
 
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoder;
+import bio.pih.seq.LightweightSymbolList;
 
 import com.google.common.collect.Maps;
 
 /**
- * Class to calculate some statistics values for biological searching.
- * Basesd on FSA Blast source code.
+ * Class to calculate statistics values for similar sequences searching process.
  * 
- * TODO: To test with protein score matrix
- * TODO: To implement the calculation of K where the score matrix does not have -1 or 1.
- *    
  * @author albrecht (felipe.albrecht@gmail.com)
+ **/
+/*
+ * 
+ * This code is a Java implementation from the karlin.c file from the FSA-Blast, which copied from
+ * blastkar.c and modified to make it work standalone without using implementations of mathematical
+ * functions in ncbimath.c and other definitions in the NCBI BLAST toolkit.
+ * 
+ * See: Karlin, S. & Altschul, S.F. "Methods for Assessing the Statistical Significance of Molecular
+ * Sequence Features by Using General Scoring Schemes," Proc. Natl. Acad. Sci. USA 87 (1990),
+ * 2264-2268.
+ * 
+ * Computes the parameters lambda and K for use in calculating the statistical significance of
+ * high-scoring segments or subalignments.
+ * 
+ * The scoring scheme must be integer valued. A positive score must be possible, but the expected
+ * (mean) score must be negative.
+ * 
+ * A program that calls this routine must provide the value of the lowest possible score, the value
+ * of the greatest possible score, and a pointer to an array of probabilities for the occurence of
+ * all scores between these two extreme scores. For example, if score -2 occurs with probability
+ * 0.7, score 0 occurs with probability 0.1, and score 3 occurs with probability 0.2, then the
+ * subroutine must be called with low = -2, high = 3, and pr pointing to the array of values { 0.7,
+ * 0.0, 0.1, 0.0, 0.0, 0.2 }. The calling program must also provide pointers to lambda and K; the
+ * subroutine will then calculate the values of these two parameters. In this example, lambda=0.330
+ * and K=0.154.
+ * 
+ * The parameters lambda and K can be used as follows. Suppose we are given a length N random
+ * sequence of independent letters. Associated with each letter is a score, and the probabilities of
+ * the letters determine the probability for each score. Let S be the aggregate score of the highest
+ * scoring contiguous segment of this sequence. Then if N is sufficiently large (greater than 100),
+ * the following bound on the probability that S is greater than or equal to x applies:
+ * 
+ * P( S >= x ) <= 1 - exp [ - KN exp ( - lambda * x ) ].
+ * 
+ * In other words, the p-value for this segment can be written as 1-exp[-KN*exp(-lambda*S)].
+ * 
+ * This formula can be applied to pairwise sequence comparison by assigning scores to pairs of
+ * letters (e.g. amino acids), and by replacing N in the formula with N*M, where N and M are the
+ * lengths of the two sequences being compared.
+ * 
+ * In addition, letting y = KN*exp(-lambda*S), the p-value for finding m distinct segments all with
+ * score >= S is given by:
+ * 
+ * 2 m-1 -y 1 - [ 1 + y + y /2! + ... + y /(m-1)! ] e
+ * 
+ * Notice that for m=1 this formula reduces to 1-exp(-y), which is the same as the previous formula.
  */
 public class Statistics {
 
 	private static final double BLAST_KARLIN_LAMBDA0_DEFAULT = 0.5;
 	private static final double BLAST_KARLIN_LAMBDA_ACCURACY_DEFAULT = (1.e-5);
 	private static final int BLAST_KARLIN_LAMBDA_ITER_DEFAULT = 17;
-		
+
 	private static final double LOG_2 = Math.log(2.0);
 
 	private Map<Integer, Double> scoreProbabilities(int dismatch, int match, SymbolList query)
 			throws IndexOutOfBoundsException, BioException {
-		
+
 		int[][] baseValue = new int[4][4];
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -42,7 +86,6 @@ public class Statistics {
 			}
 		}
 
-
 		int min = Math.min(dismatch, match);
 		int max = Math.max(dismatch, match);
 		int delta;
@@ -51,9 +94,9 @@ public class Statistics {
 		} else {
 			delta = -min;
 		}
-		
-		int scoreProbabilitiesSize = (min + delta) + (max + delta) + 1; 
-		
+
+		int scoreProbabilitiesSize = (min + delta) + (max + delta) + 1;
+
 		double[] scoreProbabilities = new double[scoreProbabilitiesSize];
 		for (int i = dismatch + delta; i <= match + delta; i++) {
 			scoreProbabilities[i] = 0.0;
@@ -69,49 +112,46 @@ public class Statistics {
 
 		for (int i = 1; i <= length; i++) {
 			if (checkSymbol(query.symbolAt(i))) {
-				double probability = 250.00 / numRegularLettersInQuery;				
+				double probability = 250.00 / numRegularLettersInQuery;
 				int querySymbolValue = DNASequenceEncoder.getBitsFromSymbol(query.symbolAt(i));
-				
+
 				{
 					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.a());
-					int score = baseValue[querySymbolValue][symbolValue];					
-					scoreProbabilities[score+delta] += probability;
+					int score = baseValue[querySymbolValue][symbolValue];
+					scoreProbabilities[score + delta] += probability;
 				}
 				{
 					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.c());
-					int score = baseValue[querySymbolValue][symbolValue];					
-					scoreProbabilities[score+delta] += probability;
-				}	
+					int score = baseValue[querySymbolValue][symbolValue];
+					scoreProbabilities[score + delta] += probability;
+				}
 				{
 					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.g());
-					int score = baseValue[querySymbolValue][symbolValue];					
-					scoreProbabilities[score+delta] += probability;
-				}	
+					int score = baseValue[querySymbolValue][symbolValue];
+					scoreProbabilities[score + delta] += probability;
+				}
 				{
 					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.t());
-					int score = baseValue[querySymbolValue][symbolValue];					
-					scoreProbabilities[score+delta] += probability;
-				}	
+					int score = baseValue[querySymbolValue][symbolValue];
+					scoreProbabilities[score + delta] += probability;
+				}
 			}
 		}
 
-
 		final double sum = 1000.00;
 
-		for (int i = dismatch+delta; i <= match+delta; i++) {
+		for (int i = dismatch + delta; i <= match + delta; i++) {
 			double probability = scoreProbabilities[i];
 			scoreProbabilities[i] = probability / sum;
 		}
 
 		Map<Integer, Double> scoreProbabilitiesMap = Maps.newHashMap();
 		for (int i = dismatch; i <= match; i++) {
-			scoreProbabilitiesMap.put(i, scoreProbabilities[i+delta]);			
+			scoreProbabilitiesMap.put(i, scoreProbabilities[i + delta]);
 		}
-		
+
 		return scoreProbabilitiesMap;
 	}
-
-
 
 	private boolean checkSymbol(Symbol s) {
 		if (s == DNATools.a() || s == DNATools.c() || s == DNATools.g() || s == DNATools.t()) {
@@ -119,8 +159,6 @@ public class Statistics {
 		}
 		return false;
 	}
-	
-	
 
 	private Double calculateLambda(Map<Integer, Double> prob, int mismatch, int match) {
 		if (!checkScoreRange(mismatch, match)) {
@@ -237,6 +275,18 @@ public class Statistics {
 		return lambda * av;
 	}
 
+	private static int BLAST_SCORE_1MIN = -10000;
+	private static int BLAST_SCORE_1MAX = 1000;
+	private static int BLAST_SCORE_RANGE_MAX = BLAST_SCORE_1MAX - BLAST_SCORE_1MIN;
+
+	private static double BLAST_KARLIN_K_SUMLIMIT_DEFAULT = 0.01;
+	private static int BLAST_KARLIN_K_ITER_MAX = 100;
+	private static int DIMOFP0_MAX = BLAST_KARLIN_K_ITER_MAX * BLAST_SCORE_RANGE_MAX + 1;
+
+	private int DIMOFP0(int iter, int range) {
+		return iter * range + 1;
+	}
+
 	private double blastK(Map<Integer, Double> prob, double lambda, double h, int mismatch, int match) {
 
 		if (lambda <= 0.0 || h <= 0.0) {
@@ -250,7 +300,99 @@ public class Statistics {
 			return K * (1.0 - 1.0 / etolam);
 		}
 
-		throw new RuntimeException("Not implemented if the max or min value is not 1 or -1.");
+		int low = mismatch;
+		int high = match;
+		int range = high - low;
+
+		double sumlimit = BLAST_KARLIN_K_SUMLIMIT_DEFAULT;
+		int iter = BLAST_KARLIN_K_ITER_MAX;
+
+		if (DIMOFP0(iter, range) > DIMOFP0_MAX) {
+			return -1;
+		}
+
+		double[] P0 = new double[DIMOFP0(iter, range)];
+
+		double Sum = 0.0;
+		int lo = 0;
+		int hi = 0;
+
+		double sum = 1.0;
+		double oldsum = 1.0;
+		double oldsum2 = 1.0;
+		P0[0] = 1.0;
+		int p = low;
+
+		int first;
+		int last;
+		long j;
+		for (j = 0; j < iter & sum > sumlimit; Sum += sum /= ++j) {
+			first = last = range;
+			lo += low;
+			hi += high;
+
+			int ptrP;
+			for (ptrP = hi - lo; ptrP >= 0; P0[ptrP--] = sum) {
+				int ptr1 = ptrP - first;
+				int ptr1e = ptrP - last;
+				int ptr2 = p + first;
+
+				for (sum = 0.0; ptr1 >= ptr1e;) {
+					sum += (P0[ptr1--] * prob.get(ptr2++));
+				}
+
+				if (first != 0) {
+					--first;
+				}
+
+				if (ptrP <= range) {
+					--last;
+				}
+			}
+
+			double etolami = Math.pow(etolam, lo - 1);
+			int i;
+			for (sum = 0.0, i = lo; i != 0; ++i) {
+				etolami *= etolam;
+				sum += P0[++ptrP] * etolami;
+			}
+
+			for (; i <= hi; ++i) {
+				sum += P0[++ptrP];
+			}
+
+			oldsum2 = oldsum;
+			oldsum = sum;
+		}
+
+		/* Terms of geometric progression added for correction */
+		double ratio = oldsum / oldsum2;
+
+		if (ratio >= (1.0 - sumlimit * 0001)) {
+			return -1;
+		}
+
+		sumlimit *= 0.01;
+		while (sum > sumlimit) {
+			oldsum *= ratio;
+			Sum += sum = oldsum / ++j;
+		}
+
+		int i;
+		// Look for the greatest common divisor ("delta" in Appendix of PNAS 87 of Karlin&Altschul
+		// (1990)
+		for (i = 0, j = -low; i <= range && j > 1; ++i) {
+			if (prob.get(p + i) != 0) {
+				j = gcd(j, i);
+			}
+		}
+
+		if (j * etolam > 0.05) {
+			double etolami = Math.pow(etolam, -j);
+			return j * Math.exp(-2.0 * Sum) / (av * (1.0 - etolami));
+		} else {
+			return -j * Math.exp(-2.0 * Sum) / (av * Math.exp(-j * lambda) - 1);
+		}
 	}
 
 	private static final int MAX_SCORE = 1000;
@@ -267,10 +409,10 @@ public class Statistics {
 		return true;
 	}
 
-	private double lengthAdjust(double K, double ungappedLogK, double ungappedH,
-			int querySize, long databaseSize, long numberOfSequences) {
+	private double lengthAdjust(double K, double ungappedLogK, double ungappedH, int querySize, long databaseSize,
+			long numberOfSequences) {
 		double lenghtAdjust = 0;
-		double minimumQueryLength =  1 / K;
+		double minimumQueryLength = 1 / K;
 
 		for (int count = 0; count < 5; count++) {
 			lenghtAdjust = (ungappedLogK + Math.log((querySize - lenghtAdjust)
@@ -291,18 +433,37 @@ public class Statistics {
 	public double calculateEvalue(double normalizedScore) {
 		return this.searchSpaceSize / Math.pow(2, normalizedScore);
 	}
-	
-	
+
 	public double gappedEvalueToNominal(double evalue) {
-		double normalizedScore = Math.log(this.searchSpaceSize / evalue) / LOG_2;		
-		return Math.ceil((LOG_2 * normalizedScore + this.logK) / lambda);	
+		double normalizedScore = Math.log(this.searchSpaceSize / evalue) / LOG_2;
+		return Math.ceil((LOG_2 * normalizedScore + this.logK) / lambda);
 	}
-	
+
+	/**
+	 * Look for the greatest common divisor
+	 */
+	public long gcd(long a, long b) {
+		long c;
+		b = Math.abs(b);
+		if (b > a) {
+			c = a;
+			a = b;
+			b = c;
+		}
+
+		while (b != 0) {
+			c = a % b;
+			a = b;
+			b = c;
+		}
+		return a;
+	}
+
 	public int getMinLengthDropOut() {
 		return minLength;
 	}
-	
-	private final Map<Integer, Double> probabilities; 
+
+	private final Map<Integer, Double> probabilities;
 	private final double lambda;
 	private final double H;
 	private final double K;
@@ -312,7 +473,9 @@ public class Statistics {
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
 	private final int minLength;
-	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences, double minEvalue) throws IndexOutOfBoundsException, BioException{
+
+	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences,
+			double minEvalue) throws IndexOutOfBoundsException, BioException {
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);
@@ -363,5 +526,5 @@ public class Statistics {
 		System.out.println("Effective query size: " + effectiveQuerySize);
 		System.out.println("Effective database size: " + effectiveDatabaseSize);
 		System.out.println("Search space size: " + searchSpaceSize);
-	}
+	}	
 }
