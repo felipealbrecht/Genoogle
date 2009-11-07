@@ -1,4 +1,4 @@
-package bio.pih.web;
+package bio.pih.interfaces;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,101 +9,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.startup.Embedded;
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import bio.pih.Genoogle;
-import bio.pih.index.InvalidHeaderData;
-import bio.pih.io.Output;
 import bio.pih.io.AbstractSequenceDataBank;
+import bio.pih.io.Output;
 import bio.pih.search.SearchParams;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Maps;
 
-public class WebServer implements Runnable {
-	
-	private volatile boolean running = true;
-	Embedded embedded = null;
-
-	public WebServer(String defaultHost, int port, String path) throws LifecycleException,
-			InvalidHeaderData, IllegalSymbolException, BioException {
-		System.out.println(defaultHost);
-		System.out.println(path);
-
-		assert (new File(path).exists());
-		System.out.println(Genoogle.getInstance().getClass() + " loaded.");
-		System.setProperty("catalina.home", path);
-
-		embedded = new Embedded();
-
-		Engine engine = embedded.createEngine();
-		engine.setDefaultHost(defaultHost);
-
-		Host host = embedded.createHost(defaultHost, path + "/");
-		engine.addChild(host);
-		engine.setName("genoogle httpd");
-
-		Context context = embedded.createContext("", path + "/genoogle/");
-		host.addChild(context);
-
-		embedded.addEngine(engine);
-		Connector connector = embedded.createConnector((InetAddress) null, port, false);
-		embedded.addConnector(connector);
-	}
-
-	public void start() throws LifecycleException, InterruptedException {
-		embedded.start();
-		while (running) {
-			Thread.sleep(1000);
-		}
-	}
-
-	public void stop() throws LifecycleException {
-		embedded.stop();
-		running = false;
-	}
-
-	@Override
-	public void run() {
-		try {
-			this.start();
-		} catch (LifecycleException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args) throws LifecycleException, InterruptedException,
-			InvalidHeaderData, IllegalSymbolException, BioException {
-		String defaultHost = args[0];
-		String path = args[1];
-		int port = Integer.parseInt(args[2]);
-
-		new Thread(new Console()).start();
-		new WebServer(defaultHost, port, path).start();
-	}
-}
-
-class Console implements Runnable {
+public class Console implements Runnable {
 	private static Logger logger = Logger.getLogger(Console.class.getCanonicalName());
-	
+
 	private static final String EXIT = "exit";
 	private static final String DEFAULT = "default";
 	private static final String LIST = "list";
@@ -115,7 +40,30 @@ class Console implements Runnable {
 
 	private static Logger profileLogger = Logger.getLogger("profile");
 
+	private File inputBatch;
+
+	private final Genoogle genoogle;
+
+	public Console(Genoogle genoogle) {
+		this.genoogle = genoogle;
+	}
+
+	/**
+	 * Starts console informing a batch file to be executed.
+	 */
+	public Console(Genoogle genoogle, File inputBatch) {
+		this(genoogle);
+		this.inputBatch = inputBatch;
+	}
+
 	public void run() {
+		if (inputBatch != null) {
+			try {
+				execute(new InputStreamReader(new FileInputStream(inputBatch)), true);
+			} catch (FileNotFoundException e) {
+				logger.error(e);
+			}
+		}
 		execute(new InputStreamReader(System.in), false);
 	}
 
@@ -127,15 +75,7 @@ class Console implements Runnable {
 			File file = new File("timer_output");
 			output = new PrintStream(file);
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		Genoogle sois = null;
-		try {
-			sois = Genoogle.getInstance();
-		} catch (Exception e) {
-			logger.fatal(e);
+			logger.error(e1);
 			return;
 		}
 
@@ -204,8 +144,7 @@ class Console implements Runnable {
 							if (new File(queryFile).exists()) {
 								BufferedReader in = new BufferedReader(new FileReader(queryFile));
 								profileLogger.info("<" + line + ">");
-								List<SearchResults> results = sois.doBatchSyncSearch(in, db,
-										parameters);
+								List<SearchResults> results = genoogle.doBatchSyncSearch(in, db, parameters);
 								end = System.currentTimeMillis();
 								long total = end - begin;
 								profileLogger.info("</" + line + ":" + total + ">");
@@ -213,8 +152,7 @@ class Console implements Runnable {
 								OutputFormat outformat = OutputFormat.createPrettyPrint();
 								outformat.setTrimText(false);
 								outformat.setEncoding("UTF-8");
-								XMLWriter writer = new XMLWriter(new FileOutputStream(new File(
-										outputFile + ".xml")), outformat);
+								XMLWriter writer = new XMLWriter(new FileOutputStream(new File(outputFile + ".xml")), outformat);
 								writer.write(document);
 								writer.flush();
 
@@ -230,12 +168,12 @@ class Console implements Runnable {
 						System.gc();
 
 					} else if (commands[0].equals(LIST)) {
-						for (AbstractSequenceDataBank db : sois.getDatabanks()) {
+						for (AbstractSequenceDataBank db : genoogle.getDatabanks()) {
 							System.out.println(db.toString());
 						}
 
 					} else if (commands[0].equals(DEFAULT)) {
-						System.out.println(sois.getDefaultDatabank());
+						System.out.println(genoogle.getDefaultDatabank());
 
 					} else if (commands[0].equals(PARAMETERS)) {
 						for (SearchParams.Parameter param : SearchParams.Parameter.values()) {
@@ -271,13 +209,13 @@ class Console implements Runnable {
 					prev = line;
 					System.out.print("genoogle console> ");
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.fatal(e);
+					return;
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal(e);
+			return;
 		}
 	}
 }

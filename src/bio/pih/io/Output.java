@@ -41,7 +41,7 @@ public class Output {
 		Document doc = factory.createDocument();
 		doc.setName("genoogle");
 
-		Element output = doc.addElement("genoogle");
+		Element output = doc.addElement(Genoogle.SOFTWARE_NAME);
 		output.addAttribute("version", Genoogle.VERSION.toString());
 		output.addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
 
@@ -74,7 +74,7 @@ public class Output {
 		
 
 		Element output = doc.addElement("genoogle");
-		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
+		output.addElement("references").addAttribute("program", Genoogle.SOFTWARE_NAME).addAttribute("version", "0.01").addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
 		output.add(searchResultToXML(searchResult));
 		
 		return doc;

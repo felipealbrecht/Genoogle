@@ -21,7 +21,7 @@
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	if (request.getParameter("query") != null) {
-		Genoogle sois = Genoogle.getInstance();
+		Genoogle genoogle = Genoogle.getInstance();
 		String query = request.getParameter("query");
 
 		if (query == null) {
@@ -52,7 +52,7 @@
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		SearchResults sr = sois.doSyncSearch(query);
+		SearchResults sr = genoogle.doSyncSearch(query);
 		long total = System.currentTimeMillis() - begin;
 
 		if (sr.hasFail()) {			
