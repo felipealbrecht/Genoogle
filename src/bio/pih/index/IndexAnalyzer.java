@@ -19,7 +19,7 @@ import bio.pih.encoder.SequenceEncoder;
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.IndexedSequenceDataBank;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 
@@ -50,14 +50,14 @@ public class IndexAnalyzer {
 				if (commands.length == 3) {
 					qtd = Integer.parseInt(commands[2]);
 				}
-				for (SequenceDataBank dataBank: sm.getDatabanks()) {
+				for (AbstractSequenceDataBank dataBank: sm.getDatabanks()) {
 					if (dataBank.getName().equals(dataBankName)) {
 						found = true;
 						analyzer.analyzerDNASequenceDataBank((IndexedDNASequenceDataBank) dataBank, 30);
 					}
 					if (dataBank instanceof DatabankCollection) {
-						DatabankCollection<SequenceDataBank> collection = (DatabankCollection<SequenceDataBank>) dataBank;
-						SequenceDataBank subDataBank = collection.getDatabank(dataBankName);
+						DatabankCollection<AbstractSequenceDataBank> collection = (DatabankCollection<AbstractSequenceDataBank>) dataBank;
+						AbstractSequenceDataBank subDataBank = collection.getDatabank(dataBankName);
 						if (subDataBank != null) {
 							found = true;
 							analyzer.analyzerDNASequenceDataBank((IndexedDNASequenceDataBank) subDataBank, qtd);
@@ -70,14 +70,14 @@ public class IndexAnalyzer {
 			}
 			
 			if (commands[0].equals("list")) {
-				for (SequenceDataBank dataBank: sm.getDatabanks()) {
+				for (AbstractSequenceDataBank dataBank: sm.getDatabanks()) {
 					System.out.println(dataBank.getName() + "\t" + dataBank.getClass());
 
 					if (dataBank instanceof DatabankCollection) {
-						DatabankCollection<SequenceDataBank> collection = (DatabankCollection<SequenceDataBank>) dataBank;
-						Iterator<SequenceDataBank> databanksIterator = collection.databanksIterator();
+						DatabankCollection<AbstractSequenceDataBank> collection = (DatabankCollection<AbstractSequenceDataBank>) dataBank;
+						Iterator<AbstractSequenceDataBank> databanksIterator = collection.databanksIterator();
 						while (databanksIterator.hasNext()) {
-							SequenceDataBank next = databanksIterator.next();
+							AbstractSequenceDataBank next = databanksIterator.next();
 							System.out.println(next.getName() + "\t" + next.getClass());
 						}
 					}
@@ -124,13 +124,13 @@ public class IndexAnalyzer {
 		System.out.println("Total show: " + totalShow + " and is " + perc + "% of all.");
 	}
 	
-	public void analyzerDNASequenceDataBank(DatabankCollection<IndexedSequenceDataBank> collection, int maxSequences) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+	public void analyzerDNASequenceDataBank(DatabankCollection<IndexedDNASequenceDataBank> collection, int maxSequences) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		int indexBitsSize = collection.getSubSequenceLength() * SequenceEncoder.bitsByAlphabetSize(4);
 		int indexSize = 1 << indexBitsSize;
 		
 		Map<Integer, SequenceQuantity> sequences = Maps.newHashMap();
 		
-		Iterator<IndexedSequenceDataBank> iterator = collection.databanksIterator();
+		Iterator<IndexedDNASequenceDataBank> iterator = collection.databanksIterator();
 		while (iterator.hasNext()) {
 			IndexedSequenceDataBank dataBank = iterator.next();
 			for (int i = 0; i < indexSize; i++) {

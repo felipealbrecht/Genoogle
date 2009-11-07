@@ -12,7 +12,7 @@ import java.nio.channels.FileChannel.MapMode;
 import org.apache.log4j.Logger;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.proto.Io.InvertedIndexBuck;
 
 /**
@@ -32,7 +32,7 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public MemoryInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public MemoryInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
 		super(databank, subSequenceLength);
 	}
 

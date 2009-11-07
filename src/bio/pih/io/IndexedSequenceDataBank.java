@@ -13,27 +13,7 @@ import bio.pih.index.ValueOutOfBoundsException;
  * 
  * @author albrecht
  */
-public interface IndexedSequenceDataBank extends SequenceDataBank {
-
-	/**
-	 * Defines where the index will be stored at runtime.
-	 */
-	public static enum StorageKind {
-		/**
-		 * The index will be stored in the RAM.
-		 */
-		MEMORY,
-		
-		/**
-		 * The index will be stored into a disk file.
-		 */
-		DISK
-	}
-	
-	/**
-	 * @return where the index is stored.
-	 */
-	public StorageKind getStorageKind();
+public interface IndexedSequenceDataBank {
 	
 	/**
 	 * Receive an encodedSubSequence, that is a sub-sequence 8 bases length encoded into a short, 
@@ -44,5 +24,6 @@ public interface IndexedSequenceDataBank extends SequenceDataBank {
 	 * @throws IOException 
 	 * @throws InvalidHeaderData 
 	 */
+	
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;		
 }

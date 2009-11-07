@@ -2,20 +2,21 @@ package bio.pih.tests.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
-import org.easymock.EasyMock;
+import org.easymock.classextension.EasyMock;
 import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.IndexConstructionException;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.builder.InvertedIndexBuilder;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.seq.LightweightSymbolList;
 
 public class InvertedIndexBuilderTest extends TestCase {
@@ -23,8 +24,16 @@ public class InvertedIndexBuilderTest extends TestCase {
 	private static int SUB_SEQUENCE_LENGTH = 10;
 	private static DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getEncoder(SUB_SEQUENCE_LENGTH);
 
-	private SequenceDataBank createSequenceDatabankMock(DNASequenceEncoderToInteger encoder) throws IOException {
-		SequenceDataBank sequenceDataBank = EasyMock.createMock(SequenceDataBank.class);
+	private AbstractSequenceDataBank createSequenceDatabankMock(DNASequenceEncoderToInteger encoder) throws IOException, SecurityException, NoSuchMethodException {
+		AbstractSequenceDataBank sequenceDataBank = EasyMock.createMock(AbstractSequenceDataBank.class);
+		
+		EasyMock.createMock(AbstractSequenceDataBank.class, new Method[] 
+				 {AbstractSequenceDataBank.class.getMethod("getAlphabet"),
+				  AbstractSequenceDataBank.class.getMethod("getEncoder"),
+				  AbstractSequenceDataBank.class.getMethod("getFullPath")});
+				 
+				
+				
 		EasyMock.expect(sequenceDataBank.getAlphabet()).andReturn(DNATools.getDNA()).anyTimes();
 		EasyMock.expect(sequenceDataBank.getEncoder()).andReturn(encoder).anyTimes();
 		EasyMock.expect(sequenceDataBank.getFullPath()).andReturn(new File("/tmp", this.getClass().getName())).anyTimes();
@@ -33,8 +42,8 @@ public class InvertedIndexBuilderTest extends TestCase {
 	}
 
 	@Test
-	public void testBeginEnd() throws IllegalSymbolException, IOException, IndexConstructionException {
-		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
+	public void testBeginEnd() throws IllegalSymbolException, IOException, IndexConstructionException, SecurityException, NoSuchMethodException {
+		AbstractSequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
 
 		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
 		InvertedIndexBuilder index = new InvertedIndexBuilder(memoryInvertedIndex);
@@ -43,8 +52,8 @@ public class InvertedIndexBuilderTest extends TestCase {
 	}
 
 	@Test
-	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException, IndexConstructionException {
-		SequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
+	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException, IndexConstructionException, SecurityException, NoSuchMethodException {
+		AbstractSequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
 		
 		MemoryInvertedIndex memoryInvertedIndex = new MemoryInvertedIndex(sequenceDataBank, SUB_SEQUENCE_LENGTH);
 		InvertedIndexBuilder index = new InvertedIndexBuilder(memoryInvertedIndex);

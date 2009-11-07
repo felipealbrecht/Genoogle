@@ -6,7 +6,7 @@ import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 
 /**
  * An interface for index witch stores encoded {@link SequenceEncoder} sequences. 
@@ -15,7 +15,7 @@ import bio.pih.io.SequenceDataBank;
  */
 public abstract class AbstractInvertedIndex {
 
-	protected final SequenceDataBank databank;
+	protected final AbstractSequenceDataBank databank;
 	protected final int subSequenceLength;
 	protected final int indexSize;
 	protected final long[] EMPTY_ARRAY = new long[0];
@@ -28,7 +28,7 @@ public abstract class AbstractInvertedIndex {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public AbstractInvertedIndex(SequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public AbstractInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
 		assert (subSequenceLength > 0);
 
 		this.databank = databank;
@@ -41,7 +41,7 @@ public abstract class AbstractInvertedIndex {
 		this.loaded = false;
 	}
 			
-	public SequenceDataBank getDatabank() {
+	public AbstractSequenceDataBank getDatabank() {
 		return databank;
 	}
 	

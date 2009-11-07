@@ -27,7 +27,7 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.DuplicateDatabankException;
 import bio.pih.io.Output;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 import bio.pih.search.SearchParams;
@@ -44,23 +44,27 @@ import com.google.common.collect.Lists;
  * 
  * @author albrecht
  */
-public class SOIS {
+public class Genoogle {
 
+	public static Double VERSION = 0.69;
+	public static String COPYRIGHT_NOTICE = "Genoogle - Felipe Albrecht (2009).";
+	
 	SearchManager sm = null;
-	private static SOIS singleton = null;
+	private static Genoogle singleton = null;
+	
 
-	static Logger logger = Logger.getLogger(SOIS.class.getName());
+	static Logger logger = Logger.getLogger(Genoogle.class.getName());
 
 	/**
-	 * @return SOIS Singleton instance.
+	 * @return Genoogle Singleton instance.
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
 	 */
-	public synchronized static SOIS getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
+	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
 		if (singleton == null) {
 			try {
-				singleton = new SOIS();
+				singleton = new Genoogle();
 			} catch (IOException e) {
 				logger.fatal(e.getMessage());
 				return null;
@@ -81,7 +85,7 @@ public class SOIS {
 	 * @throws BioException
 	 * @throws IllegalSymbolException
 	 */
-	private SOIS() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
+	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
 			BioException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
@@ -103,7 +107,7 @@ public class SOIS {
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
 
-	public Collection<SequenceDataBank> getDatabanks() {
+	public Collection<AbstractSequenceDataBank> getDatabanks() {
 		return sm.getDatabanks();
 	}
 
@@ -184,7 +188,7 @@ public class SOIS {
 	}
 
 	/**
-	 * Finish {@link SOIS}.
+	 * Finish {@link Genoogle}.
 	 * 
 	 * @throws InterruptedException
 	 */
@@ -223,14 +227,14 @@ public class SOIS {
 			return;
 		}
 
-		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
+		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 
 		String option = args[0];
 
 		if (option.equals("-g")) {
 			logger.info("Searching for non encoded data banks.");
 
-			for (SequenceDataBank dataBank : dataBanks) {
+			for (AbstractSequenceDataBank dataBank : dataBanks) {
 				if (!dataBank.check()) {
 					dataBank.delete();
 					logger.info("Data bank " + dataBank.getName() + " is not encoded.");
@@ -247,7 +251,7 @@ public class SOIS {
 		}
 
 		else if (option.equals("-s")) {
-			SOIS sois = new SOIS();
+			Genoogle sois = new Genoogle();
 			logger.info("Initalizing SOIS for searchs.");
 
 			String inputFile = args[1];

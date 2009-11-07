@@ -4,6 +4,9 @@
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/home/albrecht/java/biojava-1.5/src"/>
+	<classpathentry kind="lib" path="lib/easymock.jar"/>
+	<classpathentry kind="lib" path="lib/easymockclassextension.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="lib/bootstrap.jar"/>
@@ -31,10 +34,7 @@
 	<classpathentry kind="lib" path="lib/tomcat-i18n-fr.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
-	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar" sourcepath="/home/albrecht/Área de Trabalho/protobuf-2.0.2/java/src/main/java"/>
-	<classpathentry kind="lib" path="lib/easymock-2.5.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/easymock-2.5.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/easymock-2.5.2.jar" sourcepath="/home/albrecht/java/easymock-2.5.2/easymock-2.5.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar" sourcepath="/home/albrecht/java/google-collect-snapshot-20080820/src-snapshot-20080820.zip"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

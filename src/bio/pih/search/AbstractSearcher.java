@@ -2,7 +2,7 @@ package bio.pih.search;
 
 import java.util.concurrent.Callable;
 
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.search.results.SearchResults;
 
 /**
@@ -28,7 +28,7 @@ public abstract class AbstractSearcher implements Callable<SearchResults> {
 	 * @param databank 
 	 *            Sequence data bank where the search will be performed.
 	 */
-	public AbstractSearcher(long id, SearchParams sp, SequenceDataBank databank) {
+	public AbstractSearcher(long id, SearchParams sp, AbstractSequenceDataBank databank) {
 		this.id = id;
 		this.sp = sp;
 		this.sr = new SearchResults(sp);

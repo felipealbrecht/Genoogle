@@ -2,7 +2,7 @@
 %><%@page import="java.lang.management.ThreadInfo"
 %><%@page import="java.lang.management.ManagementFactory"
 %><%@page import="java.lang.management.ThreadMXBean"
-%><%@page import="bio.pih.SOIS"
+%><%@page import="bio.pih.Genoogle"
 %><%@page import="org.dom4j.Document"
 %><%@page import="org.dom4j.io.OutputFormat"
 %><%@page import="org.dom4j.io.XMLWriter"
@@ -21,7 +21,7 @@
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	if (request.getParameter("query") != null) {
-		SOIS sois = SOIS.getInstance();
+		Genoogle sois = Genoogle.getInstance();
 		String query = request.getParameter("query");
 
 		if (query == null) {
@@ -62,7 +62,7 @@
 			out.println("<img src=\"fail.jpg\"/>");
 			out.println("<code>");
 			out.println("<br>");
-			for (Exception e : sr.getFails()) {
+			for (Throwable e : sr.getFails()) {
 				logger.fatal("Fail while doing searching process", e);
 				out.println(e);
 			}

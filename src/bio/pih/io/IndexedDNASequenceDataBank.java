@@ -23,13 +23,11 @@ import bio.pih.io.proto.Io.StoredSequence;
  * @author albrecht
  * 
  */
-public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements IndexedSequenceDataBank {
+public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank implements IndexedSequenceDataBank {
 
 	private final MemoryInvertedIndex index;
 	private InvertedIndexBuilder indexBuilder;
 	protected final DNAMaskEncoder maskEncoder;
-
-	private final StorageKind storageKind;
 
 	/**
 	 * 
@@ -45,13 +43,10 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 	 * @throws InvalidHeaderData
 	 * @throws IOException
 	 */
-	public IndexedDNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent,
-			StorageKind storageKind, int subSequenceLength, String mask) throws ValueOutOfBoundsException, IOException,
-			InvalidHeaderData {
-		super(name, path, parent, subSequenceLength);
-		this.storageKind = storageKind;
-		// this.similarSubSequencesIndex =
-		// SimilarSubSequencesIndex.getDefaultInstance(subSequenceLength);
+	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask,
+			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		super(name, subSequenceLength, path, parent);
+
 		if (mask != null) {
 			maskEncoder = new DNAMaskEncoder(mask, subSequenceLength);
 		} else {
@@ -105,11 +100,6 @@ public class IndexedDNASequenceDataBank extends DNASequenceDataBank implements I
 
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData {
 		return index.getMatchingSubSequence(encodedSubSequence);
-	}
-
-	@Override
-	public StorageKind getStorageKind() {
-		return storageKind;
 	}
 	
 	@Override

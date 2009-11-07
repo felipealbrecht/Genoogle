@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Lists;
@@ -29,7 +29,7 @@ public class SearchManager {
 	private static Logger logger = Logger.getLogger(SearchManager.class.getName());
 	private static Logger profileLogger = Logger.getLogger("profile");
 
-	private Map<String, SequenceDataBank> databanks;
+	private Map<String, AbstractSequenceDataBank> databanks;
 	private ExecutorService requestsExecutor = null;
 
 	/**
@@ -53,7 +53,7 @@ public class SearchManager {
 	/**
 	 * @param databank
 	 */
-	public void addDatabank(SequenceDataBank databank) {
+	public void addDatabank(AbstractSequenceDataBank databank) {
 		databanks.put(databank.getName(), databank);
 	}
 
@@ -78,7 +78,7 @@ public class SearchManager {
 		for (SearchParams sp : sps) {
 			logger.info("doSearch on " + sp);
 
-			SequenceDataBank databank = databanks.get(sp.getDatabank());
+			AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
 			if (databank == null) {
 				throw new UnknowDataBankException(this, sp.getDatabank());
 			}
@@ -116,7 +116,7 @@ public class SearchManager {
 	public SearchResults doSyncSearch(SearchParams sp) throws UnknowDataBankException,
 			InterruptedException, ExecutionException {
 		logger.info("doSearch on " + sp);
-		SequenceDataBank databank = databanks.get(sp.getDatabank());
+		AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
 			throw new UnknowDataBankException(this, sp.getDatabank());
 		}
@@ -131,10 +131,10 @@ public class SearchManager {
 	}
 
 	/**
-	 * @return {@link Collection} of all {@link SequenceDataBank} that this
+	 * @return {@link Collection} of all {@link AbstractSequenceDataBank} that this
 	 *         {@link SearchResults} is managing.
 	 */
-	public Collection<SequenceDataBank> getDatabanks() {
+	public Collection<AbstractSequenceDataBank> getDatabanks() {
 		return databanks.values();
 	}
 	

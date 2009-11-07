@@ -26,10 +26,10 @@ import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import bio.pih.SOIS;
+import bio.pih.Genoogle;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.io.Output;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.search.SearchParams;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
@@ -47,7 +47,7 @@ public class WebServer implements Runnable {
 		System.out.println(path);
 
 		assert (new File(path).exists());
-		System.out.println(SOIS.getInstance().getClass() + " loaded.");
+		System.out.println(Genoogle.getInstance().getClass() + " loaded.");
 		System.setProperty("catalina.home", path);
 
 		embedded = new Embedded();
@@ -131,9 +131,9 @@ class Console implements Runnable {
 			e1.printStackTrace();
 		}
 
-		SOIS sois = null;
+		Genoogle sois = null;
 		try {
-			sois = SOIS.getInstance();
+			sois = Genoogle.getInstance();
 		} catch (Exception e) {
 			logger.fatal(e);
 			return;
@@ -230,7 +230,7 @@ class Console implements Runnable {
 						System.gc();
 
 					} else if (commands[0].equals(LIST)) {
-						for (SequenceDataBank db : sois.getDatabanks()) {
+						for (AbstractSequenceDataBank db : sois.getDatabanks()) {
 							System.out.println(db.toString());
 						}
 

@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import bio.pih.io.DatabankCollection;
 import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
@@ -32,7 +32,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
 
-	private final DatabankCollection<SequenceDataBank> databankCollection;
+	private final DatabankCollection<AbstractSequenceDataBank> databankCollection;
 	
 	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
 		@Override
@@ -41,7 +41,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		}
 	};
 
-	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<SequenceDataBank> databank) {
+	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<AbstractSequenceDataBank> databank) {
 		super(code, sp, databank);
 		this.databankCollection = databank;
 	}
@@ -59,9 +59,9 @@ public class CollectionSearcher extends AbstractSearcher {
 
 			ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 
-			Iterator<SequenceDataBank> it = databankCollection.databanksIterator();
+			Iterator<AbstractSequenceDataBank> it = databankCollection.databanksIterator();
 			while (it.hasNext()) {
-				SequenceDataBank innerBank = it.next();
+				AbstractSequenceDataBank innerBank = it.next();
 				final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp, (IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
 				subDataBanksCS.submit(indexSearcher);
 			}

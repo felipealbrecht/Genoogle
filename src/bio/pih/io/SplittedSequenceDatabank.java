@@ -21,7 +21,6 @@ import org.biojavax.bio.seq.RichSequence;
 import bio.pih.index.IndexConstructionException;
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 import bio.pih.io.proto.Io.StoredDatabank;
 import bio.pih.io.proto.Io.StoredSequenceInfo;
 import bio.pih.io.proto.Io.StoredDatabank.Builder;
@@ -71,7 +70,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 * @param mask
 	 */
 	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask) {
-		super(name, DNATools.getDNA(), path, null, subSequenceLength);
+		super(name, DNATools.getDNA(), subSequenceLength, path, null);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
 	}
@@ -81,7 +80,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			InvalidHeaderData, IndexConstructionException {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
-		for (SequenceDataBank sequence : collection.values()) {
+		for (AbstractSequenceDataBank sequence : databanks.values()) {
 			fastaFiles.add(new FastaFileInfo(sequence.getFullPath()));
 		}
 
@@ -94,7 +93,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long totalBasesBySubBase = totalBasesCount / qtdSubBases;
 		long subCount = 0;
 
-		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, new File(getSubDatabankName(subCount)), this, StorageKind.MEMORY, subSequenceLength, mask);
+		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this);
 		actualSequenceDatank.beginIndexBuild();
 		int totalSequences = 0;
 		long totalBases = 0;
@@ -124,7 +123,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
-					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, new File(getSubDatabankName(subCount)), this, StorageKind.MEMORY, subSequenceLength, mask);
+					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this);
 					actualSequenceDatank.beginIndexBuild();
 				}
 			}
@@ -194,7 +193,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	public boolean check() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
+				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 				if (!actualSequenceDatank.check()) {
 					return false;
 				}
@@ -210,7 +209,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	public void delete() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
+				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 				actualSequenceDatank.delete();
 			} catch (Exception e) {
 				logger.fatal(e);
@@ -226,7 +225,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
-			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, new File(getSubDatabankName(i)), this, StorageKind.MEMORY, subSequenceLength, mask);
+			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 			subDataBank.load();
 			try {
 				this.addDatabank(subDataBank);

@@ -26,7 +26,7 @@ import bio.pih.index.IndexConstructionException;
 import bio.pih.index.IndexFileOffset;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.SubSequenceIndexInfo;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.proto.Io.InvertedIndexBuck;
 
 import com.google.common.collect.Lists;
@@ -58,7 +58,7 @@ public class InvertedIndexBuilder {
 
 	private int totalEntries = -1;
 	private final MemoryInvertedIndex memoryInvertedIndex;
-	private SequenceDataBank databank;
+	private AbstractSequenceDataBank databank;
 	private int indexSize;
 
 	private List<SequenceInfo> sequencesToAdd = Lists.newArrayList();

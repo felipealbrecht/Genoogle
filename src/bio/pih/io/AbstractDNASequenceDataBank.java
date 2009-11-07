@@ -16,11 +16,9 @@ import java.util.NoSuchElementException;
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
-import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.IndexConstructionException;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;
@@ -34,20 +32,12 @@ import bio.pih.seq.op.LightweightStreamReader;
 import com.google.protobuf.ByteString;
 
 /**
- * An abstract class for Sequence Banks that uses DNA sequences
+ * Abstract class for Sequence Banks which stores DNA sequences
  * 
  * @author albrecht
  * 
  */
-public abstract class DNASequenceDataBank implements SequenceDataBank {
-
-	protected final FiniteAlphabet alphabet = DNATools.getDNA();
-	protected final String name;
-	protected final File file;
-	protected final DatabankCollection<? extends DNASequenceDataBank> parent;
-	protected final int subSequenceLength;
-	protected File fullPath = null;
-	protected final DNASequenceEncoderToInteger encoder;
+public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBank {
 
 	private volatile int nextSequenceId;
 	private int numberOfSequences;
@@ -73,16 +63,12 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	 * @param minEvalueDropOut
 	 * @throws IOException
 	 */
-	public DNASequenceDataBank(String name, File path, DatabankCollection<? extends DNASequenceDataBank> parent,
-			int subSequenceLength) {
-		this.name = name;
-		this.file = path;
-		this.parent = parent;
+	public AbstractDNASequenceDataBank(String name, int subSequenceLength, 
+			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
+		super(name, DNATools.getDNA(), subSequenceLength, path, parent);
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;
-		this.subSequenceLength = subSequenceLength;
-		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.storedDatabank = null;
 	}
 
@@ -253,39 +239,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 	public int getNumberOfSequences() {
 		return numberOfSequences;
 	}
-
-	public FiniteAlphabet getAlphabet() {
-		return alphabet;
-	}
-
-	public void setName(String name) {
-		throw new IllegalStateException("The name is imutable for a DataBank");
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setPath(File directory) {
-		throw new UnsupportedOperationException("The path is imutable for a DataBank");
-	}
-
-	public File getFilePath() {
-		return file;
-	}
-
-	@Override
-	public File getFullPath() {
-		if (fullPath == null) {
-			if (getParent() == null) {
-				fullPath = getFilePath();
-			} else {
-				fullPath = new File(getParent().getFullPath(), this.getFilePath().getPath());
-			}
-		}
-		return fullPath;
-	}
-
+	
 	protected synchronized File getDataBankFile() {
 		if (dataBankFile == null) {
 			dataBankFile = new File(getFullPath() + ".dsdb");
@@ -300,10 +254,6 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		return storedDataBankInfoFile;
 	}
 
-	@Override
-	public SequenceDataBank getParent() {
-		return parent;
-	}
 
 	@Override
 	public String toString() {
@@ -328,14 +278,7 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 		}
 		
 	}
-
-
-	@Override
-	public DNASequenceEncoderToInteger getEncoder() {
-		return encoder;
-	}
-
-	@Override
+	
 	public long getDataBaseSize() {
 		return dataBankSize;
 	}
@@ -354,10 +297,5 @@ public abstract class DNASequenceDataBank implements SequenceDataBank {
 			return getNumberOfSequences();
 		}
 		return parent.getTotalNumberOfSequences();
-	}
-
-	@Override
-	public int getSubSequenceLength() {
-		return subSequenceLength;
 	}
 }

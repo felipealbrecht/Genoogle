@@ -16,13 +16,12 @@ import org.junit.Test;
 
 import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.index.IndexConstructionException;
-import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.MemoryInvertedIndex;
+import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.index.builder.InvertedIndexBuilder;
+import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.IndexedDNASequenceDataBank;
-import bio.pih.io.SequenceDataBank;
-import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 import bio.pih.seq.LightweightSymbolList;
 import bio.pih.seq.generator.DNASequencesPopulator;
 
@@ -39,7 +38,7 @@ public class SubSequencesArrayIndexTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		SequenceDataBank dataBank = new IndexedDNASequenceDataBank("dummy", File.createTempFile(this.getName(), ".tmp"), null, StorageKind.MEMORY, 8, "11111111");
+		AbstractSequenceDataBank dataBank = new IndexedDNASequenceDataBank("TestDB", 8, "11111111", File.createTempFile(this.getName(), ".tmp"), null);
 		index = new MemoryInvertedIndex (dataBank, SUB_SEQUENCE_LENGTH);
 		encoder = DNASequenceEncoderToInteger.getEncoder(8);
 	}

@@ -10,6 +10,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.ProcessingInstruction;
 
+import bio.pih.Genoogle;
 import bio.pih.search.SearchParams;
 import bio.pih.search.results.HSP;
 import bio.pih.search.results.Hit;
@@ -24,8 +25,7 @@ import com.google.common.collect.Maps;
  * @author albrecht
  */
 public class Output {
-
-	private static String copyRightNotice = "Genoogle by Albrecht, Justel and Pinto. 2008.";
+	
 	private final static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
 	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
 	
@@ -41,8 +41,8 @@ public class Output {
 		Document doc = factory.createDocument();
 		doc.setName("genoogle");
 
-		Element output = doc.addElement("genoogle").addAttribute("version", "1");
-		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
+		Element output = doc.addElement("genoogle").addAttribute("version", Genoogle.VERSION.toString());
+		output.addElement("references").addAttribute("program", "Genoogle").addAttribute("version", Genoogle.VERSION.toString()).addAttribute("authors", Genoogle.COPYRIGHT_NOTICE);
 		Element iterationsElement = output.addElement("iterations");
 
 		for (int i = 0; i < searchResults.size(); i++) {
@@ -73,7 +73,7 @@ public class Output {
 		
 
 		Element output = doc.addElement("genoogle");
-		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("authors", copyRightNotice);
+		output.addElement("references").addAttribute("program", "SOIS - Search Over Indexed Sequences").addAttribute("version", "0.01").addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
 		output.add(searchResultToXML(searchResult));
 		
 		return doc;

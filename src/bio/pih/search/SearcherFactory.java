@@ -1,10 +1,10 @@
 package bio.pih.search;
 
 import bio.pih.io.DatabankCollection;
-import bio.pih.io.SequenceDataBank;
+import bio.pih.io.AbstractSequenceDataBank;
 
 /**
- * Construct a Searcher appropriate to the kind of {@link SequenceDataBank}.
+ * Construct a Searcher appropriate to the kind of {@link AbstractSequenceDataBank}.
  * 
  * @author albrecht
  */
@@ -19,10 +19,10 @@ public class SearcherFactory {
 	 * @return {@link Searcher} related with the data bank given.
 	 */
 	@SuppressWarnings("unchecked")
-	static public AbstractSearcher getSearcher(long id, SearchParams sp, SequenceDataBank databank) {
+	static public AbstractSearcher getSearcher(long id, SearchParams sp, AbstractSequenceDataBank databank) {
 
 		if (databank instanceof DatabankCollection) {
-			return new CollectionSearcher(id, sp, (DatabankCollection<SequenceDataBank>) databank);
+			return new CollectionSearcher(id, sp, (DatabankCollection<AbstractSequenceDataBank>) databank);
 		}
 
 		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName()

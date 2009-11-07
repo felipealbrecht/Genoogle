@@ -15,7 +15,6 @@ import org.dom4j.io.SAXReader;
 
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
-import bio.pih.io.IndexedSequenceDataBank.StorageKind;
 import bio.pih.search.SearchManager;
 
 import com.google.common.collect.Lists;
@@ -56,8 +55,8 @@ public class XMLConfigurationReader {
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));
 
-		List<SequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
-		for (SequenceDataBank dataBank : dataBanks) {
+		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
+		for (AbstractSequenceDataBank dataBank : dataBanks) {
 			dataBank.load();
 			searchManager.addDatabank(dataBank);
 		}
@@ -104,13 +103,13 @@ public class XMLConfigurationReader {
 	
 	
 	/**
-	 * @return {@link List} of {@link SequenceDataBank} that are configured in
+	 * @return {@link List} of {@link AbstractSequenceDataBank} that are configured in
 	 *         the XML file.
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<SequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData {
+	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData {
 		// TODO: to check if the XML is valid
 		Element rootElement = doc.getRootElement();
 		Element databanks = rootElement.element("databanks");
@@ -119,10 +118,10 @@ public class XMLConfigurationReader {
 			return null;
 		}
 
-		List<SequenceDataBank> sequenceDataBanks = Lists.newLinkedList();
-		Iterator databankIterator = databanks.elementIterator();
+		List<AbstractSequenceDataBank> sequenceDataBanks = Lists.newLinkedList();
+		Iterator<AbstractDNASequenceDataBank> databankIterator = databanks.elementIterator();
 		while (databankIterator.hasNext()) {
-			SequenceDataBank databank = getDatabank((Element) databankIterator.next(), null);
+			AbstractSequenceDataBank databank = getDatabank((Element) databankIterator.next(), null);
 			if (databank == null) {
 				return null;
 			}
@@ -133,8 +132,8 @@ public class XMLConfigurationReader {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static SequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends DNASequenceDataBank> parent) throws IOException, InvalidHeaderData {
+	private static AbstractSequenceDataBank getDatabank(Element e,
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidHeaderData {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
@@ -181,17 +180,9 @@ public class XMLConfigurationReader {
 			return splittedSequenceDatabank;
 		}
 
-		if (e.getName().trim().equals("databank")) {
-			StorageKind storageKind = null;
-			String storage = e.attributeValue("storage");
-			if (storage == null || storage.equals("memory")) {
-				storageKind = StorageKind.MEMORY;
-			} else {
-				storageKind = StorageKind.DISK;
-			}
-					
+		if (e.getName().trim().equals("databank")) {				
 			try {
-				return new IndexedDNASequenceDataBank(name, new File(path), parent, storageKind, subSequenceLength, mask);
+				return new IndexedDNASequenceDataBank(name, subSequenceLength, mask, new File(path), parent);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -199,7 +190,7 @@ public class XMLConfigurationReader {
 
 		} else if (e.getName().trim().equals("databank-collection")) {			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), new File(path), parent, subSequenceLength);
+					name, DNATools.getDNA(), subSequenceLength, new File(path), parent);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
