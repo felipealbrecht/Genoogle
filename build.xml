@@ -88,47 +88,10 @@
 		</javadoc>
 	</target>
 
-	<target name="start-scheduler" depends="package">
-		<java classname="bio.pih.Genoogle" fork="true">
-			<arg value="-s" />
-			<arg value="files/workers" />
-			<classpath>
-				<pathelement location="${jar.genoogle}" />
-				<fileset dir="./lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</java>
-	</target>
-
-	<target name="start-worker" depends="package">
-		<java classname="bio.pih.Genoogle" fork="true" spawn="true">
-			<arg value="-w" />
-			<arg value="5000" />
-			<classpath>
-				<pathelement location="${jar.genoogle}" />
-				<fileset dir="./lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</java>
-
-		<java classname="bio.pih.Genoogle" fork="true" spawn="true">
-			<arg value="-w" />
-			<arg value="5001" />
-			<classpath>
-				<pathelement location="${jar.genoogle}" />
-				<fileset dir="./lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</java>
-	</target>
-
 	<target name="start-web" depends="package">
 		<echo message="Starting web server" />
 
-		<java maxmemory="512m" classname="bio.pih.web.WebServer" fork="true">
+		<java maxmemory="1024m" classname="bio.pih.web.WebServer" fork="true">
 			<arg value="localhost" />
 			<arg value="/home/albrecht/genoogle/webapps" />
 			<arg value="8080"/>
