@@ -46,8 +46,8 @@ import com.google.common.collect.Lists;
  */
 public class Genoogle {
 
-	public static Double VERSION = 0.69;
-	public static String COPYRIGHT_NOTICE = "Genoogle - Felipe Albrecht (2009).";
+	public static Double VERSION = 0.70;
+	public static String COPYRIGHT_NOTICE = "Felipe Albrecht (2009).";
 	
 	SearchManager sm = null;
 	private static Genoogle singleton = null;

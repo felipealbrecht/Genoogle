@@ -41,10 +41,11 @@ public class Output {
 		Document doc = factory.createDocument();
 		doc.setName("genoogle");
 
-		Element output = doc.addElement("genoogle").addAttribute("version", Genoogle.VERSION.toString());
-		output.addElement("references").addAttribute("program", "Genoogle").addAttribute("version", Genoogle.VERSION.toString()).addAttribute("authors", Genoogle.COPYRIGHT_NOTICE);
-		Element iterationsElement = output.addElement("iterations");
+		Element output = doc.addElement("genoogle");
+		output.addAttribute("version", Genoogle.VERSION.toString());
+		output.addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
 
+		Element iterationsElement = output.addElement("iterations");
 		for (int i = 0; i < searchResults.size(); i++) {
 			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number", String.valueOf(i));
 			iterationElement.add(searchResultToXML(searchResults.get(i)));
