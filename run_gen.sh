@@ -4,4 +4,4 @@ $JAVA_HOME/bin/java \
  -Xmx2048m \
  -server \
  -classpath genoogle.jar:lib/* \
- bio.pih.SOIS -g
+ bio.pih.Genoogle -g

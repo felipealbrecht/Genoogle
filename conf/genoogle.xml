@@ -24,13 +24,13 @@
   <genoogle:databanks>
   
  
-<!--  <genoogle:split-databanks name="RefSeq_11" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">-->
-<!--    <genoogle:databank name="Frog"        path="frog.rna.fna"  storage="memory" /> -->
-<!--    <genoogle:databank name="Human"       path="human.rna.fna" storage="memory" />-->
-<!--    <genoogle:databank name="Mouse"       path="mouse.rna.fna" storage="memory" />-->
-<!--    <genoogle:databank name="Rat"         path="rat.rna.fna" storage="memory" />-->
-<!--    <genoogle:databank name="Zebrafish"   path="zebrafish.rna.fna" storage="memory" />-->
-<!--  </genoogle:split-databanks> -->
+  <genoogle:split-databanks name="RefSeq_11" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+    <genoogle:databank name="Frog"        path="frog.rna.fna"  storage="memory" /> 
+    <genoogle:databank name="Human"       path="human.rna.fna" storage="memory" />
+    <genoogle:databank name="Mouse"       path="mouse.rna.fna" storage="memory" />
+    <genoogle:databank name="Rat"         path="rat.rna.fna" storage="memory" />
+    <genoogle:databank name="Zebrafish"   path="zebrafish.rna.fna" storage="memory" />
+  </genoogle:split-databanks> 
 
   
     <genoogle:split-databanks name="RefSeq_9"  path="files/fasta" mask="1110100110111" number-of-sub-databanks="1" sub-sequence-length="9">

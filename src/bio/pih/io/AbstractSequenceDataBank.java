@@ -15,8 +15,10 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 
 /**
- * This abstract class which specifies the ways to access a sequences data banks.
- * The methods are divided into 3 classes: general information like name and path, add a sequence file, a single sequence or a collection of them and sync these data and for last, and some way the most important, do searchs.
+ * This abstract class which specifies the ways to access a sequences data banks. The methods are
+ * divided into 3 classes: general information like name and path, add a sequence file, a single
+ * sequence or a collection of them and sync these data and for last, and some way the most
+ * important, do searchs.
  * 
  * @author albrecht
  */
@@ -26,15 +28,12 @@ public abstract class AbstractSequenceDataBank {
 	protected final FiniteAlphabet alphabet;
 	protected final int subSequenceLength;
 	protected final DNASequenceEncoderToInteger encoder;
-	
+
 	protected final File path;
 	protected final DatabankCollection<? extends AbstractDNASequenceDataBank> parent;
-	
 
-	protected File fullPath = null;
-	
-	protected AbstractSequenceDataBank(String name, FiniteAlphabet alphabet, int subSequenceLength, 
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
+	protected AbstractSequenceDataBank(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
@@ -42,7 +41,7 @@ public abstract class AbstractSequenceDataBank {
 		this.path = path;
 		this.parent = parent;
 	}
-	
+
 	/**
 	 * The name is related with the files names too.
 	 * 
@@ -53,48 +52,64 @@ public abstract class AbstractSequenceDataBank {
 	}
 
 	/**
-	 * @return the file name and directory where is this SequenceDataBank.
+	 * @return the file name and directory where is this SequenceDataBank. It should used at run
+	 *         time and not formating db time.
 	 */
 	public File getFilePath() {
+		return getFilePath(false);
+	}
+
+	/**
+	 * @param formating informs if it was called during formating db time.
+	 * @return the file name and directory where is this SequenceDataBank.
+	 */
+	public File getFilePath(boolean formating) {
 		return path;
 	}
-	
+
 	/**
-	 * @return the file name and directory where is this SequenceDataBank considering its parent.
+	 * @return the file name and directory where is this SequenceDataBank considering its parent. It
+	 *         should used at run time and not formating db time.
 	 */
 	public File getFullPath() {
-		if (fullPath == null) {
-			if (getParent() == null) {
-				fullPath = getFilePath();
-			} else {
-				fullPath = new File(getParent().getFullPath(), this.getFilePath().getPath());
-			}
+		return getFullPath(false);
+	}
+
+	/**
+	 * @param formating informs if it was called during formating db time.
+	 * @return the file name and directory where is this SequenceDataBank considering its parent.
+	 */
+	public File getFullPath(boolean formating) {
+		if (getParent() == null) {
+			return getFilePath(formating);
+		} else {
+			return new File(getParent().getFullPath(formating), this.getFilePath(formating).getPath());
 		}
-		return fullPath;
 	}
 
 	/**
 	 * @return the number of sequences stored in this SequenceDataBank
 	 */
 	abstract public int getNumberOfSequences();
-	
+
 	/**
-	 * @return the total number of sequences stored in this SequenceDataBank and all siblings.
-	 * <b>To calculate statistics, this value should be used</b>.
-	 */	
+	 * @return the total number of sequences stored in this SequenceDataBank and all siblings. <b>To
+	 *         calculate statistics, this value should be used</b>.
+	 */
 	abstract public long getTotalNumberOfSequences();
-	
+
 	/**
-	 * @return the number of nucleotides (DNA) or amino acids (Protein) stored in this SequenceDataBank.
-	 */	
+	 * @return the number of nucleotides (DNA) or amino acids (Protein) stored in this
+	 *         SequenceDataBank.
+	 */
 	abstract public long getDataBaseSize();
-	
+
 	/**
-	 * @return the number of bases stored in this SequenceDataBank and all siblings.
-	 * <b>This value should be used to calculate statistics, </b>. 
-	 */	
+	 * @return the number of bases stored in this SequenceDataBank and all siblings. <b>This value
+	 *         should be used to calculate statistics, </b>.
+	 */
 	abstract public long getTotalDataBaseSize();
-	
+
 	/**
 	 * @return the {@link FiniteAlphabet} of the sequences of this sequence bank.
 	 */
@@ -110,52 +125,58 @@ public abstract class AbstractSequenceDataBank {
 	 * @throws NoSuchElementException
 	 * @throws BioException
 	 * @throws IOException
-	 * @throws IndexConstructionException 
+	 * @throws IndexConstructionException
 	 */
-	abstract public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException, IOException, IndexConstructionException;
+	abstract public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
+			BioException, IOException, IndexConstructionException;
 
 	/**
 	 * Load this sequence bank
 	 * 
 	 * @throws IOException
-	 * @throws ValueOutOfBoundsException  
-	 * @throws InvalidHeaderData 
-	 * @throws BioException 
-	 * @throws IllegalSymbolException 
+	 * @throws ValueOutOfBoundsException
+	 * @throws InvalidHeaderData
+	 * @throws BioException
+	 * @throws IllegalSymbolException
 	 */
-	abstract public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException;	
-	
+	abstract public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData,
+			IllegalSymbolException, BioException;
+
 	/**
-	 * Encode the sequences into a computer legible mode 
-	 * @throws IOException 
-	 * @throws BioException 
-	 * @throws NoSuchElementException 
-	 * @throws ValueOutOfBoundsException 
-	 * @throws InvalidHeaderData 
-	 * @throws IndexConstructionException 
+	 * Encode the sequences into a computer legible mode
+	 * 
+	 * @throws IOException
+	 * @throws BioException
+	 * @throws NoSuchElementException
+	 * @throws ValueOutOfBoundsException
+	 * @throws InvalidHeaderData
+	 * @throws IndexConstructionException
 	 */
-	abstract public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException;
-	
+	abstract public void encodeSequences() throws IOException, NoSuchElementException, BioException,
+			ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException;
+
 	/**
-	 * @return the parent of this {@link AbstractSequenceDataBank} or <code>null</code> if it do not have parent 
+	 * @return the parent of this {@link AbstractSequenceDataBank} or <code>null</code> if it do not
+	 *         have parent
 	 */
 	protected AbstractSequenceDataBank getParent() {
 		return parent;
 	}
 
-	
 	/**
-	 * @return <code>true</code> if the data bank files and its data are okay. This method do <b>not</b> check file consistency. 
+	 * @return <code>true</code> if the data bank files and its data are okay. This method do
+	 *         <b>not</b> check file consistency.
 	 */
 	abstract public boolean check();
-	
+
 	/**
-	 * @return {@link DNASequenceEncoderToInteger} witch is responsible to encode the sequences in this data bank.
+	 * @return {@link DNASequenceEncoderToInteger} witch is responsible to encode the sequences in
+	 *         this data bank.
 	 */
 	public DNASequenceEncoderToInteger getEncoder() {
 		return encoder;
-	} 
-	
+	}
+
 	/**
 	 * @return length of the sub sequences stored in this data bank.
 	 */
@@ -163,7 +184,6 @@ public abstract class AbstractSequenceDataBank {
 		return subSequenceLength;
 	}
 
-	
 	/**
 	 * Delete all file informations of this data bank.
 	 */

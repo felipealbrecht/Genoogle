@@ -125,7 +125,10 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public File getFilePath() {
+	public File getFilePath(boolean formating) {
+		if (formating) {
+			return path;
+		}
 		return new File(path, name);
 	}
 

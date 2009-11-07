@@ -81,7 +81,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
-			fastaFiles.add(new FastaFileInfo(sequence.getFullPath()));
+			fastaFiles.add(new FastaFileInfo(sequence.getFullPath(true)));
 		}
 
 		long totalBasesCount = 0;
@@ -97,6 +97,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		actualSequenceDatank.beginIndexBuild();
 		int totalSequences = 0;
 		long totalBases = 0;
+		
+		getFullPath().mkdirs();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();

@@ -9,17 +9,7 @@
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/annotations-api.jar"/>
-	<classpathentry kind="lib" path="lib/bootstrap.jar"/>
-	<classpathentry kind="lib" path="lib/bytecode.jar"/>
-	<classpathentry kind="lib" path="lib/catalina-ant.jar"/>
-	<classpathentry kind="lib" path="lib/catalina-ha.jar"/>
-	<classpathentry kind="lib" path="lib/catalina-tribes.jar"/>
 	<classpathentry kind="lib" path="lib/catalina.jar"/>
-	<classpathentry kind="lib" path="lib/commons-cli.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-daemon.jar"/>
-	<classpathentry kind="lib" path="lib/commons-dbcp-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-pool-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/el-api.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-el.jar"/>
@@ -29,12 +19,9 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-coyote.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat-i18n-es.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat-i18n-fr.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat-i18n-ja.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry kind="lib" path="lib/bytecode.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
