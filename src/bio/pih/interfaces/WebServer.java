@@ -9,6 +9,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Embedded;
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
@@ -16,6 +17,8 @@ import bio.pih.Genoogle;
 import bio.pih.index.InvalidHeaderData;
 
 public class WebServer implements Runnable {
+	
+	static Logger logger = Logger.getLogger(WebServer.class.getName());
 	
 	private volatile boolean running = true;
 	Embedded embedded = null;
@@ -63,9 +66,9 @@ public class WebServer implements Runnable {
 		try {
 			this.start();
 		} catch (LifecycleException e) {
-			e.printStackTrace();
+			logger.fatal(e);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.fatal(e);
 		}
 	}
 

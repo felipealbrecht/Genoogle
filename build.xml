@@ -24,7 +24,7 @@
 		<!-- Jar configuration -->
 		<property name="manifest.dir" location="./manifest" />
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
-		<property name="jar.genoogle" location="${build.dir}/genoogle.war" />
+		<property name="targz.genoogle" location="genoogle.tar.gz" />
 
 
 		<!-- Javac properties -->
@@ -37,6 +37,9 @@
 		<!-- Javadoc properties -->
 		<property name="build.docs" location="${build.dir}/docs" />
 		<property name="packages" value="bio.pih.*" />
+
+        <!-- Packing info -->
+		<property name="packing.dir" location="packing/genoogle" />    
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
@@ -65,11 +68,46 @@
 		</javac>
 	</target>
 
-	<target name="package" depends="compile">
+	<target name="jar" depends="compile">
 		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
 			<fileset dir="${build.classes.dir}" />
 		</jar>
 	</target>
+
+	<target name="packing_dir" depends="jar">
+		<mkdir dir="${packing.dir}"/>
+
+		<copy file="${jar.genoogle}" tofile="${packing.dir}/genoogle.jar"/>
+
+		<copy file="run_console.sh" tofile="${packing.dir}/run_console.sh"/>
+		<copy file="run_gen.sh" tofile="${packing.dir}/run_gen.sh"/>
+		<copy file="run_web.sh" tofile="${packing.dir}/run_web.sh"/>
+
+		<copy file="./conf/genoogle_default.xml" tofile="${packing.dir}/conf/genoogle.xml"/>
+		<copy file="./conf/log4j.properties" tofile="${packing.dir}/conf/log4j.properties"/>
+	
+		<mkdir dir="${packing.dir}/files/fasta"/>
+		<copy file="files/fasta/AE000657.fna" tofile="${packing.dir}/files/fasta/AE000657.fna"/>
+		
+		<copy todir="${packing.dir}/lib">
+			<fileset dir="./lib"/>
+		</copy>
+
+		<copy todir="${packing.dir}/webapps">
+			<fileset dir="./webapps">
+				<exclude name="**/work/"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="packing" depends="packing_dir">
+		<tar destfile="genoogle.tar" basedir="./packing"/>
+		<gzip destfile="${targz.genoogle}" src="genoogle.tar"/>
+	    
+		<delete file="genoogle.tar"/>
+		<delete dir="./packing"/>
+	</target>
+   
 
 	<!-- Creates the API documentation -->
 	<target name="javadoc" depends="compile" description="Creates the API documentation">
@@ -88,7 +126,7 @@
 		</javadoc>
 	</target>
 
-	<target name="start-web" depends="package">
+	<target name="start-web" depends="jar">
 		<echo message="Starting web server" />
 
 		<java maxmemory="1024m" classname="bio.pih.web.WebServer" fork="true">
@@ -132,8 +170,10 @@
 	</target>
 
 	<target name="clear" depends="init" description="clean">
-		<echo message="Deleting ${build.dir}" />
+<!--		<echo message="Deleting ${build.dir}" />
 		<delete dir="${build.dir}" />
+		<delete dir="${packing.dir}" />
+		<delete file="${targz.genoogle}" /> -->
 	</target>
 
 

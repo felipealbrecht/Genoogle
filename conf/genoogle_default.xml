@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
+
+  <genoogle:search-manager>
+    <genoogle:max-simultaneous-searchs value="1"/>     
+  </genoogle:search-manager>
+  
+  <genoogle:score>
+    <genoogle:match value="1"/>
+    <genoogle:dismatch value="-3" />
+  </genoogle:score>
+
+  <genoogle:search-parameters>
+    <genoogle:max-sub-sequence-distance   value="30"/>
+    <genoogle:min-evalue                  value="1E-5" />
+    <genoogle:extend-dropoff              value="3" />
+    <genoogle:max-hits-results            value="50" />
+    <genoogle:max-threads-index-search    value="2" />
+    <genoogle:min-query-slice-length      value="250" />
+    <genoogle:query-split-quantity        value="1" />
+  </genoogle:search-parameters>
+
+  <genoogle:databanks>
+    <genoogle:split-databanks name="Aquifex aeolicus" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+      <genoogle:databank name="Aquifex aeolicus" path="AE000657.fna" storage="memory" />
+    </genoogle:split-databanks>
+  </genoogle:databanks>  	
+
+</genoogle:conf>
