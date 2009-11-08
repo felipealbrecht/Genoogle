@@ -18,6 +18,7 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.interfaces.Console;
 import bio.pih.io.AbstractSequenceDataBank;
+import bio.pih.io.InvalidConfigurationException;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 import bio.pih.search.SearchParams;
@@ -51,8 +52,9 @@ public class Genoogle {
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
+	 * @throws InvalidConfigurationException 
 	 */
-	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException {
+	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
 		if (singleton == null) {
 			try {
 				singleton = new Genoogle();
@@ -75,9 +77,10 @@ public class Genoogle {
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
+	 * @throws InvalidConfigurationException 
 	 */
 	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
-			BioException {
+			BioException, InvalidConfigurationException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		sm = XMLConfigurationReader.getSearchManager();
 	}
@@ -188,7 +191,7 @@ public class Genoogle {
 	}
 
 	public static void main(String[] args) throws IOException, InvalidHeaderData, ValueOutOfBoundsException,
-			IllegalSymbolException, BioException {
+			IllegalSymbolException, BioException, InvalidConfigurationException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		logger.info(SOFTWARE_NAME + " - " + VERSION);
 		logger.info(COPYRIGHT_NOTICE);

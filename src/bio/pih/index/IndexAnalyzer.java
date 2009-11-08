@@ -20,6 +20,7 @@ import bio.pih.io.DatabankCollection;
 import bio.pih.io.IndexedDNASequenceDataBank;
 import bio.pih.io.IndexedSequenceDataBank;
 import bio.pih.io.AbstractSequenceDataBank;
+import bio.pih.io.InvalidConfigurationException;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 
@@ -29,7 +30,7 @@ import com.google.common.collect.Maps;
 public class IndexAnalyzer {
 
 	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
+	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
 		PropertyConfigurator.configure("conf/log4j.properties");
 		SearchManager sm = XMLConfigurationReader.getSearchManager();
 		IndexAnalyzer analyzer = new IndexAnalyzer();

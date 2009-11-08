@@ -15,6 +15,7 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.Genoogle;
 import bio.pih.index.InvalidHeaderData;
+import bio.pih.io.InvalidConfigurationException;
 
 public class WebServer implements Runnable {
 	
@@ -24,7 +25,7 @@ public class WebServer implements Runnable {
 	Embedded embedded = null;
 
 	public WebServer(String defaultHost, int port, String path) throws LifecycleException,
-			InvalidHeaderData, IllegalSymbolException, BioException {
+			InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
 		System.out.println(defaultHost);
 		System.out.println(path);
 
@@ -72,7 +73,7 @@ public class WebServer implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) throws IllegalSymbolException, InvalidHeaderData, BioException, LifecycleException, InterruptedException {
+	public static void main(String[] args) throws IllegalSymbolException, InvalidHeaderData, BioException, LifecycleException, InterruptedException, InvalidConfigurationException {
 		String defaultHost = args[0];
 		String path = args[1];
 		int port = Integer.parseInt(args[2]);

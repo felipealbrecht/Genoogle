@@ -36,8 +36,8 @@ public class XMLConfigurationReader {
 		try {
 			doc = new SAXReader().read(new File(path));
 		} catch (Exception e) {
-			System.err.println("Error reading the configuration at " + path + ".");
-			System.err.println(e);
+			logger.fatal("Error reading the configuration at " + path + ".");
+			logger.fatal(e);
 		}
 	}
 
@@ -49,8 +49,9 @@ public class XMLConfigurationReader {
 	 * @throws InvalidHeaderData 
 	 * @throws BioException 
 	 * @throws IllegalSymbolException 
+	 * @throws InvalidConfigurationException 
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));
@@ -107,9 +108,10 @@ public class XMLConfigurationReader {
 	 *         the XML file.
 	 * @throws InvalidHeaderData 
 	 * @throws IOException 
+	 * @throws InvalidConfigurationException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData {
+	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData, InvalidConfigurationException {
 		// TODO: to check if the XML is valid
 		Element rootElement = doc.getRootElement();
 		Element databanks = rootElement.element("databanks");
@@ -133,7 +135,7 @@ public class XMLConfigurationReader {
 
 	@SuppressWarnings("unchecked")
 	private static AbstractSequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidHeaderData {
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidHeaderData, InvalidConfigurationException {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
@@ -147,15 +149,20 @@ public class XMLConfigurationReader {
 		}
 		
 		if (name == null) {
-			logger.fatal("Missing attribute name in element " + e.getName());
-			return null;
+			throw new InvalidConfigurationException("Missing attribute name in element " + e.getName());
 		}
 
 		if (path == null) {
-			logger.fatal("Missing attribute path in element " + e.getName());
-			return null;
+			throw new InvalidConfigurationException("Missing attribute path in element " + e.getName());
 		}
 		
+		if (path.equals(name)) {
+			throw new InvalidConfigurationException("It is not possible to have a FASTA (" + path + ") file with the same name (" + name + ").");
+		}
+		
+		if ((parent != null) && path.equals(parent.getName())) {
+			throw new InvalidConfigurationException("It is not possible to have a FASTA (" + path + ") file with the same name (" + parent.getName() + ") of the its parent data bank.");
+		}
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
