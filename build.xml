@@ -26,10 +26,9 @@
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
 		<property name="targz.genoogle" location="genoogle.tar.gz" />
 
-
 		<!-- Javac properties -->
 		<property name="javac.depend" value="false" />
-		<property name="javac.debug" value="true" />
+		<property name="javac.debug" value="false" />
 		<property name="javac.deprecation" value="false" />
 		<property name="javac.source" value="6" />
 		<property name="javac.target" value="6" />
@@ -43,6 +42,19 @@
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
+
+
+		<!-- War file craeation -->
+		<property name="jsp.dir.name" value="webapp" />
+		<property name="package.name" value="${jsp.dir.name}.war" />
+	    <property name="webapp.dir" value="webapps" />
+
+		<property name="dest.dir" value="target" />
+
+		<property name="temp.dir" value="temp" />
+
+
+
 
 
 		<echo message="JUnit present:                      ${junit.present}" />
@@ -80,7 +92,7 @@
 		<copy file="${jar.genoogle}" tofile="${packing.dir}/genoogle.jar"/>
 
 		<copy file="run_console.sh" tofile="${packing.dir}/run_console.sh"/>
-		<copy file="run_gen.sh" tofile="${packing.dir}/run_gen.sh"/>
+		<copy file="format_db.sh" tofile="${packing.dir}/format_db.sh"/>
 		<copy file="run_web.sh" tofile="${packing.dir}/run_web.sh"/>
 
 		<copy file="./conf/genoogle_default.xml" tofile="${packing.dir}/conf/genoogle.xml"/>
@@ -125,6 +137,44 @@
 
 		</javadoc>
 	</target>
+
+	<target name="war" depends="jar">
+		   <!-- copy the config files -->
+      <copy file="${resources.dir}/MANIFEST.MF" tofile="${temp.dir.meta-inf}/MANIFEST.MF" overwrite="true" />
+      <copy file="${resources.dir}/web.xml" tofile="${temp.dir.web-inf}/web.xml" overwrite="true" />
+      <copy file="${resources.dir}/managed-beans.xml" tofile="${temp.dir.web-inf}/managed-beans.xml" overwrite="true" />
+      <copy file="${resources.dir}/navigation-rules.xml" tofile="${temp.dir.web-inf}/navigation-rules.xml" overwrite="true" />
+
+      <copy todir="${temp.dir.classes}">
+        <fileset dir="${src.dir}">
+          <include name="**/*.xml"/>
+          <include name="**/*.xsl"/>
+        </fileset>
+      </copy>
+    	
+      <!-- with all resources in place, create the war file -->
+      <war destfile="${package.file}" webxml="${temp.dir.web-inf}/web.xml" basedir="${temp.dir}">
+        <fileset dir="${pages.dir}"/>
+        <lib dir="${lib.dir}" />
+        <classes dir="${temp.dir.classes}" />
+      </war>
+    </target>
+
+    <!-- JUST DEPLOY JSP's -->
+    <target name="jsps">
+      <!-- i'm trying to be explicit about what i put out there -->
+      <copy todir="${webapp.dir}/${jsp.dir.name}">
+        <fileset dir="${pages.dir}">
+          <include name="**/*.jsp"/>
+          <include name="**/*.html"/>
+          <include name="**/*.css"/>
+          <include name="**/*.gif"/>
+          <include name="**/*.jpg"/>
+          <include name="**/*.png"/>
+          <include name="**/*.js"/>
+        </fileset>
+      </copy>
+    </target>			
 
 	<target name="start-web" depends="jar">
 		<echo message="Starting web server" />

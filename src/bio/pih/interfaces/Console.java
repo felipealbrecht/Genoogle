@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
@@ -69,15 +68,6 @@ public class Console implements Runnable {
 
 	public void execute(InputStreamReader isr, boolean echo) {
 		BufferedReader lineReader = new BufferedReader(isr);
-		PrintStream output = null;
-
-		try {
-			File file = new File("timer_output");
-			output = new PrintStream(file);
-		} catch (FileNotFoundException e1) {
-			logger.error(e1);
-			return;
-		}
 
 		boolean executePrev = false;
 		String prev = null;
@@ -200,10 +190,6 @@ public class Console implements Runnable {
 
 					} else {
 						System.err.println("Unknow command: " + commands[0]);
-					}
-
-					if (end != -1) {
-						output.println(line + "\t" + begin + "\t" + end + "\t" + (end - begin));
 					}
 
 					prev = line;
