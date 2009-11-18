@@ -73,6 +73,10 @@ public class Console implements Runnable {
 		String prev = null;
 		String line = null;
 
+
+		Map<Parameter, Object> consoleParameters = SearchParams.getSearchParamsMap();
+		
+
 		System.out.print("genoogle console> ");
 
 		try {
@@ -107,11 +111,7 @@ public class Console implements Runnable {
 							String queryFile = commands[2];
 							String outputFile = commands[3];
 
-							System.out.println("DB: " + db);
-							System.out.println("Query: " + queryFile);
-							System.out.println("Output: " + outputFile);
-
-							Map<Parameter, Object> parameters = Maps.newHashMap();
+							Map<Parameter, Object> searchParameters = Maps.newHashMap();
 
 							for (int i = 4; i < commands.length; i++) {
 								String command = commands[i];
@@ -128,13 +128,13 @@ public class Console implements Runnable {
 									continue;
 								}
 								Object value = p.convertValue(paramValue);
-								parameters.put(p, value);
+								searchParameters.put(p, value);
 							}
 
 							if (new File(queryFile).exists()) {
 								BufferedReader in = new BufferedReader(new FileReader(queryFile));
 								profileLogger.info("<" + line + ">");
-								List<SearchResults> results = genoogle.doBatchSyncSearch(in, db, parameters);
+								List<SearchResults> results = genoogle.doBatchSyncSearch(in, db, searchParameters);
 								end = System.currentTimeMillis();
 								long total = end - begin;
 								profileLogger.info("</" + line + ":" + total + ">");
@@ -166,8 +166,8 @@ public class Console implements Runnable {
 						System.out.println(genoogle.getDefaultDatabank());
 
 					} else if (commands[0].equals(PARAMETERS)) {
-						for (SearchParams.Parameter param : SearchParams.Parameter.values()) {
-							System.out.println(param.getName());
+						for (Parameter parameter: consoleParameters.keySet()) {
+							System.out.println(parameter.getName() + "=" + consoleParameters.get(parameter));
 						}
 
 					} else if (commands[0].equals(PREV) || commands[0].equals("p")) {
