@@ -76,8 +76,6 @@ public class SearchManager {
 				requestsExecutor);
 
 		for (SearchParams sp : sps) {
-			logger.info("doSearch on " + sp);
-
 			AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
 			if (databank == null) {
 				throw new UnknowDataBankException(this, sp.getDatabank());

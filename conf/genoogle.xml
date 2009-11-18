@@ -3,7 +3,7 @@
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
   <genoogle:search-manager>
-    <genoogle:max-simultaneous-searchs value="1"/>     
+    <genoogle:max-simultaneous-searchs value="2"/>     
   </genoogle:search-manager>
   
   <genoogle:score>
@@ -12,14 +12,14 @@
   </genoogle:score>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="30"/>
-    <genoogle:min-hsp-length              value="20" />
+    <genoogle:max-sub-sequence-distance   value="11"/>
+    <genoogle:min-hsp-length              value="22" />
     <genoogle:extend-dropoff              value="3" />
-    <genoogle:max-hits-results            value="50" />
-    <genoogle:max-threads-index-search    value="2" />
-    <genoogle:max-threads-extend-align    value="4" />
-    <genoogle:min-query-slice-length      value="250" />
-    <genoogle:query-split-quantity        value="1" />
+    <genoogle:max-hits-results            value="20" />
+    <genoogle:max-threads-index-search    value="4" />
+    <genoogle:max-threads-extend-align    value="8" />
+    <genoogle:min-query-slice-length      value="1000" />
+    <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
 
   <genoogle:databanks>

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import bio.pih.search.UnknowDataBankException;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 import bio.pih.seq.LightweightSymbolList;
+import bio.pih.util.InputSequencesReader;
 
 import com.google.common.collect.Lists;
 
@@ -48,7 +50,7 @@ public class Genoogle {
 	static Logger logger = Logger.getLogger(Genoogle.class.getName());
 
 	/**
-	 * @return Genoogle Singleton instance.
+	 * @return {@link Genoogle} Singleton instance.
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
@@ -90,13 +92,13 @@ public class Genoogle {
 	 * @param databank
 	 * @return {@link List} of {@link SearchResults} of the given queries.
 	 * @throws IOException
-	 * @throws IllegalSymbolException
 	 * @throws UnknowDataBankException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
+	 * @throws BioException 
+	 * @throws NoSuchElementException 
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, IllegalSymbolException,
-			UnknowDataBankException, InterruptedException, ExecutionException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
@@ -109,8 +111,7 @@ public class Genoogle {
 		return sm.getDefaultDataBankName();
 	}
 
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IllegalSymbolException,
-			IOException, UnknowDataBankException, InterruptedException, ExecutionException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IOException, UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		return doBatchSyncSearch(in, databank, null);
 	}
 
@@ -119,23 +120,20 @@ public class Genoogle {
 	 * @param databank
 	 * @return {@link List} of {@link SearchResults} of the given queries.
 	 * @throws IOException
-	 * @throws IllegalSymbolException
 	 * @throws UnknowDataBankException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
+	 * @throws BioException 
+	 * @throws NoSuchElementException 
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank, Map<Parameter, Object> parameters)
-			throws IOException, IllegalSymbolException, UnknowDataBankException, InterruptedException,
-			ExecutionException {
+			throws IOException, UnknowDataBankException, InterruptedException,
+			ExecutionException, NoSuchElementException, BioException {
 
+		List<SymbolList> list = InputSequencesReader.read(in);
+		
 		List<SearchParams> batch = Lists.newLinkedList();
-		while (in.ready()) {
-			String seqString = in.readLine();
-			seqString = seqString.trim();
-			if (seqString.length() == 0) {
-				continue;
-			}
-			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
+		for (SymbolList sequence: list) {
 			SearchParams sp;
 			if (parameters == null) {
 				sp = new SearchParams(sequence, databank);
