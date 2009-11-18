@@ -25,10 +25,10 @@ import com.google.common.collect.Maps;
  * @author albrecht
  */
 public class Output {
-	
+
 	private final static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
 	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
-	
+
 	/**
 	 * @param searchResults
 	 * 
@@ -47,13 +47,14 @@ public class Output {
 
 		Element iterationsElement = output.addElement("iterations");
 		for (int i = 0; i < searchResults.size(); i++) {
-			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number", String.valueOf(i));
+			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number",
+					String.valueOf(i));
 			iterationElement.add(searchResultToXML(searchResults.get(i)));
 		}
 
 		return doc;
 	}
-	
+
 	/**
 	 * @param searchResult
 	 * 
@@ -69,14 +70,15 @@ public class Output {
 		Map<String, String> xslProcessing = Maps.newHashMap();
 		xslProcessing.put("type", "text/xsl");
 		xslProcessing.put("href", "results.xsl");
-		ProcessingInstruction xsltInstruction = DocumentHelper.createProcessingInstruction("xml-stylesheet", xslProcessing);
+		ProcessingInstruction xsltInstruction = DocumentHelper.createProcessingInstruction("xml-stylesheet",
+				xslProcessing);
 		doc.add(xsltInstruction);
-		
 
 		Element output = doc.addElement("genoogle");
-		output.addElement("references").addAttribute("program", Genoogle.SOFTWARE_NAME).addAttribute("version", "0.01").addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
+		output.addElement("references").addAttribute("program", Genoogle.SOFTWARE_NAME).addAttribute("version",
+				Double.toString(Genoogle.VERSION)).addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
 		output.add(searchResultToXML(searchResult));
-		
+
 		return doc;
 	}
 
@@ -87,7 +89,7 @@ public class Output {
 	public static Element searchResultToXML(SearchResults searchResult) {
 		assert searchResult != null;
 		if (searchResult.hasFail()) {
-			for (Throwable e: searchResult.getFails()) {
+			for (Throwable e : searchResult.getFails()) {
 				e.printStackTrace(System.err);
 			}
 		}
@@ -119,7 +121,7 @@ public class Output {
 
 	/**
 	 * @param hits
-	 * @return {@link Element} containing the {@link List} of  {@link Hit} at XML form.
+	 * @return {@link Element} containing the {@link List} of {@link Hit} at XML form.
 	 */
 	public static Element hitsToXML(List<Hit> hits) {
 		assert hits != null;
@@ -149,7 +151,7 @@ public class Output {
 		hitElement.addAttribute("length", Integer.toString(hit.getLength()));
 		hitElement.addAttribute("databank", hit.getDatabankName());
 		hitElement.add(hspsToXML(hit.getHSPs()));
-		
+
 		return hitElement;
 	}
 
@@ -187,22 +189,21 @@ public class Output {
 		hspElement.addAttribute("hit-to", Integer.toString(hsp.getHitTo()));
 		hspElement.addAttribute("identity-len", Integer.toString(hsp.getIdentityLength()));
 		hspElement.addAttribute("align-len", Integer.toString(hsp.getAlignLength()));
-		
+
 		hspElement.addElement("query").addText(hsp.getQuerySeq());
 		hspElement.addElement("path").addText(hsp.getPathSeq());
 		hspElement.addElement("target").addText(hsp.getTargetSeq());
-				
 
 		return hspElement;
 	}
-	
+
 	public static String doubleToString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
 		formatter.format(SIMPLE_DOUBLE_FORMAT, value);
 		return sb.toString();
 	}
-	
+
 	public static String doubleToScientificString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
