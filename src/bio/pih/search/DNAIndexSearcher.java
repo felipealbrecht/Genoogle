@@ -96,7 +96,7 @@ public class DNAIndexSearcher implements Runnable {
 
 			logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
 					+ " with the sequence with " + sliceQuery.length() + "bases and min subSequenceLength >= "
-					+ this.statistics.getMinLengthDropOut());
+					+ this.sp.getMinHspLength());
 
 			long bMask = System.currentTimeMillis();
 			int[] iess = getEncodedSubSequences(sliceQuery, databank.getMaskEncoder());
@@ -156,7 +156,7 @@ public class DNAIndexSearcher implements Runnable {
 	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset) throws ValueOutOfBoundsException,
 			IOException, InvalidHeaderData {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, statistics.getMinLengthDropOut(), subSequenceLength, this);
+		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this);
 
 		for (int ss = 0; ss < iess.length; ss++) {
 			retrieveIndexPosition(iess[ss], retrievedData, ss + offset);

@@ -57,7 +57,7 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 		SymbolList query = sp.getQuery();
 
-		Statistics statistics = new Statistics(sp.getMatchScore(), sp.getDismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences(), sp.getMinEvalue());
+		Statistics statistics = new Statistics(sp.getMatchScore(), sp.getDismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
 		String seqString = query.seqString();
 
@@ -89,7 +89,7 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 		logger.info("(" + id + ") " + querySplitQuantity + " threads with slice query with " + length + " bases.");
 		for (int i = 0; i < querySplitQuantity; i++) {
 			int begin = (sliceSize * i);
-			int end = (sliceSize * i) + sliceSize + (statistics.getMinLengthDropOut() - subSequenceLength);
+			int end = (sliceSize * i) + sliceSize + (sp.getMinHspLength() - subSequenceLength);
 			if (end > length) {
 				end = length;
 			}

@@ -112,7 +112,7 @@ public class Output {
 		paramsElement.addAttribute("query", params.getQuery().seqString());
 		paramsElement.addAttribute("databank", params.getDatabank());
 		paramsElement.addAttribute("maxSubSequencesDistance", Integer.toString(params.getMaxSubSequencesDistance()));
-		paramsElement.addAttribute("minEvalue", Double.toString(params.getMinEvalue()));
+		paramsElement.addAttribute("minHspLength", Integer.toString(params.getMinHspLength()));
 
 		return paramsElement;
 	}

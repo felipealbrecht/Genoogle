@@ -457,10 +457,6 @@ public class Statistics {
 		return a;
 	}
 
-	public int getMinLengthDropOut() {
-		return minLength;
-	}
-
 	private final Map<Integer, Double> probabilities;
 	private final double lambda;
 	private final double H;
@@ -470,10 +466,9 @@ public class Statistics {
 	private final double effectiveDatabaseSize;
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
-	private final int minLength;
 
-	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences,
-			double minEvalue) throws IndexOutOfBoundsException, BioException {
+	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences)
+			throws IndexOutOfBoundsException, BioException {
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);
@@ -486,7 +481,6 @@ public class Statistics {
 		this.effectiveQuerySize = query.length() - lengthAdjust;
 		this.effectiveDatabaseSize = databaseSize - numberOfSequences * lengthAdjust;
 		this.searchSpaceSize = effectiveQuerySize * effectiveDatabaseSize;
-		this.minLength = (int) Math.floor(gappedEvalueToNominal(minEvalue) / match);
 	}
 
 	public void print_values(int match) {
@@ -524,5 +518,5 @@ public class Statistics {
 		System.out.println("Effective query size: " + effectiveQuerySize);
 		System.out.println("Effective database size: " + effectiveDatabaseSize);
 		System.out.println("Search space size: " + searchSpaceSize);
-	}	
+	}
 }

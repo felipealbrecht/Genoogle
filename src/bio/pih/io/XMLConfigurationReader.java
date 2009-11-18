@@ -242,12 +242,11 @@ public class XMLConfigurationReader {
 	}
 	
 	/**
-	 * @return default extended drop off specified at the XML configuration
-	 *         file.
+	 * @return default minimum length of a HSP to be keep to the next seaching phase.
 	 */
-	public static double getMinEvalue() {
-		String value = getSearchParameters().element("min-evalue").attributeValue("value");
-		return Double.parseDouble(value);
+	public static int getMinHspLength() {
+		String value = getSearchParameters().element("min-hsp-length").attributeValue("value");
+		return Integer.parseInt(value);
 	}
 	
 	/**

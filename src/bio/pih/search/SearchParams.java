@@ -20,7 +20,7 @@ public final class SearchParams implements Serializable {
 	private final String databankName;
 	private int maxSubSequencesDistance;
 	private int sequencesExtendDropoff;
-	private double minEvalue;
+	private int minHspLength;
 	private int maxHitsResults;
 	private int maxThreadsIndexSearch;
 	private int minQuerySliceLength;
@@ -42,7 +42,7 @@ public final class SearchParams implements Serializable {
 	/**
 	 * Minimum value for E-Value
 	 */
-	public static final double MIN_EVALUE = XMLConfigurationReader.getMinEvalue();
+	public static final int MIN_HSP_LENGTH = XMLConfigurationReader.getMinHspLength();
 	
 	/**
 	 * Quantity of hits that will be processed and shown.
@@ -60,14 +60,14 @@ public final class SearchParams implements Serializable {
 	public static final int DISMATCH_SCORE = XMLConfigurationReader.getDismatchScore();
 
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, MATCH_SCORE, DISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, 
+		this(query, databankName, MATCH_SCORE, DISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, 
 				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 	}
 	
 	public enum Parameter {
 		MAX_SUB_SEQUENCE_DISTANCE("MaxSubSequenceDistance", Integer.class),
 		SEQUENCES_EXTEND_DROPOFF("SequencesExtendDropoff", Integer.class),
-		MIN_EVALUE("MinEvalue", Double.class),
+		MIN_HSP_LENGTH("MinHspLength", Integer.class),
 		MAX_HITS_RESULTS("MaxHitsResults", Integer.class),
 		MAX_THREADS_INDEX_SEARCH("MaxThreadsIndexSearch", Integer.class),
 		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class),
@@ -113,7 +113,7 @@ public final class SearchParams implements Serializable {
 	
 	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
 		this(query, databankName, MATCH_SCORE, DISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, 
-				SEQUENCES_EXTEND_DROPOFF, MIN_EVALUE, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, 
+				SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, 
 				MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 				
 		for (Parameter param: parameters.keySet()) {
@@ -122,7 +122,7 @@ public final class SearchParams implements Serializable {
 			switch (param) {
 			case MAX_SUB_SEQUENCE_DISTANCE: this.maxSubSequencesDistance = (Integer) v; break;
 			case SEQUENCES_EXTEND_DROPOFF: this.sequencesExtendDropoff = (Integer) v; break;
-			case MIN_EVALUE: this.minEvalue = (Double) v; break;
+			case MIN_HSP_LENGTH: this.minHspLength = (Integer) v; break;
 			case MAX_HITS_RESULTS: this.maxHitsResults = (Integer) v; break;
 			case MAX_THREADS_INDEX_SEARCH: this.maxThreadsIndexSearch = (Integer) v; break;
 			case MIN_QUERY_SLICE_LENGTH: this.minQuerySliceLength = (Integer) v; break;
@@ -133,14 +133,14 @@ public final class SearchParams implements Serializable {
 		}
 	}
 
-	public SearchParams(SymbolList query, String databankName, int matchScore, int dismatchScore, int maxSubSequencesDistance, int sequencesExtendDropoff, double minEvalue, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
+	public SearchParams(SymbolList query, String databankName, int matchScore, int dismatchScore, int maxSubSequencesDistance, int sequencesExtendDropoff, int minHspLength, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
 		this.query = query;
 		this.databankName = databankName;
 		this.matchScore = matchScore;
 		this.dismatchScore = dismatchScore;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
-		this.minEvalue = minEvalue;
+		this.minHspLength = minHspLength;
 		this.maxHitsResults = maxHitsResults;
 		this.maxThreadsIndexSearch = maxThreadsIndexSearch;
 		this.minQuerySliceLength = minQuerySliceLength;
@@ -190,10 +190,10 @@ public final class SearchParams implements Serializable {
 	}
 	
 	/**
-	 * @return the minimum value of the E-value
+	 * @return the minimum length of a HSP to be keep to the next search phase.
 	 */
-	public double getMinEvalue() {
-		return minEvalue;
+	public int getMinHspLength() {
+		return minHspLength;
 	}
 	
 	/**
@@ -203,14 +203,23 @@ public final class SearchParams implements Serializable {
 		return maxHitsResults;
 	}
 
+	/**
+	 * @return quantity of threads which will be used to perform the index search of the input query sub-sequences.
+	 */
 	public int getMaxThreadsIndexSearch() {
 		return maxThreadsIndexSearch;
 	}
-	
+
+	/**
+	 * @return quantity of slices which the input query will be divided.
+	 */
 	public int getQuerySplitQuantity() {
 		return querySplitQuantity;
 	}
 
+	/**
+	 * @return the minimum slice length when the input query is divided.  
+	 */
 	public int getMinQuerySliceLength() {
 		return minQuerySliceLength;
 	}

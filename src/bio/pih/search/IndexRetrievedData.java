@@ -22,9 +22,9 @@ public class IndexRetrievedData {
 	private final int maxSubSequenceDistance;
 
 	@SuppressWarnings("unchecked")
-	public IndexRetrievedData(int size, SearchParams sp, int minLength, int subSequenceLength, DNAIndexSearcher searcher) {
+	public IndexRetrievedData(int size, SearchParams sp, int subSequenceLength, DNAIndexSearcher searcher) {
 
-		this.minLength = minLength;
+		this.minLength = sp.getMinHspLength();
 		this.subSequenceLength = subSequenceLength;
 		this.maxSubSequenceDistance = sp.getMaxSubSequencesDistance();
 
