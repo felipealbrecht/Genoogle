@@ -2,7 +2,6 @@ package bio.pih.interfaces;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import bio.pih.Genoogle;

@@ -32,7 +32,7 @@
 <div style="position: absolute; bottom: 20px;">
 <hr style="width: 100%;"> 
  <font size=-1>
- <p>Genoogle do <b>not</b> have any affiliation with Google. I just think 'genoogle' is a cool name and better than 'Genhooo' or 'Genuil' or 'Gensn' :-)</p>
+ <p>Genoogle does <b>not</b> have any affiliation with Google. I just think 'genoogle' is a cool name and better than 'Genhooo' or 'Genuil' or 'Gensn' :-)</p>
  <p><%=Genoogle.SOFTWARE_NAME%> - <%=Genoogle.VERSION%> - <%=Genoogle.COPYRIGHT_NOTICE%> - <a href="<%=Genoogle.WEB_PAGE%>"><%=Genoogle.WEB_PAGE%></a></p>
   </font>
 </div> 

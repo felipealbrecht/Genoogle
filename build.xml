@@ -43,20 +43,6 @@
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
 
-
-		<!-- War file craeation -->
-		<property name="jsp.dir.name" value="webapp" />
-		<property name="package.name" value="${jsp.dir.name}.war" />
-	    <property name="webapp.dir" value="webapps" />
-
-		<property name="dest.dir" value="target" />
-
-		<property name="temp.dir" value="temp" />
-
-
-
-
-
 		<echo message="JUnit present:                      ${junit.present}" />
 		<echo message="JUnit supported by Ant:             ${junit.support}" />
 		<echo message="Keep it up, rock 'n' roll, good music save your soul" />
@@ -130,7 +116,6 @@
 
 			<group title="Indexer" packages="bio.pih.indexer" />
 			<group title="Scheduler" packages="bio.pih.scheduler" />
-			<group title="Communicator" packages="bio.pih.scheduler.communicator:bio.pih.scheduler.communicator.*" />
 			<group title="Search" packages="bio.pih.search" />
 			<group title="Seq" packages="bio.pih.seq:bio.pih.seq.*" />
 			<group title="util" packages="bio.pih.util" />
@@ -138,49 +123,10 @@
 		</javadoc>
 	</target>
 
-	<target name="war" depends="jar">
-		   <!-- copy the config files -->
-      <copy file="${resources.dir}/MANIFEST.MF" tofile="${temp.dir.meta-inf}/MANIFEST.MF" overwrite="true" />
-      <copy file="${resources.dir}/web.xml" tofile="${temp.dir.web-inf}/web.xml" overwrite="true" />
-      <copy file="${resources.dir}/managed-beans.xml" tofile="${temp.dir.web-inf}/managed-beans.xml" overwrite="true" />
-      <copy file="${resources.dir}/navigation-rules.xml" tofile="${temp.dir.web-inf}/navigation-rules.xml" overwrite="true" />
-
-      <copy todir="${temp.dir.classes}">
-        <fileset dir="${src.dir}">
-          <include name="**/*.xml"/>
-          <include name="**/*.xsl"/>
-        </fileset>
-      </copy>
-    	
-      <!-- with all resources in place, create the war file -->
-      <war destfile="${package.file}" webxml="${temp.dir.web-inf}/web.xml" basedir="${temp.dir}">
-        <fileset dir="${pages.dir}"/>
-        <lib dir="${lib.dir}" />
-        <classes dir="${temp.dir.classes}" />
-      </war>
-    </target>
-
-    <!-- JUST DEPLOY JSP's -->
-    <target name="jsps">
-      <!-- i'm trying to be explicit about what i put out there -->
-      <copy todir="${webapp.dir}/${jsp.dir.name}">
-        <fileset dir="${pages.dir}">
-          <include name="**/*.jsp"/>
-          <include name="**/*.html"/>
-          <include name="**/*.css"/>
-          <include name="**/*.gif"/>
-          <include name="**/*.jpg"/>
-          <include name="**/*.png"/>
-          <include name="**/*.js"/>
-        </fileset>
-      </copy>
-    </target>			
-
 	<target name="start-web" depends="jar">
 		<echo message="Starting web server" />
 
-		<java maxmemory="1024m" classname="bio.pih.web.WebServer" fork="true">
-			<arg value="localhost" />
+		<java maxmemory="1024m" classname="bio.pih.interfaces.WebServer" fork="true">
 			<arg value="/home/albrecht/genoogle/webapps" />
 			<arg value="8080"/>
 			<classpath>
