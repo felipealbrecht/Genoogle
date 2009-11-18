@@ -1,0 +1,81 @@
+= GENOOGLE BETA ABOUT =
+
+== Fundamental Informations ==
+Genoogle is a software for similar DNA sequences searching developed by Felipe Albrecht (felipe.albrecht@gmail.com / http://www.pih.bio.br)
+
+Genoogle uses indexing and parallel processing techniques and it is developed in Java.
+Genoogle is free for use but it is not open source, yet.
+The name Genoogle comes from Genes + Google, the final world domination plan is to develop a software to locate genes likes Google is to locate information in the Web and Genoogle does *not* have *any* affiliation with Google Inc and I hope its name will not cause problem.
+
+It is a Beta Version of Genoogle, it means: it lacks some features and have some know and a lot of unknow bugs. 
+So, I hope that the users (YOU!) will inform me about bugs and features which you will like to have.
+
+If you really want to develop something in to Genoogle, contact me.
+
+== Features ==
+
+=== Actual Features: ===
+ * Fast similar sequences searching.
+ * Really good sensibility.
+ * Text mode interfaces.
+ * Simple Web interface (more for testing).
+ * Good memory requirements. (For a 4 gigabytes data bank, it is necessary not more than 4 gigabytes of RAM memory).
+ * Works (and tested) at Windows and Linux.
+ * Data banks with more than 8 gigabytes. 
+ * Console and batch interfaces.
+
+=== Missing and planed features: ===
+ * Web Services Interface.
+ * Better web interface.
+ * RNA indexing and searching sequences.
+
+=== Missing and not (for so soon) planed features: ===
+ * Proteins indexing and searching. (It will be a big work to implement it, but it is possible)
+ * Clusters implementation. (May be my Ph.D. project)
+
+== Intalation == 
+
+=== Requirements === 
+To run Genoogle it is necessary:
+ * JRE >= 1.6 and the environment variable JAVA_HOME should inform where the JRE is, by example:  JAVA_HOME="/usr/lib/jvm/java-6-sun"
+ * Ram Memory: The Genoogle memory requirement is approximately 80% of the data bank size more approximately 40Mbs for Java run time.
+
+=== Installation process ===
+ * Download the package here (TBA)
+ * Unpack
+ * Copy the fasta files which you want to search into the fasta/files folder.
+ * Run the format_db.sh script.
+ * Wait while the data bank is formatted and the inverted index processed.
+ * Run run_web.sh or run_console.sh . (The run_web.sh has also the console interface)
+ * Have fun!
+
+== Searching ==
+Genoogle has two interfaces: a '''very''' simple web page and text mode console.
+
+To do the search using the web page is very simples. Open the address ''localhost:8080'' at your browser and put the query sequence in the input box and click ''Search sequence'' button. Wait and the results will be shown. The console interface is much better!
+
+=== Console interface ===
+
+The console interface has the following commands:
+ * search <data bank> <input file> <outout file> <parameters>: does the search.
+ * list : lists available the data banks.
+ * parameters : shows the search parameters.
+ * gc : executes the java garbage collection.
+ * prev and l : executes the last command again.
+ * batch <batch file> : runs the commands listed in this batch file.
+ * exit : finish Genoogle execution.
+
+The search parameters are:
+ * MaxSubSequenceDistance : maximum distance between two index entries to be considered into the same HSPs.
+ * SequencesExtendDropoff : drop off for sequence extension.
+ * MaxHitsResults : maximum quantity of results which will be returned.
+ * QuerySplitQuantity : how many slices the input query will be splitted. 
+ * MinQuerySliceLength : minimum size of each input query slice.
+ * MaxThreadsIndexSearch : quantity of threads which will be used to index search. ( Should be MaxThreadsIndexSearch <= QuerySplitQuantity * 2).
+ * MatchScore : score when has a match at the alignment.
+ * DismatchScore : score when has a dismatch at the alignment.
+ 
+search Genomes_RefSeq BA000002 result_file QuerySplitQuantity=2 MaxThreadsIndexSearch=2 MaxHitsResults=20
+
+
+
