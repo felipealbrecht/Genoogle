@@ -27,10 +27,12 @@ public final class SearchParams {
 	private int minHspLength;
 	private int maxHitsResults;
 	private int maxThreadsIndexSearch;
+	private int maxThreadsExtendAlign;
 	private int minQuerySliceLength;
 	private int querySplitQuantity;
 	private int matchScore;
 	private int mismatchScore;
+
 
 	/**
 	 * Default maximum distance between two sub-sequences of a sequence to be considered at same
@@ -54,6 +56,8 @@ public final class SearchParams {
 	public static final int MAX_HITS_RESULTS = XMLConfigurationReader.getMaxResults();
 
 	public static final int MAX_THREADS_INDEX_SEARCH = XMLConfigurationReader.getMaxThreadsIndexSearch();
+	
+	public static final int MAX_THREADS_EXTEND_ALIGN = XMLConfigurationReader.getMaxThreadsExtendAlign();
 
 	public static final int MIN_QUERY_SLICE_LENGTH = XMLConfigurationReader.getMinQuerySliceLength();
 
@@ -64,7 +68,9 @@ public final class SearchParams {
 	public static final int MISMATCH_SCORE = XMLConfigurationReader.getMismatchScore();
 
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
+		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, 
+				MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, 
+				MAX_THREADS_INDEX_SEARCH, MAX_THREADS_EXTEND_ALIGN, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 	}
 
 	public enum Parameter {
@@ -73,6 +79,7 @@ public final class SearchParams {
 		MIN_HSP_LENGTH("MinHspLength", Integer.class),
 		MAX_HITS_RESULTS("MaxHitsResults", Integer.class),
 		MAX_THREADS_INDEX_SEARCH("MaxThreadsIndexSearch", Integer.class),
+		MAX_THREADS_EXTEND_ALIGN("MaxThreadsExtendAlign", Integer.class),
 		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class),
 		QUERY_SPLIT_QUANTITY("QuerySplitQuantity", Integer.class),
 		MATCH_SCORE("MatchScore", Integer.class),
@@ -114,11 +121,10 @@ public final class SearchParams {
 	}
 
 	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
-		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
+		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MAX_THREADS_EXTEND_ALIGN, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 
 		for (Parameter param : parameters.keySet()) {
 			Object v = parameters.get(param);
-			System.out.println(param.getName() + "=" + v);
 			switch (param) {
 			case MAX_SUB_SEQUENCE_DISTANCE:
 				this.maxSubSequencesDistance = (Integer) v;
@@ -134,6 +140,9 @@ public final class SearchParams {
 				break;
 			case MAX_THREADS_INDEX_SEARCH:
 				this.maxThreadsIndexSearch = (Integer) v;
+				break;
+			case MAX_THREADS_EXTEND_ALIGN:
+				this.maxThreadsExtendAlign = (Integer) v;
 				break;
 			case MIN_QUERY_SLICE_LENGTH:
 				this.minQuerySliceLength = (Integer) v;
@@ -153,7 +162,7 @@ public final class SearchParams {
 
 	public SearchParams(SymbolList query, String databankName, int matchScore, int mismatchScore,
 			int maxSubSequencesDistance, int sequencesExtendDropoff, int minHspLength, int maxHitsResults,
-			int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
+			int maxThreadsIndexSearch, int maxThreadsExtendAlign, int minQuerySliceLength, int querySplitQuantity) {
 		this.query = query;
 		this.databankName = databankName;
 		this.matchScore = matchScore;
@@ -163,6 +172,7 @@ public final class SearchParams {
 		this.minHspLength = minHspLength;
 		this.maxHitsResults = maxHitsResults;
 		this.maxThreadsIndexSearch = maxThreadsIndexSearch;
+		this.maxThreadsExtendAlign = maxThreadsExtendAlign;
 		this.minQuerySliceLength = minQuerySliceLength;
 		this.querySplitQuantity = querySplitQuantity;
 	}
@@ -229,6 +239,13 @@ public final class SearchParams {
 	 */
 	public int getMaxThreadsIndexSearch() {
 		return maxThreadsIndexSearch;
+	}
+	
+	/**
+	 * @return quantity of threads which will be used to extend and align the HSPs.
+	 */
+	public int getMaxThreadsExtendAlign() {
+		return maxThreadsExtendAlign;
 	}
 
 	/**

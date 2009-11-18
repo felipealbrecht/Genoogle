@@ -79,7 +79,7 @@ public class CollectionSearcher extends AbstractSearcher {
 				} else {
 					sequencesRetrievedAreas.addAll(list);
 				}
-			}
+			} 
 
 			queryExecutor.shutdown();
 			subDatabanksExecutor.shutdown();
@@ -91,7 +91,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	
 			Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
 
-			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
+			ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());
 
 			int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : sequencesRetrievedAreas.size();
 			maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());

@@ -33,9 +33,11 @@ public class Console implements Runnable {
 	private static final String LIST = "list";
 	private static final String GC = "gc";
 	private static final String PARAMETERS = "parameters";
+	private static final String SET = "set";
 	private static final String BATCH = "batch";
 	private static final String SEARCH = "search";
 	private static final String PREV = "prev";
+	private static final String HELP = "help";
 
 	private static Logger profileLogger = Logger.getLogger("profile");
 
@@ -73,9 +75,7 @@ public class Console implements Runnable {
 		String prev = null;
 		String line = null;
 
-
 		Map<Parameter, Object> consoleParameters = SearchParams.getSearchParamsMap();
-		
 
 		System.out.print("genoogle console> ");
 
@@ -112,6 +112,7 @@ public class Console implements Runnable {
 							String outputFile = commands[3];
 
 							Map<Parameter, Object> searchParameters = Maps.newHashMap();
+							searchParameters.putAll(consoleParameters);
 
 							for (int i = 4; i < commands.length; i++) {
 								String command = commands[i];
@@ -166,9 +167,26 @@ public class Console implements Runnable {
 						System.out.println(genoogle.getDefaultDatabank());
 
 					} else if (commands[0].equals(PARAMETERS)) {
-						for (Parameter parameter: consoleParameters.keySet()) {
+						for (Parameter parameter : consoleParameters.keySet()) {
 							System.out.println(parameter.getName() + "=" + consoleParameters.get(parameter));
 						}
+
+					} else if (commands[0].equals(SET)) {
+						String[] split = commands[1].split("=");
+						if (split.length != 2) {
+							System.out.println(commands[1] + " is invalid set parameters option.");
+						}
+						String paramName = split[0];
+						String paramValue = split[1];
+
+						Parameter p = Parameter.getParameterByName(paramName);
+						if (p == null) {
+							System.out.println(paramName + " is an invalid parameter name");
+							continue;
+						}
+						Object value = p.convertValue(paramValue);
+						consoleParameters.put(p, value);
+						System.out.println(paramName + " is " + paramValue);
 
 					} else if (commands[0].equals(PREV) || commands[0].equals("p")) {
 						executePrev = true;
@@ -188,6 +206,29 @@ public class Console implements Runnable {
 						System.out.println("Bye.");
 						System.exit(0);
 
+					} else if (commands[0].equals(HELP)) {
+						System.out.println("Commands:");
+						System.out.println("search <data bank> <input file> <output file> <parameters>: does the search");
+						System.out.println("list : lists the data banks.");
+						System.out.println("parameters : shows the search parameters and their values.");
+						System.out.println("set <parameter>=<value> : set the parameters value.");
+						System.out.println("gc : executes the java garbage collection.");
+						System.out.println("prev or l: executes the last command.");
+						System.out.println("batch <batch file> : runs the commands listed in this batch file.");
+						System.out.println("help: this help.");
+						System.out.println("exit : finish Genoogle execution.");
+						System.out.println();
+						System.out.println("Search Parameters:");
+
+						System.out.println("MaxSubSequenceDistance : maximum index entries distance to be considered in the same HSPs.");
+						System.out.println("SequencesExtendDropoff : drop off for sequence extension.");
+						System.out.println("MaxHitsResults : maximum quantity of returned results.");
+						System.out.println("QuerySplitQuantity : how many slices the input query will be divided.");
+						System.out.println("MinQuerySliceLength : minimum size of each input query slice.");
+						System.out.println("MaxThreadsIndexSearch : quantity of threads which will be used to index search.");
+						System.out.println("MaxThreadsExtendAlign : quantity of threads which will be used to extend and align the HSPs.");						
+						System.out.println("MatchScore : score when has a match at the alignment.");
+						System.out.println("MismatchScore : score when has a mismatch at the alignment.");
 					} else {
 						System.err.println("Unknow command: " + commands[0]);
 					}

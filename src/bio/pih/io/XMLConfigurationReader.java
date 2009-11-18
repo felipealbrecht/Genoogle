@@ -258,18 +258,32 @@ public class XMLConfigurationReader {
 	}
 
 	/**
-	 * @return Max number of threads that will search an index.
+	 * @return Max number of threads that will be used to search sub-sequences at the index.
 	 */
 	public static int getMaxThreadsIndexSearch() {
 		String value = getSearchParameters().element("max-threads-index-search").attributeValue("value");
 		return Integer.parseInt(value);
 	}
 	
+	/**
+	 * @return Max number of threads that will be used to extend and align the HSP.
+	 */
+	public static int getMaxThreadsExtendAlign() {
+		String value = getSearchParameters().element("max-threads-extend-align").attributeValue("value");
+		return Integer.parseInt(value);
+	}
+	
+	/**
+	 * @return minimum size of each input query slice.
+	 */
 	public static int getMinQuerySliceLength() {
 		String value = getSearchParameters().element("min-query-slice-length").attributeValue("value");
 		return Integer.parseInt(value);
 	}
 	
+	/**
+	 *  @return how many slices the input query will be divided.
+	 */
 	public static int getQuerySplitQuantity() {
 		String value = getSearchParameters().element("query-split-quantity").attributeValue("value");
 		return Integer.parseInt(value);
