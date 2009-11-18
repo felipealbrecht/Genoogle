@@ -8,7 +8,7 @@
   
   <genoogle:score>
     <genoogle:match value="1"/>
-    <genoogle:dismatch value="-3" />
+    <genoogle:mismatch value="-3" />
   </genoogle:score>
 
   <genoogle:search-parameters>

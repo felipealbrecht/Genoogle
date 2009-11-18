@@ -76,7 +76,7 @@ public class XMLConfigurationReader {
 	
 	
 	private static Integer match = null;
-	private static Integer dismatch = null;
+	private static Integer mismatch = null;
 	
 	public static int getMatchScore() {
 		if (match == null) {
@@ -90,16 +90,16 @@ public class XMLConfigurationReader {
 		return match.intValue();
 	}
 	
-	public static int getDismatchScore() {
-		if (dismatch == null) {
+	public static int getMismatchScore() {
+		if (mismatch == null) {
 			Element rootElement = doc.getRootElement();
 			Element scoreElement = rootElement.element("score");
-			Element dismatchElement = scoreElement.element("dismatch");
-			String value = dismatchElement.attributeValue("value");
-			dismatch = Integer.parseInt(value);
+			Element mismatchElement = scoreElement.element("mismatch");
+			String value = mismatchElement.attributeValue("value");
+			mismatch = Integer.parseInt(value);
 		}		
 
-		return dismatch.intValue();
+		return mismatch.intValue();
 	}
 	
 	

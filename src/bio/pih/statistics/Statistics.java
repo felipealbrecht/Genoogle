@@ -70,7 +70,7 @@ public class Statistics {
 
 	private static final double LOG_2 = Math.log(2.0);
 
-	private Map<Integer, Double> scoreProbabilities(int dismatch, int match, SymbolList query)
+	private Map<Integer, Double> scoreProbabilities(int mismatch, int match, SymbolList query)
 			throws IndexOutOfBoundsException, BioException {
 
 		int[][] baseValue = new int[4][4];
@@ -79,13 +79,13 @@ public class Statistics {
 				if (i == j) {
 					baseValue[i][j] = match;
 				} else {
-					baseValue[i][j] = dismatch;
+					baseValue[i][j] = mismatch;
 				}
 			}
 		}
 
-		int min = Math.min(dismatch, match);
-		int max = Math.max(dismatch, match);
+		int min = Math.min(mismatch, match);
+		int max = Math.max(mismatch, match);
 		int delta;
 		if (min < 0) {
 			delta = Math.abs(min);
@@ -96,7 +96,7 @@ public class Statistics {
 		int scoreProbabilitiesSize = (min + delta) + (max + delta) + 1;
 
 		double[] scoreProbabilities = new double[scoreProbabilitiesSize];
-		for (int i = dismatch + delta; i <= match + delta; i++) {
+		for (int i = mismatch + delta; i <= match + delta; i++) {
 			scoreProbabilities[i] = 0.0;
 		}
 
@@ -138,13 +138,13 @@ public class Statistics {
 
 		final double sum = 1000.00;
 
-		for (int i = dismatch + delta; i <= match + delta; i++) {
+		for (int i = mismatch + delta; i <= match + delta; i++) {
 			double probability = scoreProbabilities[i];
 			scoreProbabilities[i] = probability / sum;
 		}
 
 		Map<Integer, Double> scoreProbabilitiesMap = Maps.newHashMap();
-		for (int i = dismatch; i <= match; i++) {
+		for (int i = mismatch; i <= match; i++) {
 			scoreProbabilitiesMap.put(i, scoreProbabilities[i + delta]);
 		}
 

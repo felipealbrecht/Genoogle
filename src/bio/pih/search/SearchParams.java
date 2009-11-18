@@ -26,7 +26,7 @@ public final class SearchParams implements Serializable {
 	private int minQuerySliceLength;
 	private int querySplitQuantity;	
 	private int matchScore;
-	private int dismatchScore;
+	private int mismatchScore;
 
 	
 	/**
@@ -57,10 +57,10 @@ public final class SearchParams implements Serializable {
 	
 	public static final int MATCH_SCORE = XMLConfigurationReader.getMatchScore();
 	
-	public static final int DISMATCH_SCORE = XMLConfigurationReader.getDismatchScore();
+	public static final int MISMATCH_SCORE = XMLConfigurationReader.getMismatchScore();
 
 	public SearchParams(SymbolList query, String databankName) {
-		this(query, databankName, MATCH_SCORE, DISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, 
+		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, 
 				MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 	}
 	
@@ -73,7 +73,7 @@ public final class SearchParams implements Serializable {
 		MIN_QUERY_SLICE_LENGTH("MinQuerySliceLength", Integer.class),
 		QUERY_SPLIT_QUANTITY("QuerySplitQuantity", Integer.class),
 		MATCH_SCORE("MatchScore", Integer.class),
-		DISMATCH_SCORE("DismatchScore", Integer.class);
+		MISMATCH_SCORE("MismatchScore", Integer.class);
 		
 		
 		String name;
@@ -112,7 +112,7 @@ public final class SearchParams implements Serializable {
 	}
 	
 	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
-		this(query, databankName, MATCH_SCORE, DISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, 
+		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, DEFAULT_MAX_SUB_SEQUENCE_DISTANCE, 
 				SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, 
 				MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 				
@@ -128,16 +128,16 @@ public final class SearchParams implements Serializable {
 			case MIN_QUERY_SLICE_LENGTH: this.minQuerySliceLength = (Integer) v; break;
 			case QUERY_SPLIT_QUANTITY: this.querySplitQuantity = (Integer) v; break;
 			case MATCH_SCORE: this.matchScore = (Integer) v; break;
-			case DISMATCH_SCORE: this.dismatchScore = (Integer) v; break; 
+			case MISMATCH_SCORE: this.mismatchScore = (Integer) v; break; 
 			}
 		}
 	}
 
-	public SearchParams(SymbolList query, String databankName, int matchScore, int dismatchScore, int maxSubSequencesDistance, int sequencesExtendDropoff, int minHspLength, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
+	public SearchParams(SymbolList query, String databankName, int matchScore, int mismatchScore, int maxSubSequencesDistance, int sequencesExtendDropoff, int minHspLength, int maxHitsResults, int maxThreadsIndexSearch, int minQuerySliceLength, int querySplitQuantity) {
 		this.query = query;
 		this.databankName = databankName;
 		this.matchScore = matchScore;
-		this.dismatchScore = dismatchScore;
+		this.mismatchScore = mismatchScore;
 		this.maxSubSequencesDistance = maxSubSequencesDistance;
 		this.sequencesExtendDropoff = sequencesExtendDropoff;
 		this.minHspLength = minHspLength;
@@ -169,10 +169,10 @@ public final class SearchParams implements Serializable {
 	}
 
 	/**
-	 * @return value when has a dismatch between two bases.
+	 * @return value when has a mismatch between two bases.
 	 */
-	public int getDismatchScore() {
-		return dismatchScore;
+	public int getMismatchScore() {
+		return mismatchScore;
 	}
 
 	/**

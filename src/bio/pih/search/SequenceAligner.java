@@ -115,8 +115,8 @@ public class SequenceAligner implements Runnable {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
 			int matchScore = sr.getParams().getMatchScore();
-			int dismatchScore = sr.getParams().getDismatchScore();
-			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(matchScore, dismatchScore, dismatchScore, dismatchScore, dismatchScore, 2000);
+			int mismatchScore = sr.getParams().getMismatchScore();
+			DividedStringGenoogleSmithWaterman smithWaterman = new DividedStringGenoogleSmithWaterman(matchScore, mismatchScore, mismatchScore, mismatchScore, mismatchScore, 2000);
 
 			smithWaterman.pairwiseAlignment(extensionResult.getQuerySequenceExtended(),
 					extensionResult.getTargetSequenceExtended());

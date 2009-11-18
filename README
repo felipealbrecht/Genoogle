@@ -73,9 +73,15 @@ The search parameters are:
  * MinQuerySliceLength : minimum size of each input query slice.
  * MaxThreadsIndexSearch : quantity of threads which will be used to index search. ( Should be MaxThreadsIndexSearch <= QuerySplitQuantity * 2).
  * MatchScore : score when has a match at the alignment.
- * DismatchScore : score when has a dismatch at the alignment.
+ * MismatchScore : score when has a mismatch at the alignment.
  
-search Genomes_RefSeq BA000002 result_file QuerySplitQuantity=2 MaxThreadsIndexSearch=2 MaxHitsResults=20
+An example of search is shown bellow: 
+
+'''search Genomes_RefSeq BA000002 result_file QuerySplitQuantity=2 MaxThreadsIndexSearch=2 MaxHitsResults=20'''
+
+This search, make a search at the Genomes_RefSeq databank, using as input the file BA000002 and the results will be saved at "result_file.xml" file.
+The input query will be split in to 2 parts and will be used 2 threads to do the search of the input query sub-sequences at the inverted index.
+At the end will be returned to the user, the 20 better scores.
 
 
 

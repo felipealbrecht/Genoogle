@@ -89,7 +89,7 @@ public class SimilarSubSequencesIndex {
 	 * @param alphabet
 	 * @param subSequenceLength
 	 * @param match
-	 * @param dismatch
+	 * @param mismatch
 	 * @param gapOpen
 	 * @param gapExtend
 	 * @param threshold

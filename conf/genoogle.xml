@@ -8,12 +8,12 @@
   
   <genoogle:score>
     <genoogle:match value="1"/>
-    <genoogle:dismatch value="-3" />
+    <genoogle:mismatch value="-3" />
   </genoogle:score>
 
   <genoogle:search-parameters>
     <genoogle:max-sub-sequence-distance   value="30"/>
-    <genoogle:min-hsp-length              value="11" />
+    <genoogle:min-hsp-length              value="20" />
     <genoogle:extend-dropoff              value="3" />
     <genoogle:max-hits-results            value="50" />
     <genoogle:max-threads-index-search    value="2" />
