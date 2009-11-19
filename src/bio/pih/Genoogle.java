@@ -20,6 +20,7 @@ import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.interfaces.Console;
 import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.InvalidConfigurationException;
+import bio.pih.io.SequencesProvider;
 import bio.pih.io.XMLConfigurationReader;
 import bio.pih.search.SearchManager;
 import bio.pih.search.SearchParams;
@@ -27,9 +28,6 @@ import bio.pih.search.UnknowDataBankException;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 import bio.pih.seq.LightweightSymbolList;
-import bio.pih.util.InputSequencesReader;
-
-import com.google.common.collect.Lists;
 
 /**
  * Genoogle non distributed and no server implementation. For tests and validation propose.
@@ -54,9 +52,10 @@ public class Genoogle {
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
-	 * @throws InvalidConfigurationException 
+	 * @throws InvalidConfigurationException
 	 */
-	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
+	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException,
+			InvalidConfigurationException {
 		if (singleton == null) {
 			try {
 				singleton = new Genoogle();
@@ -79,7 +78,7 @@ public class Genoogle {
 	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
-	 * @throws InvalidConfigurationException 
+	 * @throws InvalidConfigurationException
 	 */
 	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
 			BioException, InvalidConfigurationException {
@@ -95,10 +94,11 @@ public class Genoogle {
 	 * @throws UnknowDataBankException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
-	 * @throws BioException 
-	 * @throws NoSuchElementException 
+	 * @throws BioException
+	 * @throws NoSuchElementException
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException,
+			InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
@@ -111,7 +111,8 @@ public class Genoogle {
 		return sm.getDefaultDataBankName();
 	}
 
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IOException, UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IOException,
+			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		return doBatchSyncSearch(in, databank, null);
 	}
 
@@ -123,26 +124,15 @@ public class Genoogle {
 	 * @throws UnknowDataBankException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
-	 * @throws BioException 
-	 * @throws NoSuchElementException 
+	 * @throws BioException
+	 * @throws NoSuchElementException
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank, Map<Parameter, Object> parameters)
-			throws IOException, UnknowDataBankException, InterruptedException,
-			ExecutionException, NoSuchElementException, BioException {
+			throws IOException, UnknowDataBankException, InterruptedException, ExecutionException,
+			NoSuchElementException, BioException {
 
-		List<SymbolList> list = InputSequencesReader.read(in);
-		
-		List<SearchParams> batch = Lists.newLinkedList();
-		for (SymbolList sequence: list) {
-			SearchParams sp;
-			if (parameters == null) {
-				sp = new SearchParams(sequence, databank);
-			} else {
-				sp = new SearchParams(sequence, databank, parameters);
-			}
-			batch.add(sp);
-		}
-		return sm.doSyncSearch(batch);
+		SequencesProvider provider = new SequencesProvider(in);	
+		return sm.doSyncSearch(provider, databank, parameters);
 	}
 
 	/**

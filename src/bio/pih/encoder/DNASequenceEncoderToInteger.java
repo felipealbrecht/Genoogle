@@ -17,10 +17,11 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 	static Logger logger = Logger.getLogger("bio.pih.encoder.DNASequenceEncoderToInteger");
 
-	private static DNASequenceEncoderToInteger[] encoders = new DNASequenceEncoderToInteger[Integer.SIZE/2];
-	
+	private static DNASequenceEncoderToInteger[] encoders = new DNASequenceEncoderToInteger[Integer.SIZE / 2];
+
 	/**
-	 * @param subSequenceLength length of the subSequences.
+	 * @param subSequenceLength
+	 *            length of the subSequences.
 	 * @return singleton of the {@link DNASequenceEncoderToInteger}
 	 */
 	public static DNASequenceEncoderToInteger getEncoder(int subSequenceLength) {
@@ -28,8 +29,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 			try {
 				encoders[subSequenceLength] = new DNASequenceEncoderToInteger(subSequenceLength);
 			} catch (ValueOutOfBoundsException e) {
-				logger
-						.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
+				logger.fatal("Problem creating the default instance for DNASequenceEncoderToInteger. Please check the stackstrace above.");
 				logger.fatal(e);
 				return null;
 			}
@@ -53,7 +53,8 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 */
 	public int encodeSubSequenceToInteger(SymbolList subSymbolList) {
 		if (subSymbolList.length() > subSequenceLength) {
-			throw new ValueOutOfBoundsException(subSymbolList + " is bigger than subSequenceLength("+subSequenceLength+")");
+			throw new ValueOutOfBoundsException(subSymbolList + " is bigger than subSequenceLength("
+					+ subSequenceLength + ")");
 		}
 
 		int encoded = 0;
@@ -64,10 +65,11 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		return encoded;
 	}
-	
+
 	public int encodeSubSequenceToInteger(String subSequence) {
 		if (subSequence.length() > subSequenceLength) {
-			throw new ValueOutOfBoundsException(subSequence + " is bigger than subSequenceLength("+subSequenceLength+")");
+			throw new ValueOutOfBoundsException(subSequence + " is bigger than subSequenceLength(" + subSequenceLength
+					+ ")");
 		}
 
 		int encoded = 0;
@@ -78,7 +80,6 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 		return encoded;
 	}
-
 
 	/**
 	 * Decode an int vector to its sequence string representation
@@ -96,16 +97,14 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */
-	public SymbolList decodeIntegerToSymbolList(int encoded) throws IllegalSymbolException,
-			BioException {
+	public SymbolList decodeIntegerToSymbolList(int encoded) throws IllegalSymbolException, BioException {
 		String sequenceString = decodeIntegerToString(encoded, subSequenceLength);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
 	}
-	
+
 	private String decodeIntegerToString(int encoded, int length) {
-		return decodeIntegerToString(encoded, 0, length-1);
+		return decodeIntegerToString(encoded, 0, length - 1);
 	}
-	
 
 	/**
 	 * TODO: Optimize this function using a constant masks table.
@@ -139,13 +138,12 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		sequenceEncoded[getPositionLength()] = sequence.length();
 
 		if (sequence.length() < subSequenceLength) {
-			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSequenceToInteger(sequence
-					.subList(1, sequence.length()));
+			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSequenceToInteger(sequence.subList(1,
+					sequence.length()));
 		} else {
 			int pos = getPositionBeginBitsVector();
-			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
-					.getNotOverlappedFactory().newSymbolListWindowIterator(sequence,
-							this.subSequenceLength);
+			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(
+					sequence, this.subSequenceLength);
 			while (symbolListWindowIterator.hasNext()) {
 				SymbolList next = symbolListWindowIterator.next();
 				sequenceEncoded[pos] = encodeSubSequenceToInteger(next);
@@ -153,30 +151,28 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 			}
 			if (pos < size) {
 				int from = sequence.length() - extra + 1;
-				sequenceEncoded[pos] = encodeSubSequenceToInteger(sequence.subList(from, sequence
-						.length()));
+				sequenceEncoded[pos] = encodeSubSequenceToInteger(sequence.subList(from, sequence.length()));
 			}
 		}
 
 		return sequenceEncoded;
 	}
-	
+
 	/**
 	 * @param encodedSequence
 	 * @return the {@link SymbolList} that is stored in encodedSequence
 	 * @throws IllegalSymbolException
 	 * @throws BioException
 	 */
-	public SymbolList decodeIntegerArrayToSymbolList(int[] encodedSequence)
-			throws IllegalSymbolException, BioException {
+	public SymbolList decodeIntegerArrayToSymbolList(int[] encodedSequence) throws IllegalSymbolException, BioException {
 		String sequenceString = decodeIntegerArrayToString(encodedSequence);
 		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
 	}
 
 	/**
 	 * @param encodedSequence
-	 * @param begin 
-	 * @param end 
+	 * @param begin
+	 * @param end
 	 * @return the sequence in {@link String} form that is stored in encodedSequence
 	 * @throws IllegalSymbolException
 	 * @throws BioException
@@ -192,8 +188,7 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		int posInInt = begin % subSequenceLength;
 
 		if (posInInt != 0) {
-			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], posInInt,
-					subSequenceLength-1));
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], posInInt, subSequenceLength - 1));
 			arrayPos++;
 		}
 
@@ -203,13 +198,14 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		}
 
 		int posInIntLast = end % subSequenceLength;
-		sequence.append(decodeIntegerToString(encodedSequence[arrayPos], 0, posInIntLast));
+		if (posInIntLast > 0) {
+			sequence.append(decodeIntegerToString(encodedSequence[arrayPos], 0, posInIntLast));
+		}
 
 		return sequence.toString();
 	}
 
-	private String decoteIntegerArrayToStringShortenOneSubSequence(int[] encodedSequence,
-			int begin, int end) {
+	private String decoteIntegerArrayToStringShortenOneSubSequence(int[] encodedSequence, int begin, int end) {
 
 		int arrayPosBegin = (begin / subSequenceLength) + 1;
 		int arrayPosEnd = (end / subSequenceLength) + 1;
@@ -249,12 +245,12 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 		sequence.append(decodeIntegerToString(encodedSequence[i], extra));
 		return sequence.toString();
 	}
-	
-	//TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
+
+	// TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
 	public static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
 		int posInArray = (pos / subSequenceLength) + 1;
-		int posInInt = (subSequenceLength) - (pos % subSequenceLength) ;
-		int vectorValue = encodedSequence[posInArray]; 		
+		int posInInt = (subSequenceLength) - (pos % subSequenceLength);
+		int vectorValue = encodedSequence[posInArray];
 		int shift = posInInt * 2;
 		int value = vectorValue >> (shift - 2);
 		return value & 3;

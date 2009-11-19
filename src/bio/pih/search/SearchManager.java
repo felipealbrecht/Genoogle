@@ -1,8 +1,10 @@
 package bio.pih.search;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -12,8 +14,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.biojava.bio.BioException;
 
 import bio.pih.io.AbstractSequenceDataBank;
+import bio.pih.io.SequencesProvider;
+import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Lists;
@@ -67,36 +72,47 @@ public class SearchManager {
 	 * @throws UnknowDataBankException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
+	 * @throws BioException 
+	 * @throws IOException 
+	 * @throws NoSuchElementException 
 	 */
-	public List<SearchResults> doSyncSearch(List<SearchParams> sps) throws UnknowDataBankException,
-			InterruptedException, ExecutionException {
+	public List<SearchResults> doSyncSearch(SequencesProvider provider, String databankName, Map<Parameter, Object> parameters) throws UnknowDataBankException,
+			InterruptedException, ExecutionException, NoSuchElementException, IOException, BioException {
 
 		long begin = System.currentTimeMillis();
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
 				requestsExecutor);
 
-		for (SearchParams sp : sps) {
-			AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
-			if (databank == null) {
-				throw new UnknowDataBankException(this, sp.getDatabank());
+		AbstractSequenceDataBank databank = databanks.get(databankName);
+		if (databank == null) {
+			throw new UnknowDataBankException(databankName);
+		}
+		int totalSubmited = 0;
+		while(provider.hasNext()) {
+			SearchParams sp;
+			if (parameters == null) {
+				sp = new SearchParams(provider.getNextSequence(), databankName);
+			} else {
+				sp = new SearchParams(provider.getNextSequence(), databankName, parameters);
 			}
 			long id = getNextSearchId();
 			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);
 
 			completionService.submit(searcher);
+			totalSubmited ++;
 		}
 
 		List<SearchResults> results = Lists.newLinkedList();
 
 		long prev = System.currentTimeMillis();		
-		for (int i = 0; i < sps.size(); i++) {
+		for (int i = 0; i < totalSubmited; i++) {
 			Future<SearchResults> future = completionService.take();
 			SearchResults results2 = future.get();
 			results.add(results2);
 			long c = System.currentTimeMillis();
 			long total = c - prev;
 			prev = c;
-			profileLogger.info("  " + (i+1) +"/" +sps.size() + " in " + (total) + " and total is " + (c - begin));
+			profileLogger.info("  " + (i+1) +"/" +totalSubmited + " in " + (total) + " and total is " + (c - begin));
 		}
 
 		return results;
@@ -116,7 +132,7 @@ public class SearchManager {
 		logger.info("doSearch on " + sp);
 		AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
-			throw new UnknowDataBankException(this, sp.getDatabank());
+			throw new UnknowDataBankException(sp.getDatabank());
 		}
 		long id = getNextSearchId();
 		final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);

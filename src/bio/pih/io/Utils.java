@@ -60,8 +60,11 @@ public final class Utils {
 			return 'g';
 		case 'g':
 			return 'c';
+
+			// For especial bases.
 		default:
-			throw new IllegalStateException(base + " is not a valid DNA base.");
+			return 'A';
+			// throw new IllegalStateException(base + " is not a valid DNA base.");
 		}
 	}
 

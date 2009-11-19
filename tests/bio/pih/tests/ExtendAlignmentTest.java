@@ -113,6 +113,17 @@ public void testExtendThreeOne() throws Exception {
 		assertEquals(extension.getTargetSequenceExtended(), LightweightSymbolList.createDNA("ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTTTGATCA").seqString());
 	}
 	
+	public void testExtendSix() throws Exception {		
+		int[] encoded_1 = ENCODER.encodeSymbolListToIntegerArray(LightweightSymbolList.createDNA("ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC"));
+		int[] encoded_2 = ENCODER.encodeSymbolListToIntegerArray(LightweightSymbolList.createDNA("ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC"));
+		
+		ExtendSequences extension = ExtendSequences.doExtension(encoded_1, 2, 4, encoded_2, 2, 4, EXTENSTION_DROPOFF, SUB_SEQUENCE_LENGTH, ENCODER);		
+		assertEquals(extension.getQuerySequenceExtended(), LightweightSymbolList.createDNA("ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC").seqString());
+		assertEquals(extension.getTargetSequenceExtended(), LightweightSymbolList.createDNA("ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC").seqString());
+	}
+	
+	
+	
 	public void testExtend11Diff() throws Exception {		
 		int[] encoded_1 = ENCODER.encodeSymbolListToIntegerArray(LightweightSymbolList.createDNA("ATGCATGACTA"));
 		int[] encoded_2 = ENCODER.encodeSymbolListToIntegerArray(LightweightSymbolList.createDNA("GTGCATGACTC"));
