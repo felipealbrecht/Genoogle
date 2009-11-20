@@ -23,7 +23,6 @@ import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.io.proto.Io.StoredDatabank;
 import bio.pih.io.proto.Io.StoredSequenceInfo;
-import bio.pih.io.proto.Io.StoredDatabank.Builder;
 import bio.pih.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.seq.op.LightweightIOTools;
 import bio.pih.seq.op.LightweightStreamReader;
@@ -98,7 +97,12 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		int totalSequences = 0;
 		long totalBases = 0;
 		
-		getFullPath().mkdirs();
+		if (!getFilePath().exists()) {
+			boolean mkdirs = getFullPath().mkdirs();
+			if (!mkdirs) {
+				logger.error(getFilePath() + " was not possible to create.");
+			}
+		}
 		FileChannel dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 		FileChannel storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 		bio.pih.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
@@ -172,10 +176,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		StoredDatabank storedDatabank = storedDatabankBuilder.build();
 		return storedDatabank;
 	}
-
-	List<StoredDatabank> subDatabanks = Lists.newLinkedList();
-	Builder storedDataBuilder = StoredDatabank.newBuilder();
-
+	
 	private void sortFiles(List<FastaFileInfo> fastaFiles) {
 		Collections.sort(fastaFiles, new Comparator<FastaFileInfo>() {
 			@Override

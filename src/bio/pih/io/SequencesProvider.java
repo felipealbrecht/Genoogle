@@ -15,19 +15,23 @@ import bio.pih.seq.op.LightweightStreamReader;
 
 public class SequencesProvider {
 
-	private BufferedReader in = null;
+	private final BufferedReader in;
 	private boolean isFastaFile = false;
 
 	LightweightStreamReader readFastaDNA;
 
 	public SequencesProvider(BufferedReader in) throws IOException {
-		in.mark(1);
-		String firstLine = in.readLine();
-		in.reset();
+		this.in = in;
+		this.in.mark(1);
+		String firstLine = this.in.readLine();
+		if (firstLine == null) {
+			return;
+		}
+		this.in.reset();
 
 		if (firstLine.charAt(0) == '>') {
 			isFastaFile = true;
-			readFastaDNA = LightweightIOTools.readFastaDNA(in, null);
+			readFastaDNA = LightweightIOTools.readFastaDNA(this.in, null);
 		}
 	}
 
@@ -49,17 +53,28 @@ public class SequencesProvider {
 	 * Read each line of the input stream, and each line will be considered a different sequence.
 	 * 
 	 * @param in
-	 * @return {@link List} of {@link SymbolList} containing the sequences read.
+	 * @return {@link List} of {@link SymbolList} containing the sequences read. Or <code>null</code> if it does not have more sequences.
 	 * @throws IllegalSymbolException
 	 * @throws IOException
 	 */
 	private synchronized SymbolList getNextLiteralSequence() throws IllegalSymbolException, IOException {
 		String seqString = in.readLine();
+		if (seqString == null) {
+			return null;
+		}
 		seqString = seqString.trim();
-		while (seqString.length() == 0) {
+		while (seqString.length() == 0 && in.ready()) {
 			seqString = in.readLine();
+			if (seqString == null) {
+				return null;
+			}
 			seqString = seqString.trim();
 		}
+		
+		if (seqString.length() == 0) {
+			return null;
+		}
+		
 		return LightweightSymbolList.createDNA(seqString);
 	}
 

@@ -61,8 +61,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		lwsl.alphabet = alphabet;
 		lwsl.seqString = seqString;
 		
-		assert lwsl.symbols.length == lwsl.seqString.length();
-		
 		return lwsl;
 	}
 	

@@ -140,6 +140,18 @@ public class Hit {
 		Hit other = (Hit) obj;
 		return other.gi.equals(gi);
 	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = id.hashCode();
+		hashCode *= gi.hashCode();
+		hashCode *= accession.hashCode();
+		hashCode *= description.hashCode();
+		hashCode *= length;
+		hashCode *= databankName.hashCode();
+		hashCode *= hsps.hashCode();
+		return hashCode;	
+	}
 
 	/**
 	 * Comparator of two hits by them total score.

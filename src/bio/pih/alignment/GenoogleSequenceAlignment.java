@@ -41,15 +41,19 @@ public abstract class GenoogleSequenceAlignment {
 		output += "  Query:\t" + queryName + ",\tLength:\t" + queryLength + System.getProperty("line.separator");
 		output += "  Target:\t" + targetName + ",\tLength:\t" + targetLength + System.getProperty("line.separator") + System.getProperty("line.separator");
 
-		int currline = Math.min(60, align[0].length()), i, j, k, l;
 		// counts the absolute position within the String
-		String space = "  ", kspace = "", jspace = "";
+		int currline = Math.min(60, align[0].length()), i, j, k, l;
+		
+		StringBuilder space = new StringBuilder();
+		StringBuilder kspace = new StringBuilder();
+		StringBuilder jspace = new StringBuilder();
+		
 		for (k = 0; k < Integer.valueOf(Math.max(queryEnd+queryOffset, targetEnd+targetOffset)).toString().length(); k++)
-			space += " ";
+			space.append(' ');
 		for (k = Integer.valueOf(queryStart + 1 + queryOffset).toString().length(); k <= Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); k++)
-			kspace += " ";
+			kspace.append(' ');
 		for (k = Integer.valueOf(targetStart + 1 + targetOffset).toString().length(); k <= Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); k++)
-			jspace += " ";
+			jspace.append(' ');
 
 		i = k = queryStart;
 		j = l = targetStart;
@@ -66,11 +70,11 @@ public abstract class GenoogleSequenceAlignment {
 
 		for (; currline + 60 < path.length(); currline += 60) {
 			l = Math.min(j + 1, targetEnd + targetOffset);
-			kspace = jspace = "";
+			kspace.append(' ');
 			for (int n = Integer.valueOf(k + 1 + queryOffset).toString().length() - 1; n < Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); n++)
-				kspace += " ";
+				kspace.append(' ');
 			for (int n = Integer.valueOf(j + targetOffset).toString().length() - 1; n < Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); n++)
-				jspace += " ";
+				jspace.append(' ');
 			output += " " + System.getProperty("line.separator") + "Query:\t" + kspace + Math.min(k + 1 + queryOffset, queryEnd + queryOffset) + " ";
 			for (i = currline; i < currline + 60; i++) {
 				if ((align[0].charAt(i) != '-') && (align[0].charAt(i) != '~'))
@@ -85,11 +89,12 @@ public abstract class GenoogleSequenceAlignment {
 		align[0] += " " + queryEnd + queryOffset;
 		align[1] += " " + targetEnd + targetOffset;
 		if (currline + 1 < path.length()) {
-			kspace = jspace = "";
+			kspace = new StringBuilder();
+			jspace = new StringBuilder();
 			for (int n = Integer.valueOf(k + queryOffset).toString().length() - 1; n < Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); n++)
-				kspace += " ";
+				kspace.append(' ');
 			for (int n = Integer.valueOf(j + targetOffset).toString().length() - 1; n < Integer.valueOf(Math.max(queryEnd + queryOffset, targetEnd + targetOffset)).toString().length(); n++)
-				jspace += " ";
+				jspace.append(' ');
 			output += " " + System.getProperty("line.separator") + "Query:\t" + kspace + Math.min(k + 1 + queryOffset, queryEnd + queryOffset) + " " + align[0].substring(currline, align[0].length());
 			output += " " + System.getProperty("line.separator") + "        " + space + path.substring(currline, path.length());
 			output += " " + System.getProperty("line.separator") + "Target:\t" + jspace + Math.min(j + targetOffset, targetEnd + targetOffset) + " " + align[1].substring(currline, align[1].length()) + System.getProperty("line.separator");

@@ -15,6 +15,8 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
+import com.google.common.collect.Lists;
+
 import bio.pih.index.InvalidHeaderData;
 import bio.pih.index.ValueOutOfBoundsException;
 import bio.pih.interfaces.Console;
@@ -57,6 +59,7 @@ public class Genoogle {
 	public synchronized static Genoogle getInstance() throws InvalidHeaderData, IllegalSymbolException, BioException,
 			InvalidConfigurationException {
 		if (singleton == null) {
+			logger.info("Starting Genoogle .");
 			try {
 				singleton = new Genoogle();
 			} catch (IOException e) {
@@ -86,6 +89,20 @@ public class Genoogle {
 		sm = XMLConfigurationReader.getSearchManager();
 	}
 
+	
+	// To stop the current searchs too?
+	List<GenoogleListener> listerners = Lists.newLinkedList();
+
+	public void addListerner(GenoogleListener listerner) {
+		listerners.add(listerner);		
+	}
+	
+	public void finish() {
+		for (GenoogleListener listerner: listerners) {
+			listerner.finish();
+		}		
+	}
+	
 	/**
 	 * @param in
 	 * @param databank
@@ -187,8 +204,7 @@ public class Genoogle {
 		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 
 		if (args.length == 0) {
-			Genoogle genoogle = Genoogle.getInstance();
-			Console console = new Console(genoogle);
+			Console console = new Console();
 			new Thread(console).start();
 		} else {
 
@@ -218,12 +234,9 @@ public class Genoogle {
 				return;
 			}
 
-			else if (args.length >= 2 && option.equals("-b")) {
-				logger.info("Starting Genoogle .");
-				Genoogle genoogle = Genoogle.getInstance();
-
+			else if (args.length >= 2 && option.equals("-b")) {				
 				String inputFile = args[1];
-				Console console = new Console(genoogle, new File(inputFile));
+				Console console = new Console(new File(inputFile));
 				new Thread(console).start();
 
 			} else {

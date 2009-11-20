@@ -138,7 +138,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		addFastaFile(getFullPath());
 	}
 
-	public void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException, IndexConstructionException {
+	public synchronized void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException, IndexConstructionException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
@@ -236,7 +236,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		return id;
 	}
 
-	public int getNumberOfSequences() {
+	public synchronized int getNumberOfSequences() {
 		return numberOfSequences;
 	}
 	
@@ -270,11 +270,17 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	@Override
 	public void delete() {
 		if (getDataBankFile().exists()) {
-			getDataBankFile().delete();			
+			boolean delete = getDataBankFile().delete();
+			if (!delete) {
+				logger.error(getDataBankFile() + " can not be deleted.");
+			}
 		}
 		
 		if (getStoredDataBankInfoFile().exists()) {
-			getStoredDataBankInfoFile().delete();
+			boolean delete = getStoredDataBankInfoFile().delete();
+			if (!delete) {
+				logger.error(getStoredDataBankInfoFile() + " can not be deleted.");
+			}
 		}
 		
 	}

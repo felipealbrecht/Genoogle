@@ -112,7 +112,10 @@ public class InvertedIndexBuilder {
 
 	private void resetFilePhase1() throws IOException, IndexConstructionException {
 		if (entriesTempFilePhase1 != null && entriesTempFilePhase1.exists()) {
-			entriesTempFilePhase1.delete();
+			boolean delete = entriesTempFilePhase1.delete();
+			if (!delete) {
+				logger.error(entriesTempFilePhase1 + " can not be deleted.");
+			}
 		}
 		entriesTempFilePhase1 = File.createTempFile(databank.getFullPath().getName(), ".sbms_1.tmp");
 		entriesTempFilePhase1.deleteOnExit();
@@ -125,7 +128,10 @@ public class InvertedIndexBuilder {
 
 	private void resetFilePhase2() throws IOException, IndexConstructionException {
 		if (entriesTempFilePhase2 != null && entriesTempFilePhase2.exists()) {
-			entriesTempFilePhase2.delete();
+			boolean delete = entriesTempFilePhase2.delete();
+			if (!delete) {
+				logger.error(entriesTempFilePhase2 + " can not be deleted.");
+			}
 		}
 		entriesTempFilePhase2 = File.createTempFile(databank.getFullPath().getName(), ".sbms_2.tmp");
 		entriesTempFilePhase2.deleteOnExit();
@@ -264,10 +270,10 @@ public class InvertedIndexBuilder {
 			}
 
 			if (o1.sequenceId != o2.sequenceId) {
-				return o1.sequenceId - o1.sequenceId;
+				return o1.sequenceId - o2.sequenceId;
 			}
 
-			return o1.position - o1.position;
+			return o1.position - o2.position;
 		}
 	};
 

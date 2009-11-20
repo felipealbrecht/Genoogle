@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
+import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.io.AbstractSequenceDataBank;
 import bio.pih.io.SequencesProvider;
@@ -89,11 +90,16 @@ public class SearchManager {
 		}
 		int totalSubmited = 0;
 		while(provider.hasNext()) {
+			SymbolList nextSequence = provider.getNextSequence();
+			if (nextSequence == null) {
+				break;
+			}
+			
 			SearchParams sp;
 			if (parameters == null) {
-				sp = new SearchParams(provider.getNextSequence(), databankName);
+				sp = new SearchParams(nextSequence, databankName);
 			} else {
-				sp = new SearchParams(provider.getNextSequence(), databankName, parameters);
+				sp = new SearchParams(nextSequence, databankName, parameters);
 			}
 			long id = getNextSearchId();
 			final AbstractSearcher searcher = SearcherFactory.getSearcher(id, sp, databank);

@@ -15,9 +15,7 @@ public class DividedStringGenoogleSmithWatermanTest {
 	DividedStringGenoogleSmithWaterman d3;
 	DividedStringGenoogleSmithWaterman d4;
 	DividedStringGenoogleSmithWaterman d5;
-	DividedStringGenoogleSmithWaterman d6;
-	
-	
+		
 	@Test
 	public void testSameSequencesAligneds() {
 		d = new DividedStringGenoogleSmithWaterman(1, -1, -1, -1, -1, 20);

@@ -40,6 +40,6 @@ public class SubSequenceIndexInfo {
 	 * @return the sequence id 
 	 */
 	public static int getSequenceId(long subSequenceInfoIntRepresention) {
-		return (int) (subSequenceInfoIntRepresention >> 32) & DATA_32_BITS_MASK;
+		return (int) (subSequenceInfoIntRepresention >> 32);
 	}
 }

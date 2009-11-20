@@ -146,11 +146,17 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 
 	public void delete() {
 		if (getMemoryInvertedIndexFile().exists()) {
-			getMemoryInvertedIndexFile().delete();
+			boolean delete = getMemoryInvertedIndexFile().delete();
+			if (!delete) {
+				logger.error(getMemoryInvertedOffsetIndexFile() + " can not be deleted.");
+			}
 		}
 		
 		if (getMemoryInvertedOffsetIndexFile().exists()) {
-			getMemoryInvertedOffsetIndexFile().delete();
+			boolean delete = getMemoryInvertedOffsetIndexFile().delete();
+			if (!delete) {
+				logger.error(getMemoryInvertedOffsetIndexFile() + " can not be deleted.");
+			}
 		}		
 	}
 }

@@ -176,7 +176,7 @@ public class IndexRetrievedData {
 		}
 	}
 
-	public final static class RetrievedArea implements Cloneable {
+	public final static class RetrievedArea {
 		private int queryAreaBegin;
 		private int queryAreaEnd;
 		private int sequenceAreaBegin;

@@ -8,24 +8,34 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
+import org.biojava.bio.BioException;
+import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import bio.pih.Genoogle;
+import bio.pih.GenoogleListener;
+import bio.pih.index.InvalidHeaderData;
 import bio.pih.io.AbstractSequenceDataBank;
+import bio.pih.io.InvalidConfigurationException;
 import bio.pih.io.Output;
 import bio.pih.search.SearchParams;
+import bio.pih.search.UnknowDataBankException;
 import bio.pih.search.SearchParams.Parameter;
 import bio.pih.search.results.SearchResults;
 
 import com.google.common.collect.Maps;
 
-public class Console implements Runnable {
+public class Console implements Runnable, GenoogleListener {
 	private static Logger logger = Logger.getLogger(Console.class.getCanonicalName());
 
 	private static final String EXIT = "exit";
@@ -42,22 +52,30 @@ public class Console implements Runnable {
 	private static Logger profileLogger = Logger.getLogger("profile");
 
 	private File inputBatch;
+	
+	private volatile boolean running;
 
 	private final Genoogle genoogle;
 
-	public Console(Genoogle genoogle) {
-		this.genoogle = genoogle;
+	public Console() throws IllegalSymbolException, InvalidHeaderData, BioException, InvalidConfigurationException {
+		this.genoogle = Genoogle.getInstance();;
+		genoogle.addListerner(this);
 	}
 
 	/**
 	 * Starts console informing a batch file to be executed.
+	 * @throws InvalidConfigurationException 
+	 * @throws BioException 
+	 * @throws InvalidHeaderData 
+	 * @throws IllegalSymbolException 
 	 */
-	public Console(Genoogle genoogle, File inputBatch) {
-		this(genoogle);
+	public Console(File inputBatch) throws IllegalSymbolException, InvalidHeaderData, BioException, InvalidConfigurationException {
+		this();
 		this.inputBatch = inputBatch;
 	}
 
 	public void run() {
+		running = true;
 		if (inputBatch != null) {
 			try {
 				execute(new InputStreamReader(new FileInputStream(inputBatch)), true);
@@ -80,7 +98,7 @@ public class Console implements Runnable {
 		System.out.print("genoogle console> ");
 
 		try {
-			while (executePrev || (line = lineReader.readLine()) != null) {
+			while (running &&  (executePrev || (line = lineReader.readLine()) != null) ) {
 				long begin = System.currentTimeMillis();
 				long end = -1;
 
@@ -166,9 +184,9 @@ public class Console implements Runnable {
 					} else if (commands[0].equals(DEFAULT)) {
 						System.out.println(genoogle.getDefaultDatabank());
 
-					} else if (commands[0].equals(PARAMETERS)) {
-						for (Parameter parameter : consoleParameters.keySet()) {
-							System.out.println(parameter.getName() + "=" + consoleParameters.get(parameter));
+					} else if (commands[0].equals(PARAMETERS)) {						
+						for (Entry<Parameter, Object> entry : consoleParameters.entrySet()) {						
+							System.out.println(entry.getKey().getName() + "=" + entry.getValue());
 						}
 
 					} else if (commands[0].equals(SET)) {
@@ -203,8 +221,7 @@ public class Console implements Runnable {
 						end = System.currentTimeMillis();
 
 					} else if (commands[0].equals(EXIT)) {
-						System.out.println("Bye.");
-						System.exit(0);
+						genoogle.finish();
 
 					} else if (commands[0].equals(HELP)) {
 						System.out.println("Commands:");
@@ -235,14 +252,44 @@ public class Console implements Runnable {
 
 					prev = line;
 					System.out.print("genoogle console> ");
-				} catch (Exception e) {
+				} catch (IndexOutOfBoundsException e) {
 					logger.fatal(e);
-					return;
+					continue;
+				} catch (UnsupportedEncodingException e) {
+					logger.fatal(e);
+					continue;
+				} catch (FileNotFoundException e) {
+					logger.fatal(e);
+					continue;
+				} catch (IOException e) {
+					logger.fatal(e);
+					continue;
+				} catch (NoSuchElementException e) {
+					logger.fatal(e);
+					continue;
+				} catch (UnknowDataBankException e) {
+					logger.error(e);
+					continue;
+				} catch (InterruptedException e) {
+					logger.fatal(e);
+					continue;
+				} catch (ExecutionException e) {
+					logger.fatal(e);
+					continue;
+				} catch (BioException e) {
+					logger.fatal(e);
+					continue;
 				}
 			}
 		} catch (IOException e) {
 			logger.fatal(e);
 			return;
 		}
+	}
+
+	@Override
+	public void finish() {
+		logger.info("Genoogle sent a command to finish. Bye!");
+		this.running = false;
 	}
 }

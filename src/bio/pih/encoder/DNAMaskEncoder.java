@@ -27,12 +27,11 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		}
 		if (length != subSequenceLength) {
 			throw new RuntimeException("The subSequenceLength (" + subSequenceLength
-					+ ") and the count of the usable values of the mask (" + length
-					+ ") should be the same.");
+					+ ") and the count of the usable values of the mask (" + length + ") should be the same.");
 		}
 		this.resultLength = length;
 	}
-	
+
 	public int getPatternLength() {
 		return patternLength;
 	}
@@ -41,8 +40,8 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		int encoded = 0;
 		int offset = 0;
 		int length = symbolList.length();
-		
-		for (int i = 1; i <= length; i++) {			
+
+		for (int i = 1; i <= length; i++) {
 			if (this.mask[i - 1]) {
 				encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
 			} else {
@@ -53,7 +52,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		return encoded;
 	}
 
-    public int applyMask(String subSequence) {
+	public int applyMask(String subSequence) {
 		int encoded = 0;
 		int offset = 0;
 		int length = subSequence.length();
@@ -67,39 +66,35 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		}
 
 		return encoded;
-    }
-	
+	}
+
 	public int applyMask(int begin, int end, String subSequence) {
 		int encoded = 0;
 		int offset = 0;
-		
+
 		for (int i = begin; i < end; i++) {
-            int pos = i-begin;
+			int pos = i - begin;
 			if (this.mask[pos]) {
-				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - ( pos - offset + 1)) << 1));
+				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (pos - offset + 1)) << 1));
 			} else {
 				offset++;
 			}
 		}
 
 		return encoded;
-	}	
-	
+	}
+
 	public int[] applySequenceMask(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
 		int size = sequence.length() / this.patternLength;
-		int extra = sequence.length() % this.patternLength;
-		if (extra != 0) { // extra space for incomplete sub-sequence
-			// size++; // the masked sequences does not contain incomplete sub-sequences.
-		}
+
 		size++; // extra space for information on the length.
 		int sequenceEncoded[] = new int[size];
 		sequenceEncoded[getPositionLength()] = sequence.length();
 
 		int pos = getPositionBeginBitsVector();
-		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory
-				.getNotOverlappedFactory().newSymbolListWindowIterator(sequence,
-						this.patternLength);
+		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(
+				sequence, this.patternLength);
 		while (symbolListWindowIterator.hasNext()) {
 			SymbolList next = symbolListWindowIterator.next();
 			sequenceEncoded[pos] = applyMask(next);
@@ -108,8 +103,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 		return sequenceEncoded;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Pattern: ");
@@ -127,7 +121,6 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		sb.append(resultLength);
 		return sb.toString();
 	}
-
 
 	public static void mainX(String[] args) throws IllegalSymbolException {
 		DNAMaskEncoder patternEncoder = new DNAMaskEncoder("111010010100110111", 11);

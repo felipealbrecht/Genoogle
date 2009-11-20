@@ -2,6 +2,7 @@ package bio.pih.search;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.biojava.bio.symbol.SymbolList;
@@ -123,9 +124,9 @@ public final class SearchParams {
 	public SearchParams(SymbolList query, String databankName, Map<Parameter, Object> parameters) {
 		this(query, databankName, MATCH_SCORE, MISMATCH_SCORE, MAX_SUB_SEQUENCE_DISTANCE, SEQUENCES_EXTEND_DROPOFF, MIN_HSP_LENGTH, MAX_HITS_RESULTS, MAX_THREADS_INDEX_SEARCH, MAX_THREADS_EXTEND_ALIGN, MIN_QUERY_SLICE_LENGTH, QUERY_SPLIT_QUANTITY);
 
-		for (Parameter param : parameters.keySet()) {
-			Object v = parameters.get(param);
-			switch (param) {
+		for (Entry<Parameter, Object> paramEntry : parameters.entrySet()) {
+			Object v = paramEntry.getValue();
+			switch (paramEntry.getKey()) {
 			case MAX_SUB_SEQUENCE_DISTANCE:
 				this.maxSubSequencesDistance = (Integer) v;
 				break;

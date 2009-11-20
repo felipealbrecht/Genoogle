@@ -5,17 +5,17 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import bio.pih.Genoogle;
+import bio.pih.GenoogleListener;
 
-public class WebServer implements Runnable {
+public class WebServer implements Runnable, GenoogleListener {
 	
 	static Logger logger = Logger.getLogger(WebServer.class.getName());
-	private volatile boolean running = true;
 	Server server;
 
 	public WebServer(int port, String path) throws Exception {
-        
-        server = new Server(port);
-         
+        Genoogle.getInstance().addListerner(this);
+       
+        server = new Server(port);        
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
         webapp.setWar(path);        
@@ -25,14 +25,10 @@ public class WebServer implements Runnable {
 
 	public void start() throws Exception {
 		server.start();
-		while (running) {
-			Thread.sleep(1000);
-		}
 	}
 
 	public void stop() throws Exception  {
 		server.stop();
-		running = false;
 	}
 
 	@Override
@@ -43,14 +39,22 @@ public class WebServer implements Runnable {
 			logger.fatal(e);
 		}
 	}
+	
+	@Override
+	public void finish() {
+		logger.info("Genoogle sent a command to finish. Bye!");
+		try {
+			this.stop();
+		} catch (Exception e) {
+			logger.error(e);
+		}		
+	}
 
 	public static void main(String[] args) throws Exception {
 		String path = args[0];
 		int port = Integer.parseInt(args[1]);
 
-		
-		Genoogle genoogle = Genoogle.getInstance();
-		new Thread(new Console(genoogle)).start();
+		new Thread(new Console()).start();
 		new WebServer(port, path).start();
 	}
 }

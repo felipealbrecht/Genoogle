@@ -1,6 +1,5 @@
 package bio.pih.search.results;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 import bio.pih.alignment.DividedStringGenoogleSmithWaterman;
@@ -10,7 +9,7 @@ import bio.pih.alignment.GenoogleSmithWaterman;
  * @author albrecht
  * 
  */
-public class HSP implements Serializable {
+public class HSP {
 
 	private static final long serialVersionUID = -7701610542981141900L;
 

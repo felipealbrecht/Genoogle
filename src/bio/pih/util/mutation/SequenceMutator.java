@@ -13,8 +13,8 @@ import java.util.Random;
  */
 /**
  * @author albrecht (felipe.albrecht@gmail.com)
- *
- * TODO: javadoc methods comments, a better main method. 
+ * 
+ *         TODO: javadoc methods comments, a better main method.
  */
 public class SequenceMutator {
 
@@ -24,27 +24,27 @@ public class SequenceMutator {
 	 * Default probability for a base mutation occurs.
 	 */
 	public static final double DEFAULT_MUTATE_BASE_RATION = 0.25;
-		
+
 	/**
 	 * Default probability for a sub-sequence be inserted occurs.
 	 */
 	public static final double DEFAULT_INSERTION_RATIO = 0.005;
-	
+
 	/**
 	 * Default probability for a sub-sequence be removed occurs.
 	 */
 	public static final double DEFAULT_REMOTION_RATIO = 0.01;
-	
+
 	/**
 	 * Default probability for a sub-sequence be duplicated occurs.
 	 */
 	public static final double DEFAULT_DUPLICATION_RATIO = 0.005;
-	
+
 	/**
 	 * Default probability for a sub-sequence be dislocated occurs.
 	 */
 	public static final double DEFAULT_DISLOCATION_RATIO = 0.005;
-	
+
 	/**
 	 * Default probability for a sub-sequence be inverted occurs.
 	 */
@@ -57,13 +57,16 @@ public class SequenceMutator {
 
 	/**
 	 * Proportional size related with sequence that will be modified.
-	 * <p>Example, for a deletion mutation on a 20 bases length sequence and proportional_size of 4
-	 *  the maximum size of the deleted sub-sequence will be 20/4: 5 bases.
+	 * <p>
+	 * Example, for a deletion mutation on a 20 bases length sequence and proportional_size of 4 the
+	 * maximum size of the deleted sub-sequence will be 20/4: 5 bases.
 	 */
 	public static final int DEFAULT_PROPORTION_SIZE = 4;
 
 	private final static int PROBABILITIES_VECTOR_SIZE = 10000;
-	private static final int[] DEFAULT_PROBABILITY_VECTOR = createProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION, DEFAULT_INSERTION_RATIO, DEFAULT_REMOTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DISLOCATION_RATIO, DEFAULT_INVERSION_RATIO, DEFAULT_DISLOCATION_INVERSION_RATIO);
+	private static final int[] DEFAULT_PROBABILITY_VECTOR = createProbabilitiesVector(DEFAULT_MUTATE_BASE_RATION,
+			DEFAULT_INSERTION_RATIO, DEFAULT_REMOTION_RATIO, DEFAULT_DUPLICATION_RATIO, DEFAULT_DISLOCATION_RATIO,
+			DEFAULT_INVERSION_RATIO, DEFAULT_DISLOCATION_INVERSION_RATIO);
 
 	// Informations to fill the probabilities vector.
 	static final int NOTHING = 0;
@@ -77,9 +80,10 @@ public class SequenceMutator {
 	static final int DISLOCATION_INVERSION = 8;
 
 	/**
-	 * Create a probabilities vector with the given probabilities.
-	 * The sensibilities for each mutation came from 0.001 (0.00001%) to 10,000.00 (100%)
-	 * This methods do <b>not</b> check if a single or the total probabilities are higher then   
+	 * Create a probabilities vector with the given probabilities. The sensibilities for each
+	 * mutation came from 0.001 (0.00001%) to 10,000.00 (100%) This methods do <b>not</b> check if a
+	 * single or the total probabilities are higher then
+	 * 
 	 * @param mutateBase
 	 * @param deletion
 	 * @param insertion
@@ -89,7 +93,8 @@ public class SequenceMutator {
 	 * @param dislocationWithInversion
 	 * @return a vector with the probabilities.
 	 */
-	public static int[] createProbabilitiesVector(double mutateBase, double deletion, double insertion, double duplication, double dislocation, double inversion, double dislocationWithInversion) {
+	public static int[] createProbabilitiesVector(double mutateBase, double deletion, double insertion,
+			double duplication, double dislocation, double inversion, double dislocationWithInversion) {
 		int[] probabilitiesVector = new int[PROBABILITIES_VECTOR_SIZE];
 
 		int pos = 0;
@@ -131,8 +136,8 @@ public class SequenceMutator {
 	}
 
 	/**
-	 * Same as mutateSequence(String sequence, int generations, int proporsionSize, int[] probabilitiesVector)
-	 * but using default probability vector.
+	 * Same as mutateSequence(String sequence, int generations, int proporsionSize, int[]
+	 * probabilitiesVector) but using default probability vector.
 	 * 
 	 * @param sequence
 	 * @param generations
@@ -142,7 +147,7 @@ public class SequenceMutator {
 	public static String mutateSequence(String sequence, int generations, int proporsionSize) {
 		return mutateSequence(sequence, generations, proporsionSize, DEFAULT_PROBABILITY_VECTOR);
 	}
-	
+
 	/**
 	 * Mutate the input sequence using the probabilities vector generations times.
 	 * 
@@ -194,13 +199,13 @@ public class SequenceMutator {
 	 * Simple main for test and fast applications.
 	 * 
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		if (args.length == 1) {
-			printHelp();			
+			printHelp();
 		}
-		
+
 		File sequenceFile = new File(args[0]);
 		if (!sequenceFile.exists()) {
 			throw new FileNotFoundException("File " + args[0] + " was not found.");
@@ -208,9 +213,9 @@ public class SequenceMutator {
 		String sequence = readSequence(sequenceFile);
 		int generations = Integer.parseInt(args[1]);
 		System.out.println(mutateSequence(sequence, generations, 4, DEFAULT_PROBABILITY_VECTOR));
-		
+
 	}
-	
+
 	private static void printHelp() {
 		System.out.println("SequenceMutator help:");
 		System.out.println("<sequence> <generations>");
@@ -218,17 +223,27 @@ public class SequenceMutator {
 		System.out.println("to change the probabilities values, change at souce code :-)");
 		System.out.println("It's only a main for test propose, please, implement yours application and use this class.");
 	}
-	
+
 	public static String readSequence(File sequenceFile) throws FileNotFoundException, IOException {
-		BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
-		StringBuilder sb = new StringBuilder();
-		
-		while (br.ready()) {
-			String line = br.readLine().trim();
-			line = line.replaceAll("[\n|\r]", "");
-			sb.append(line);
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(sequenceFile));
+			StringBuilder sb = new StringBuilder();
+
+			while (br.ready()) {
+				String readLine = br.readLine();
+				if (readLine == null) {
+					return sb.toString();
+				}
+				String line = readLine.trim();
+				line = line.replaceAll("[\n|\r]", "");
+				sb.append(line);
+			}
+			return sb.toString();
+		} finally {
+			br.close();
 		}
-		return sb.toString();
+
 	}
 
 	/**
@@ -251,8 +266,9 @@ public class SequenceMutator {
 	/**
 	 * Delete a random sub-sequence.
 	 * 
-	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be removed.
+	 * @param sequence
+	 * @param maxSizeProportion
+	 *            max proportion of the sequence that will be removed.
 	 * 
 	 * @return a new sequence with the mutation.
 	 */
@@ -279,8 +295,9 @@ public class SequenceMutator {
 	/**
 	 * Insert a random sub-sequence.
 	 * 
-	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be inserted.
+	 * @param sequence
+	 * @param maxSizeProportion
+	 *            max proportion of the sequence that will be inserted.
 	 * 
 	 * @return a new sequence with the mutation.
 	 */
@@ -299,8 +316,9 @@ public class SequenceMutator {
 	/**
 	 * Duplicate a random sub-sequence and put into a random place in the sequence.
 	 * 
-	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be duplicated.
+	 * @param sequence
+	 * @param maxSizeProportion
+	 *            max proportion of the sequence that will be duplicated.
 	 * 
 	 * @return a new sequence with the mutation.
 	 */
@@ -328,8 +346,9 @@ public class SequenceMutator {
 	/**
 	 * Dislocate a random sub-sequence and put into a random place in the sequence.
 	 * 
-	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be dislocated.
+	 * @param sequence
+	 * @param maxSizeProportion
+	 *            max proportion of the sequence that will be dislocated.
 	 * 
 	 * @return a new sequence with the mutation.
 	 */
@@ -361,11 +380,11 @@ public class SequenceMutator {
 
 		return new String(charArray);
 	}
-	
+
 	/**
 	 * Invert a random sub-sequence.
 	 * 
-	 * @param sequence 
+	 * @param sequence
 	 * @return a new sequence with the mutation.
 	 */
 	public static String mutateInvertation(String sequence) {
@@ -385,8 +404,9 @@ public class SequenceMutator {
 	/**
 	 * Dislocate and invert a random sub-sequence.
 	 * 
-	 * @param sequence 
-	 * @param maxSizeProportion max proportion of the sequence that will be dislocate and inverted.
+	 * @param sequence
+	 * @param maxSizeProportion
+	 *            max proportion of the sequence that will be dislocate and inverted.
 	 * 
 	 * @return a new sequence with the mutation.
 	 */
@@ -438,7 +458,8 @@ public class SequenceMutator {
 
 	private static int randomLength(String sequence, int maxSizeProportion) {
 		assert maxSizeProportion >= 1;
-		// random.next(1) will return always 0, so, the probability to return 1 should be calculed on maxSizeProportion
+		// random.next(1) will return always 0, so, the probability to return 1 should be calculed
+		// on maxSizeProportion
 		if ((sequence.length() / maxSizeProportion) <= 1) {
 			return calculateBonus(maxSizeProportion);
 		}
@@ -467,7 +488,8 @@ public class SequenceMutator {
 	/**
 	 * Create a random sequence.
 	 * 
-	 * @param length of the new sequence.
+	 * @param length
+	 *            of the new sequence.
 	 * 
 	 * @return the generated sequence.
 	 */
