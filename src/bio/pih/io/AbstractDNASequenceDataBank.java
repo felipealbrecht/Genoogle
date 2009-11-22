@@ -64,8 +64,8 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	 * @throws IOException
 	 */
 	public AbstractDNASequenceDataBank(String name, int subSequenceLength, 
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
-		super(name, DNATools.getDNA(), subSequenceLength, path, parent);
+			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
+		super(name, DNATools.getDNA(), subSequenceLength, path, parent, lowComplexityFilter);
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;

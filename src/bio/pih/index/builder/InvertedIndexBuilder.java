@@ -14,6 +14,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +25,7 @@ import bio.pih.encoder.DNASequenceEncoderToInteger;
 import bio.pih.encoder.SequenceEncoder;
 import bio.pih.index.IndexConstructionException;
 import bio.pih.index.IndexFileOffset;
+import bio.pih.index.LowComplexitySubSequences;
 import bio.pih.index.MemoryInvertedIndex;
 import bio.pih.index.SubSequenceIndexInfo;
 import bio.pih.io.AbstractSequenceDataBank;
@@ -65,12 +67,24 @@ public class InvertedIndexBuilder {
 	private long totalMemorytoAdd;
 	private int totalSubSequencesToAdd;
 
+	private int[] lowComplexitySubSequences;
+
+	private int totalFiltered = 0;
+
 	public InvertedIndexBuilder(MemoryInvertedIndex memoryInvertedIndex) {
 		this.memoryInvertedIndex = memoryInvertedIndex;
 		this.databank = memoryInvertedIndex.getDatabank();
 		this.indexSize = memoryInvertedIndex.getIndexSize();
 		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;
-
+		
+		int lowComplexityFilterLimit = databank.getLowComplexityFilter();
+		if (lowComplexityFilterLimit < 0) {
+			this.lowComplexitySubSequences = new int[0];
+			logger.info("Low complexity sub sequences filter disabled.");
+		} else {
+			this.lowComplexitySubSequences = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilterLimit).getSubSequences();
+			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequences.length + " sub sequences.");
+		}
 	}
 
 	public InvertedIndexBuilder(MemoryInvertedIndex memoryInvertedIndex, int totalSortMemory)
@@ -224,10 +238,15 @@ public class InvertedIndexBuilder {
 				int sequencePos = (arrayPos - SequenceEncoder.getPositionBeginBitsVector()) * subSequenceOffSet;
 				int subSequence = encodedSequence[arrayPos];
 
-				if (entries[subSequence % entriesArraySize] == null) {
-					entries[subSequence % entriesArraySize] = new ArrayList<Entry>(5);
+				if (Arrays.binarySearch(lowComplexitySubSequences, subSequence) < 0) {
+
+					if (entries[subSequence % entriesArraySize] == null) {
+						entries[subSequence % entriesArraySize] = new ArrayList<Entry>(5);
+					}
+					entries[subSequence % entriesArraySize].add(new Entry(subSequence, sequenceId, sequencePos));
+				} else {
+					totalFiltered++;
 				}
-				entries[subSequence % entriesArraySize].add(new Entry(subSequence, sequenceId, sequencePos));
 			}
 		}
 
@@ -305,11 +324,14 @@ public class InvertedIndexBuilder {
 		}
 	}
 
-	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
+	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException,
+			IndexConstructionException {
 		int totalUsedMemory = 0;
 		int offset = 0;
 		int beginOffset = 0;
 		int processedEntries = 0;
+		
+		logger.info("Filtered " + totalFiltered + " low complexity subsequences.");
 
 		while (processedEntries < totalEntries) {
 
@@ -335,7 +357,8 @@ public class InvertedIndexBuilder {
 		getEntriesOutpuPhase2().flush();
 	}
 
-	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
+	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException,
+			IndexConstructionException {
 		{
 			List<SortedEntriesBufferManager> entryBufferManagers = Lists.newArrayList();
 

@@ -139,6 +139,8 @@ public class XMLConfigurationReader {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
+		String lowComplexityFilterString = e.attributeValue("low-complexity-filter");
+		
 		
 		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
 		int subSequenceLength; 
@@ -163,11 +165,16 @@ public class XMLConfigurationReader {
 		if ((parent != null) && path.equals(parent.getName())) {
 			throw new InvalidConfigurationException("It is not possible to have a FASTA (" + path + ") file with the same name (" + parent.getName() + ") of the its parent data bank.");
 		}
+		
+		int lowComplexityFilter = -1;
+		if (lowComplexityFilterString != null) {
+			lowComplexityFilter = Integer.parseInt(lowComplexityFilterString);
+		}
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, mask);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, mask, lowComplexityFilter);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -189,7 +196,7 @@ public class XMLConfigurationReader {
 
 		if (e.getName().trim().equals("databank")) {				
 			try {
-				return new IndexedDNASequenceDataBank(name, subSequenceLength, mask, new File(path), parent);
+				return new IndexedDNASequenceDataBank(name, subSequenceLength, mask, new File(path), parent, lowComplexityFilter);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -197,7 +204,7 @@ public class XMLConfigurationReader {
 
 		} else if (e.getName().trim().equals("databank-collection")) {			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), subSequenceLength, new File(path), parent);
+					name, DNATools.getDNA(), subSequenceLength, new File(path), parent, lowComplexityFilter);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {

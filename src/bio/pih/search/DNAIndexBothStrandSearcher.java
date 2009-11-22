@@ -85,7 +85,6 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 		CountDownLatch indexSearchersCountDown = new CountDownLatch(querySplitQuantity * 2);
 
-		logger.info("(" + id + ") Preprocessing time: " + (System.currentTimeMillis() - searchBegin));
 		logger.info("(" + id + ") " + querySplitQuantity + " threads with slice query with " + length + " bases.");
 		for (int i = 0; i < querySplitQuantity; i++) {
 			int begin = (sliceSize * i);

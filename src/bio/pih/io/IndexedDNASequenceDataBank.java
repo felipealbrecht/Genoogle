@@ -44,8 +44,8 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	 * @throws IOException
 	 */
 	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask,
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
-		super(name, subSequenceLength, path, parent);
+			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+		super(name, subSequenceLength, path, parent, lowComplexityFilter);
 
 		if (mask != null) {
 			maskEncoder = new DNAMaskEncoder(mask, subSequenceLength);

@@ -38,8 +38,8 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	 * @param minEvalueDropOut 
 	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
-		super(name, alphabet, subSequenceLength, path, parent);
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
+		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
 		this.databanks = new LinkedHashMap<String, T>();
 	}
 

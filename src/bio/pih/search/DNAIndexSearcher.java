@@ -100,7 +100,6 @@ public class DNAIndexSearcher implements Runnable {
 
 			long bMask = System.currentTimeMillis();
 			int[] iess = getEncodedSubSequences(sliceQuery, databank.getMaskEncoder());
-			logger.info("[" + this.toString() + "]" + (System.currentTimeMillis() - bMask) + " to apply mask.");
 
 			long init = System.currentTimeMillis();
 			IndexRetrievedData retrievedData = getIndexPositions(iess, offset);

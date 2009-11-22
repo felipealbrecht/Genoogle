@@ -31,12 +31,14 @@ public abstract class AbstractSequenceDataBank {
 
 	protected final File path;
 	protected final DatabankCollection<? extends AbstractDNASequenceDataBank> parent;
+	protected final int lowComplexityFilter;
 
 	protected AbstractSequenceDataBank(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) {
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
+		this.lowComplexityFilter = lowComplexityFilter;
 		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
 		this.path = path;
 		this.parent = parent;
@@ -162,6 +164,10 @@ public abstract class AbstractSequenceDataBank {
 	protected AbstractSequenceDataBank getParent() {
 		return parent;
 	}
+	
+	public int getLowComplexityFilter() {
+		return lowComplexityFilter;
+	}
 
 	/**
 	 * @return <code>true</code> if the data bank files and its data are okay. This method do
@@ -188,4 +194,5 @@ public abstract class AbstractSequenceDataBank {
 	 * Delete all file informations of this data bank.
 	 */
 	abstract public void delete();
+
 }
