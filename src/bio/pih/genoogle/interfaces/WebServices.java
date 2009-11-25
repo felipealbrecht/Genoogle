@@ -33,30 +33,27 @@ public class WebServices {
 		OutputFormat outformat = OutputFormat.createPrettyPrint();
 		outformat.setTrimText(false);
 		XMLWriter writer = null;
-		
-		String ret = "";
-		
+
 		try {
 			writer = new XMLWriter(outputStream, outformat);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.fatal(e);
+			return e.getLocalizedMessage();
 		}
 		
 		try {
 			writer.write(doc);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal(e);
+			return e.getLocalizedMessage();
 		}	
 		
 		try {
-			ret = outputStream.toString("UTF-8");
+			return outputStream.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal(e);
+			return e.getLocalizedMessage();
 		}
-
-        return ret;
     }
 	
 }
