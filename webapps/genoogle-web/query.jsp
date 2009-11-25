@@ -41,11 +41,6 @@
 			return;
 		}
 
-		if (query.length() > 40000) {
-			out.print("Query too long, should be until 40000 bases, someday it will be solved :-)");
-			return;
-		}
-
 		String dnaSequence = "[ACTGactg]*";
 		if (!query.matches(dnaSequence)) {
 			out.print("It doesnt look a DNA sequence!");

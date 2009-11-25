@@ -1,5 +1,5 @@
 <project name="genoogle" default="compile" basedir=".">
-	<description> Build script for genoogle project</description>
+	<description> Build script for Genoogle project</description>
 
 
 	<target name="init" description="Checks environment and setup variables">

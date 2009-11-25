@@ -9,5 +9,22 @@
   <description>
      Genoogle
   </description>
+  
+  
+  <listener>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+  </listener>
+  <servlet>
+    <description>JAX-WS endpoint - fromjava</description>
+    <display-name>fromjava</display-name>
+    <servlet-name>fromjava</servlet-name>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>fromjava</servlet-name>
+    <url-pattern>/addnumbers</url-pattern>
+  </servlet-mapping>
+
 
 </web-app>
