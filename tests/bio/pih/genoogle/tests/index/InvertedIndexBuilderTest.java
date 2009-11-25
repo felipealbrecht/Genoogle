@@ -33,7 +33,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 				  AbstractSequenceDataBank.class.getMethod("getFullPath")});
 				 
 				
-				
+		EasyMock.expect(sequenceDataBank.getLowComplexityFilter()).andReturn(-1).anyTimes();
 		EasyMock.expect(sequenceDataBank.getAlphabet()).andReturn(DNATools.getDNA()).anyTimes();
 		EasyMock.expect(sequenceDataBank.getEncoder()).andReturn(encoder).anyTimes();
 		EasyMock.expect(sequenceDataBank.getFullPath()).andReturn(new File("/tmp", this.getClass().getName())).anyTimes();

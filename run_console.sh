@@ -4,4 +4,4 @@ $JAVA_HOME/bin/java \
  -Xms3096m \
  -Xmx3096m \
  -classpath genoogle.jar:lib/* \
-  bio.pih.Genoogle $1 $2
+  bio.pih.genoogle.Genoogle $1 $2
