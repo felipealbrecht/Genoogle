@@ -115,17 +115,6 @@ public class Genoogle {
 		}		
 	}
 	
-	/**
-	 * @param in
-	 * @param databank
-	 * @return {@link List} of {@link SearchResults} of the given queries.
-	 * @throws IOException
-	 * @throws UnknowDataBankException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
-	 * @throws BioException
-	 * @throws NoSuchElementException
-	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException,
 			InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
@@ -184,6 +173,26 @@ public class Genoogle {
 		try {
 			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
 			SearchParams sp = new SearchParams(sequence, dataBankName);
+			sr = sm.doSyncSearch(sp);
+		} catch (UnknowDataBankException e) {
+			logger.error(e.getMessage(), e);
+		} catch (IllegalSymbolException e) {
+			logger.error(e.getMessage(), e);
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ExecutionException e) {
+			logger.error(e.getMessage(), e);
+		}
+
+		return sr;
+	}
+	
+	public SearchResults doSyncSearch(String seqString, String dataBankName, Map<Parameter, Object> parameters) {
+		SearchResults sr = null;
+		seqString = seqString.trim();
+		try {
+			SymbolList sequence = LightweightSymbolList.createDNA(seqString);
+			SearchParams sp = new SearchParams(sequence, dataBankName, parameters);
 			sr = sm.doSyncSearch(sp);
 		} catch (UnknowDataBankException e) {
 			logger.error(e.getMessage(), e);

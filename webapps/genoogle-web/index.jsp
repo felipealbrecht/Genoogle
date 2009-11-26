@@ -1,4 +1,4 @@
-<%@page import="bio.pih.Genoogle"%>
+<%@page import="bio.pih.genoogle.Genoogle"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">  <head>
     <title><%=Genoogle.SOFTWARE_NAME%> - <%=Genoogle.VERSION %></title>
 </head>

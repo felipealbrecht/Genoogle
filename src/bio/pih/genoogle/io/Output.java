@@ -62,6 +62,13 @@ public class Output {
 	 */
 	public static Document genoogleOutputToXML(SearchResults searchResult) {
 		assert searchResult != null;
+		Element output = genoogleXmlHeader();
+		output.add(searchResultToXML(searchResult));
+				
+		return output.getDocument();
+	}
+
+	public static Element genoogleXmlHeader() {
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Document doc = factory.createDocument();
@@ -77,11 +84,9 @@ public class Output {
 		Element output = doc.addElement("genoogle");
 		output.addElement("references").addAttribute("program", Genoogle.SOFTWARE_NAME).addAttribute("version",
 				Double.toString(Genoogle.VERSION)).addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
-		output.add(searchResultToXML(searchResult));
-
-		return doc;
+		return output;
 	}
-
+	
 	/**
 	 * @param searchResult
 	 * @return {@link Element} containing the {@link SearchResults} at XML form.
