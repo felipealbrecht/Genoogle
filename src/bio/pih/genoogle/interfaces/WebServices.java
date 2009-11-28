@@ -3,7 +3,9 @@ package bio.pih.genoogle.interfaces;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidParameterException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,7 +20,6 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -29,7 +30,10 @@ import bio.pih.genoogle.search.SearchParams;
 import bio.pih.genoogle.search.SearchParams.Parameter;
 import bio.pih.genoogle.search.results.SearchResults;
 
-@WebService(targetNamespace="http://genoogle.pih.bio.br")
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+@WebService(targetNamespace="http://webservices.interfaces.genoogle.pih.bio")
 public class WebServices {
 	static Logger logger = Logger.getLogger(WebServices.class.getName());
 
@@ -46,35 +50,38 @@ public class WebServices {
 		this.wsContext = wsContext;
 	}
 	
+	@WebMethod(operationName = "name")
+	public String name() {
+		return Genoogle.SOFTWARE_NAME;
+	}
+	
 	@WebMethod(operationName = "version")
-	public double version() {
+	public Double version() {
 		return Genoogle.VERSION;
 	}
 
-	@WebMethod(operationName = "list")
-	public String list() {
-		Element genoogleXmlHeader = Output.genoogleXmlHeader();
+	@WebMethod(operationName = "databanks")
+	public List<String> databanks() {
+		List<String> databanksList = Lists.newLinkedList();
 
 		Collection<AbstractSequenceDataBank> databanks = genoogle.getDatabanks();
-		Element element = genoogleXmlHeader.addElement("databanks");
 		for (AbstractSequenceDataBank databank : databanks) {
-			element.addElement(databank.getName());
+			databanksList.add(databank.getName());
 		}
 
-		return xmlToString(genoogleXmlHeader.getDocument());
+		return databanksList;
 	}
 
 	@WebMethod(operationName = "parameters")
-	public String parameters() {
-		Element genoogleXmlHeader = Output.genoogleXmlHeader();
-
+	public List<String> parameters() {
 		Map<Parameter, Object> defaultParameters = SearchParams.getSearchParamsMap();
-		Element element = genoogleXmlHeader.addElement("parameters");
+		List<String> parameters = Lists.newLinkedList();
+		
 		for (Entry<Parameter, Object> entry : defaultParameters.entrySet()) {
-			element.addElement(entry.getKey().getName()).addAttribute("value", entry.getValue().toString());
+			parameters.add(entry.getKey().toString()+"="+entry.getValue().toString());
 		}
 
-		return xmlToString(genoogleXmlHeader.getDocument());
+		return parameters;
 	}
 
 	@WebMethod(operationName = "setParameter")
@@ -116,6 +123,42 @@ public class WebServices {
 			parameters = SearchParams.getSearchParamsMap();
 		}
 				
+		SearchResults sr = genoogle.doSyncSearch(query, databank, parameters);
+		Document doc = Output.genoogleOutputToXML(sr);
+		return xmlToString(doc);
+	}
+	
+	@WebMethod(operationName = "searchWithParameters")
+	public String searchWithParameters(@WebParam(name = "query") String query, @WebParam(name = "databank") String databank, @WebParam(name = "parametersList") List<String> parametersList) {
+		MessageContext mc = wsContext.getMessageContext();
+		HttpSession session = ((javax.servlet.http.HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST)).getSession();
+		if (session == null) {
+			throw new WebServiceException("No session in WebServiceContext");
+		}
+
+		Map<Parameter, Object> sessionParameters = (Map<Parameter, Object>) session.getAttribute("parameters");
+		Map<Parameter, Object> parameters = Maps.newHashMap(); 
+		if (sessionParameters != null) {
+			for (Entry<Parameter, Object> e: sessionParameters.entrySet()) {
+				parameters.put(e.getKey(), e.getValue());
+			}
+		}
+		
+		for (String param: parametersList) {
+			String[] p = param.split("=");
+			if (p.length != 2) {
+				throw new InvalidParameterException(param + " is invalid.");
+			}
+			Parameter parameterByName = Parameter.getParameterByName(p[0]);
+			if (parameterByName == null) {
+				throw new InvalidParameterException(p[0] + " is not a parameter name.");
+			}
+			
+			// TODO: to verify, protect if the value is not possible.
+			Object convertValue = parameterByName.convertValue(p[1]);			
+			parameters.put(parameterByName, convertValue);			
+		}
+										
 		SearchResults sr = genoogle.doSyncSearch(query, databank, parameters);
 		Document doc = Output.genoogleOutputToXML(sr);
 		return xmlToString(doc);

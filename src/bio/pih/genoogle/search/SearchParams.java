@@ -104,7 +104,7 @@ public final class SearchParams {
 
 		public static Parameter getParameterByName(String name) {
 			for (Parameter param : values()) {
-				if (param.getName().equals(name)) {
+				if (param.getName().equals(name) || param.name().equals(name)) {
 					return param;
 				}
 			}
