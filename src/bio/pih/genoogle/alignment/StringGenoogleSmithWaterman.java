@@ -276,46 +276,42 @@ public class StringGenoogleSmithWaterman extends GenoogleSmithWaterman {
 		}
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the query aligned.
-	 */
+	@Override
 	public String getQueryAligned() {
 		return align[0];
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the target aligned.
-	 */
+	@Override
 	public String getTargetAligned() {
 		return align[1];
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the alignment path.
-	 */
+	@Override
 	public String getPath() {
 		return path;
 	}
 
+	@Override
 	public int getQueryStart() {
 		return queryStart + 1;
 	}
 
+	@Override
 	public int getQueryEnd() {
 		return maxI;
 	}
 
+	@Override
 	public int getTargetStart() {
 		return targetStart + 1;
 	}
 
+	@Override
 	public int getTargetEnd() {
 		return maxJ;
 	}
 
-	/**
-	 * @return alignment score.
-	 */
+	@Override
 	public int getScore() {
 		return score;
 	}
@@ -339,6 +335,7 @@ public class StringGenoogleSmithWaterman extends GenoogleSmithWaterman {
 		return z;
 	}
 
+	@Override
 	public int getIdentitySize() {
 		return identitySize;
 	}

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
@@ -46,18 +45,7 @@ public class DNAIndexSearcher implements Runnable {
 
 	private final List<Throwable> fails;
 
-	/**
-	 * @param id
-	 * @param sp
-	 * @param databank
-	 * @param encodedQuery
-	 * @param countDown
-	 * @param retrievedAreas2
-	 * @param i
-	 * @param retrievedDatas
-	 * @param countDown
-	 * @throws BioException
-	 */
+
 	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, String sliceQuery,
 			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {

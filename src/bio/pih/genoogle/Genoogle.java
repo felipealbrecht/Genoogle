@@ -32,12 +32,11 @@ import bio.pih.genoogle.seq.LightweightSymbolList;
 import com.google.common.collect.Lists;
 
 /**
- * Genoogle non distributed and no server implementation. For tests and validation propose.
- * 
+ * The main class of Genoogle. To get a Genoogle instance, use the getInstance() method.
  * 
  * @author albrecht
  */
-public class Genoogle {
+public final class Genoogle {
 
 	public static String SOFTWARE_NAME = "Genoogle BETA";
 	public static Double VERSION = 0.72;
@@ -50,11 +49,9 @@ public class Genoogle {
 	static Logger logger = Logger.getLogger(Genoogle.class.getName());
 
 	/**
-	 * @return {@link Genoogle} Singleton instance.
-	 * @throws InvalidHeaderData
-	 * @throws BioException
-	 * @throws IllegalSymbolException
-	 * @throws InvalidConfigurationException
+	 * Get the {@link Genoogle} execution instance.
+	 * 
+	 * @return {@link Genoogle} singleton instance or <code>null</code> if an error did happen.
 	 */
 	public synchronized static Genoogle getInstance() {
 		if (singleton == null) {
@@ -80,20 +77,13 @@ public class Genoogle {
 				logger.fatal(e.getMessage());
 				return null;
 			}
-			
+
 		}
 		return singleton;
 	}
 
 	/**
-	 * Simple constructor.
-	 * 
-	 * @throws ValueOutOfBoundsException
-	 * @throws IOException
-	 * @throws InvalidHeaderData
-	 * @throws BioException
-	 * @throws IllegalSymbolException
-	 * @throws InvalidConfigurationException
+	 * Private constructor.
 	 */
 	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
 			BioException, InvalidConfigurationException {
@@ -101,71 +91,126 @@ public class Genoogle {
 		sm = XMLConfigurationReader.getSearchManager();
 	}
 
-	
-	// To stop the current searchs too?
-	List<GenoogleListener> listerners = Lists.newLinkedList();
+	/**
+	 * Classes which use Genoogle and should be notified about changes.
+	 */
+	private List<GenoogleListener> listerners = Lists.newLinkedList();
 
+	/**
+	 * Add a new listener to Genoogle which will be notified about changes.
+	 * 
+	 * @param listerner
+	 */
 	public void addListerner(GenoogleListener listerner) {
-		listerners.add(listerner);		
+		listerners.add(listerner);
 	}
-	
-	public void finish() {
-		for (GenoogleListener listerner: listerners) {
+
+	/**
+	 * Finish {@link Genoogle} and notify the listeners to finish.
+	 */
+	public void finish() throws InterruptedException {
+		for (GenoogleListener listerner : listerners) {
 			listerner.finish();
-		}		
+		}
+		sm.shutdown();
 	}
-	
+
+	/**
+	 * Get the data bank name where the searches are performed when the data bank is not specified.
+	 * 
+	 * @return Default data bank name
+	 */
+	public String getDefaultDatabank() {
+		return sm.getDefaultDataBankName();
+	}
+
+	/**
+	 * Get a {@link Collection} of all available data banks
+	 * 
+	 * @return {@link Collection} of all {@link AbstractSequenceDataBank} which it is possible to
+	 *         execute a query.
+	 */
+	public Collection<AbstractSequenceDataBank> getDatabanks() {
+		return sm.getDatabanks();
+	}
+
+	/**
+	 * Do the search at the default data bank, reading the queries from the given
+	 * {@link BufferedReader} and returning the execution line only after all searches are finished.
+	 * 
+	 * @param in
+	 *            {@link BufferedReader} where the sequences are read.
+	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
+	 *         sequence inside the given {@link BufferedReader}.
+	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException,
 			InterruptedException, ExecutionException, NoSuchElementException, BioException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
 
-	public Collection<AbstractSequenceDataBank> getDatabanks() {
-		return sm.getDatabanks();
-	}
-
-	public String getDefaultDatabank() {
-		return sm.getDefaultDataBankName();
-	}
-
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank) throws IOException,
+	/**
+	 * Do the search at the specified data bank, reading the queries from the given
+	 * {@link BufferedReader} and returning the execution line only after all searches are finished.
+	 * 
+	 * @param in
+	 *            {@link BufferedReader} where the sequences are read.
+	 * @param databankName
+	 *            Data bank name where the search will be made.
+	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
+	 *         sequence inside the given {@link BufferedReader}.
+	 */
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName) throws IOException,
 			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
-		return doBatchSyncSearch(in, databank, null);
+		return doBatchSyncSearch(in, databankName, null);
 	}
 
 	/**
+	 * Do the search at the specified data bank, reading the queries from the given
+	 * {@link BufferedReader}, using the specified {@link Map} of {@link Parameter} as parameters,
+	 * and returning the execution line only after all searches are finished.
+	 * 
 	 * @param in
-	 * @param databank
-	 * @return {@link List} of {@link SearchResults} of the given queries.
-	 * @throws IOException
-	 * @throws UnknowDataBankException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
-	 * @throws BioException
-	 * @throws NoSuchElementException
+	 *            {@link BufferedReader} where the sequences are read.
+	 * @param databankName
+	 *            Data bank name where the search will be made.
+	 * @param parameters
+	 *            {@link Map} of {@link Parameter} which will be used in these searches.
+	 * 
+	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
+	 *         sequence inside the given {@link BufferedReader}.
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databank, Map<Parameter, Object> parameters)
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName, Map<Parameter, Object> parameters)
 			throws IOException, UnknowDataBankException, InterruptedException, ExecutionException,
 			NoSuchElementException, BioException {
 
-		SequencesProvider provider = new SequencesProvider(in);	
-		return sm.doSyncSearch(provider, databank, parameters);
+		SequencesProvider provider = new SequencesProvider(in);
+		return sm.doSyncSearch(provider, databankName, parameters);
 	}
 
 	/**
-	 * @param seqString
-	 * @return {@link SearchResults} of the search using the default databank.
+	 * Do the search of the given sequence at the default data bank and returning the execution line
+	 * only after all searches are finished.
+	 * 
+	 * @param inputSequence
+	 *            input sequence for the searching.
+	 * @return A {@link SearchResults} containing the results of this search.
 	 */
-	public SearchResults doSyncSearch(String seqString) {
+	public SearchResults doSyncSearch(String inputSequence) {
 		String defaultDataBankName = sm.getDefaultDataBankName();
-		return doSyncSearch(seqString, defaultDataBankName);
+		return doSyncSearch(inputSequence, defaultDataBankName);
 	}
 
 	/**
+	 * Do the search of the given sequence at the informed data bank and returning the execution
+	 * line only after all searches are finished.
+	 * 
 	 * @param seqString
+	 *            input sequence for the searching.
 	 * @param dataBankName
-	 * @return {@link SearchResults} of the search
+	 *            data bank name where the search will be performed.
+	 * 
+	 * @return A {@link SearchResults} containing the results of this search.
 	 */
 	public SearchResults doSyncSearch(String seqString, String dataBankName) {
 		SearchResults sr = null;
@@ -186,7 +231,21 @@ public class Genoogle {
 
 		return sr;
 	}
-	
+
+	/**
+	 * Do the search of the given sequence at the informed data bank, using the specified
+	 * {@link Map} of {@link Parameter} as parameters, and returning the execution line only after
+	 * all searches are finished.
+	 * 
+	 * @param seqString
+	 *            input sequence for the searching.
+	 * @param dataBankName
+	 *            data bank name where the search will be performed.
+	 * @param parameters
+	 *            {@link Map} of {@link Parameter} which will be used in these searches.
+	 * 
+	 * @return A {@link SearchResults} containing the results of this search.
+	 */
 	public SearchResults doSyncSearch(String seqString, String dataBankName, Map<Parameter, Object> parameters) {
 		SearchResults sr = null;
 		seqString = seqString.trim();
@@ -208,14 +267,10 @@ public class Genoogle {
 	}
 
 	/**
-	 * Finish {@link Genoogle}.
-	 * 
-	 * @throws InterruptedException
+	 * Main method: Use the "-g" option to encode and create inverted index for the data banks or
+	 * "-b file" to execute the commands specified at the file or do not use parameters and use the
+	 * console.
 	 */
-	public void shutdown() throws InterruptedException {
-		sm.shutdown();
-	}
-
 	public static void main(String[] args) throws IOException, InvalidHeaderData, ValueOutOfBoundsException,
 			IllegalSymbolException, BioException, InvalidConfigurationException {
 		PropertyConfigurator.configure("conf/log4j.properties");
@@ -255,7 +310,7 @@ public class Genoogle {
 				return;
 			}
 
-			else if (args.length >= 2 && option.equals("-b")) {				
+			else if (args.length >= 2 && option.equals("-b")) {
 				String inputFile = args[1];
 				Console console = new Console(new File(inputFile));
 				new Thread(console).start();

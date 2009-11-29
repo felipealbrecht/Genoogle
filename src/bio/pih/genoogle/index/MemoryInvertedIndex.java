@@ -16,8 +16,7 @@ import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.proto.Io.InvertedIndexBuck;
 
 /**
- * An inverted sub-sequences index stored in the memory. Faster than {@link DiskInvertedIndex}, but
- * requires much more memory.
+ * An inverted sub-sequences index stored in the memory.
  * 
  * @author albrecht
  */

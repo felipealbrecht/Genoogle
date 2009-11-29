@@ -1,8 +1,10 @@
 package bio.pih.genoogle.alignment;
 
-// TODO: Ver o pattern que isto corresponde.
-// TODO: Ver/refazer o alinhamento para as questoes do interior serem todos alinhados.
-
+/**
+ * Class which divided the query and target sequences and create {@link GenoogleSmithWaterman}
+ * instances and delegate to them the alignment execution. This class is useful to save memory for
+ * alignment of the very long sequences.
+ */
 public class DividedStringGenoogleSmithWaterman {
 
 	private final int match;
@@ -27,6 +29,22 @@ public class DividedStringGenoogleSmithWaterman {
 	private int targetEnd;
 	private int identitySize;
 
+	/**
+	 * Constructor which inform the scores for the alignment.
+	 * 
+	 * @param match
+	 *            score when two symbols are the same.
+	 * @param replace
+	 *            score when two symbols are different.
+	 * @param insert
+	 *            score when a gap is put because a insertion.
+	 * @param delete
+	 *            score when a gap is put because a deletion.
+	 * @param gapExtend
+	 *            score to extend a gap.
+	 * @param lengthThreshould
+	 *            minimum length of each sub-query or sub-target sequences.
+	 */
 	public DividedStringGenoogleSmithWaterman(int match, int replace, int insert, int delete, int gapExtend,
 			int lengthThreshould) {
 		this.match = match;
@@ -37,7 +55,16 @@ public class DividedStringGenoogleSmithWaterman {
 		this.lengthThreshould = lengthThreshould;
 	}
 
+	/**
+	 * Do the alignment of the two given sequences and return the score. Others alignment
+	 * informations are stored at the class instance.
+	 * 
+	 * @param query
+	 * @param target
+	 * @return score of the alignment.
+	 */
 	public int pairwiseAlignment(String query, String target) {
+
 		if (query.length() <= lengthThreshould || target.length() <= lengthThreshould) {
 			StringGenoogleSmithWaterman aligner = new StringGenoogleSmithWaterman(match, replace, insert, delete, gapExtend);
 			aligner.pairwiseAlignment(query, target);
@@ -56,17 +83,17 @@ public class DividedStringGenoogleSmithWaterman {
 
 		int m = query.length() / lengthThreshould;
 		int n = target.length() / lengthThreshould;
-		
+
 		int mRest = query.length() % lengthThreshould;
-		if (mRest != 0)  {
+		if (mRest != 0) {
 			m++;
 		}
-		
+
 		int nRest = query.length() % lengthThreshould;
 		if (nRest != 0) {
 			n++;
 		}
-		
+
 		int c = Math.min(m, n);
 		int queryLength = query.length() / c;
 		int targetLength = target.length() / c;
@@ -82,17 +109,17 @@ public class DividedStringGenoogleSmithWaterman {
 		score = 0;
 
 		for (int s = 0; s < c; s++) {
-			int endQueryPiece; 
+			int endQueryPiece;
 			int endTargetPiece;
-			
+
 			if (s == c - 1) {
 				endQueryPiece = query.length();
 				endTargetPiece = target.length();
 			} else {
 				endQueryPiece = queryPos + queryLength + queryDiff;
-				endTargetPiece  = targetPos + targetLength + targetDiff;
+				endTargetPiece = targetPos + targetLength + targetDiff;
 			}
-			
+
 			String queryPiece = query.substring(queryPos, endQueryPiece);
 			String targetPiece = target.substring(targetPos, endTargetPiece);
 
@@ -126,6 +153,13 @@ public class DividedStringGenoogleSmithWaterman {
 		return this.score;
 	}
 
+	/**
+	 * Format correctly the begin of this sub-alignment.
+	 * 
+	 * @param queryPiece
+	 * @param targetPiece
+	 * @param aligner
+	 */
 	private void setBeginSubAlignment(String queryPiece, String targetPiece, StringGenoogleSmithWaterman aligner) {
 		int i;
 		for (i = 1; i < aligner.getQueryStart() && i < aligner.getTargetStart(); i++) {
@@ -146,13 +180,13 @@ public class DividedStringGenoogleSmithWaterman {
 		}
 		while (i < aligner.getQueryStart() || i < aligner.getTargetStart()) {
 			if (i < aligner.getQueryStart()) {
-				queryAlignedBuilder.append(queryPiece.charAt(i-1));
+				queryAlignedBuilder.append(queryPiece.charAt(i - 1));
 				targetAlignedBuilder.append('-');
 				pathAlignedBuilder.append(' ');
 				score += insert;
 			} else {
 				queryAlignedBuilder.append('-');
-				targetAlignedBuilder.append(targetPiece.charAt(i-1));
+				targetAlignedBuilder.append(targetPiece.charAt(i - 1));
 				pathAlignedBuilder.append(' ');
 				score += insert;
 			}
@@ -160,6 +194,11 @@ public class DividedStringGenoogleSmithWaterman {
 		}
 	}
 
+	/**
+	 * Get the {@link String} representing the aligned query.
+	 * 
+	 * @return aligned query.
+	 */
 	public String getQueryAligned() {
 		if (queryAligned == null) {
 			queryAligned = queryAlignedBuilder.toString();
@@ -167,6 +206,11 @@ public class DividedStringGenoogleSmithWaterman {
 		return queryAligned;
 	}
 
+	/**
+	 * Get the {@link String} representing the aligned target.
+	 * 
+	 * @return aligned target.
+	 */
 	public String getTargetAligned() {
 		if (targetAligned == null) {
 			targetAligned = targetAlignedBuilder.toString();
@@ -174,6 +218,11 @@ public class DividedStringGenoogleSmithWaterman {
 		return targetAligned;
 	}
 
+	/**
+	 * Get the {@link String} representing the alignment path.
+	 * 
+	 * @return alignment path.
+	 */
 	public String getPath() {
 		if (pathAligned == null) {
 			pathAligned = pathAlignedBuilder.toString();
@@ -181,26 +230,46 @@ public class DividedStringGenoogleSmithWaterman {
 		return pathAligned;
 	}
 
+	/**
+	 * 
+	 * @return alignment score
+	 */
 	public int getScore() {
 		return score;
 	}
 
+	/**
+	 * @return where the alignment begins at the query sequence.
+	 */
 	public int getQueryStart() {
 		return queryStart;
 	}
 
+	/**
+	 * @return where the alignment ends at the query sequence.
+	 */
 	public int getQueryEnd() {
 		return queryEnd;
 	}
 
+	/**
+	 * @return where the alignment begins at the target sequence.
+	 */
 	public int getTargetStart() {
 		return targetStart;
 	}
 
+	/**
+	 * @return where the alignment ends at the target sequence.
+	 */
 	public int getTargetEnd() {
 		return targetEnd;
 	}
 
+	/**
+	 * Get the identity size, it is, how many exact matches occurred in the alignment.
+	 * @return the alignment identity size.
+	 */
 	public int getIdentitySize() {
 		return identitySize;
 	}

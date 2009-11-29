@@ -80,7 +80,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	int identitySize;
 
 	private static final long serialVersionUID = 2884980510887845616L;
-	
+
 	/**
 	 * Constructs the new SmithWaterman alignment object. Alignments are only performed, if the
 	 * alphabet of the given <code>SubstitutionMatrix</code> equals the alpabet of both the query
@@ -100,8 +100,6 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	 *            expenses for a gap opening in the target sequence
 	 * @param gapExtend
 	 *            expenses for the extension of a gap which was started earlier.
-	 * @param matrix
-	 *            the <code>SubstitutionMatrix</code> object to use.
 	 */
 	public GenoogleSmithWaterman(int match, int replace, int insert, int delete, int gapExtend) {
 		this.insert = insert;
@@ -169,9 +167,8 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 			int from = Math.max(1, i - k);
 			int to = Math.min(subject.length(), i + k);
 			for (j = from; j <= to; j++) {
-				scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete,
-						scoreMatrix[i][j - 1] + insert, scoreMatrix[i - 1][j - 1]
-								+ matchReplace(query, subject, i, j));
+				scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1] + insert,
+						scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j));
 
 				if (scoreMatrix[i][j] > scoreMatrix[maxI][maxJ]) {
 					maxI = i;
@@ -254,8 +251,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 					} else if (scoreMatrix[i][j] == E[i][j] || gap_extend[0]) {
 						// check if gap has been extended or freshly
 						// opened
-						gap_extend[0] = Math.abs(E[i][j]
-								- (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
+						gap_extend[0] = Math.abs(E[i][j] - (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
 
 						alignBuilder[0].append('-');
 						alignBuilder[1].append(st.tokenizeSymbol(subject.symbolAt(j--)));
@@ -265,8 +261,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 					} else {
 						// check if gap has been extended or freshly
 						// opened
-						gap_extend[1] = Math.abs(F[i][j]
-								- (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
+						gap_extend[1] = Math.abs(F[i][j] - (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
 
 						alignBuilder[0].append(st.tokenizeSymbol(query.symbolAt(i--)));
 						alignBuilder[1].append('-');
@@ -279,12 +274,14 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		}
 	}
 
-	private void backtrace(SymbolList query, SymbolList subject, int[][] scoreMatrix,
-			StringBuilder pathBuilder, StringBuilder[] alignBuilder, SymbolTokenization st)
-			throws IllegalSymbolException {
+	/**
+	 * Backtrace phase for the Smith-Waterman algorithm. 
+	 */
+	private void backtrace(SymbolList query, SymbolList subject, int[][] scoreMatrix, StringBuilder pathBuilder,
+			StringBuilder[] alignBuilder, SymbolTokenization st) throws IllegalSymbolException {
 		int i;
 		int j;
-		
+
 		j = maxJ;
 		for (i = maxI; i > 0;) {
 			do {
@@ -346,18 +343,30 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		return path;
 	}
 
+	/**
+	 * @return where the alignment begins at the query sequence.
+	 */
 	public int getQueryStart() {
 		return queryStart + 1;
 	}
 
+	/**
+	 * @return where the alignment ends at the query sequence.
+	 */
 	public int getQueryEnd() {
 		return maxI;
 	}
 
+	/**
+	 * @return where the alignment begins at the target sequence.
+	 */
 	public int getTargetStart() {
 		return targetStart + 1;
 	}
 
+	/**
+	 * @return where the alignment ends at the target sequence.
+	 */
 	public int getTargetEnd() {
 		return maxJ;
 	}
@@ -412,6 +421,11 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		}
 	}
 
+	/**
+	 * Get the identity size, it is, how many exact matches occurred in the alignment.
+	 * 
+	 * @return the alignment identity size.
+	 */
 	public int getIdentitySize() {
 		return identitySize;
 	}

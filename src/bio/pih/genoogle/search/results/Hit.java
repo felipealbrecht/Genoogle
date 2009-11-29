@@ -21,7 +21,6 @@ public class Hit {
 	List<HSP> hsps;
 	
 	/**
-	 * @param hitNum
 	 * @param id
 	 * @param gi 
 	 * @param description

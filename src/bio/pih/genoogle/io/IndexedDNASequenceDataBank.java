@@ -29,20 +29,6 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	private InvertedIndexBuilder indexBuilder;
 	protected final DNAMaskEncoder maskEncoder;
 
-	/**
-	 * 
-	 * @param name
-	 *            the name of the data bank
-	 * @param path
-	 *            the path where the data bank is/will be stored
-	 * @param parent
-	 * @param storageKind
-	 * @param subSequenceLength
-	 * @param minEvalueDropOut
-	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData
-	 * @throws IOException
-	 */
 	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask,
 			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
 		super(name, subSequenceLength, path, parent, lowComplexityFilter);

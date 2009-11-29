@@ -48,20 +48,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 
 	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
 
-	/**
-	 * Default constructor for all DNASequenceDataBank.
-	 * 
-	 * @param name
-	 *            the name of the data bank.
-	 * @param path
-	 *            the path where will be stored.
-	 * @param parent
-	 * @param readOnly
-	 *            if the data will be read only, no new sequences added.
-	 * @param subSequenceLength
-	 * @param minEvalueDropOut
-	 * @throws IOException
-	 */
+		
 	public AbstractDNASequenceDataBank(String name, int subSequenceLength, 
 			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
 		super(name, DNATools.getDNA(), subSequenceLength, path, parent, lowComplexityFilter);

@@ -59,13 +59,12 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 	/**
 	 * @param name
-	 *            name of this databank
+	 *            name of this databank   
 	 * @param path
 	 *            directory where it will be
 	 * @param subSequenceLength
 	 * @param qtdSubBases
 	 *            how many parts will have this sequence databank
-	 * @param minEvalueDropOut
 	 * @param mask
 	 */
 	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask, int lowComplexityFilter) {

@@ -109,7 +109,14 @@
 
 	<!-- Creates the API documentation -->
 	<target name="javadoc" depends="compile" description="Creates the API documentation">
-		<javadoc encoding="ISO-8859-1" packagenames="${packages}" sourcepath="${src.dir}" classpath="${classpath}" destdir="${build.docs}" author="true" version="true" use="true" source="1.6" windowtitle="${name}-${version} API" doctitle="${name}-${version}" maxmemory="192m">
+		<javadoc encoding="ISO-8859-1" packagenames="${packages}" sourcepath="${src.dir}" destdir="${build.docs}" author="true" version="true" use="true" source="1.6" windowtitle="${name}-${version} API" doctitle="${name}-${version}" maxmemory="192m">
+
+			<classpath>
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+
 			<link href="http://java.sun.com/javase/6/docs/api/" offline="false" />
 
 			<excludepackage name="bio.pih.tests.*" />

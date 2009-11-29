@@ -84,6 +84,7 @@ public class WebServices {
 		return parameters;
 	}
 
+	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "setParameter")
 	public boolean setParameter(@WebParam(name = "parameter") String parameter,
 			@WebParam(name = "value") String paramValue) {
@@ -110,6 +111,7 @@ public class WebServices {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "search")
 	public String search(@WebParam(name = "query") String query, @WebParam(name = "databank") String databank) {
 		MessageContext mc = wsContext.getMessageContext();
@@ -128,6 +130,7 @@ public class WebServices {
 		return xmlToString(doc);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "searchWithParameters")
 	public String searchWithParameters(@WebParam(name = "query") String query, @WebParam(name = "databank") String databank, @WebParam(name = "parametersList") List<String> parametersList) {
 		MessageContext mc = wsContext.getMessageContext();

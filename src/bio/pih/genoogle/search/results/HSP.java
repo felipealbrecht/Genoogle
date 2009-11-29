@@ -23,16 +23,6 @@ public class HSP {
 	private final int hitTo;
 	
 	
-	/**
-	 * @param num
-	 * @param alignment
-	 * @param queryFrom
-	 * @param queryTo
-	 * @param hitFrom
-	 * @param hitTo
-	 * @param normalizedScore
-	 * @param eValue
-	 */
 	public HSP(DividedStringGenoogleSmithWaterman alignment, 
 			int queryFrom, int queryTo, int hitFrom, int hitTo, 
 			double normalizedScore, double eValue) {

@@ -66,16 +66,9 @@ public class SearchManager {
 	/**
 	 * Process a batch of {@link SearchParams}
 	 * 
-	 * @param sps
-	 * @return a {@link List} of {@link SearchResults}, it does not give
+	 * @return {@link List} of {@link SearchResults}, it does not give
 	 *         guarantee that the first input SearchParam is the first in the
-	 *         results list.
-	 * @throws UnknowDataBankException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
-	 * @throws BioException 
-	 * @throws IOException 
-	 * @throws NoSuchElementException 
+	 *         results list. 
 	 */
 	public List<SearchResults> doSyncSearch(SequencesProvider provider, String databankName, Map<Parameter, Object> parameters) throws UnknowDataBankException,
 			InterruptedException, ExecutionException, NoSuchElementException, IOException, BioException {

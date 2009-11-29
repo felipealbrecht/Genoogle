@@ -2,7 +2,9 @@ package bio.pih.genoogle.alignment;
 
 
 /**
- * Some changes by Felipe Albrecht for faster alignment methods
+ * Sequences alignment output generation.
+ * 
+ * @author Biojava and changes by Felipe Albrecht for faster alignment methods
  */
 public abstract class GenoogleSequenceAlignment {
 
@@ -32,7 +34,7 @@ public abstract class GenoogleSequenceAlignment {
 	 *            The time in milliseconds, which was needed to generate the alignment.
 	 * @param queryOffset
 	 * @param targetOffset
-	 * @return formatierten String.
+	 * @return formated String.
 	 */
 	public static String formatOutput(String queryName, String targetName, String[] align, String path, int queryStart, int queryEnd, long queryLength, int targetStart, int targetEnd, long targetLength, double editdistance, long time, int queryOffset, int targetOffset) {
 

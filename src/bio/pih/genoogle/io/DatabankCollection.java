@@ -28,15 +28,6 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	
 	protected final LinkedHashMap<String, T> databanks;
 
-	/**
-	 * @param name
-	 * @param alphabet
-	 * @param path
-	 * @param parent
-	 * @param subSequenceLength 
-	 * @param maxThreads
-	 * @param minEvalueDropOut 
-	 */
 	public DatabankCollection(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
 			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
 		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);

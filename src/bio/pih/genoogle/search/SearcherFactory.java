@@ -10,14 +10,6 @@ import bio.pih.genoogle.io.DatabankCollection;
  */
 public class SearcherFactory {
 
-	/**
-	 * @param id
-	 * @param sp
-	 * @param databank
-	 * @param sm
-	 * @param parent
-	 * @return {@link Searcher} related with the data bank given.
-	 */
 	@SuppressWarnings("unchecked")
 	static public AbstractSearcher getSearcher(long id, SearchParams sp, AbstractSequenceDataBank databank) {
 

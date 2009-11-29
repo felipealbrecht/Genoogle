@@ -30,8 +30,6 @@ public class LongArray {
 
 	/**
 	 * Constructor that gives the block size.
-	 * 
-	 * @param blockSize
 	 */
 	public LongArray() {
 		this.finalArray = null;
