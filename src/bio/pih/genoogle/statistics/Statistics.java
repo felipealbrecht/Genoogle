@@ -70,6 +70,17 @@ public class Statistics {
 
 	private static final double LOG_2 = Math.log(2.0);
 
+	/**
+	 * Calculate the probability of each score and return a {@link Map} with the probabilities.
+	 * 
+	 * @param mismatch
+	 *            Match score.
+	 * @param match
+	 *            Mismatch score.
+	 * @param query
+	 *            Input query sequence
+	 * @return {@link Map} which the probability of each score.
+	 */
 	private Map<Integer, Double> scoreProbabilities(int mismatch, int match, SymbolList query)
 			throws IndexOutOfBoundsException, BioException {
 
@@ -151,6 +162,12 @@ public class Statistics {
 		return scoreProbabilitiesMap;
 	}
 
+	/**
+	 * Check if the {@link Symbol} s is a valid base.
+	 * 
+	 * @param s
+	 * @return <code>true</code> if the symbol is a valid base.
+	 */
 	private boolean checkSymbol(Symbol s) {
 		if (s == DNATools.a() || s == DNATools.c() || s == DNATools.g() || s == DNATools.t()) {
 			return true;
@@ -158,6 +175,17 @@ public class Statistics {
 		return false;
 	}
 
+	/**
+	 * Calculate the lambda from the scores.
+	 * 
+	 * @param prob
+	 *            Scores probabilities.
+	 * @param mismatch
+	 *            mismatch score.
+	 * @param match
+	 *            match score.
+	 * @return Lambda value.
+	 */
 	private Double calculateLambda(Map<Integer, Double> prob, int mismatch, int match) {
 		if (!checkScoreRange(mismatch, match)) {
 			return null;
@@ -194,6 +222,17 @@ public class Statistics {
 		return blastKarlinLambdaBis(prob, mismatch, match);
 	}
 
+	/**
+	 * Convergent method to find lambda.
+	 * 
+	 * @param prob
+	 *            Scores probabilities.
+	 * @param min
+	 *            minimum score value.
+	 * @param max
+	 *            max score value.
+	 * @return lambda value.
+	 */
 	private Double blastKarlinLambdaBis(Map<Integer, Double> prob, int min, int max) {
 		if (!checkScoreRange(min, max)) {
 			return null;
@@ -247,6 +286,21 @@ public class Statistics {
 		return (lambda + up) / 2.;
 	}
 
+	/**
+	 * Calculate the H value.
+	 * 
+	 * @param prob
+	 *            Scores probabilities.
+	 * 
+	 * @param lambda
+	 *            lambda value.
+	 * 
+	 * @param mismatch
+	 *            mismatch score.
+	 * @param match
+	 *            match score.
+	 * @return value of H.
+	 */
 	private double blastH(Map<Integer, Double> prob, double lambda, int mismatch, int match) {
 		if (lambda < 0.0) {
 			return -1.0;
@@ -285,6 +339,21 @@ public class Statistics {
 		return iter * range + 1;
 	}
 
+	/**
+	 * Calculate the H value.
+	 * 
+	 * @param prob
+	 *            Scores probabilities.
+	 * @param lambda
+	 *            lambda value.
+	 * @param h
+	 *            value of H.
+	 * @param mismatch
+	 *            mismatch score.
+	 * @param match
+	 *            match score.
+	 * @return value of K.
+	 */
 	private double blastK(Map<Integer, Double> prob, double lambda, double h, int mismatch, int match) {
 
 		if (lambda <= 0.0 || h <= 0.0) {
@@ -407,15 +476,33 @@ public class Statistics {
 		return true;
 	}
 
-	private double lengthAdjust(double K, double ungappedLogK, double ungappedH, int querySize, long databaseSize,
+	/**
+	 * Adjust the query length.
+	 * 
+	 * @param K
+	 *            value of the K
+	 * @param LogK
+	 *            value of the log of K
+	 * @param H
+	 *            value of H
+	 * @param querySize
+	 *            the length of the query
+	 * 
+	 * @param databaseSize
+	 *            the size, total of bases, in the data bank.
+	 * @param numberOfSequences
+	 *            quantity of sequences in the data bank.
+	 * @return Length adjusted.
+	 */
+	private double lengthAdjust(double K, double LogK, double H, int querySize, long databaseSize,
 			long numberOfSequences) {
 		double lenghtAdjust = 0;
 		double minimumQueryLength = 1 / K;
 
 		for (int count = 0; count < 5; count++) {
-			lenghtAdjust = (ungappedLogK + Math.log((querySize - lenghtAdjust)
+			lenghtAdjust = (LogK + Math.log((querySize - lenghtAdjust)
 					* (databaseSize - numberOfSequences * lenghtAdjust)))
-					/ ungappedH;
+					/ H;
 
 			if (lenghtAdjust > querySize - minimumQueryLength) {
 				lenghtAdjust = querySize - minimumQueryLength;
@@ -424,14 +511,33 @@ public class Statistics {
 		return lenghtAdjust;
 	}
 
+	/**
+	 * Normalize the score.
+	 * 
+	 * @param nominalScore
+	 *            nominal alignment score.
+	 * @return Alignment score normalized.
+	 */
 	public double nominalToNormalizedScore(double nominalScore) {
 		return ((nominalScore * this.lambda) - this.logK) / LOG_2;
 	}
 
+	/**
+	 * Calculate the E-value from the normalized score.
+	 * 
+	 * @param normalizedScore
+	 * @return E-Value.
+	 */
 	public double calculateEvalue(double normalizedScore) {
 		return this.searchSpaceSize / Math.pow(2, normalizedScore);
 	}
 
+	/**
+	 * E-Value to the score.
+	 * 
+	 * @param evalue
+	 * @return nominal score.
+	 */
 	public double gappedEvalueToNominal(double evalue) {
 		double normalizedScore = Math.log(this.searchSpaceSize / evalue) / LOG_2;
 		return Math.ceil((LOG_2 * normalizedScore + this.logK) / lambda);
@@ -467,7 +573,22 @@ public class Statistics {
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
 
-	public Statistics(int match, int mismatch, SymbolList query, long databaseSize, long numberOfSequences)
+	/**
+	 * Create the statistics values from the giver query sequence, the data bank size and number of
+	 * sequences in this data bank.
+	 * 
+	 * @param match
+	 *            Scoring to a match.
+	 * @param mismatch
+	 *            Scoring to a mismatch.
+	 * @param query
+	 *            Input query sequence.
+	 * @param dataBankSize
+	 *            quantity of bases in the all data bank sequences.
+	 * @param numberOfSequences
+	 *            quantity of sequences in the data bank.
+	 */
+	public Statistics(int match, int mismatch, SymbolList query, long dataBankSize, long numberOfSequences)
 			throws IndexOutOfBoundsException, BioException {
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
@@ -476,10 +597,10 @@ public class Statistics {
 
 		this.logK = Math.log(K);
 
-		this.lengthAdjust = lengthAdjust(K, logK, H, query.length(), databaseSize, numberOfSequences);
+		this.lengthAdjust = lengthAdjust(K, logK, H, query.length(), dataBankSize, numberOfSequences);
 
 		this.effectiveQuerySize = query.length() - lengthAdjust;
-		this.effectiveDatabaseSize = databaseSize - numberOfSequences * lengthAdjust;
+		this.effectiveDatabaseSize = dataBankSize - numberOfSequences * lengthAdjust;
 		this.searchSpaceSize = effectiveQuerySize * effectiveDatabaseSize;
 	}
 

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 
 import org.biojava.bio.seq.io.StreamReader;
 import org.biojavax.Namespace;
+import org.biojavax.bio.seq.RichSequence.IOTools;
 
 
 /**
@@ -13,6 +14,7 @@ import org.biojavax.Namespace;
 public class LightweightIOTools {
 	
     /**
+     * A {@link IOTools} that uses the Genoogle clases.
      * @param br
      * @param ns
      * @return {@link StreamReader} of the DNA FASTA files. 

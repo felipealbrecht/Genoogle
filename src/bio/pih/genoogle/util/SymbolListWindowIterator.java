@@ -6,8 +6,8 @@ import org.biojava.bio.symbol.SymbolList;
 
 /**
  * Iterate among the sub-sequences
- * @author albrecht
  * 
+ * @author albrecht
  */
 public interface SymbolListWindowIterator extends Iterator<SymbolList>{
 	

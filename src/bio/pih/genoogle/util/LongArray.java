@@ -3,11 +3,9 @@ package bio.pih.genoogle.util;
 import java.util.Arrays;
 
 /**
+ * Array of primitive long which has growing capability. Useful for large arrays of arrays.
+ * 
  * @author Felipe Albrecht
- * 
- *         KISS !
- * 
- *         TODO: junits!
  */
 public class LongArray {
 
@@ -16,7 +14,6 @@ public class LongArray {
 	private long[] actualBlock;
 	private int actualBockPos;
 
-	// TODO: put these values as input parameters.
 	private static final int DEFAULT_INITIAL_SIZE = 5;
 
 	/**
@@ -130,8 +127,7 @@ public class LongArray {
 
 	/**
 	 * test
-	 * 
-	 * @param args
+	 * TODO: move to a junit.
 	 */
 	public static void mainX(String[] args) {
 		LongArray longArray = new LongArray();

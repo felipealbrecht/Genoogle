@@ -1,7 +1,14 @@
 package bio.pih.genoogle.util;
 
+import bio.pih.genoogle.search.IndexRetrievedData;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 
+/**
+ * Circular Array used to store the {@link IndexRetrievedData} retrieved from the inverted index.
+ * 
+ * @author albrecht
+ * 
+ */
 public class CircularArrayList {
 
 	private RetrievedArea[] elementData;
@@ -9,10 +16,21 @@ public class CircularArrayList {
 	private int size = 0;
 	private Iterator it = new Iterator();
 
+	private static final int DEFAULT_SIZE = 5;
+
+	/**
+	 * Defaul constructor
+	 */
 	public CircularArrayList() {
-		this(5);
+		this(DEFAULT_SIZE);
 	}
 
+	/**
+	 * Constructor which specify the size of circular list. When the slot is occupied fully, it
+	 * grows to 3/2 of the previous size.
+	 * 
+	 * @param size
+	 */
 	public CircularArrayList(int size) {
 		elementData = new RetrievedArea[size];
 	}
@@ -55,12 +73,12 @@ public class CircularArrayList {
 		if (retrievedArea != null) {
 			retrievedArea.reset(queryPos, sequencePos, subSequenceLength);
 		} else {
-			assert(tail != elementData.length);
+			assert (tail != elementData.length);
 			elementData[tail] = new RetrievedArea(queryPos, sequencePos, subSequenceLength);
 		}
 		tail = (tail + 1) % elementData.length;
 		size++;
-		assert((head + size) % elementData.length == tail);
+		assert ((head + size) % elementData.length == tail);
 		return true;
 
 	}
@@ -69,23 +87,33 @@ public class CircularArrayList {
 		elementData[tail] = new RetrievedArea(queryPos, sequencePos, subSequenceLength);
 		tail = (tail + 1) % elementData.length;
 		size++;
-		assert(tail > head);
+		assert (tail > head);
 		return true;
 	}
-	
+/**
+ * Set the informed position to this correct position. 
+ * @param openedArea {@link RetrievedArea} which will be moved
+ * @param pos which should be moved
+ */
 	public void rePos(RetrievedArea openedArea, int pos) {
-		assert(elementData[pos] == openedArea);
-		int prev = pos; 
-		pos = (pos +1) % elementData.length;		
-		while (pos != tail && elementData[pos] != null && openedArea.getQueryAreaEnd() > elementData[pos].getQueryAreaEnd()) {
+		assert (elementData[pos] == openedArea);
+		int prev = pos;
+		pos = (pos + 1) % elementData.length;
+		while (pos != tail && elementData[pos] != null
+				&& openedArea.getQueryAreaEnd() > elementData[pos].getQueryAreaEnd()) {
 			elementData[prev] = elementData[pos];
 			elementData[pos] = openedArea;
 			prev = pos;
-			pos = (pos +1) % elementData.length;
+			pos = (pos + 1) % elementData.length;
 		}
 	}
 
-
+	/**
+	 * Remove elements from the circular list.
+	 * 
+	 * @param total
+	 *            quantity of elements which will be removed.
+	 */
 	public void removeElements(int total) {
 
 		size = size - total;
@@ -93,12 +121,12 @@ public class CircularArrayList {
 			tail = 0;
 			head = 0;
 		} else {
-			head = (head + total) % elementData.length;  
+			head = (head + total) % elementData.length;
 		}
-		assert((head + size) % elementData.length == tail);
-		assert(size >= 0);
-		assert(tail >= 0);
-		assert(head >= 0);
+		assert ((head + size) % elementData.length == tail);
+		assert (size >= 0);
+		assert (tail >= 0);
+		assert (head >= 0);
 	}
 
 	public void clear() {
@@ -114,12 +142,12 @@ public class CircularArrayList {
 		int pos = -1;
 
 		public boolean hasNext() {
-			return pos+1 < size;
+			return pos + 1 < size;
 		}
 
 		public RetrievedArea next() {
 			pos++;
-			RetrievedArea retrievedArea = elementData[(pos+head) % elementData.length];
+			RetrievedArea retrievedArea = elementData[(pos + head) % elementData.length];
 			return retrievedArea;
 		}
 

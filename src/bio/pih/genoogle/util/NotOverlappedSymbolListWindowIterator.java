@@ -3,8 +3,9 @@ package bio.pih.genoogle.util;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
+ * Iterate over the non overlapped sub-sequences from the symbol list
+ *  
  * @author albrecht
- *
  */
 public class NotOverlappedSymbolListWindowIterator extends AbstractSymbolListWindowIterator {
 
@@ -16,6 +17,7 @@ public class NotOverlappedSymbolListWindowIterator extends AbstractSymbolListWin
 		super(sequence, windowLength);
 	}
 
+	@Override
 	public SymbolList next() {
 		SymbolList subList = sequence.subList(actualPos+1, actualPos + windowSize);
 		actualPos+= windowSize;

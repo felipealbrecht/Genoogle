@@ -3,8 +3,9 @@ package bio.pih.genoogle.util;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
+ * Abstract class for the symbol list iterator.
+ * 
  * @author albrecht
- *
  */
 public abstract class AbstractSymbolListWindowIterator implements SymbolListWindowIterator {
 
@@ -27,32 +28,37 @@ public abstract class AbstractSymbolListWindowIterator implements SymbolListWind
 		this.actualPos = 0;
 	}
 
+	@Override
 	public SymbolList getSymbolList() {
 		return sequence;
 	}
 
+	@Override
 	public int getWindowSize() {
 		return windowSize;
 	}
 
+	@Override
 	public void setWindowSize(int size) {
 		this.windowSize = size;
 
 	}
 
+	@Override
 	public int getActualPos() {
 		return actualPos;
 	}
 
+	@Override
 	public boolean hasNext() {
 		if (actualPos + windowSize <= sequence.length()) {
 			return true;
 		}
 		return false;
 	}
-
+	
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-
 }

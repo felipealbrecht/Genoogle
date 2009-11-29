@@ -17,8 +17,9 @@ import org.biojavax.bio.seq.io.RichSequenceBuilderFactory;
 import org.biojavax.bio.seq.io.RichSequenceFormat;
 
 /**
- * @author albrecht
+ * A reader that read the sequences from a stream.
  * 
+ * @author albrecht
  */
 public class LightweightStreamReader implements RichSequenceIterator {
 
@@ -53,7 +54,6 @@ public class LightweightStreamReader implements RichSequenceIterator {
 	 */
 	protected boolean moreSequenceAvailable = true;
 
-
 	/**
 	 * @param reader
 	 * @param format
@@ -61,12 +61,13 @@ public class LightweightStreamReader implements RichSequenceIterator {
 	 * @param sf
 	 * @param ns
 	 */
-	public LightweightStreamReader(BufferedReader reader, RichSequenceFormat format, SymbolTokenization symParser, RichSequenceBuilderFactory sf, Namespace ns) {
-        this.reader = reader;
-        this.format = format;
-        this.symParser = symParser;
-        this.sf = sf;
-        this.ns = ns;
+	public LightweightStreamReader(BufferedReader reader, RichSequenceFormat format, SymbolTokenization symParser,
+			RichSequenceBuilderFactory sf, Namespace ns) {
+		this.reader = reader;
+		this.format = format;
+		this.symParser = symParser;
+		this.sf = sf;
+		this.ns = ns;
 	}
 
 	/**
@@ -76,19 +77,18 @@ public class LightweightStreamReader implements RichSequenceIterator {
 	 * @param sf
 	 * @param ns
 	 */
-	public LightweightStreamReader(InputStream is, RichSequenceFormat format, SymbolTokenization symParser, RichSequenceBuilderFactory sf, Namespace ns) {
-		this(new BufferedReader(new InputStreamReader(is)), format,symParser,sf,ns);
+	public LightweightStreamReader(InputStream is, RichSequenceFormat format, SymbolTokenization symParser,
+			RichSequenceBuilderFactory sf, Namespace ns) {
+		this(new BufferedReader(new InputStreamReader(is)), format, symParser, sf, ns);
 	}
 
 	public Sequence nextSequence() throws NoSuchElementException, BioException {
 		return this.nextRichSequence();
 	}
-	
 
 	public BioEntry nextBioEntry() throws NoSuchElementException, BioException {
 		return this.nextRichSequence();
 	}
-
 
 	public boolean hasNext() {
 		return moreSequenceAvailable;

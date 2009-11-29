@@ -7,8 +7,9 @@ import java.util.List;
 import org.biojava.bio.seq.Sequence;
 
 /**
+ * Write to a file random sequences.
+ * 
  * @author albrecht
- *
  */
 public class Populator {
  /**
@@ -21,15 +22,10 @@ public static void main(String[] args) throws FileNotFoundException, IOException
 	if (args.length != 6) 
 	{
 		System.out.println("Quantidade de parametros invalido");
-		System.out.println("<dna|rna|prot> <qtd> <length_range_from> <length_range_to> <file_path>" );
+		System.out.println("<qtd> <length_range_from> <length_range_to> <file_path>" );
 		return;
 	}
 	 
-	if (!args[0].equals("dna")) {
-		System.out.println("Only dna is currently availiable :-(");
-		return;
-	}
-	
 	int qtd = Integer.parseInt(args[1]);
 	int lengthRangeFrom = Integer.parseInt(args[2]);
 	int lengthRangeTo = Integer.parseInt(args[3]);

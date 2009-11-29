@@ -12,8 +12,9 @@ import org.biojava.bio.symbol.Symbol;
 import org.biojava.bio.symbol.SymbolList;
 
 /**
+ * A symbol list hat consumes less memory and is faster to build.
+ * 
  * @author albrecht
- *
  */
 public class LightweightSymbolList extends AbstractSymbolList implements Serializable {
 	private static final long serialVersionUID = -3125317520644706924L;
@@ -75,10 +76,12 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		}
 	}
 
+	@Override
 	public Alphabet getAlphabet() {
 		return alphabet;
 	}
 		
+	@Override
 	public int length() {
 		return symbols.length;
 	}
@@ -97,6 +100,7 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		return value;
 	}
 	
+	@Override
 	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
 		return symbols[pos - 1];
 	}
@@ -112,14 +116,12 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 
 	/**
+	 * Create a DNA {@link SymbolList} from the given DNA {@link String}.
 	 * @param dna
-	 * @return SymbolList of the given dna sequence string. 
-	 * @throws IllegalSymbolException
-	 * 
+	 * @return SymbolList of the given DNA sequence string. 
 	 */
 	public static SymbolList createDNA(String dna) throws IllegalSymbolException {
 		Alphabet alphabet = AlphabetManager.alphabetForName("DNA");
 		return constructLightweightSymbolList(alphabet, dna, false);
 	}
-	//TODO: To create static methods for Protein and RNA sequencess
 }
