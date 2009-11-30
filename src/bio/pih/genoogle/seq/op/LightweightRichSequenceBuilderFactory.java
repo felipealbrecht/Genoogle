@@ -4,7 +4,7 @@ import org.biojava.bio.seq.io.SequenceBuilder;
 import org.biojavax.bio.seq.io.RichSequenceBuilderFactory;
 
 /**
- * {@link RichSequenceBuilderFactory} that uses the {@link LightweightRichSequenceBuilder}.
+ * {@link RichSequenceBuilderFactory} that uses the {@link LightweightSequenceBuilder}
  * 
  * @author albrecht
  */

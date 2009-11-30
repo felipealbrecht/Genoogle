@@ -16,6 +16,7 @@
 
 		<property name="docs.dir" location="./doc/javadoc" />
 		<property name="src.dir" location="./src" />
+		<property name="src_tmp.dir" location="src_tmp/" />    
 
 		<!-- Main build directory -->
 		<property name="build.dir" location="./ant-build" />
@@ -25,6 +26,10 @@
 		<property name="manifest.dir" location="./manifest" />
 		<property name="jar.genoogle" location="${build.dir}/genoogle.jar" />
 		<property name="targz.genoogle" location="genoogle.tar.gz" />
+		<property name="jar.genoogle-src" location="genoogle-src.jar" />
+		<property name="jar.genoogle-javadoc" location="genoogle-javadoc.jar" />
+
+
 
 		<!-- Javac properties -->
 		<property name="javac.depend" value="false" />
@@ -39,6 +44,7 @@
 
         <!-- Packing info -->
 		<property name="packing.dir" location="packing/genoogle" />    
+		
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
@@ -56,6 +62,7 @@
 		<mkdir dir="${reports.tests}" />
 	</target>
 
+	<!-- Compile the Genoogle Sources -->
 	<target name="compile" depends="prepare">
 		<javac encoding="ISO-8859-15" srcdir="${src.dir}" destdir="${build.classes.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}" debug="${javac.debug}">
 			<classpath>
@@ -66,12 +73,30 @@
 		</javac>
 	</target>
 
+	<!-- Generate the Genoogle jar file -->
 	<target name="jar" depends="compile">
 		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
 			<fileset dir="${build.classes.dir}" />
 		</jar>
 	</target>
 
+
+	<!-- Generate the Genoogle source jar file -->
+	<target name="src_jar" depends="init">
+		<mkdir dir="${src_tmp.dir}"/>
+
+		<copy todir="${src_tmp.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/.svn"/>
+			</fileset>
+		</copy>
+		<jar jarfile="${jar.genoogle-src}">
+			<fileset dir="${src_tmp.dir}"/>
+		</jar>
+		<delete dir="${src_tmp.dir}"/>
+    </target>
+
+	<!-- Pre processing to generate the jar file-->
 	<target name="packing_dir" depends="jar">
 		<mkdir dir="${packing.dir}"/>
 
@@ -98,6 +123,7 @@
 		</copy>
 	</target>
 
+	<!-- create the genoogle.tar.gz file -->
 	<target name="packing" depends="packing_dir">
 		<tar destfile="genoogle.tar" basedir="./packing"/>
 		<gzip destfile="${targz.genoogle}" src="genoogle.tar"/>
@@ -130,21 +156,12 @@
 		</javadoc>
 	</target>
 
-	<target name="start-web" depends="jar">
-		<echo message="Starting web server" />
-
-		<java maxmemory="1024m" classname="bio.pih.interfaces.WebServer" fork="true">
-			<arg value="/home/albrecht/genoogle/webapps" />
-			<arg value="8080"/>
-			<classpath>
-				<pathelement location="${jar.genoogle}" />
-				<fileset dir="./lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</java>
+	<!-- Create the jar file with the API documentation -->
+	<target name="javadoc_jar" depends="javadoc">
+		<jar jarfile="${jar.genoogle-javadoc}">
+			<fileset dir="${build.docs}"/>
+		</jar>
 	</target>
-
 
 	<!-- Runs tests if the Ant optional JUnit support is available -->
 	<target name="run-tests" depends="compile">
@@ -172,13 +189,16 @@
 		</junit>
 	</target>
 
-	<target name="clear" depends="init" description="clean">
-<!--		<echo message="Deleting ${build.dir}" />
-		<delete dir="${build.dir}" />
-		<delete dir="${packing.dir}" />
-		<delete file="${targz.genoogle}" /> -->
+	<!-- Create a zip with all genoogle libs -->
+	<target name="libs_package">
+		<zip destfile="genoogle-libs.zip"
+       		basedir="./lib"
+	        excludes="**/.svn"
+		  />
 	</target>
 
+
+	<target name="all" depends="packing,libs_package,javadoc_jar,src_jar"/>
 
 
 </project>

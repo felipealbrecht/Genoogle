@@ -19,9 +19,9 @@ If you really want to develop something in to Genoogle, contact me.
  * Really good sensibility.
  * Text mode interfaces.
  * Web Services Interface.
- * Simple Web interface (more for testing).
+ * Very Simple Web interface, but support for JSP.
  * Good memory requirements. (For a 4 gigabytes data bank, it is necessary not more than 4 gigabytes of RAM memory).
- * Works (and tested) at Windows and Linux.
+ * Working (and tested) at Windows and Linux.
  * Data banks with more than 8 gigabytes. 
  * Console and batch interfaces.
 
@@ -50,9 +50,11 @@ To run Genoogle it is necessary:
  * Have fun!
 
 == Searching ==
-Genoogle has two interfaces: a '''very''' simple web page and text mode console.
+Genoogle has two interfaces: a '''very''' simple web page, text mode console, and WebServices interface.
 
 To do the search using the web page is very simples. Open the address ''localhost:8080'' at your browser and put the query sequence in the input box and click ''Search sequence'' button. Wait and the results will be shown. The console interface is much better!
+
+To use the WebServices, please check their wiki.
 
 === Console interface ===
 
@@ -88,6 +90,20 @@ At the end will be returned to the user, the 20 better scores.
 
 -----
 
-On WebService, visit its wiki: WebServices
+
+== Dependencies ==
+
+Genoogle uses:
+ * A modified version of the [Biojava http://biojava.org/] for FASTA file parsing and DNA Alphabet informations.
+ * [Dom4j http://www.dom4j.org/] for XML parsing.
+ * [JUnit4 http://www.junit.org/] for unit testing.
+ * [Easy Mock http://easymock.org/] and [CgLib http://cglib.sourceforge.net/] for Mock creation at the JUnits.
+ * [Google Collections http://code.google.com/p/google-collections/].
+ * [Protocol Buffers http://code.google.com/intl/pt-BR/apis/protocolbuffers/] for Data bank and index serialization.
+ * [Log4J http://logging.apache.org/log4j/] for loggin.
+ * [Jetty http://www.mortbay.org/] for embedded web server.
+ * [Jax-WS https://jax-ws.dev.java.net/] for WebServices implementation.
+
+All these libraries can be download in a single zip file.
 
 

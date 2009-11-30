@@ -5,4 +5,4 @@ $JAVA_HOME/bin/java \
  -server \
  -classpath genoogle.jar:lib/*:lib/jetty/*:lib/jetty/ext/* \
   bio.pih.genoogle.interfaces.WebServer \
-  webapps/genoogle-web 8080
+  webapps/genoogle-webservices 8090

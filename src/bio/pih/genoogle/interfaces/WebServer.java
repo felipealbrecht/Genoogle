@@ -7,13 +7,26 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.GenoogleListener;
 
+/**
+ * Genoogle Embedded Web Service.
+ * It is used to provide the JSP pages and the Web Services.
+ * 
+ * @author albrecht
+ */
 public class WebServer implements Runnable, GenoogleListener {
 	
 	static Logger logger = Logger.getLogger(WebServer.class.getName());
 	Server server;
 
-	public WebServer(int port, String path) throws Exception {
-        Genoogle.getInstance().addListerner(this);
+	/**
+	 * @param port http port.
+	 * @param path path to the webapp.
+	 * @param standAlone if it will run the JSPs pages that will use WebServices to make access Genoogle. 
+	 */
+	public WebServer(int port, String path, boolean standAlone) throws Exception {
+		if (!standAlone) {
+			Genoogle.getInstance().addListerner(this);
+		}
        
         server = new Server(port);        
         WebAppContext webapp = new WebAppContext();
@@ -53,8 +66,14 @@ public class WebServer implements Runnable, GenoogleListener {
 	public static void main(String[] args) throws Exception {
 		String path = args[0];
 		int port = Integer.parseInt(args[1]);
+		boolean standAlone = false;
+		if (args.length == 3) {
+			standAlone = Boolean.parseBoolean(args[2]);
+		}
 
-		new Thread(new Console()).start();
-		new WebServer(port, path).start();
+		if (!standAlone) {
+			new Thread(new Console()).start();
+		}
+		new WebServer(port, path, standAlone).start();
 	}
 }

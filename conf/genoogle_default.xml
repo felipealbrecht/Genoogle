@@ -23,7 +23,7 @@
   </genoogle:search-parameters>
   
   <genoogle:web-service>
-    <genoogle:server-address         value="http://localhost:8080/webservices?wsdl"/>
+    <genoogle:server-address         value="http://localhost:8090/webservices?wsdl"/>
     <genoogle:use-sessions           value="true"/>
   </genoogle:web-service>
 

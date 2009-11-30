@@ -11,7 +11,7 @@ public class UnknowDataBankException extends Exception {
 	private final String databank;
 
 	/**
-	 * @param the invalid data bank name 
+	 * @param databank the invalid data bank name 
 	 */
 	public UnknowDataBankException(String databank) {
 		this.databank = databank;

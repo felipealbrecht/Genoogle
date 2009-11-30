@@ -109,7 +109,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 	}
 	
 	/**
-	 * Apply mask in a whole {@SymbolList} sequence. 
+	 * Apply mask in a whole {@link SymbolList} sequence. 
 	 * @param sequence  where the mask will be applied.
 	 * @return encoded version of the masked sequence.
 	 */
