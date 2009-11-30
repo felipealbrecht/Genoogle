@@ -18,6 +18,7 @@ If you really want to develop something in to Genoogle, contact me.
  * Fast similar sequences searching.
  * Really good sensibility.
  * Text mode interfaces.
+ * Web Services Interface.
  * Simple Web interface (more for testing).
  * Good memory requirements. (For a 4 gigabytes data bank, it is necessary not more than 4 gigabytes of RAM memory).
  * Works (and tested) at Windows and Linux.
@@ -25,7 +26,6 @@ If you really want to develop something in to Genoogle, contact me.
  * Console and batch interfaces.
 
 === Missing and planed features: ===
- * Web Services Interface.
  * Better web interface.
  * RNA indexing and searching sequences.
 
@@ -57,21 +57,23 @@ To do the search using the web page is very simples. Open the address ''localhos
 === Console interface ===
 
 The console interface has the following commands:
- * search <data bank> <input file> <outout file> <parameters>: does the search.
- * list : lists available the data banks.
- * parameters : shows the search parameters.
+ * search <data bank> <input file> <output file> <parameters>: does the search.
+ * list : lists the data banks.
+ * parameters : shows the search parameters and their values.
+ * set <parameter>=<value> : set the parameter value.
  * gc : executes the java garbage collection.
- * prev and l : executes the last command again.
+ * prev or l : executes the last command.
  * batch <batch file> : runs the commands listed in this batch file.
  * exit : finish Genoogle execution.
 
 The search parameters are:
- * MaxSubSequenceDistance : maximum distance between two index entries to be considered into the same HSPs.
+ * MaxSubSequenceDistance : maximum index entries distance to be considered in the same HSPs.
  * SequencesExtendDropoff : drop off for sequence extension.
- * MaxHitsResults : maximum quantity of results which will be returned.
- * QuerySplitQuantity : how many slices the input query will be splitted. 
+ * MaxHitsResults : maximum quantity of returned results.
+ * QuerySplitQuantity : how many slices the input query will be divided. 
  * MinQuerySliceLength : minimum size of each input query slice.
  * MaxThreadsIndexSearch : quantity of threads which will be used to index search. ( Should be MaxThreadsIndexSearch <= QuerySplitQuantity * 2).
+ * MaxThreadsExtendAlign : quantity of threads which will be used to extend and align the HSPs.
  * MatchScore : score when has a match at the alignment.
  * MismatchScore : score when has a mismatch at the alignment.
  
@@ -83,5 +85,9 @@ This search, make a search at the Genomes_RefSeq databank, using as input the fi
 The input query will be split in to 2 parts and will be used 2 threads to do the search of the input query sub-sequences at the inverted index.
 At the end will be returned to the user, the 20 better scores.
 
+
+-----
+
+On WebService, visit its wiki: WebServices
 
 

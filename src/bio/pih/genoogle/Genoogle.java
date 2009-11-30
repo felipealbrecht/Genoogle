@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
 public final class Genoogle {
 
 	public static String SOFTWARE_NAME = "Genoogle BETA";
-	public static Double VERSION = 0.72;
+	public static Double VERSION = 0.73;
 	public static String COPYRIGHT_NOTICE = "Felipe Albrecht (felipe.albrecht@gmail.com) - 2009.";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
 
