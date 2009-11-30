@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 /**
- * The class stores the Hit from a search. 
+ * The class stores a Hit from a search. 
  * 
  * @author albrecht
  *

@@ -46,24 +46,4 @@ public class SequenceCompressorTest extends TestCase {
 		assertEquals(8, SequenceEncoder.bitsByAlphabetSize(255));
 		assertEquals(8, SequenceEncoder.bitsByAlphabetSize(256));
 	}
-
-	/**
-	 * @throws ValueOutOfBoundsException
-	 */
-	@Test
-	public void testGetClassFromSize() throws ValueOutOfBoundsException {
-		assertEquals(Byte.class, SequenceEncoder.getClassFromSize(1));
-		assertEquals(Byte.class, SequenceEncoder.getClassFromSize(7));
-		assertEquals(Byte.class, SequenceEncoder.getClassFromSize(8));
-		assertEquals(Short.class, SequenceEncoder.getClassFromSize(9));
-		assertEquals(Short.class, SequenceEncoder.getClassFromSize(15));
-		assertEquals(Short.class, SequenceEncoder.getClassFromSize(16));
-		assertEquals(Integer.class, SequenceEncoder.getClassFromSize(17));
-		assertEquals(Integer.class, SequenceEncoder.getClassFromSize(31));
-		assertEquals(Integer.class, SequenceEncoder.getClassFromSize(32));
-		assertEquals(Long.class, SequenceEncoder.getClassFromSize(33));
-		assertEquals(Long.class, SequenceEncoder.getClassFromSize(63));
-		assertEquals(Long.class, SequenceEncoder.getClassFromSize(64));
-	}
-
 }

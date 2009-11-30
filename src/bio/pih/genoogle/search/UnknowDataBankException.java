@@ -1,10 +1,9 @@
 package bio.pih.genoogle.search;
 
-
 /**
- * Exception that is throw when is tried to access an unknown data bank.
+ * Exception that is throw when is tried to access an invalid data bank.
+ * 
  * @author albrecht
- *
  */
 public class UnknowDataBankException extends Exception {
 
@@ -12,12 +11,12 @@ public class UnknowDataBankException extends Exception {
 	private final String databank;
 
 	/**
-	 * @param databank
+	 * @param the invalid data bank name 
 	 */
 	public UnknowDataBankException(String databank) {
 		this.databank = databank;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Unknow databank " + databank + ".";

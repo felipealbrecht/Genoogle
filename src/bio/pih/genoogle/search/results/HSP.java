@@ -6,8 +6,9 @@ import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.alignment.GenoogleSmithWaterman;
 
 /**
- * @author albrecht
+ * The class stores a HSP from a search.
  * 
+ * @author albrecht
  */
 public class HSP {
 
@@ -21,10 +22,8 @@ public class HSP {
 	private final int queryTo;
 	private final int hitFrom;
 	private final int hitTo;
-	
-	
-	public HSP(DividedStringGenoogleSmithWaterman alignment, 
-			int queryFrom, int queryTo, int hitFrom, int hitTo, 
+
+	public HSP(DividedStringGenoogleSmithWaterman alignment, int queryFrom, int queryTo, int hitFrom, int hitTo,
 			double normalizedScore, double eValue) {
 		this.alignment = alignment;
 		this.queryFrom = queryFrom;
@@ -34,56 +33,56 @@ public class HSP {
 		this.normalizedScore = normalizedScore;
 		this.eValue = eValue;
 	}
-	
+
 	/**
 	 * @return score of this HSP.
 	 */
 	public double getScore() {
 		return alignment.getScore();
 	}
-	
+
 	/**
 	 * @return where the query begins at this HSP.
 	 */
 	public int getQueryFrom() {
 		return queryFrom;
 	}
-	
+
 	/**
 	 * @return where the query ends at this HSP.
-	 */	
+	 */
 	public int getQueryTo() {
 		return queryTo;
 	}
-	
+
 	/**
 	 * @return where the target begins at this HSP.
 	 */
 	public int getHitFrom() {
 		return hitFrom;
 	}
-	
+
 	/**
 	 * @return where the target ends at this HSP.
 	 */
 	public int getHitTo() {
 		return hitTo;
 	}
-	
+
 	/**
 	 * @return identity length of this HSP.
 	 */
 	public int getIdentityLength() {
 		return alignment.getIdentitySize();
 	}
-	
+
 	/**
 	 * @return alignment length of this HSP.
 	 */
 	public int getAlignLength() {
 		return alignment.getPath().length();
 	}
-	
+
 	/**
 	 * @return representation of the aligned query.
 	 */
@@ -97,36 +96,35 @@ public class HSP {
 	public String getTargetSeq() {
 		return alignment.getTargetAligned();
 	}
-	
+
 	/**
 	 * @return representation of the aligned path.
 	 */
 	public String getPathSeq() {
 		return alignment.getPath();
 	}
-	
+
 	/**
 	 * @return {@link GenoogleSmithWaterman} containing the alignment informations.
 	 */
 	public DividedStringGenoogleSmithWaterman getAlignment() {
-		return alignment; 
+		return alignment;
 	}
-	
+
 	/**
 	 * @return normalize score of this HSP.
 	 */
 	public double getNormalizedScore() {
 		return normalizedScore;
 	}
-	
+
 	/**
 	 * @return E-Value of this HSP.
 	 */
 	public double getEValue() {
 		return eValue;
 	}
-	
-		
+
 	/**
 	 * Comparator of two HSP using them scores.
 	 */
@@ -138,5 +136,5 @@ public class HSP {
 			return Double.compare(osw2.getScore(), osw1.getScore());
 		}
 	};
-	
+
 }

@@ -19,24 +19,37 @@ import bio.pih.genoogle.search.results.SearchResults;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Class responsible to extend and align the HSPs.
+ * 
+ * @author albrecht
+ */
 public class SequenceAligner implements Runnable {
 	private final CountDownLatch countDown;
-	private final BothStrandSequenceAreas retrievedArea;
+	private final BothStrandSequenceAreas retrievedAreas;
 	private final SearchResults sr;
 	private final StoredSequence storedSequence;
 
-	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedArea, SearchResults sr)
+	/**
+	 * @param countDown
+	 *            Synchronizer use to wait until all HSPs from all Sub sub banks are extended and aligned. 
+	 * @param retrievedAreas
+	 *            retrievedAre which the HSPs that will be extended and retrieved.
+	 * @param sr
+	 *            Where the results are stored.
+	 */
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr)
 			throws IllegalSymbolException, IOException {
 		this.countDown = countDown;
-		this.retrievedArea = retrievedArea;
+		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;
-		this.storedSequence = retrievedArea.getStoredSequence();
+		this.storedSequence = retrievedAreas.getStoredSequence();
 	}
 
 	@Override
 	public void run() {
 		try {
-			extendAndAlignHSPs(this.retrievedArea, this.storedSequence);
+			extendAndAlignHSPs(this.retrievedAreas, this.storedSequence);
 		} catch (Exception e) {
 			sr.addFail(e);
 		} catch (AssertionError ae) {
@@ -129,6 +142,11 @@ public class SequenceAligner implements Runnable {
 		}
 	}
 
+	/**
+	 * Check if the extended areas has overlapped positions and merge them.
+	 * @param extendedSequences
+	 * @return {@link List} of {@link ExtendSequences} that are merged when they have overlapped areas.
+	 */
 	private List<ExtendSequences> mergeExtendedAreas(List<ExtendSequences> extendedSequences) {
 		ListIterator<ExtendSequences> iterator1 = extendedSequences.listIterator();
 		while (iterator1.hasNext()) {
@@ -148,6 +166,12 @@ public class SequenceAligner implements Runnable {
 		return extendedSequences;
 	}
 
+	/**
+	 * Check if the {@link ExtendSequences} seq1 and seq2 are overlapped. 
+	 * @param seq1 an {@link ExtendSequences}
+	 * @param seq2 an {@link ExtendSequences}
+	 * @return a merged {@link ExtendSequences} or <code>null</code> if was not merged. 
+	 */
 	private ExtendSequences tryToMerge(ExtendSequences seq1, ExtendSequences seq2) {
 		int seq1QueryBegin = seq1.getBeginQuerySegment();
 		int seq1QueryEnd = seq1.getEndQuerySegment();

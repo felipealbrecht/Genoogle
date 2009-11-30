@@ -17,7 +17,6 @@ public class SearchResults {
 	private final SearchParams params;
 	private final List<Hit> hits;
 	private List<Throwable> fails = null;
-	private int minSubSequenceLength;
 
 	/**
 	 * @param params
@@ -95,13 +94,5 @@ public class SearchResults {
 	 */
 	public List<Throwable> getFails() {
 		return fails;
-	}
-
-	public void setMinSubSequenceLength(int minSubSequenceLength) {
-		this.minSubSequenceLength = minSubSequenceLength;
-	}
-
-	public int getMinSubSequenceLength() {
-		return minSubSequenceLength;
 	}
 }

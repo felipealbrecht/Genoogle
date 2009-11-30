@@ -1,18 +1,25 @@
 package bio.pih.genoogle.encoder;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.util.SymbolListWindowIterator;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
+/**
+ * Class that apply a mask to the given sub-sequences.
+ * 
+ * @author albrecht
+ */
 public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 	private final boolean[] mask;
 	private final int patternLength;
 	private final int resultLength;
 
+	/**
+	 * @param mask Mask where "1" means that the base should be preserved and "0" that should be removed. 
+	 * @param subSequenceLength The subsequence length, the value should be the total of "1"s at the mask. 
+	 */
 	public DNAMaskEncoder(String mask, int subSequenceLength) {
 		super(subSequenceLength);
 
@@ -36,6 +43,11 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		return patternLength;
 	}
 
+	/**
+	 * Apply the mask in a informed {@link SymbolList} and return the encoded masked sequence. 
+	 * @param symbolList sequence
+	 * @return encoded masked {@link SymbolList}.
+	 */
 	public int applyMask(SymbolList symbolList) {
 		int encoded = 0;
 		int offset = 0;
@@ -52,6 +64,11 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		return encoded;
 	}
 
+	/**
+	 * Apply the mask in a informed {@link String} sub-sequence and return the encoded masked sequence. 
+	 * @param subSequence 
+	 * @return encoded masked sequence.
+	 */
 	public int applyMask(String subSequence) {
 		int encoded = 0;
 		int offset = 0;
@@ -68,6 +85,13 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		return encoded;
 	}
 
+	/**
+	 * Apply the mask on a portion of the given sub-sequence
+	 * @param begin  of the sub-sequence
+	 * @param end  of the sub-sequence.
+	 * @param subSequence  where the mask will be applied.
+	 * @return encoded version of the masked sub-sequence.
+	 */
 	public int applyMask(int begin, int end, String subSequence) {
 		int encoded = 0;
 		int offset = 0;
@@ -83,7 +107,12 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 		return encoded;
 	}
-
+	
+	/**
+	 * Apply mask in a whole {@SymbolList} sequence. 
+	 * @param sequence  where the mask will be applied.
+	 * @return encoded version of the masked sequence.
+	 */
 	public int[] applySequenceMask(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
 		int size = sequence.length() / this.patternLength;
@@ -121,37 +150,4 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		sb.append(resultLength);
 		return sb.toString();
 	}
-
-	public static void mainX(String[] args) throws IllegalSymbolException {
-		DNAMaskEncoder patternEncoder = new DNAMaskEncoder("111010010100110111", 11);
-		SymbolList symbolList = LightweightSymbolList.createDNA("AAACACCACACCAACAAA");
-		SymbolList symbolList2 = LightweightSymbolList.createDNA("CCCACAACACAACCACCC");
-		SymbolList symbolList3 = LightweightSymbolList.createDNA("AAAAAAAAAAAAAAAAAA");
-		SymbolList symbolList4 = LightweightSymbolList.createDNA("AAAAAAACCCCCCCCCCC");
-		SymbolList symbolList5 = LightweightSymbolList.createDNA("ACGTACGTACGTACGTAC");
-
-		System.out.println(patternEncoder);
-
-		System.out.println(symbolList.seqString());
-		int masked = patternEncoder.applyMask(symbolList);
-		System.out.println(patternEncoder.decodeIntegerToString(masked));
-
-		System.out.println(symbolList2.seqString());
-		int masked2 = patternEncoder.applyMask(symbolList2);
-		System.out.println(patternEncoder.decodeIntegerToString(masked2));
-
-		System.out.println(symbolList3.seqString());
-		int masked3 = patternEncoder.applyMask(symbolList3);
-		System.out.println(patternEncoder.decodeIntegerToString(masked3));
-
-		System.out.println(symbolList4.seqString());
-		int masked4 = patternEncoder.applyMask(symbolList4);
-		System.out.println(patternEncoder.decodeIntegerToString(masked4));
-
-		System.out.println(symbolList5.seqString());
-		int masked5 = patternEncoder.applyMask(symbolList5);
-		System.out.println(patternEncoder.decodeIntegerToString(masked5));
-
-	}
-
 }

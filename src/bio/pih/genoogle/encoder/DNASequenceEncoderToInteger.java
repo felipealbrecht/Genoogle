@@ -11,6 +11,8 @@ import bio.pih.genoogle.util.SymbolListWindowIterator;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
 /**
+ * Abstract class of the DNA Encoder to bit map stored in a integer.
+ * 
  * @author albrecht
  */
 public class DNASequenceEncoderToInteger extends DNASequenceEncoder {

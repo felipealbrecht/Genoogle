@@ -6,8 +6,9 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 
 /**
- * @author albrecht
+ * Class with the main informations of the encoding sequences.
  * 
+ * @author albrecht
  */
 public abstract class SequenceEncoder {
 	private static int POSITION_LENGTH = 0;
@@ -73,41 +74,13 @@ public abstract class SequenceEncoder {
 	public final static int getPositionBeginBitsVector() {
 		return POSITION_BEGIN_BITS_VECTOR;
 	}
-	
+
 	/**
 	 * @param encodedSequence
 	 * @return length in bases of the encoded sequence.
 	 */
 	public final static int getSequenceLength(int[] encodedSequence) {
 		return encodedSequence[POSITION_LENGTH];
-	}
-	
-	/**
-	 * 
-	 * @param size
-	 * @return the integer Class that is need to store the value passed in size parameter.
-	 * @throws ValueOutOfBoundsException
-	 */
-	@SuppressWarnings("unchecked")
-	public static Class getClassFromSize(int size) throws ValueOutOfBoundsException {
-		if (size <= 0) {
-			throw new ValueOutOfBoundsException("size lower than zero.");
-		}
-		if (size > Long.MAX_VALUE) {
-			throw new ValueOutOfBoundsException("size higher than " + Long.MAX_VALUE);
-		}
-
-		if (size <= 8) {
-			return Byte.class;
-		} else if (size <= 16) {
-			return Short.class;
-		} else if (size <= 32) {
-			return Integer.class;
-		} else if (size <= 64) {
-			return Long.class;
-		} else {
-			throw new ValueOutOfBoundsException("size is higher than a " + Long.MAX_VALUE + "? May be it's a bug.");
-		}
 	}
 
 	/**

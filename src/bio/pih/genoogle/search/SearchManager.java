@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.SymbolList;
 
+import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.SequencesProvider;
 import bio.pih.genoogle.search.SearchParams.Parameter;
@@ -27,6 +28,7 @@ import com.google.common.collect.Maps;
 
 /**
  * Manage Searchers, check its status and stores and returns its results.
+ * Each {@link Genoogle} instance has one {@link SearchManager}.
  * 
  * @author albrecht
  */

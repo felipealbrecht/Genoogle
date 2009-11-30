@@ -11,6 +11,9 @@ import bio.pih.genoogle.io.DatabankCollection;
 public class SearcherFactory {
 
 	@SuppressWarnings("unchecked")
+	/**
+	 * Get the searcher for the appropriate data bank.
+	 */
 	static public AbstractSearcher getSearcher(long id, SearchParams sp, AbstractSequenceDataBank databank) {
 
 		if (databank instanceof DatabankCollection) {
@@ -18,6 +21,6 @@ public class SearcherFactory {
 		}
 
 		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName()
-				+ " not implemented yet. :-( ");
+				+ " do not exist. ");
 	}
 }
