@@ -300,4 +300,18 @@ public class XMLConfigurationReader {
 		return path.replace('/', File.separatorChar);
 	}
 
+
+	private static Element getWebService() {
+		return doc.getRootElement().element("web-service");
+	}
+	
+	public static String getWebServiceAddress() {
+		return getWebService().element("server-address").attributeValue("value");
+	}
+	
+	public static Boolean useSessions() {
+		String value = getWebService().element("use-sessions").attributeValue("value");
+		return Boolean.parseBoolean(value);
+	}
+
 }

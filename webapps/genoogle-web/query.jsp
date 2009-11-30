@@ -8,6 +8,7 @@
 %><%@page import="org.dom4j.io.XMLWriter"
 %><%@page import="bio.pih.genoogle.io.Output"
 %><%@page import="bio.pih.genoogle.search.results.SearchResults"
+%><%@page import="bio.pih.genoogle.interfaces.webservices.WebServicesClient"
 %><%@page import="javax.xml.transform.TransformerFactory"
 %><%@page import="javax.xml.transform.Transformer"
 %><%@page import="javax.xml.transform.stream.StreamSource"
@@ -21,7 +22,7 @@
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	if (request.getParameter("query") != null) {
-		Genoogle genoogle = Genoogle.getInstance();
+		WebServicesClient client = WebServicesClient.getInstance();
 		String query = request.getParameter("query");
 
 		if (query == null) {
@@ -47,36 +48,11 @@
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		SearchResults sr = genoogle.doSyncSearch(query);
-		long total = System.currentTimeMillis() - begin;
-
-		if (sr.hasFail()) {			
-			out.println("<body><title>Epic Fail</title>");
-			out.println("<center>");
-			out.println("<h1>Genoogle Fail!</h1>");
-			out.println("<img src=\"fail.jpg\"/>");
-			out.println("<code>");
-			out.println("<br>");
-			for (Throwable e : sr.getFails()) {
-				logger.fatal("Fail while doing searching process", e);
-				out.println(e);
-			}
-			out.println("<br>Please, inform Felipe Albrecht at felipe.albrecht@gmail.com about this error, Because shit happens...</br>");
-			out.println("</center>");
-			out.println("</code>");
-			out.println("</body>");
-			
-		} else {		
-			response.setContentType("text/xml; charset=UTF-8");
-			Document resultDocument = Output.genoogleOutputToXML(sr);
-			resultDocument.getRootElement().addElement("infos").addAttribute("search-time", Long.toString(total));
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-			OutputFormat outformat = OutputFormat.createPrettyPrint();
-			outformat.setTrimText(false);
-			XMLWriter writer = new XMLWriter(outputStream, outformat);
-			writer.write(resultDocument);
-			out.print(outputStream);
-		}
+		String result = client.doSearch(query, "AS");
+		long total = System.currentTimeMillis() - begin;		
+		response.setContentType("text/xml; charset=UTF-8");
+		out.print(result);
+		out.print("<!-- TOTAL TIME: "+total+" -->");
+		
 	}
 %>

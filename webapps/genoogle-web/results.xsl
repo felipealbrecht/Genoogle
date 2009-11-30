@@ -18,10 +18,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   </html>
 </xsl:template>
 
-<xsl:template match="genoogle/infos">
- Search Time: <xsl:value-of select="@search-time"/>
-</xsl:template>
-
 <xsl:template match="genoogle/results/params">
 	<h2><xsl:value-of select="@query"/></h2>
 	<div id="parameters">

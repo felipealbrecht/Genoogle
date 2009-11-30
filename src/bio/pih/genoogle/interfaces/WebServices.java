@@ -72,16 +72,26 @@ public class WebServices {
 		return databanksList;
 	}
 
+	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "parameters")
-	public List<String> parameters() {
-		Map<Parameter, Object> defaultParameters = SearchParams.getSearchParamsMap();
-		List<String> parameters = Lists.newLinkedList();
+	public List<String> parameters() {		
+		MessageContext mc = wsContext.getMessageContext();
+		HttpSession session = ((javax.servlet.http.HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST)).getSession();
+		if (session == null) {
+			throw new WebServiceException("No session in WebServiceContext");
+		}
 		
-		for (Entry<Parameter, Object> entry : defaultParameters.entrySet()) {
-			parameters.add(entry.getKey().toString()+"="+entry.getValue().toString());
+		Map<Parameter, Object> parameters = (Map<Parameter, Object>) session.getAttribute("parameters");
+		if (parameters == null) {
+			parameters = SearchParams.getSearchParamsMap();
+		} 
+
+		List<String> parametersList = Lists.newLinkedList();			
+		for (Entry<Parameter, Object> entry : parameters.entrySet()) {
+			parametersList.add(entry.getKey().toString()+"="+entry.getValue().toString());
 		}
 
-		return parameters;
+		return parametersList;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -96,8 +106,7 @@ public class WebServices {
 
 		Map<Parameter, Object> parameters = (Map<Parameter, Object>) session.getAttribute("parameters");
 		if (parameters == null) {
-			parameters = SearchParams.getSearchParamsMap();
-			mc.put("parameters", parameters);
+			parameters = SearchParams.getSearchParamsMap();			
 		}
 
 		Parameter p = Parameter.getParameterByName(parameter);
@@ -107,7 +116,7 @@ public class WebServices {
 
 		Object value = p.convertValue(paramValue);
 		parameters.put(p, value);
-
+		session.setAttribute("parameters", parameters);
 		return true;
 	}
 

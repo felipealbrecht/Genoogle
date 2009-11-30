@@ -21,6 +21,11 @@
     <genoogle:min-query-slice-length      value="1000" />
     <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
+  
+  <genoogle:web-service>
+    <genoogle:server-address         value="http://localhost:8080/webservices?wsdl"/>
+    <genoogle:use-sessions           value="true"/>
+  </genoogle:web-service>
 
   <genoogle:databanks>
  

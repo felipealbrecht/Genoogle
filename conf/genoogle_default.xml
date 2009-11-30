@@ -21,6 +21,11 @@
     <genoogle:min-query-slice-length      value="250" />
     <genoogle:query-split-quantity        value="1" />
   </genoogle:search-parameters>
+  
+  <genoogle:web-service>
+    <genoogle:server-address         value="http://localhost:8080/webservices?wsdl"/>
+    <genoogle:use-sessions           value="true"/>
+  </genoogle:web-service>
 
   <genoogle:databanks>
     <genoogle:split-databanks name="Aquifex aeolicus" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
