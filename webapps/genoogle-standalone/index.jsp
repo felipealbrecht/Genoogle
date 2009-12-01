@@ -1,3 +1,8 @@
+<!-- Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br) -->
+<!-- Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)           -->
+<!--                                                                                          -->
+<!-- For further information check the LICENSE file.                                          -->
+
 <%@page import="bio.pih.genoogle.Genoogle"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">  <head>
     <title><%=Genoogle.SOFTWARE_NAME%> - <%=Genoogle.VERSION %></title>

@@ -13,7 +13,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <body>
 	<xsl:apply-templates/>
 	<hr/>
-	Genoogle by Felipe Albrecht
+		Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br) <BR />
+ 		Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
   </body>
   </html>
 </xsl:template>

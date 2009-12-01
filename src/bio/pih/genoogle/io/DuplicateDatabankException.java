@@ -1,6 +1,15 @@
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+
 package bio.pih.genoogle.io;
 
 /**
+ * This exception is throw when it has two data banks with the same name.
+ *
  * @author albrecht
  */
 public class DuplicateDatabankException extends Exception {

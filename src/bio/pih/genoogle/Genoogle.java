@@ -1,3 +1,10 @@
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+
 package bio.pih.genoogle;
 
 import java.io.BufferedReader;
@@ -38,10 +45,21 @@ import com.google.common.collect.Lists;
  */
 public final class Genoogle {
 
+	public static String line = System.getProperty("line.separator");
+
 	public static String SOFTWARE_NAME = "Genoogle BETA";
-	public static Double VERSION = 0.73;
-	public static String COPYRIGHT_NOTICE = "Felipe Albrecht (felipe.albrecht@gmail.com) - 2009.";
+	public static Double VERSION = 0.74;
+	public static String AUTHOR = "Felipe Albrecht (felipe.albrecht@gmail.com).";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
+	public static String COPYRIGHT = "Copyright (C) 2008,2009  Felipe Fernandes Albrecht";
+
+	public static String COPYRIGHT_NOTICE = line
+			+ "-----------------------------------------------------------------------------------------" + line
+			+ SOFTWARE_NAME + " Copyright (C) 2008,2009  " + AUTHOR + line
+			+ "This program comes with ABSOLUTELY NO WARRANTY;" + line
+			+ "This is free software, and you are welcome to redistribute it under certain conditions;" + line
+			+ "See the LICENCE file or check at http://www.gnu.org/licenses/gpl-3.0.html for full license." + line
+			+ "-------------------------------------------------------------------------------------------";
 
 	SearchManager sm = null;
 	private static Genoogle singleton = null;
@@ -180,9 +198,9 @@ public final class Genoogle {
 	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
 	 *         sequence inside the given {@link BufferedReader}.
 	 */
-	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName, Map<Parameter, Object> parameters)
-			throws IOException, UnknowDataBankException, InterruptedException, ExecutionException,
-			NoSuchElementException, BioException {
+	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName,
+			Map<Parameter, Object> parameters) throws IOException, UnknowDataBankException, InterruptedException,
+			ExecutionException, NoSuchElementException, BioException {
 
 		SequencesProvider provider = new SequencesProvider(in);
 		return sm.doSyncSearch(provider, databankName, parameters);
@@ -274,7 +292,6 @@ public final class Genoogle {
 	public static void main(String[] args) throws IOException, InvalidHeaderData, ValueOutOfBoundsException,
 			IllegalSymbolException, BioException, InvalidConfigurationException {
 		PropertyConfigurator.configure("conf/log4j.properties");
-		logger.info(SOFTWARE_NAME + " - " + VERSION);
 		logger.info(COPYRIGHT_NOTICE);
 
 		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();

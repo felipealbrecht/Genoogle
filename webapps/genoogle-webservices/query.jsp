@@ -18,6 +18,13 @@
 %><%@page import="java.io.ByteArrayOutputStream"
 %><%@page import="org.apache.log4j.Logger"
 %><%
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+ 
 	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	if (request.getParameter("query") != null) {

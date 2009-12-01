@@ -1,6 +1,14 @@
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+
 package bio.pih.genoogle.interfaces;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -64,6 +72,10 @@ public class WebServer implements Runnable, GenoogleListener {
 	}
 
 	public static void main(String[] args) throws Exception {
+		PropertyConfigurator.configure("conf/log4j.properties");
+		
+		logger.info(Genoogle.COPYRIGHT_NOTICE);
+		
 		String path = args[0];
 		int port = Integer.parseInt(args[1]);
 		boolean standAlone = false;
@@ -71,8 +83,11 @@ public class WebServer implements Runnable, GenoogleListener {
 			standAlone = Boolean.parseBoolean(args[2]);
 		}
 
-		if (!standAlone) {
-			new Thread(new Console()).start();
+		if (standAlone) {
+			logger.info("Starting stand alone web server.");
+		} else {
+			logger.info("Starting web server for WebServices and Web pages.");
+			new Thread(new Console()).start();			
 		}
 		new WebServer(port, path, standAlone).start();
 	}

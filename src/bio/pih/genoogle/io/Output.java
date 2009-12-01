@@ -1,3 +1,10 @@
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+
 package bio.pih.genoogle.io;
 
 import java.util.Formatter;
@@ -43,7 +50,7 @@ public class Output {
 
 		Element output = doc.addElement(Genoogle.SOFTWARE_NAME);
 		output.addAttribute("version", Genoogle.VERSION.toString());
-		output.addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
+		output.addAttribute("copyright", Genoogle.COPYRIGHT);
 
 		Element iterationsElement = output.addElement("iterations");
 		for (int i = 0; i < searchResults.size(); i++) {
@@ -83,7 +90,7 @@ public class Output {
 
 		Element output = doc.addElement("genoogle");
 		output.addElement("references").addAttribute("program", Genoogle.SOFTWARE_NAME).addAttribute("version",
-				Double.toString(Genoogle.VERSION)).addAttribute("copyright", Genoogle.COPYRIGHT_NOTICE);
+				Double.toString(Genoogle.VERSION)).addAttribute("copyright", Genoogle.COPYRIGHT);
 		return output;
 	}
 	

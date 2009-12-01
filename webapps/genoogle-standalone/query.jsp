@@ -3,7 +3,14 @@
 %><%@page import="javax.xml.ws.BindingProvider"
 %><%@page import="org.apache.log4j.Logger"
 %><%
-	final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
+/*
+ * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
+ * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ *
+ * For further information check the LICENSE file.
+ */
+ 
+final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	WebServices proxy;
 	
