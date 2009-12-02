@@ -26,7 +26,6 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.genoogle.index.IndexConstructionException;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
@@ -66,7 +65,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 	/**
 	 * @param name
-	 *            name of this databank   
+	 *            name of this databank
 	 * @param path
 	 *            directory where it will be
 	 * @param subSequenceLength
@@ -74,7 +73,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 *            how many parts will have this sequence databank
 	 * @param mask
 	 */
-	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask, int lowComplexityFilter) {
+	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask,
+			int lowComplexityFilter) {
 		super(name, DNATools.getDNA(), subSequenceLength, path, null, lowComplexityFilter);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
@@ -82,7 +82,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException,
-			InvalidHeaderData, IndexConstructionException {
+			IndexConstructionException {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
@@ -102,7 +102,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		actualSequenceDatank.beginIndexBuild();
 		int totalSequences = 0;
 		long totalBases = 0;
-		
+
 		if (!getFilePath().exists()) {
 			boolean mkdirs = getFullPath().mkdirs();
 			if (!mkdirs) {
@@ -182,7 +182,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		StoredDatabank storedDatabank = storedDatabankBuilder.build();
 		return storedDatabank;
 	}
-	
+
 	private void sortFiles(List<FastaFileInfo> fastaFiles) {
 		Collections.sort(fastaFiles, new Comparator<FastaFileInfo>() {
 			@Override
@@ -212,8 +212,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			}
 		}
 		return true;
-	}	
-	
+	}
+
 	@Override
 	public void delete() {
 		for (int i = 0; i < qtdSubBases; i++) {
@@ -224,11 +224,10 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 				logger.fatal(e);
 			}
 		}
-	}	
-
+	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
+	public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
 			BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();

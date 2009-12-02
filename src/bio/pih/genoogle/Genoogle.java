@@ -22,7 +22,6 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SymbolList;
 
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.interfaces.Console;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
@@ -44,6 +43,8 @@ import com.google.common.collect.Lists;
  * @author albrecht
  */
 public final class Genoogle {
+
+	public static final File CONF_LOG4J_PROPERTIES_FILE = new File(getHome(), "conf/log4j.properties");
 
 	public static String line = System.getProperty("line.separator");
 
@@ -82,9 +83,6 @@ public final class Genoogle {
 			} catch (ValueOutOfBoundsException e) {
 				logger.fatal(e.getMessage());
 				return null;
-			} catch (InvalidHeaderData e) {
-				logger.fatal(e.getMessage());
-				return null;
 			} catch (IllegalSymbolException e) {
 				logger.fatal(e.getMessage());
 				return null;
@@ -103,9 +101,9 @@ public final class Genoogle {
 	/**
 	 * Private constructor.
 	 */
-	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException,
-			BioException, InvalidConfigurationException {
-		PropertyConfigurator.configure("conf/log4j.properties");
+	private Genoogle() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
+			BioException, InvalidConfigurationException {		
+		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		sm = XMLConfigurationReader.getSearchManager();
 	}
 
@@ -289,10 +287,12 @@ public final class Genoogle {
 	 * "-b file" to execute the commands specified at the file or do not use parameters and use the
 	 * console.
 	 */
-	public static void main(String[] args) throws IOException, InvalidHeaderData, ValueOutOfBoundsException,
+	public static void main(String[] args) throws IOException, ValueOutOfBoundsException,
 			IllegalSymbolException, BioException, InvalidConfigurationException {
-		PropertyConfigurator.configure("conf/log4j.properties");
+		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		logger.info(COPYRIGHT_NOTICE);
+		
+		System.err.println(getHome());
 
 		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 
@@ -336,6 +336,19 @@ public final class Genoogle {
 				showHelp();
 			}
 		}
+	}
+	
+	private static File home = null;
+	public static File getHome() {
+		if (home == null) {
+			String homeEnv = System.getenv("GENOOGLE_HOME");
+			if (homeEnv != null) {
+				home = new File(homeEnv);
+			} else {
+				home = new File(".");
+			}
+		}
+		return home;			
 	}
 
 	private static void showHelp() {

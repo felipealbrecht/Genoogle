@@ -72,7 +72,7 @@ public class WebServer implements Runnable, GenoogleListener {
 	}
 
 	public static void main(String[] args) throws Exception {
-		PropertyConfigurator.configure("conf/log4j.properties");
+		PropertyConfigurator.configure(Genoogle.CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		
 		logger.info(Genoogle.COPYRIGHT_NOTICE);
 		

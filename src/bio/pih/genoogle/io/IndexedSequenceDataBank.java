@@ -10,7 +10,6 @@ package bio.pih.genoogle.io;
 import java.io.IOException;
 
 import bio.pih.genoogle.index.AbstractInvertedIndex;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 
@@ -32,5 +31,5 @@ public interface IndexedSequenceDataBank {
 	 * @throws InvalidHeaderData 
 	 */
 	
-	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;		
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException;		
 }

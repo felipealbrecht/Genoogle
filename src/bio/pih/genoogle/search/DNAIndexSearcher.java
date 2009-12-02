@@ -17,7 +17,6 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.encoder.DNAMaskEncoder;
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
@@ -147,7 +146,7 @@ public class DNAIndexSearcher implements Runnable {
 	}
 
 	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset) throws ValueOutOfBoundsException,
-			IOException, InvalidHeaderData {
+			IOException {
 
 		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this);
 
@@ -158,7 +157,7 @@ public class DNAIndexSearcher implements Runnable {
 	}
 
 	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData, int queryPos)
-			throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+			throws ValueOutOfBoundsException, IOException {
 
 		long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 		for (long subSequenceIndexInfo : indexPositions) {

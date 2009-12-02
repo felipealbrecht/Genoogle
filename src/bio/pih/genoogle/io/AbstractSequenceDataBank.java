@@ -18,7 +18,6 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.index.IndexConstructionException;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 
 /**
@@ -148,8 +147,7 @@ public abstract class AbstractSequenceDataBank {
 	 * @throws BioException
 	 * @throws IllegalSymbolException
 	 */
-	abstract public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData,
-			IllegalSymbolException, BioException;
+	abstract public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException;
 
 	/**
 	 * Encode the sequences into a computer legible mode
@@ -162,7 +160,7 @@ public abstract class AbstractSequenceDataBank {
 	 * @throws IndexConstructionException
 	 */
 	abstract public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException;
+			ValueOutOfBoundsException, IndexConstructionException;
 
 	/**
 	 * @return the parent of this {@link AbstractSequenceDataBank} or <code>null</code> if it do not

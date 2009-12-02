@@ -31,7 +31,6 @@ import org.dom4j.io.XMLWriter;
 
 import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.GenoogleListener;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.InvalidConfigurationException;
 import bio.pih.genoogle.io.Output;
@@ -64,8 +63,8 @@ public class Console implements Runnable, GenoogleListener {
 
 	private final Genoogle genoogle;
 
-	public Console() throws IllegalSymbolException, InvalidHeaderData, BioException, InvalidConfigurationException {
-		this.genoogle = Genoogle.getInstance();;
+	public Console() throws IllegalSymbolException, BioException, InvalidConfigurationException {
+		this.genoogle = Genoogle.getInstance();
 		genoogle.addListerner(this);
 	}
 
@@ -76,7 +75,7 @@ public class Console implements Runnable, GenoogleListener {
 	 * @throws InvalidHeaderData 
 	 * @throws IllegalSymbolException 
 	 */
-	public Console(File inputBatch) throws IllegalSymbolException, InvalidHeaderData, BioException, InvalidConfigurationException {
+	public Console(File inputBatch) throws IllegalSymbolException, BioException, InvalidConfigurationException {
 		this();
 		this.inputBatch = inputBatch;
 	}

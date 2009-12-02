@@ -20,7 +20,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import bio.pih.genoogle.index.InvalidHeaderData;
+import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.search.SearchManager;
 
@@ -35,15 +35,15 @@ public class XMLConfigurationReader {
 
 	private static Logger logger = Logger.getLogger("pih.bio.io.ConfigurationXMLReader");
 
-	private static String path = "conf" + File.separator + "genoogle.xml";
+	private static File confFile = new File(Genoogle.getHome(), "conf" + File.separator + "genoogle.xml");
 
 	private static Document doc = null;
 
 	static {
 		try {
-			doc = new SAXReader().read(new File(path));
+			doc = new SAXReader().read(confFile);
 		} catch (Exception e) {
-			logger.fatal("Error reading the configuration at " + path + ".");
+			logger.fatal("Error reading the configuration at " + confFile + ".");
 			logger.fatal(e);
 		}
 	}
@@ -58,7 +58,7 @@ public class XMLConfigurationReader {
 	 * @throws IllegalSymbolException 
 	 * @throws InvalidConfigurationException 
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException, InvalidConfigurationException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException, InvalidConfigurationException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));
@@ -118,8 +118,7 @@ public class XMLConfigurationReader {
 	 * @throws InvalidConfigurationException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidHeaderData, InvalidConfigurationException {
-		// TODO: to check if the XML is valid
+	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidConfigurationException {
 		Element rootElement = doc.getRootElement();
 		Element databanks = rootElement.element("databanks");
 
@@ -142,7 +141,7 @@ public class XMLConfigurationReader {
 
 	@SuppressWarnings("unchecked")
 	private static AbstractSequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidHeaderData, InvalidConfigurationException {
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidConfigurationException {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");

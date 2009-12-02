@@ -38,7 +38,7 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public MemoryInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
+	public MemoryInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
 		super(databank, subSequenceLength);
 	}
 

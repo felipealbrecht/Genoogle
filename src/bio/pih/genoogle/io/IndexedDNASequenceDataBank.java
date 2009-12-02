@@ -18,7 +18,6 @@ import org.biojava.bio.symbol.SymbolList;
 import bio.pih.genoogle.encoder.DNAMaskEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.IndexConstructionException;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
@@ -37,7 +36,7 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	protected final DNAMaskEncoder maskEncoder;
 
 	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask,
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) throws ValueOutOfBoundsException, IOException, InvalidHeaderData {
+			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) throws ValueOutOfBoundsException {
 		super(name, subSequenceLength, path, parent, lowComplexityFilter);
 
 		if (mask != null) {
@@ -91,7 +90,7 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 		return maskEncoder;
 	}
 
-	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData {
+	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException {
 		return index.getMatchingSubSequence(encodedSubSequence);
 	}
 	

@@ -35,9 +35,7 @@ public abstract class AbstractInvertedIndex {
 	 * @param subSequenceLength
 	 * @throws ValueOutOfBoundsException
 	 */
-	public AbstractInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) throws ValueOutOfBoundsException {
-		assert (subSequenceLength > 0);
-
+	public AbstractInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
 		this.databank = databank;
 		this.subSequenceLength = subSequenceLength;
 		this.encoder = databank.getEncoder();
@@ -62,17 +60,15 @@ public abstract class AbstractInvertedIndex {
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 * @throws ValueOutOfBoundsException
 	 * @throws IOException 
-	 * @throws InvalidHeaderData 
 	 */
-	abstract public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException, InvalidHeaderData;
+	abstract public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException;
 
 	/**
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 * @throws IOException 
-	 * @throws InvalidHeaderData 
 	 */
-	abstract public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException, InvalidHeaderData;
+	abstract public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException;
 
 	/**
 	 * @return a string containing the status of the index.

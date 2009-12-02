@@ -20,7 +20,6 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.genoogle.index.IndexConstructionException;
-import bio.pih.genoogle.index.InvalidHeaderData;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 
 /**
@@ -142,7 +141,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, InvalidHeaderData, IllegalSymbolException, BioException {
+	public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();
@@ -169,7 +168,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	
 	@Override
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException, InvalidHeaderData, IndexConstructionException {
+			ValueOutOfBoundsException, IndexConstructionException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();
