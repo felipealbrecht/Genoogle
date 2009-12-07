@@ -33,7 +33,8 @@ public class WebServer implements Runnable, GenoogleListener {
 	 */
 	public WebServer(int port, String path, boolean standAlone) throws Exception {
 		if (!standAlone) {
-			Genoogle.getInstance().addListerner(this);
+			Genoogle genoogle = Genoogle.getInstance();
+			genoogle.addListerner(this);			
 		}
        
         server = new Server(port);        
@@ -85,10 +86,18 @@ public class WebServer implements Runnable, GenoogleListener {
 
 		if (standAlone) {
 			logger.info("Starting stand alone web server.");
+			new WebServer(port, path, standAlone).start();
 		} else {
+			if (Genoogle.getInstance().getDatabanks().size() == 0) {
+				logger.fatal("Genoogle does not have any data bank to perform the searches.");
+				Genoogle.getInstance().finish();
+				return;
+			}
 			logger.info("Starting web server for WebServices and Web pages.");
 			new Thread(new Console()).start();			
+			new WebServer(port, path, standAlone).start();
 		}
-		new WebServer(port, path, standAlone).start();
 	}
 }
+
+

@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.Logger;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.IllegalSymbolException;
@@ -60,6 +61,8 @@ import com.google.common.collect.Lists;
  */
 public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASequenceDataBank> {
 
+	private static Logger logger = Logger.getLogger(SplittedSequenceDatabank.class.getName());
+	
 	private final int qtdSubBases;
 	private final String mask;
 
@@ -227,14 +230,17 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
+	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
 			BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
 			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
-			subDataBank.load();
+			boolean b = subDataBank.load();
+			if (b == false) {
+				return false;
+			}
 			try {
 				this.addDatabank(subDataBank);
 			} catch (DuplicateDatabankException e) {
@@ -243,6 +249,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 			logger.info("Loaded " + (i + 1) + " of " + qtdSubBases + " sub-databanks.");
 		}
 		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time) + "ms.");
+		return true;
 	}
 
 	private class FastaFileInfo {

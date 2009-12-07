@@ -24,7 +24,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
  * This abstract class which specifies the ways to access a sequences data banks. The methods are
  * divided into 3 classes: general information like name and path, add a sequence file, a single
  * sequence or a collection of them and sync these data and for last, and some way the most
- * important, do searchs.
+ * important, do searches.
  * 
  * @author albrecht
  */
@@ -141,13 +141,14 @@ public abstract class AbstractSequenceDataBank {
 	/**
 	 * Load this sequence bank
 	 * 
+	 * @return <true> if the data bank was loaded correctly, or <code>false</code> otherwise.
+	 * 
 	 * @throws IOException
 	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData
 	 * @throws BioException
 	 * @throws IllegalSymbolException
 	 */
-	abstract public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException;
+	abstract public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException;
 
 	/**
 	 * Encode the sequences into a computer legible mode
@@ -156,7 +157,6 @@ public abstract class AbstractSequenceDataBank {
 	 * @throws BioException
 	 * @throws NoSuchElementException
 	 * @throws ValueOutOfBoundsException
-	 * @throws InvalidHeaderData
 	 * @throws IndexConstructionException
 	 */
 	abstract public void encodeSequences() throws IOException, NoSuchElementException, BioException,

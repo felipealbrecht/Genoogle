@@ -65,7 +65,7 @@ public class Console implements Runnable, GenoogleListener {
 
 	public Console() throws IllegalSymbolException, BioException, InvalidConfigurationException {
 		this.genoogle = Genoogle.getInstance();
-		genoogle.addListerner(this);
+		genoogle.addListerner(this);		
 	}
 
 	/**
@@ -81,6 +81,12 @@ public class Console implements Runnable, GenoogleListener {
 	}
 
 	public void run() {
+		if (genoogle.getDatabanks().size() == 0) {
+			logger.fatal("Genoogle does not have any data bank to perform the searches.");
+			genoogle.finish();
+			return;
+		}
+		
 		running = true;
 		if (inputBatch != null) {
 			try {

@@ -124,11 +124,15 @@ public final class Genoogle {
 	/**
 	 * Finish {@link Genoogle} and notify the listeners to finish.
 	 */
-	public void finish() throws InterruptedException {
+	public synchronized void finish() {
 		for (GenoogleListener listerner : listerners) {
 			listerner.finish();
 		}
-		sm.shutdown();
+		try {
+			sm.shutdown();
+		} catch (InterruptedException e) {
+			logger.fatal(e);
+		}
 	}
 
 	/**

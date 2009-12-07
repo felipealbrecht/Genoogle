@@ -53,7 +53,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
 
-	Logger logger = Logger.getLogger("bio.pih.io.DNASequenceDataBank");
+	Logger logger = Logger.getLogger(AbstractSequenceDataBank.class.getCanonicalName());
 
 		
 	public AbstractDNASequenceDataBank(String name, int subSequenceLength, 
@@ -66,14 +66,13 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	}
 
 	@Override
-	public synchronized void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
-		logger.info("Loading DNASequenceDataBank from " + getDataBankFile());
+	public synchronized boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+		logger.info("Loading databank '" + getDataBankFile()+"'.");
 
 		long begin = System.currentTimeMillis();
 		if (!getDataBankFile().exists() || !getStoredDataBankInfoFile().exists()) {
 			logger.fatal("Databank " + this.getName() + " is not encoded. Please encode it.");
-			throw new IOException("Databank " + this.getName() + " is not encoded. Please encode it.\n Check "
-					+ this.getFullPath());
+			return false;
 		}
 
 		this.storedDatabank = StoredDatabank.parseFrom(new FileInputStream(getStoredDataBankInfoFile()));
@@ -87,6 +86,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 
 		logger.info("Databank loaded in " + (System.currentTimeMillis() - begin) + "ms with " + this.numberOfSequences
 				+ " sequences.");
+		return true;
 	}
 
 	/**

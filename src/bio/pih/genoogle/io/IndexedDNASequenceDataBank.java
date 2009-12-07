@@ -49,9 +49,13 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	}
 
 	@Override
-	public synchronized void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
-		super.load();
+	public synchronized boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+		boolean b = super.load();
+		if (b == false) {
+			return false;
+		}
 		index.loadFromFile();
+		return true;
 	}
 
 	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, IndexConstructionException {

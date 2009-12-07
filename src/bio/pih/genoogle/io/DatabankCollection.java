@@ -19,6 +19,7 @@ import org.biojava.bio.BioException;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
+import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 
@@ -30,7 +31,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
  */
 public class DatabankCollection<T extends AbstractSequenceDataBank> extends AbstractSequenceDataBank {
 
-	Logger logger = Logger.getLogger("bio.pih.io.DataBankCollection");
+	Logger logger = Logger.getLogger(DatabankCollection.class.getCanonicalName());
 	
 	protected final LinkedHashMap<String, T> databanks;
 
@@ -126,7 +127,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 		if (formating) {
 			return path;
 		}
-		return new File(path, name);
+		return new File(path, name);		
 	}
 
 	@Override
@@ -141,14 +142,18 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public void load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();
 		while (iterator.hasNext()) {
-			iterator.next().load();
+			boolean b = iterator.next().load();
+			if (b == false) {
+				return false;
+			}
 		}
 		logger.info("Databanks loaded in " + (System.currentTimeMillis() - time) + "ms,");
+		return true;
 	}
 
 	@Override

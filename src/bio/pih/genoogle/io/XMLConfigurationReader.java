@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
  */
 public class XMLConfigurationReader {
 
-	private static Logger logger = Logger.getLogger("pih.bio.io.ConfigurationXMLReader");
+	private static Logger logger = Logger.getLogger(XMLConfigurationReader.class.getCanonicalName());
 
 	private static File confFile = new File(Genoogle.getHome(), "conf" + File.separator + "genoogle.xml");
 
@@ -65,8 +65,11 @@ public class XMLConfigurationReader {
 
 		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
 		for (AbstractSequenceDataBank dataBank : dataBanks) {
-			dataBank.load();
-			searchManager.addDatabank(dataBank);
+			if (dataBank.load()) {
+				searchManager.addDatabank(dataBank);
+			} else {
+				logger.fatal("It was not possible to load the data bank \"" + dataBank.getName() + "\".");
+			}
 		}
 
 		return searchManager;
@@ -180,7 +183,7 @@ public class XMLConfigurationReader {
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(path), subSequenceLength, size, mask, lowComplexityFilter);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(Genoogle.getHome(), path), subSequenceLength, size, mask, lowComplexityFilter);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
