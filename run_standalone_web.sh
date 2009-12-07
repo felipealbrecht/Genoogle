@@ -41,9 +41,9 @@ fi
 if [ -n "${WEB_STANDALONE_APP_DIR+x}" ]; then
 	echo "\$WEB_STANDALONE_APP_DIR=$WEB_STANDALONE_APP_DIR"
 else
-	echo "\$WEB_STANDALONE_APP_DIR is not set. Trying ${GENOOGLE_HOME}/webapps/genoogle-webservices."
-	if [ -d ${GENOOGLE_HOME}/webapps/genoogle-webservices ]; then
-		WEB_STANDALONE_APP_DIR=${GENOOGLE_HOME}/webapps/genoogle-webservices
+	echo "\$WEB_STANDALONE_APP_DIR is not set. Trying ${GENOOGLE_HOME}/webapps/genoogle-standalone."
+	if [ -d ${GENOOGLE_HOME}/webapps/genoogle-standalone ]; then
+		WEB_STANDALONE_APP_DIR=${GENOOGLE_HOME}/webapps/genoogle-standalone
 		echo "Web Service App found at $WEB_STANDALONE_APP_DIR".
 	else
 		echo "Web Service App not found. Please configure it at WEB_STANDALONE_APP_DIR variable."
