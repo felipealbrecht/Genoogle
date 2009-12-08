@@ -8,14 +8,9 @@
 package bio.pih.genoogle.tests.index;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 import junit.framework.TestCase;
-
-import org.junit.Test;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.MemoryInvertedIndex;
@@ -28,7 +23,6 @@ import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.seq.Sequence;
-import bio.pih.genoogle.seq.generator.DNASequencesPopulator;
 
 /**
  * Tests for the {@link MemorySubSequencesInvertedIndex}
@@ -147,40 +141,4 @@ public class SubSequencesArrayIndexTest extends TestCase {
 		assertEquals(9, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[1]));
 		assertEquals(48, SubSequenceIndexInfo.getStart(matchingSubSequence[1]));
 	}
-
-	@Test
-	public void test_DNA_1000_200_700_sequences() throws FileNotFoundException, IOException, ClassNotFoundException,
-			IllegalSymbolException, ValueOutOfBoundsException, IndexConstructionException {
-
-		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator"
-				+ File.separator + "test_sequences_dataset_dna_500_200_700.seqs");
-
-		InvertedIndexBuilder indexBuilder = new InvertedIndexBuilder(index);
-
-		int code = 0;
-		indexBuilder.constructIndex();
-		for (Sequence sequence : population) {
-			indexBuilder.addSequence(code, encoder.encodeSymbolListToIntegerArray(sequence), SUB_SEQUENCE_LENGTH);
-			code++;
-		}
-		indexBuilder.finishConstruction();
-		index.loadFromFile();
-
-		long[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCTTGCCC"));
-		assertEquals(2, matchingSubSequence.length);
-		assertEquals(132, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[0]));
-		assertEquals(152, SubSequenceIndexInfo.getStart(matchingSubSequence[0]));
-
-		assertEquals(483, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[1]));
-		assertEquals(224, SubSequenceIndexInfo.getStart(matchingSubSequence[1]));
-
-		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("GAGAATAC"));
-		assertEquals(1, matchingSubSequence.length);
-		assertEquals(0, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[0]));
-		assertEquals(0, SubSequenceIndexInfo.getStart(matchingSubSequence[0]));
-
-		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCTTGCCG"));
-		assertEquals(0, matchingSubSequence.length);
-	}
-
 }

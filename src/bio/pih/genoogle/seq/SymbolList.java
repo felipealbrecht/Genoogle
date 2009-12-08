@@ -1,6 +1,8 @@
 package bio.pih.genoogle.seq;
 
-public interface SymbolList {
+import java.io.Serializable;
+
+public interface SymbolList extends Serializable {
 
 	Alphabet getAlphabet();
 	

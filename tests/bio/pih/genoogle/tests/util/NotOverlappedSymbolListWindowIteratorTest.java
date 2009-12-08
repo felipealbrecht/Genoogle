@@ -44,12 +44,12 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGAC");
 		SymbolListWindowIterator iterator = factory.newSymbolListWindowIterator(dna, 3);
 		assertTrue(iterator.hasNext());
-		assertEquals(iterator.next(), LightweightSymbolList.createDNA("ACT"));
+		assertEquals(iterator.next().seqString(), LightweightSymbolList.createDNA("ACT").seqString());
 		assertTrue(iterator.hasNext());
-		assertEquals(iterator.next(), LightweightSymbolList.createDNA("GCC"));
+		assertEquals(iterator.next().seqString(), LightweightSymbolList.createDNA("GCC").seqString());
 		assertTrue(iterator.hasNext());
-		assertEquals(iterator.next(), LightweightSymbolList.createDNA("GGA"));
-		assertTrue(!iterator.hasNext());
+		assertEquals(iterator.next().seqString(), LightweightSymbolList.createDNA("GGA").seqString());
+		assertFalse(iterator.hasNext());
 	}
 	
 	@Test
@@ -57,12 +57,12 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGAC");
 		SymbolListWindowIterator iterator = factory.newSymbolListWindowIterator(dna, 3);
 		assertTrue(iterator.hasNext());
-		assertNotSame(iterator.next(), LightweightSymbolList.createDNA("T"));
+		assertNotSame(iterator.next().seqString(), LightweightSymbolList.createDNA("T").seqString());
 		assertTrue(iterator.hasNext());
-		assertNotSame(iterator.next(), LightweightSymbolList.createDNA("TTTTGAC"));
+		assertNotSame(iterator.next().seqString(), LightweightSymbolList.createDNA("TTTTGAC").seqString());
 		assertTrue(iterator.hasNext());
-		assertNotSame(iterator.next(), LightweightSymbolList.createDNA("AAA"));
-		assertTrue(!iterator.hasNext());
+		assertNotSame(iterator.next().seqString(), LightweightSymbolList.createDNA("AAA").seqString());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
@@ -70,15 +70,15 @@ public class NotOverlappedSymbolListWindowIteratorTest extends TestCase {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGA");
 		SymbolListWindowIterator iterator = factory.newSymbolListWindowIterator(dna, 9);
 		assertTrue(iterator.hasNext());
-		assertEquals(iterator.next(), LightweightSymbolList.createDNA("ACTGCCGGA"));
-		assertTrue(!iterator.hasNext());
+		assertEquals(iterator.next().seqString(), LightweightSymbolList.createDNA("ACTGCCGGA").seqString());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test
 	public void testLongerSizeWindow() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGG");
 		SymbolListWindowIterator iterator = factory.newSymbolListWindowIterator(dna, 9);
-		assertTrue(!iterator.hasNext());
+		assertFalse(iterator.hasNext());
 	}
 
 	@Test(expected = java.lang.IndexOutOfBoundsException.class)

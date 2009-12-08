@@ -7,30 +7,22 @@
 
 package bio.pih.genoogle.tests.seq.generator;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import junit.framework.TestCase;
 
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import bio.pih.genoogle.io.reader.IOTools;
-import bio.pih.genoogle.io.reader.ParseException;
-import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
 import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
-import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.seq.Sequence;
-import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.seq.generator.DNASequencesPopulator;
 import bio.pih.genoogle.seq.generator.RandomSequenceGenerator;
 
@@ -266,36 +258,9 @@ public class SequencePopulatorTest extends TestCase {
 	}
 	
 	private static void checkSequenceEquals(Sequence seq1, Sequence seq2) {
-		assertEquals(seq1.getAlphabet(), seq2.getAlphabet());
+		assertEquals(seq1.getAlphabet().getClass(), seq2.getAlphabet().getClass());
 		assertEquals(seq1.getName(), seq2.getName());
 		assertEquals(seq1.getLength(), seq2.getLength());
-		assertEquals(new Sequence(seq1, 1, seq1.getLength()), new Sequence(seq2, 1, seq2.getLength()));
-	}
-	
-	@Test
-	public static void testReadFormatedEqualsReadFasta() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchElementException, ParseException, IllegalSymbolException {
-		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
-		Iterator<Sequence> populationIterator = population.iterator();
-		
-		BufferedReader br = new BufferedReader(new FileReader("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.fasta"));
-		RichSequenceStreamReader readFasta = IOTools.readFastaDNA(br);	
-		
-		Sequence nextFastaSequence;
-		Sequence nextPopulationSequence;
-		while(readFasta.hasNext()) {
-			nextFastaSequence = readFasta.nextSequence();
-			nextPopulationSequence = populationIterator.next();
-			assertEquals(nextFastaSequence.getLength(), nextPopulationSequence.getLength());
-			assertEquals(nextFastaSequence.seqString(), nextPopulationSequence.seqString());
-						
-			SymbolList fastaSubList = new LightweightSymbolList(nextFastaSequence, 1, nextPopulationSequence.getLength());
-			SymbolList populationSubList = new LightweightSymbolList(nextPopulationSequence, 1, nextPopulationSequence.getLength());
-			
-			assertEquals(fastaSubList, populationSubList);
-			assertEquals(nextFastaSequence.getName(), nextPopulationSequence.getName());
-		}
-		
-		assertFalse(populationIterator.hasNext());
-		assertFalse(readFasta.hasNext());
+		assertEquals(seq1.seqString(), seq2.seqString());
 	}
 }

@@ -28,7 +28,8 @@ public abstract class DNASequenceEncoder extends SequenceEncoder {
 	static byte defaultWildcharValue = 0x00;
 
 	static Hashtable<Character, Integer> DNACharToBitsSubstitionTable;
-	static Character[] DNABitsToSymbolSubstitionTable;
+	
+	static Character[] DNABitsToSymbolSubstitionTable = new Character[] { 'A', 'C', 'G', 'T' };
 
 
 	static {

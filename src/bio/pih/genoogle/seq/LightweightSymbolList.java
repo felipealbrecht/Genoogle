@@ -7,13 +7,17 @@
 
 package bio.pih.genoogle.seq;
 
+import java.io.Serializable;
+
 /**
  * A symbol list hat consumes less memory and is faster to build.
  * 
  * @author albrecht
  */
-public class LightweightSymbolList implements SymbolList {
+public class LightweightSymbolList implements SymbolList, Serializable {
 
+	private static final long serialVersionUID = 839990518618066909L;
+	
 	private Alphabet alphabet;
 	private String seqString;	
 			
@@ -41,7 +45,7 @@ public class LightweightSymbolList implements SymbolList {
 	 * @param end
 	 */
 	public LightweightSymbolList(SymbolList parent, int start, int end) {
-		String substring = this.seqString().substring(start - 1, end);
+		String substring = parent.seqString().substring(start - 1, end);
 		this.alphabet = parent.getAlphabet();
 		this.seqString = substring;
 	}
@@ -63,7 +67,7 @@ public class LightweightSymbolList implements SymbolList {
 	
 	@Override
 	public char symbolAt(int pos) {
-		return seqString.charAt(pos);
+		return seqString.charAt(pos-1);
 	}
 
 	@Override

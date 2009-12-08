@@ -1,6 +1,11 @@
 package bio.pih.genoogle.seq;
 
-public interface Alphabet {
+import java.io.Serializable;
+
+public interface Alphabet extends Serializable {
+	
+	public String getName();
+	
 	public int getSize();
 
 	boolean isValid(char c);

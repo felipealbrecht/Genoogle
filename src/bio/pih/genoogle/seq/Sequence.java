@@ -1,7 +1,11 @@
 package bio.pih.genoogle.seq;
 
-public class Sequence extends LightweightSymbolList {
+import java.io.Serializable;
 
+public class Sequence extends LightweightSymbolList implements Serializable {
+	
+	private static final long serialVersionUID = -6728396309748182898L;
+	
 	private final String name;
 
 	public Sequence(Sequence parent, int begin, int end) {

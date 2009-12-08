@@ -3,6 +3,8 @@ package bio.pih.genoogle.seq;
 
 public class DNAAlphabet implements Alphabet {
 
+	private static final long serialVersionUID = 4036186830403094421L;
+
 	public static Alphabet SINGLETON = new DNAAlphabet();
 
 	private static final int size = 4;
@@ -12,6 +14,11 @@ public class DNAAlphabet implements Alphabet {
 	public static char g = 'g';
 	public static char t = 't';
 
+	@Override
+	public String getName() {
+		return "DNA";
+	}
+	
 	@Override
 	public int getSize() {
 		return size;

@@ -2,6 +2,7 @@ package bio.pih.genoogle.seq;
 
 public class RichSequence extends Sequence {
 	
+	private static final long serialVersionUID = 8654973053346425861L;
 
 	private final String accession;
 
