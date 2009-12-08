@@ -7,8 +7,7 @@
 
 package bio.pih.genoogle.encoder;
 
-import org.biojava.bio.symbol.SymbolList;
-
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.util.SymbolListWindowIterator;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
@@ -58,11 +57,11 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 	public int applyMask(SymbolList symbolList) {
 		int encoded = 0;
 		int offset = 0;
-		int length = symbolList.length();
+		int length = symbolList.getLength();
 
 		for (int i = 1; i <= length; i++) {
 			if (this.mask[i - 1]) {
-				encoded |= (getBitsFromSymbol(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
+				encoded |= (getBitsFromChar(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
 			} else {
 				offset++;
 			}
@@ -122,11 +121,11 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 	 */
 	public int[] applySequenceMask(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
-		int size = sequence.length() / this.patternLength;
+		int size = sequence.getLength() / this.patternLength;
 
 		size++; // extra space for information on the length.
 		int sequenceEncoded[] = new int[size];
-		sequenceEncoded[getPositionLength()] = sequence.length();
+		sequenceEncoded[getPositionLength()] = sequence.getLength();
 
 		int pos = getPositionBeginBitsVector();
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(

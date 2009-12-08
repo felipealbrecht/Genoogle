@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.io.XMLConfigurationReader;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Maps;
 
@@ -274,8 +274,6 @@ public final class SearchParams {
 	 * Get a {@link Map} with all parameters and their values.
 	 * 
 	 * @return {@link Map} indexed by {@link Parameter} containing the parameters and their values.
-	 * @throws NoSuchFieldException
-	 * @throws IllegalAccessException
 	 */
 	public static Map<Parameter, Object> getSearchParamsMap() {
 		Map<Parameter, Object> searchParameters = Maps.newHashMap();

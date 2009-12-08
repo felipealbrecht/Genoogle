@@ -7,7 +7,7 @@
 
 package bio.pih.genoogle.util;
 
-import org.biojava.bio.symbol.SymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * Factory for the {@link SymbolList} sliding windows

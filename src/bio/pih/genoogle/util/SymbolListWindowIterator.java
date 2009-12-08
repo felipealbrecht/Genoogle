@@ -9,7 +9,7 @@ package bio.pih.genoogle.util;
 
 import java.util.Iterator;
 
-import org.biojava.bio.symbol.SymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * Iterate among the sub-sequences

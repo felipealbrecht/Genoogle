@@ -5,19 +5,17 @@
  * For further information check the LICENSE file.
  */
 
-package bio.pih.genoogle.seq.op;
+package bio.pih.genoogle.io.reader;
 
-import org.biojava.bio.seq.io.SequenceBuilder;
-import org.biojavax.bio.seq.io.RichSequenceBuilderFactory;
 
 /**
  * {@link RichSequenceBuilderFactory} that uses the {@link LightweightSequenceBuilder}
  * 
  * @author albrecht
  */
-public class LightweightRichSequenceBuilderFactory implements RichSequenceBuilderFactory {
+public class RichSequenceBuilderFactory {
 
-	public SequenceBuilder makeSequenceBuilder() {
-		return new LightweightSequenceBuilder();
+	public RichSequenceBuilder makeSequenceBuilder() {
+		return new RichSequenceBuilder();
 	}
 }

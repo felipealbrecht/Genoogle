@@ -12,13 +12,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 
 /**
  * This abstract class which specifies the ways to access a sequences data banks. The methods are
@@ -31,7 +30,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 public abstract class AbstractSequenceDataBank {
 
 	protected final String name;
-	protected final FiniteAlphabet alphabet;
+	protected final Alphabet alphabet;
 	protected final int subSequenceLength;
 	protected final DNASequenceEncoderToInteger encoder;
 
@@ -39,7 +38,7 @@ public abstract class AbstractSequenceDataBank {
 	protected final DatabankCollection<? extends AbstractDNASequenceDataBank> parent;
 	protected final int lowComplexityFilter;
 
-	protected AbstractSequenceDataBank(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
+	protected AbstractSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
 			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
 		this.name = name;
 		this.alphabet = alphabet;
@@ -68,7 +67,8 @@ public abstract class AbstractSequenceDataBank {
 	}
 
 	/**
-	 * @param formating informs if it was called during formating db time.
+	 * @param formating
+	 *            informs if it was called during formating db time.
 	 * @return the file name and directory where is this SequenceDataBank.
 	 */
 	public File getFilePath(boolean formating) {
@@ -84,7 +84,8 @@ public abstract class AbstractSequenceDataBank {
 	}
 
 	/**
-	 * @param formating informs if it was called during formating db time.
+	 * @param formating
+	 *            informs if it was called during formating db time.
 	 * @return the file name and directory where is this SequenceDataBank considering its parent.
 	 */
 	public File getFullPath(boolean formating) {
@@ -119,48 +120,30 @@ public abstract class AbstractSequenceDataBank {
 	abstract public long getTotalDataBaseSize();
 
 	/**
-	 * @return the {@link FiniteAlphabet} of the sequences of this sequence bank.
+	 * @return the {@link Alphabet} of the sequences of this sequence bank.
 	 */
-	public FiniteAlphabet getAlphabet() {
+	public Alphabet getAlphabet() {
 		return alphabet;
 	}
 
 	/**
 	 * Add a fasta formated sequence collection into the SequenceBank.
-	 * 
-	 * @param fastaFile
-	 * @throws FileNotFoundException
-	 * @throws NoSuchElementException
-	 * @throws BioException
-	 * @throws IOException
-	 * @throws IndexConstructionException
 	 */
 	abstract public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
-			BioException, IOException, IndexConstructionException;
+			IOException, IndexConstructionException, ParseException, IllegalSymbolException;
 
 	/**
 	 * Load this sequence bank
 	 * 
-	 * @return <true> if the data bank was loaded correctly, or <code>false</code> otherwise.
-	 * 
-	 * @throws IOException
-	 * @throws ValueOutOfBoundsException
-	 * @throws BioException
-	 * @throws IllegalSymbolException
+	 * @return <true> if the data bank was loaded correctly, or <code>false</code> otherwise. 
 	 */
-	abstract public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException;
+	abstract public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException;
 
 	/**
 	 * Encode the sequences into a computer legible mode
-	 * 
-	 * @throws IOException
-	 * @throws BioException
-	 * @throws NoSuchElementException
-	 * @throws ValueOutOfBoundsException
-	 * @throws IndexConstructionException
 	 */
-	abstract public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException, IndexConstructionException;
+	abstract public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
+			IndexConstructionException, ParseException, IllegalSymbolException;
 
 	/**
 	 * @return the parent of this {@link AbstractSequenceDataBank} or <code>null</code> if it do not
@@ -169,7 +152,7 @@ public abstract class AbstractSequenceDataBank {
 	protected AbstractSequenceDataBank getParent() {
 		return parent;
 	}
-	
+
 	public int getLowComplexityFilter() {
 		return lowComplexityFilter;
 	}

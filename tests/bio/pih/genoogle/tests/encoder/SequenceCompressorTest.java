@@ -7,8 +7,6 @@
 
 package bio.pih.genoogle.tests.encoder;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -25,12 +23,6 @@ public class SequenceCompressorTest extends TestCase {
 
 	/**
 	 * Test if the bits value from the alphabet size is correctly calculate.
-	 * 
-	 * @throws ValueOutOfBoundsException
-	 * 
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws InterruptedException
 	 */
 	@Test
 	public void testGetBitsBySize() throws ValueOutOfBoundsException {

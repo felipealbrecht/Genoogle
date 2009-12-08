@@ -11,7 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import org.biojava.bio.seq.Sequence;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.Sequence;
 
 /**
  * Write to a file random sequences.
@@ -19,13 +20,12 @@ import org.biojava.bio.seq.Sequence;
  * @author albrecht
  */
 public class Populator {
+	
  /**
  * <dna> <qtd> <range_from> <range_to> <file_path> <1-3>
  * @param args
- * @throws FileNotFoundException
- * @throws IOException
  */
-public static void main(String[] args) throws FileNotFoundException, IOException {
+public static void main(String[] args) throws FileNotFoundException, IOException, IllegalSymbolException {
 	if (args.length != 6) 
 	{
 		System.out.println("Quantidade de parametros invalido");

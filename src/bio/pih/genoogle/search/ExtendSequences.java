@@ -7,8 +7,6 @@
 
 package bio.pih.genoogle.search;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 
 /**
@@ -42,7 +40,6 @@ public class ExtendSequences {
 
 	/**
 	 * @return extended query.
-	 * @throws IllegalSymbolException
 	 */
 	public String getQuerySequenceExtended() {
 		if (queryExtendedString == null) {
@@ -55,7 +52,6 @@ public class ExtendSequences {
 
 	/**
 	 * @return extended target.
-	 * @throws IllegalSymbolException
 	 */
 	public String getTargetSequenceExtended() {
 		if (targetExtendedString == null) {

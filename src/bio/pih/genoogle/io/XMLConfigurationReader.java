@@ -13,9 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -23,6 +20,8 @@ import org.dom4j.io.SAXReader;
 import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.search.SearchManager;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 
 import com.google.common.collect.Lists;
 
@@ -51,14 +50,8 @@ public class XMLConfigurationReader {
 	/**
 	 * @return a brand new {@link SearchManager} with the parameters read from
 	 *         genoogle.xml and with its data banks.
-	 * @throws ValueOutOfBoundsException
-	 * @throws IOException
-	 * @throws InvalidHeaderData 
-	 * @throws BioException 
-	 * @throws IllegalSymbolException 
-	 * @throws InvalidConfigurationException 
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException, InvalidConfigurationException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, InvalidConfigurationException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));
@@ -116,9 +109,6 @@ public class XMLConfigurationReader {
 	/**
 	 * @return {@link List} of {@link AbstractSequenceDataBank} that are configured in
 	 *         the XML file.
-	 * @throws InvalidHeaderData 
-	 * @throws IOException 
-	 * @throws InvalidConfigurationException 
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidConfigurationException {
@@ -213,7 +203,7 @@ public class XMLConfigurationReader {
 
 		} else if (e.getName().trim().equals("databank-collection")) {			
 			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
-					name, DNATools.getDNA(), subSequenceLength, new File(path), parent, lowComplexityFilter);
+					name, DNAAlphabet.SINGLETON, subSequenceLength, new File(path), parent, lowComplexityFilter);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {

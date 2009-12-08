@@ -21,14 +21,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.SequencesProvider;
+import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchParams.Parameter;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -58,7 +59,6 @@ public class SearchManager {
 	
 	/**
 	 * Shutdown the search manager.Service
-	 * @throws InterruptedException 
 	 */
 	public void shutdown() throws InterruptedException {
 		requestsExecutor.shutdown();
@@ -80,7 +80,7 @@ public class SearchManager {
 	 *         results list. 
 	 */
 	public List<SearchResults> doSyncSearch(SequencesProvider provider, String databankName, Map<Parameter, Object> parameters) throws UnknowDataBankException,
-			InterruptedException, ExecutionException, NoSuchElementException, IOException, BioException {
+			InterruptedException, ExecutionException, NoSuchElementException, IOException, IllegalSymbolException, ParseException {
 
 		long begin = System.currentTimeMillis();
 		CompletionService<SearchResults> completionService = new ExecutorCompletionService<SearchResults>(
@@ -131,9 +131,6 @@ public class SearchManager {
 	 * 
 	 * @param sp
 	 * @return {@link SearchResults} of this search.
-	 * @throws UnknowDataBankException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
 	 */
 	public SearchResults doSyncSearch(SearchParams sp) throws UnknowDataBankException,
 			InterruptedException, ExecutionException {

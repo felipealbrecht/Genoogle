@@ -7,10 +7,9 @@
 
 package bio.pih.genoogle.encoder;
 
-import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
+import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * Class with the main informations of the encoding sequences.
@@ -23,7 +22,7 @@ public abstract class SequenceEncoder {
 
 	private static int maximumAlphabetBitsSize = 8;
 
-	protected final FiniteAlphabet alphabet;
+	protected final Alphabet alphabet;
 	protected final int subSequenceLength;
 	protected final int bitsByAlphabetSize;
 	protected final int bitsMask;
@@ -31,12 +30,11 @@ public abstract class SequenceEncoder {
 	/**
 	 * @param alphabet
 	 * @param subSequenceLength
-	 * @throws ValueOutOfBoundsException
 	 */
-	public SequenceEncoder(FiniteAlphabet alphabet, int subSequenceLength) throws ValueOutOfBoundsException {
+	public SequenceEncoder(Alphabet alphabet, int subSequenceLength) throws ValueOutOfBoundsException {
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
-		this.bitsByAlphabetSize = bitsByAlphabetSize(alphabet.size());
+		this.bitsByAlphabetSize = bitsByAlphabetSize(alphabet.getSize());
 		this.bitsMask = ((1 << bitsByAlphabetSize) - 1);
 	}
 
@@ -44,8 +42,6 @@ public abstract class SequenceEncoder {
 	 * @param alphabetSize
 	 *            must be equal or higher than 1 and equals or lower than 256
 	 * @return how many bits is necessary to store each character of the given alphabet size.
-	 * @throws ValueOutOfBoundsException
-	 *             is size is between from 1 to 64
 	 */
 	public static int bitsByAlphabetSize(int alphabetSize) throws ValueOutOfBoundsException {
 		if (alphabetSize <= 0) {

@@ -14,15 +14,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
 import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;
@@ -59,12 +60,12 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 	}
 
 	@Override
-	public List<BothStrandSequenceAreas> call() throws BioException, InterruptedException {
+	public List<BothStrandSequenceAreas> call() throws InterruptedException {
 		long searchBegin = System.currentTimeMillis();
 
 		SymbolList query = sp.getQuery();
 
-		Statistics statistics = new Statistics(sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		Statistics statistics = new Statistics(DNAAlphabet.SINGLETON, sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
 		String seqString = query.seqString();
 
@@ -76,10 +77,18 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 		String rcString = Utils.sequenceComplement(inverted);
 
 		SymbolList rcQuery = null;
-		rcQuery = LightweightSymbolList.createDNA(rcString);
+
+		// this try/catch should never happens, because the rc string is create by a verified sequence. 
+		try {
+			rcQuery = LightweightSymbolList.createDNA(rcString);
+		} catch (IllegalSymbolException e) {			
+			logger.fatal(e);
+			return null;
+		}
+
 		int[] rcEncodedQuery = encoder.encodeSymbolListToIntegerArray(rcQuery);
 
-		int length = query.length();
+		int length = query.getLength();
 
 		int querySplitQuantity = sp.getQuerySplitQuantity();
 		int minLength = sp.getMinQuerySliceLength();
@@ -131,13 +140,13 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 	}
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			Statistics statistics, CountDownLatch countDown) throws BioException {
+			Statistics statistics, CountDownLatch countDown) {
 		searcher = new DNAIndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			Statistics statistics, CountDownLatch countDown) throws BioException {
+			Statistics statistics, CountDownLatch countDown) {
 		crSearcher = new DNAIndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 		executor.submit(crSearcher);
 	}

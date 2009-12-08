@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.encoder.DNAMaskEncoder;
@@ -21,6 +20,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;

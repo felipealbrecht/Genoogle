@@ -8,12 +8,11 @@
 package bio.pih.genoogle.encoder;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.util.SymbolListWindowIterator;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
@@ -48,7 +47,6 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 
 	/**
 	 * @param subSequenceLength
-	 * @throws ValueOutOfBoundsException
 	 */
 	protected DNASequenceEncoderToInteger(int subSequenceLength) throws ValueOutOfBoundsException {
 		super(subSequenceLength);
@@ -61,15 +59,15 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @return an int containing the representation of the subsequence
 	 */
 	public int encodeSubSequenceToInteger(SymbolList subSymbolList) {
-		if (subSymbolList.length() > subSequenceLength) {
+		if (subSymbolList.getLength() > subSequenceLength) {
 			throw new ValueOutOfBoundsException(subSymbolList + " is bigger than subSequenceLength("
 					+ subSequenceLength + ")");
 		}
 
 		int encoded = 0;
 
-		for (int i = 1; i <= subSymbolList.length(); i++) {
-			encoded |= (getBitsFromSymbol(subSymbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
+		for (int i = 1; i <= subSymbolList.getLength(); i++) {
+			encoded |= (getBitsFromChar(subSymbolList.symbolAt(i)) << ((subSequenceLength - i) * bitsByAlphabetSize));
 		}
 
 		return encoded;
@@ -103,12 +101,10 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	/**
 	 * @param encoded
 	 * @return {@link LightweightSymbolList} of the given encoded sub-sequence.
-	 * @throws IllegalSymbolException
-	 * @throws BioException
 	 */
-	public SymbolList decodeIntegerToSymbolList(int encoded) throws IllegalSymbolException, BioException {
+	public SymbolList decodeIntegerToSymbolList(int encoded) throws IllegalSymbolException {
 		String sequenceString = decodeIntegerToString(encoded, subSequenceLength);
-		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
+		return new LightweightSymbolList(alphabet, sequenceString);
 	}
 
 	private String decodeIntegerToString(int encoded, int length) {
@@ -137,18 +133,17 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 */
 	public int[] encodeSymbolListToIntegerArray(SymbolList sequence) {
 		assert (sequence.getAlphabet().equals(alphabet));
-		int size = sequence.length() / subSequenceLength;
-		int extra = sequence.length() % subSequenceLength;
+		int size = sequence.getLength() / subSequenceLength;
+		int extra = sequence.getLength() % subSequenceLength;
 		if (extra != 0) { // extra space for incomplete sub-sequence
 			size++;
 		}
 		size++; // extra space for information on the length.
 		int sequenceEncoded[] = new int[size];
-		sequenceEncoded[getPositionLength()] = sequence.length();
+		sequenceEncoded[getPositionLength()] = sequence.getLength();
 
-		if (sequence.length() < subSequenceLength) {
-			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSequenceToInteger(sequence.subList(1,
-					sequence.length()));
+		if (sequence.getLength() < subSequenceLength) {
+			sequenceEncoded[getPositionBeginBitsVector()] = encodeSubSequenceToInteger(sequence);
 		} else {
 			int pos = getPositionBeginBitsVector();
 			SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(
@@ -159,8 +154,8 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 				pos++;
 			}
 			if (pos < size) {
-				int from = sequence.length() - extra + 1;
-				sequenceEncoded[pos] = encodeSubSequenceToInteger(sequence.subList(from, sequence.length()));
+				int from = sequence.getLength() - extra + 1;
+				sequenceEncoded[pos] = encodeSubSequenceToInteger(new LightweightSymbolList(sequence, from, sequence.getLength()));
 			}
 		}
 
@@ -170,12 +165,10 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	/**
 	 * @param encodedSequence
 	 * @return the {@link SymbolList} that is stored in encodedSequence
-	 * @throws IllegalSymbolException
-	 * @throws BioException
 	 */
-	public SymbolList decodeIntegerArrayToSymbolList(int[] encodedSequence) throws IllegalSymbolException, BioException {
+	public SymbolList decodeIntegerArrayToSymbolList(int[] encodedSequence) throws IllegalSymbolException {
 		String sequenceString = decodeIntegerArrayToString(encodedSequence);
-		return LightweightSymbolList.constructLightweightSymbolList(alphabet, sequenceString);
+		return new LightweightSymbolList(alphabet, sequenceString);
 	}
 
 	/**
@@ -183,8 +176,6 @@ public class DNASequenceEncoderToInteger extends DNASequenceEncoder {
 	 * @param begin
 	 * @param end
 	 * @return the sequence in {@link String} form that is stored in encodedSequence
-	 * @throws IllegalSymbolException
-	 * @throws BioException
 	 */
 	public String decodeIntegerArrayToString(int[] encodedSequence, int begin, int end) {
 

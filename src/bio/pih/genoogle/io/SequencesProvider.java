@@ -12,20 +12,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
-
+import bio.pih.genoogle.io.reader.IOTools;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
-import bio.pih.genoogle.seq.op.LightweightIOTools;
-import bio.pih.genoogle.seq.op.LightweightStreamReader;
+import bio.pih.genoogle.seq.Sequence;
+import bio.pih.genoogle.seq.SymbolList;
 
 public class SequencesProvider {
 
 	private final BufferedReader in;
 	private boolean isFastaFile = false;
 
-	LightweightStreamReader readFastaDNA;
+	RichSequenceStreamReader readFastaDNA;
 
 	public SequencesProvider(BufferedReader in) throws IOException {
 		this.in = in;
@@ -38,7 +38,7 @@ public class SequencesProvider {
 
 		if (firstLine.charAt(0) == '>') {
 			isFastaFile = true;
-			readFastaDNA = LightweightIOTools.readFastaDNA(this.in, null);
+			readFastaDNA = IOTools.readFastaDNA(this.in);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class SequencesProvider {
 		return in.ready();
 	}
 
-	public synchronized SymbolList getNextSequence() throws IOException, NoSuchElementException, BioException {
+	public synchronized SymbolList getNextSequence() throws IllegalSymbolException, IOException, NoSuchElementException, ParseException {
 		if (isFastaFile) {
 			return getNextFastaSequence();
 		}
@@ -61,8 +61,6 @@ public class SequencesProvider {
 	 * 
 	 * @param in
 	 * @return {@link List} of {@link SymbolList} containing the sequences read. Or <code>null</code> if it does not have more sequences.
-	 * @throws IllegalSymbolException
-	 * @throws IOException
 	 */
 	private synchronized SymbolList getNextLiteralSequence() throws IllegalSymbolException, IOException {
 		String seqString = in.readLine();
@@ -90,10 +88,8 @@ public class SequencesProvider {
 	 * 
 	 * @param in
 	 * @return {@link List} of {@link SymbolList} containing the sequences read.
-	 * @throws NoSuchElementException
-	 * @throws BioException
 	 */
-	private SymbolList getNextFastaSequence() throws NoSuchElementException, BioException {
+	private Sequence getNextFastaSequence() throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
 		return readFastaDNA.nextRichSequence();
 	}
 }

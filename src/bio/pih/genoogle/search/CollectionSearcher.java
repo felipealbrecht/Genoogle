@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.symbol.IllegalSymbolException;
 
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.DatabankCollection;
@@ -127,10 +126,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		} catch (IOException e) {
 			sr.addFail(e);
 			return sr;
-		} catch (IllegalSymbolException e) {
-			sr.addFail(e);
-			return sr;
-		}
+		} 
 
 		try {
 			alignnmentsCountDown.await();

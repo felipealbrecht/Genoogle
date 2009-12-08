@@ -9,18 +9,19 @@ package bio.pih.genoogle.tests.seq;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import junit.framework.TestCase;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.Sequence;
 import org.junit.Test;
 
-import bio.pih.genoogle.seq.op.LightweightIOTools;
-import bio.pih.genoogle.seq.op.LightweightStreamReader;
+import bio.pih.genoogle.io.reader.IOTools;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.Sequence;
 
 
 /**
@@ -29,18 +30,13 @@ import bio.pih.genoogle.seq.op.LightweightStreamReader;
  */
 public class LightweightSequencesTest extends TestCase {
 
-	/**
-	 * @throws FileNotFoundException
-	 * @throws NoSuchElementException
-	 * @throws BioException
-	 */
 	@Test
-	public void testReadFastFile() throws FileNotFoundException, NoSuchElementException, BioException {
+	public void testReadFastFile() throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
 		
 		BufferedReader is = new BufferedReader(new FileReader("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.fasta"));
 
 		
-		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
+		RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
 		
 		String sequence_100 = "gaacccggcgagagaaggttgacgcgtacccgttaatattgatgttacgactagcgcagttcctaacgcactcggtgtcg" +
 							"ccagaagagagctagtgacgacacgtatcctggagcgacaccactaagcagagttgtccccaagaactgcggtccctgcg" +

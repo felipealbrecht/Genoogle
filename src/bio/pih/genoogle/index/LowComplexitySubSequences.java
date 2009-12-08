@@ -10,9 +10,8 @@ package bio.pih.genoogle.index;
 import java.util.Arrays;
 import java.util.List;
 
-import org.biojava.bio.seq.DNATools;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoder;
+import bio.pih.genoogle.seq.DNAAlphabet;
 
 import com.google.common.collect.Lists;
 
@@ -23,7 +22,7 @@ public class LowComplexitySubSequences {
 	private final int bitsMask;
 	private final int derivationLimit;
 
-	private static final int alphabetSize = DNATools.getDNA().size();
+	private static final int alphabetSize = DNAAlphabet.SINGLETON.getSize();
 
 	public LowComplexitySubSequences(int subSequenceLength, int derivationLimit) {
 		this.subSequenceLength = subSequenceLength;

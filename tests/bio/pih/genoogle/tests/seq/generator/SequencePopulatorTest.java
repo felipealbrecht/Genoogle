@@ -15,24 +15,24 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import junit.framework.TestCase;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.impl.SimpleSequence;
-import org.biojava.bio.symbol.Alphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import bio.pih.genoogle.io.reader.IOTools;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.Sequence;
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.seq.generator.DNASequencesPopulator;
 import bio.pih.genoogle.seq.generator.RandomSequenceGenerator;
-import bio.pih.genoogle.seq.op.LightweightIOTools;
-import bio.pih.genoogle.seq.op.LightweightStreamReader;
 
 /**
  * @author albrecht
@@ -66,163 +66,145 @@ public class SequencePopulatorTest extends TestCase {
 	/**
 	 * Test if the length and {@link Alphabet} of sequence generated are correct.  
 	 */
-	//@Test
-	public void testSequenceGenerator() {
+	public void testSequenceGenerator() throws IllegalSymbolException {
 		int length = 1;
-		RandomSequenceGenerator randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		RandomSequenceGenerator randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		Sequence sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(1, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		assertEquals(1, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());
 		
 		length = 10;
-		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(length, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		assertEquals(length, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());
 		
 		length = 100;
-		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(length, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		assertEquals(length, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());
 		
 		length = 250;
-		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(length, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		assertEquals(length, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());
 		
 		length = 1000;
-		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(length, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());
+		assertEquals(length, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());
 		
 		length = 10000;
-		randomSequenceGenerator = new RandomSequenceGenerator(DNATools.getDNA(), length);
+		randomSequenceGenerator = new RandomSequenceGenerator(DNAAlphabet.SINGLETON, length);
 		sequence = randomSequenceGenerator.generateSequence();
-		assertEquals(length, sequence.length());
-		assertEquals(DNATools.getDNA(), sequence.getAlphabet());		
+		assertEquals(length, sequence.getLength());
+		assertEquals(DNAAlphabet.SINGLETON, sequence.getAlphabet());		
 	}
 	
 	/**
 	 * Test if the length of the generated sequences are correct
 	 */
-	//@Test
-	public void testDNASequencesPopulator() {
+	public void testDNASequencesPopulator() throws IllegalSymbolException {
 		int from = 0;
 		int to = 3;
 		List<Sequence> sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}
 		
 		from = 0;
 		to = 100;
 		sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}
 		
 		from = 99;
 		to = 100;
 		sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}
 		
 		from = 0;
 		to = 1000;
 		sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}
 		
 		from = 999;
 		to = 1000;
 		sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}
 		
 		from = 1;
 		to = 2;
 		sequences = DNASequencesPopulator.populateSequences(100, from, to);
 		for(Sequence sequence: sequences) {
-			assertTrue(sequence.length() >= from);
-			assertTrue(sequence.length() <= to);
+			assertTrue(sequence.getLength() >= from);
+			assertTrue(sequence.getLength() <= to);
 		}	
 	}
 	
 	/**
 	 * Test if the save and load sequence population from a file is working
-	 * @throws IllegalSymbolException
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
 	 */
-	//@Test
 	public void testCreateSaveAndLoadSequencePopulation() throws IllegalSymbolException, FileNotFoundException, IOException, ClassNotFoundException {
 		List<Sequence> sequences = new LinkedList<Sequence>();
 		
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
-		SymbolList symbolList = LightweightSymbolList.createDNA(stringSequence);
-		Sequence ss = new SimpleSequence(symbolList, null, "Sequence 1", null);
+		Sequence ss = new Sequence("Sequence 1", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence 2", null);
+		ss = new Sequence("Sequence 1", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence 3", null);
+		ss = new Sequence("Sequence 2", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence A", null);
+		ss = new Sequence("Sequence 3", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence T", null);
+		ss = new Sequence("Sequence 4", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence C", null);
+		ss = new Sequence("Sequence 5", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence G", null);
+		ss = new Sequence("Sequence 6", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence ACTGGTCA", null);
+		ss = new Sequence("Sequence 7", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence R1", null);
+		ss = new Sequence("Sequence 8", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		ss = new Sequence("Sequence 9", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 		
 		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
-		symbolList = LightweightSymbolList.createDNA(stringSequence);
-		ss = new SimpleSequence(symbolList, null, "Sequence R2", null);
+		ss = new Sequence("Sequence 10", DNAAlphabet.SINGLETON, stringSequence);
 		sequences.add(ss);
 				
 		removeIfExistFile(sequencePopulationTestFile);
@@ -247,12 +229,9 @@ public class SequencePopulatorTest extends TestCase {
 		
 	/**
 	 * What is enough? May be 1k sequences is enough ? May be one million is huge, but 1k is enough for this test, I think...
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws ClassNotFoundException 
 	 */
 	@Test
-	public void testCreateSaveAndLoadRandomSequencePopulation() throws FileNotFoundException, IOException, ClassNotFoundException {
+	public void testCreateSaveAndLoadRandomSequencePopulation() throws FileNotFoundException, IOException, ClassNotFoundException, IllegalSymbolException {
 		int stepSize = 10;
 		int maxSequences = 1000;
 		int lengthFrom = 20;
@@ -289,34 +268,28 @@ public class SequencePopulatorTest extends TestCase {
 	private static void checkSequenceEquals(Sequence seq1, Sequence seq2) {
 		assertEquals(seq1.getAlphabet(), seq2.getAlphabet());
 		assertEquals(seq1.getName(), seq2.getName());
-		assertEquals(seq1.length(), seq2.length());
-		assertEquals(seq1.subList(1, seq1.length()), seq2.subList(1, seq2.length()));;
+		assertEquals(seq1.getLength(), seq2.getLength());
+		assertEquals(new Sequence(seq1, 1, seq1.getLength()), new Sequence(seq2, 1, seq2.getLength()));
 	}
 	
-	/**
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws BioException
-	 */
 	@Test
-	public static void testReadFormatedEqualsReadFasta() throws FileNotFoundException, IOException, ClassNotFoundException, BioException {
+	public static void testReadFormatedEqualsReadFasta() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchElementException, ParseException, IllegalSymbolException {
 		List<Sequence> population = DNASequencesPopulator.readPopulation("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.seqs" );
 		Iterator<Sequence> populationIterator = population.iterator();
 		
 		BufferedReader br = new BufferedReader(new FileReader("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.fasta"));
-		LightweightStreamReader readFasta = LightweightIOTools.readFastaDNA(br, null);	
+		RichSequenceStreamReader readFasta = IOTools.readFastaDNA(br);	
 		
 		Sequence nextFastaSequence;
 		Sequence nextPopulationSequence;
 		while(readFasta.hasNext()) {
 			nextFastaSequence = readFasta.nextSequence();
 			nextPopulationSequence = populationIterator.next();
-			assertEquals(nextFastaSequence.length(), nextPopulationSequence.length());
+			assertEquals(nextFastaSequence.getLength(), nextPopulationSequence.getLength());
 			assertEquals(nextFastaSequence.seqString(), nextPopulationSequence.seqString());
 						
-			SymbolList fastaSubList = nextFastaSequence.subList(1, nextPopulationSequence.length());
-			SymbolList populationSubList = nextPopulationSequence.subList(1, nextPopulationSequence.length());
+			SymbolList fastaSubList = new LightweightSymbolList(nextFastaSequence, 1, nextPopulationSequence.getLength());
+			SymbolList populationSubList = new LightweightSymbolList(nextPopulationSequence, 1, nextPopulationSequence.getLength());
 			
 			assertEquals(fastaSubList, populationSubList);
 			assertEquals(nextFastaSequence.getName(), nextPopulationSequence.getName());

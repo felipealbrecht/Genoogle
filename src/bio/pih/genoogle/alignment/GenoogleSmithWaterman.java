@@ -27,11 +27,7 @@
  */
 package bio.pih.genoogle.alignment;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.BioRuntimeException;
-import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 /*
  * Created on 05.09.2005
@@ -122,35 +118,27 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	 * @param query
 	 * @param subject
 	 * @return the score of the alignment
-	 * @throws BioRuntimeException
 	 */
-	public int pairwiseAlignment(SymbolList query, SymbolList subject) throws BioRuntimeException {
-		int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];
-		int builderLength = (int) (Math.max(query.length(), subject.length()) * 1.20);
+	public int pairwiseAlignment(SymbolList query, SymbolList subject) {
+		int[][] scoreMatrix = new int[query.getLength() + 1][subject.getLength() + 1];
+		int builderLength = (int) (Math.max(query.getLength(), subject.getLength()) * 1.20);
 
 		StringBuilder pathBuilder = new StringBuilder(builderLength);
 		StringBuilder[] alignBuilder = new StringBuilder[2];
 		alignBuilder[0] = new StringBuilder(builderLength);
 		alignBuilder[1] = new StringBuilder(builderLength);
 
-		SymbolTokenization st;
-		try {
-			st = query.getAlphabet().getTokenization("default");
-		} catch (BioException exc) {
-			throw new BioRuntimeException(exc);
-		}
-
 		/*
 		 * Use affine gap panalties.
 		 */
 		if ((gapExt != delete) || (gapExt != insert)) {
-			affinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder, st);
+			affinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder);
 
 			/*
 			 * No affine gap penalties to save memory.
 			 */
 		} else {
-			nonAfinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder, st);
+			nonAfinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder);
 		}
 
 		this.score = scoreMatrix[maxI][maxJ];
@@ -162,17 +150,17 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	}
 
 	private void nonAfinedGapAlignment(SymbolList query, SymbolList subject, int[][] scoreMatrix,
-			StringBuilder pathBuilder, StringBuilder[] alignBuilder, SymbolTokenization st) {
+			StringBuilder pathBuilder, StringBuilder[] alignBuilder) {
 		int i;
 		int j;
 		int k = 3;
-		for (i = 0; i <= query.length(); i++)
+		for (i = 0; i <= query.getLength(); i++)
 			scoreMatrix[i][0] = 0;
-		for (j = 0; j <= subject.length(); j++)
+		for (j = 0; j <= subject.getLength(); j++)
 			scoreMatrix[0][j] = 0;
-		for (i = 1; i <= query.length(); i++) {
+		for (i = 1; i <= query.getLength(); i++) {
 			int from = Math.max(1, i - k);
-			int to = Math.min(subject.length(), i + k);
+			int to = Math.min(subject.getLength(), i + k);
 			for (j = from; j <= to; j++) {
 				scoreMatrix[i][j] = max(0, scoreMatrix[i - 1][j] + delete, scoreMatrix[i][j - 1] + insert,
 						scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j));
@@ -187,32 +175,28 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		/*
 		 * Here starts the traceback for non-affine gap penalities
 		 */
-		try {
-			backtrace(query, subject, scoreMatrix, pathBuilder, alignBuilder, st);
-		} catch (BioException exc) {
-			throw new BioRuntimeException(exc);
-		}
+		backtrace(query, subject, scoreMatrix, pathBuilder, alignBuilder);
 	}
 
 	private void affinedGapAlignment(SymbolList query, SymbolList subject, int[][] scoreMatrix,
-			StringBuilder pathBuilder, StringBuilder[] alignBuilder, SymbolTokenization st) {
+			StringBuilder pathBuilder, StringBuilder[] alignBuilder) {
 		int i;
 		int j;
-		int[][] E = new int[query.length() + 1][subject.length() + 1]; // Inserts
-		int[][] F = new int[query.length() + 1][subject.length() + 1]; // Deletes
+		int[][] E = new int[query.getLength() + 1][subject.getLength() + 1]; // Inserts
+		int[][] F = new int[query.getLength() + 1][subject.getLength() + 1]; // Deletes
 
 		scoreMatrix[0][0] = 0;
 		E[0][0] = F[0][0] = Integer.MIN_VALUE;
-		for (i = 1; i <= query.length(); i++) {
+		for (i = 1; i <= query.getLength(); i++) {
 			scoreMatrix[i][0] = F[i][0] = 0;
 			E[i][0] = Integer.MIN_VALUE;
 		}
-		for (j = 1; j <= subject.length(); j++) {
+		for (j = 1; j <= subject.getLength(); j++) {
 			scoreMatrix[0][j] = E[0][j] = 0;
 			F[0][j] = Integer.MIN_VALUE;
 		}
-		for (i = 1; i <= query.length(); i++)
-			for (j = 1; j <= subject.length(); j++) {
+		for (i = 1; i <= query.getLength(); i++)
+			for (j = 1; j <= subject.getLength(); j++) {
 				E[i][j] = Math.max(E[i][j - 1], scoreMatrix[i][j - 1] + insert) + gapExt;
 				F[i][j] = Math.max(F[i - 1][j], scoreMatrix[i - 1][j] + delete) + gapExt;
 				scoreMatrix[i][j] = max(0, E[i][j], F[i][j], scoreMatrix[i - 1][j - 1]
@@ -227,65 +211,61 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		/*
 		 * Here starts the traceback for affine gap penalities
 		 */
-		try {
-			boolean[] gap_extend = { false, false };
-			j = maxJ;
-			for (i = maxI; i > 0;) {
-				do {
-					// only Deletes or Inserts or Replaces possible.
-					// That's not what we want to have.
-					if (scoreMatrix[i][j] == 0) {
-						queryStart = i;
-						targetStart = j;
-						i = j = 0;
+		boolean[] gap_extend = { false, false };
+		j = maxJ;
+		for (i = maxI; i > 0;) {
+			do {
+				// only Deletes or Inserts or Replaces possible.
+				// That's not what we want to have.
+				if (scoreMatrix[i][j] == 0) {
+					queryStart = i;
+					targetStart = j;
+					i = j = 0;
 
-						// Match/Replace
-					} else if ((Math.abs(scoreMatrix[i][j]
-							- (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001)
-							&& !(gap_extend[0] || gap_extend[1])) {
-						if (query.symbolAt(i) == subject.symbolAt(j)) {
-							pathBuilder.append('|');
-							identitySize++;
-						} else {
-							pathBuilder.append(' ');
-						}
-
-						alignBuilder[0].append(st.tokenizeSymbol(query.symbolAt(i--)));
-						alignBuilder[1].append(st.tokenizeSymbol(subject.symbolAt(j--)));
-
-						// Insert || finish gap if extended gap is
-						// opened
-					} else if (scoreMatrix[i][j] == E[i][j] || gap_extend[0]) {
-						// check if gap has been extended or freshly
-						// opened
-						gap_extend[0] = Math.abs(E[i][j] - (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
-
-						alignBuilder[0].append('-');
-						alignBuilder[1].append(st.tokenizeSymbol(subject.symbolAt(j--)));
-						pathBuilder.append(' ');
-						// Delete || finish gap if extended gap is
-						// opened
+					// Match/Replace
+				} else if ((Math.abs(scoreMatrix[i][j]
+						- (scoreMatrix[i - 1][j - 1] + matchReplace(query, subject, i, j))) < 0.0001)
+						&& !(gap_extend[0] || gap_extend[1])) {
+					if (query.symbolAt(i) == subject.symbolAt(j)) {
+						pathBuilder.append('|');
+						identitySize++;
 					} else {
-						// check if gap has been extended or freshly
-						// opened
-						gap_extend[1] = Math.abs(F[i][j] - (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
-
-						alignBuilder[0].append(st.tokenizeSymbol(query.symbolAt(i--)));
-						alignBuilder[1].append('-');
 						pathBuilder.append(' ');
 					}
-				} while (j > 0);
-			}
-		} catch (BioException exc) {
-			throw new BioRuntimeException(exc);
+
+					alignBuilder[0].append(query.symbolAt(i--));
+					alignBuilder[1].append(subject.symbolAt(j--));
+
+					// Insert || finish gap if extended gap is
+					// opened
+				} else if (scoreMatrix[i][j] == E[i][j] || gap_extend[0]) {
+					// check if gap has been extended or freshly
+					// opened
+					gap_extend[0] = Math.abs(E[i][j] - (scoreMatrix[i][j - 1] + insert + gapExt)) > 0.0001;
+
+					alignBuilder[0].append('-');
+					alignBuilder[1].append(subject.symbolAt(j--));
+					pathBuilder.append(' ');
+					// Delete || finish gap if extended gap is
+					// opened
+				} else {
+					// check if gap has been extended or freshly
+					// opened
+					gap_extend[1] = Math.abs(F[i][j] - (scoreMatrix[i - 1][j] + delete + gapExt)) > 0.0001;
+
+					alignBuilder[0].append(query.symbolAt(i--));
+					alignBuilder[1].append('-');
+					pathBuilder.append(' ');
+				}
+			} while (j > 0);
 		}
 	}
 
 	/**
-	 * Backtrace phase for the Smith-Waterman algorithm. 
+	 * Backtrace phase for the Smith-Waterman algorithm.
 	 */
 	private void backtrace(SymbolList query, SymbolList subject, int[][] scoreMatrix, StringBuilder pathBuilder,
-			StringBuilder[] alignBuilder, SymbolTokenization st) throws IllegalSymbolException {
+			StringBuilder[] alignBuilder) {
 		int i;
 		int j;
 
@@ -310,18 +290,18 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 						pathBuilder.append(' ');
 					}
 
-					alignBuilder[0].append(st.tokenizeSymbol(query.symbolAt(i--)));
-					alignBuilder[1].append(st.tokenizeSymbol(subject.symbolAt(j--)));
+					alignBuilder[0].append(query.symbolAt(i--));
+					alignBuilder[1].append(subject.symbolAt(j--));
 
 					// Insert
 				} else if (Math.abs(scoreMatrix[i][j] - (scoreMatrix[i][j - 1] + insert)) < 0.0001) {
 					alignBuilder[0].append('-');
-					alignBuilder[1].append(st.tokenizeSymbol(subject.symbolAt(j--)));
+					alignBuilder[1].append(subject.symbolAt(j--));
 					pathBuilder.append(' ');
 
 					// Delete
 				} else {
-					alignBuilder[0].append(st.tokenizeSymbol(query.symbolAt(i--)));
+					alignBuilder[0].append(query.symbolAt(i--));
 					alignBuilder[1].append('-');
 					pathBuilder.append(' ');
 				}

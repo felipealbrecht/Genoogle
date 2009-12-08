@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/biojava-genoogle.jar" sourcepath="/home/albrecht/java/biojava-1.5/src"/>
 	<classpathentry kind="lib" path="lib/easymock.jar"/>
 	<classpathentry kind="lib" path="lib/easymockclassextension.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.2.jar"/>
@@ -28,7 +27,6 @@
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
-	<classpathentry kind="lib" path="lib/bytecode.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.axis_1.4.0.v200905122109/lib/axis.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.commons.discovery_0.2.0.v200905122109/lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.xml.rpc_1.1.0.v200905122109/lib/jaxrpc.jar"/>

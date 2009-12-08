@@ -11,10 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.genoogle.encoder.DNAMaskEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.IndexConstructionException;
@@ -22,6 +18,9 @@ import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * A data bank witch index its sequences and uses similar subsequences index.
@@ -35,8 +34,9 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	private InvertedIndexBuilder indexBuilder;
 	protected final DNAMaskEncoder maskEncoder;
 
-	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask,
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) throws ValueOutOfBoundsException {
+	public IndexedDNASequenceDataBank(String name, int subSequenceLength, String mask, File path,
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter)
+			throws ValueOutOfBoundsException {
 		super(name, subSequenceLength, path, parent, lowComplexityFilter);
 
 		if (mask != null) {
@@ -49,7 +49,7 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	}
 
 	@Override
-	public synchronized boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+	public synchronized boolean load() throws IOException, ValueOutOfBoundsException {
 		boolean b = super.load();
 		if (b == false) {
 			return false;
@@ -58,7 +58,8 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 		return true;
 	}
 
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, IndexConstructionException {
+	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
+			IndexConstructionException, ParseException, IllegalSymbolException {
 		beginIndexBuild();
 		super.encodeSequences();
 		endIndexBuild();
@@ -75,8 +76,7 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	}
 
 	@Override
-	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IllegalSymbolException,
-			BioException, IndexConstructionException {
+	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IndexConstructionException, IllegalSymbolException {
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		if (maskEncoder == null) {
@@ -97,7 +97,7 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException {
 		return index.getMatchingSubSequence(encodedSubSequence);
 	}
-	
+
 	@Override
 	public boolean check() {
 		if (!index.check()) {
@@ -105,11 +105,11 @@ public class IndexedDNASequenceDataBank extends AbstractDNASequenceDataBank impl
 		}
 		return super.check();
 	}
-	
+
 	@Override
 	public void delete() {
 		super.delete();
 		index.delete();
 	}
-	
+
 }

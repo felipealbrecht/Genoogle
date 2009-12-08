@@ -13,9 +13,6 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 import org.easymock.classextension.EasyMock;
 import org.junit.Test;
 
@@ -24,7 +21,10 @@ import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 public class InvertedIndexBuilderTest extends TestCase {
 
@@ -41,7 +41,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 				 
 				
 		EasyMock.expect(sequenceDataBank.getLowComplexityFilter()).andReturn(-1).anyTimes();
-		EasyMock.expect(sequenceDataBank.getAlphabet()).andReturn(DNATools.getDNA()).anyTimes();
+		EasyMock.expect(sequenceDataBank.getAlphabet()).andReturn(DNAAlphabet.SINGLETON).anyTimes();
 		EasyMock.expect(sequenceDataBank.getEncoder()).andReturn(encoder).anyTimes();
 		EasyMock.expect(sequenceDataBank.getFullPath()).andReturn(new File("/tmp", this.getClass().getName())).anyTimes();
 		EasyMock.replay(sequenceDataBank);

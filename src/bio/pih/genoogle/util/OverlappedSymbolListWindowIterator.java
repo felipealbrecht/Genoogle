@@ -7,7 +7,8 @@
 
 package bio.pih.genoogle.util;
 
-import org.biojava.bio.symbol.SymbolList;
+import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * Iterate over the overlapped sub-sequences from the symbol list
@@ -26,7 +27,7 @@ public class OverlappedSymbolListWindowIterator extends AbstractSymbolListWindow
 
 	@Override
 	public SymbolList next() {
-		SymbolList subList = sequence.subList(actualPos+1, actualPos + windowSize);
+		SymbolList subList = new LightweightSymbolList(sequence, actualPos+1, actualPos + windowSize);
 		actualPos++;
 		return subList;
 	}

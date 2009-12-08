@@ -18,9 +18,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.interfaces.Console;
@@ -28,12 +25,15 @@ import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.InvalidConfigurationException;
 import bio.pih.genoogle.io.SequencesProvider;
 import bio.pih.genoogle.io.XMLConfigurationReader;
+import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchManager;
 import bio.pih.genoogle.search.SearchParams;
 import bio.pih.genoogle.search.UnknowDataBankException;
 import bio.pih.genoogle.search.SearchParams.Parameter;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Lists;
 
@@ -86,9 +86,6 @@ public final class Genoogle {
 			} catch (IllegalSymbolException e) {
 				logger.fatal(e.getMessage());
 				return null;
-			} catch (BioException e) {
-				logger.fatal(e.getMessage());
-				return null;
 			} catch (InvalidConfigurationException e) {
 				logger.fatal(e.getMessage());
 				return null;
@@ -102,7 +99,7 @@ public final class Genoogle {
 	 * Private constructor.
 	 */
 	private Genoogle() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
-			BioException, InvalidConfigurationException {		
+			InvalidConfigurationException {
 		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		sm = XMLConfigurationReader.getSearchManager();
 	}
@@ -164,7 +161,7 @@ public final class Genoogle {
 	 *         sequence inside the given {@link BufferedReader}.
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in) throws IOException, UnknowDataBankException,
-			InterruptedException, ExecutionException, NoSuchElementException, BioException {
+			InterruptedException, ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
 		String defaultDataBankName = sm.getDefaultDataBankName();
 		return doBatchSyncSearch(in, defaultDataBankName);
 	}
@@ -181,7 +178,7 @@ public final class Genoogle {
 	 *         sequence inside the given {@link BufferedReader}.
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName) throws IOException,
-			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, BioException {
+			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
 		return doBatchSyncSearch(in, databankName, null);
 	}
 
@@ -198,11 +195,11 @@ public final class Genoogle {
 	 *            {@link Map} of {@link Parameter} which will be used in these searches.
 	 * 
 	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
-	 *         sequence inside the given {@link BufferedReader}.
+	 *         sequence inside the given {@link BufferedReader}. 
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName,
 			Map<Parameter, Object> parameters) throws IOException, UnknowDataBankException, InterruptedException,
-			ExecutionException, NoSuchElementException, BioException {
+			ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
 
 		SequencesProvider provider = new SequencesProvider(in);
 		return sm.doSyncSearch(provider, databankName, parameters);
@@ -291,11 +288,11 @@ public final class Genoogle {
 	 * "-b file" to execute the commands specified at the file or do not use parameters and use the
 	 * console.
 	 */
-	public static void main(String[] args) throws IOException, ValueOutOfBoundsException,
-			IllegalSymbolException, BioException, InvalidConfigurationException {
+	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
+			InvalidConfigurationException {
 		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		logger.info(COPYRIGHT_NOTICE);
-		
+
 		System.err.println(getHome());
 
 		List<AbstractSequenceDataBank> dataBanks = XMLConfigurationReader.getDataBanks();
@@ -341,8 +338,9 @@ public final class Genoogle {
 			}
 		}
 	}
-	
+
 	private static File home = null;
+
 	public static File getHome() {
 		if (home == null) {
 			String homeEnv = System.getenv("GENOOGLE_HOME");
@@ -352,7 +350,7 @@ public final class Genoogle {
 				home = new File(".");
 			}
 		}
-		return home;			
+		return home;
 	}
 
 	private static void showHelp() {

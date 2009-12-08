@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
-
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.io.Utils;
@@ -39,14 +37,15 @@ public class SequenceAligner implements Runnable {
 
 	/**
 	 * @param countDown
-	 *            Synchronizer use to wait until all HSPs from all Sub sub banks are extended and aligned. 
+	 *            Synchronizer use to wait until all HSPs from all Sub sub banks are extended and
+	 *            aligned.
 	 * @param retrievedAreas
 	 *            retrievedAre which the HSPs that will be extended and retrieved.
 	 * @param sr
 	 *            Where the results are stored.
 	 */
 	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr)
-			throws IllegalSymbolException, IOException {
+			throws IOException {
 		this.countDown = countDown;
 		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;
@@ -73,7 +72,7 @@ public class SequenceAligner implements Runnable {
 		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
 
 		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
-		int queryLength = searcher.getQuery().length();
+		int queryLength = searcher.getQuery().getLength();
 
 		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getName());
 
@@ -130,8 +129,7 @@ public class SequenceAligner implements Runnable {
 	}
 
 	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence, int[] encodedSequence,
-			int targetLength, List<ExtendSequences> extendedSequencesList, DNAIndexSearcher searcher)
-			throws IllegalSymbolException {
+			int targetLength, List<ExtendSequences> extendedSequencesList, DNAIndexSearcher searcher) {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
 			int matchScore = sr.getParams().getMatchScore();
@@ -151,8 +149,10 @@ public class SequenceAligner implements Runnable {
 
 	/**
 	 * Check if the extended areas has overlapped positions and merge them.
+	 * 
 	 * @param extendedSequences
-	 * @return {@link List} of {@link ExtendSequences} that are merged when they have overlapped areas.
+	 * @return {@link List} of {@link ExtendSequences} that are merged when they have overlapped
+	 *         areas.
 	 */
 	private List<ExtendSequences> mergeExtendedAreas(List<ExtendSequences> extendedSequences) {
 		ListIterator<ExtendSequences> iterator1 = extendedSequences.listIterator();
@@ -174,10 +174,13 @@ public class SequenceAligner implements Runnable {
 	}
 
 	/**
-	 * Check if the {@link ExtendSequences} seq1 and seq2 are overlapped. 
-	 * @param seq1 an {@link ExtendSequences}
-	 * @param seq2 an {@link ExtendSequences}
-	 * @return a merged {@link ExtendSequences} or <code>null</code> if was not merged. 
+	 * Check if the {@link ExtendSequences} seq1 and seq2 are overlapped.
+	 * 
+	 * @param seq1
+	 *            an {@link ExtendSequences}
+	 * @param seq2
+	 *            an {@link ExtendSequences}
+	 * @return a merged {@link ExtendSequences} or <code>null</code> if was not merged.
 	 */
 	private ExtendSequences tryToMerge(ExtendSequences seq1, ExtendSequences seq2) {
 		int seq1QueryBegin = seq1.getBeginQuerySegment();

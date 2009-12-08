@@ -7,7 +7,7 @@
 
 package bio.pih.genoogle.util;
 
-import org.biojava.bio.symbol.SymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * Abstract class for the symbol list iterator.
@@ -24,7 +24,6 @@ public abstract class AbstractSymbolListWindowIterator implements SymbolListWind
 	/**
 	 * @param sequence
 	 * @param windowLength
-	 * @throws IndexOutOfBoundsException
 	 */
 	public AbstractSymbolListWindowIterator(SymbolList sequence, int windowLength) throws IndexOutOfBoundsException {
 		if (windowLength < 1) {
@@ -58,7 +57,7 @@ public abstract class AbstractSymbolListWindowIterator implements SymbolListWind
 
 	@Override
 	public boolean hasNext() {
-		if (actualPos + windowSize <= sequence.length()) {
+		if (actualPos + windowSize <= sequence.getLength()) {
 			return true;
 		}
 		return false;

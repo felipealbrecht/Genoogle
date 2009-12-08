@@ -9,7 +9,6 @@ package bio.pih.genoogle.io;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,18 +20,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
-import bio.pih.genoogle.seq.op.LightweightIOTools;
-import bio.pih.genoogle.seq.op.LightweightStreamReader;
+import bio.pih.genoogle.io.reader.IOTools;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.RichSequence;
 
 import com.google.common.collect.Lists;
 
@@ -62,7 +61,7 @@ import com.google.common.collect.Lists;
 public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASequenceDataBank> {
 
 	private static Logger logger = Logger.getLogger(SplittedSequenceDatabank.class.getName());
-	
+
 	private final int qtdSubBases;
 	private final String mask;
 
@@ -78,14 +77,14 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 */
 	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask,
 			int lowComplexityFilter) {
-		super(name, DNATools.getDNA(), subSequenceLength, path, null, lowComplexityFilter);
+		super(name, DNAAlphabet.SINGLETON, subSequenceLength, path, null, lowComplexityFilter);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
 	}
 
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException,
-			IndexConstructionException {
+	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
+			IndexConstructionException, ParseException, IllegalSymbolException {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
@@ -119,13 +118,13 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		for (FastaFileInfo fastaFile : fastaFiles) {
 			logger.info("Adding a FASTA file from " + fastaFile.getFastaFile());
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile.getFastaFile()));
-			LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
+			RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
 			while (readFastaDNA.hasNext()) {
 				RichSequence richSequence = readFastaDNA.nextRichSequence();
 				StoredSequenceInfo addSequence = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
 				storedDatabankBuilder.addSequencesInfo(addSequence);
 				totalSequences++;
-				totalBases += richSequence.length();
+				totalBases += richSequence.getLength();
 
 				if (totalBases > totalBasesBySubBase) {
 					actualSequenceDatank.endIndexBuild();
@@ -230,8 +229,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	}
 
 	@Override
-	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
-			BioException {
+	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		this.clear();
@@ -257,17 +255,17 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long qtdBases;
 		long qtdSequences;
 
-		public FastaFileInfo(File fastaFile) throws FileNotFoundException, NoSuchElementException, BioException {
+		public FastaFileInfo(File fastaFile) throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
 			this.fastaFile = fastaFile;
 			this.qtdBases = 0;
 			this.qtdSequences = 0;
 
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-			LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
+			RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
 			logger.info("Reading informations from " + fastaFile);
 			while (readFastaDNA.hasNext()) {
 				RichSequence sequence = readFastaDNA.nextRichSequence();
-				qtdBases += sequence.length();
+				qtdBases += sequence.getLength();
 				qtdSequences++;
 			}
 		}

@@ -23,8 +23,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.IllegalSymbolException;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -34,10 +32,12 @@ import bio.pih.genoogle.GenoogleListener;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.InvalidConfigurationException;
 import bio.pih.genoogle.io.Output;
+import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchParams;
 import bio.pih.genoogle.search.UnknowDataBankException;
 import bio.pih.genoogle.search.SearchParams.Parameter;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 
 import com.google.common.collect.Maps;
 
@@ -63,19 +63,15 @@ public class Console implements Runnable, GenoogleListener {
 
 	private final Genoogle genoogle;
 
-	public Console() throws IllegalSymbolException, BioException, InvalidConfigurationException {
+	public Console() throws IllegalSymbolException, InvalidConfigurationException {
 		this.genoogle = Genoogle.getInstance();
 		genoogle.addListerner(this);		
 	}
 
 	/**
 	 * Starts console informing a batch file to be executed.
-	 * @throws InvalidConfigurationException 
-	 * @throws BioException 
-	 * @throws InvalidHeaderData 
-	 * @throws IllegalSymbolException 
 	 */
-	public Console(File inputBatch) throws IllegalSymbolException, BioException, InvalidConfigurationException {
+	public Console(File inputBatch) throws IllegalSymbolException, InvalidConfigurationException {
 		this();
 		this.inputBatch = inputBatch;
 	}
@@ -273,6 +269,9 @@ public class Console implements Runnable, GenoogleListener {
 				} catch (FileNotFoundException e) {
 					logger.fatal(e);
 					continue;
+				} catch (ParseException e) {
+					logger.fatal(e);
+					continue;
 				} catch (IOException e) {
 					logger.fatal(e);
 					continue;
@@ -288,7 +287,7 @@ public class Console implements Runnable, GenoogleListener {
 				} catch (ExecutionException e) {
 					logger.fatal(e);
 					continue;
-				} catch (BioException e) {
+				} catch (IllegalSymbolException e) {
 					logger.fatal(e);
 					continue;
 				}

@@ -26,9 +26,6 @@ public interface IndexedSequenceDataBank {
 	 * and return an Array of integer containing the sequence and position that is <b>exactly equals</b> the subsequence.
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it. 
-	 * @throws ValueOutOfBoundsException
-	 * @throws IOException 
-	 * @throws InvalidHeaderData 
 	 */
 	
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException;		

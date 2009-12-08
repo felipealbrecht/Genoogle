@@ -9,13 +9,13 @@ package bio.pih.genoogle.tests.util;
 
 import junit.framework.TestCase;
 
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.util.SymbolListWindowIterator;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
@@ -38,9 +38,6 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 		factory = null;
 	}
 	
-	/**
-	 * @throws IllegalSymbolException
-	 */
 	@Test
 	public void testOverlapedSequenceWindowIterator() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGA");
@@ -62,9 +59,6 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 	
-	/**
-	 * @throws IllegalSymbolException
-	 */
 	@Test
 	public void testWrongWindowsOverlapedSequenceWindowIterator() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGA");
@@ -86,9 +80,6 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 
-	/**
-	 * @throws IllegalSymbolException
-	 */
 	@Test
 	public void testSameSizeWindow() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGCCGGA");
@@ -98,9 +89,6 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 
-	/**
-	 * @throws IllegalSymbolException
-	 */
 	@Test
 	public void testLongerSizeWindow() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGG");
@@ -108,9 +96,6 @@ public class OverlappedSymbolListWindowIteratorTest extends TestCase {
 		assertTrue(!iterator.hasNext());
 	}
 	
-	/**
-	 * @throws IllegalSymbolException
-	 */
 	@Test(expected = java.lang.IndexOutOfBoundsException.class)
 	public void testWindowNegativeSize() throws IllegalSymbolException {
 		SymbolList dna = LightweightSymbolList.createDNA("ACTGG");

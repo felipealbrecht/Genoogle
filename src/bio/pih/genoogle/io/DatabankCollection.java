@@ -15,13 +15,12 @@ import java.util.LinkedHashMap;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.symbol.FiniteAlphabet;
-import org.biojava.bio.symbol.IllegalSymbolException;
 
-import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 
 /**
  * @author albrecht
@@ -35,7 +34,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	
 	protected final LinkedHashMap<String, T> databanks;
 
-	public DatabankCollection(String name, FiniteAlphabet alphabet, int subSequenceLength, File path,
+	public DatabankCollection(String name, Alphabet alphabet, int subSequenceLength, File path,
 			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
 		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
 		this.databanks = new LinkedHashMap<String, T>();
@@ -45,7 +44,6 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	 * Add a new databank in the collection;
 	 * 
 	 * @param databank
-	 * @throws DuplicateDatabankException
 	 */
 	public void addDatabank(T databank) throws DuplicateDatabankException {
 		if (this.databanks.containsKey(databank.getName())) {
@@ -118,7 +116,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 
 	@Override
 	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
-			BioException, IOException {
+			IOException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -142,7 +140,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
+	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();
@@ -172,8 +170,8 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 	
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException,
-			ValueOutOfBoundsException, IndexConstructionException {
+	public void encodeSequences() throws IOException, NoSuchElementException,
+			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();

@@ -79,7 +79,6 @@ public class StringGenoogleSmithWaterman extends GenoogleSmithWaterman {
 	 * @param query
 	 * @param subject
 	 * @return the score of the alignment
-	 * @throws BioRuntimeException
 	 */
 	public int pairwiseAlignment(String query, String subject) {
 		int[][] scoreMatrix = new int[query.length() + 1][subject.length() + 1];

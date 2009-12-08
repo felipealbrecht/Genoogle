@@ -17,10 +17,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.symbol.SymbolList;
 
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.proto.Io.InvertedIndexBuck;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * An inverted sub-sequences index stored in the memory.
@@ -36,7 +36,6 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 	/**
 	 * @param databank
 	 * @param subSequenceLength
-	 * @throws ValueOutOfBoundsException
 	 */
 	public MemoryInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
 		super(databank, subSequenceLength);
@@ -44,8 +43,8 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 
 	@Override
 	public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException {
-		if (subSequence.length() != subSequenceLength) {
-			throw new ValueOutOfBoundsException("The length (" + subSequence.length()
+		if (subSequence.getLength() != subSequenceLength) {
+			throw new ValueOutOfBoundsException("The length (" + subSequence.getLength()
 					+ ") of the given sequence is different from the sub-sequence (" + subSequenceLength + ")");
 		}
 		int encodedSubSequence = encoder.encodeSubSequenceToInteger(subSequence);

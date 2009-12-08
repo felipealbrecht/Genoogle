@@ -21,10 +21,6 @@ import java.nio.channels.FileChannel.MapMode;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojavax.bio.seq.RichSequence;
 
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
@@ -32,8 +28,12 @@ import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
-import bio.pih.genoogle.seq.op.LightweightIOTools;
-import bio.pih.genoogle.seq.op.LightweightStreamReader;
+import bio.pih.genoogle.io.reader.IOTools;
+import bio.pih.genoogle.io.reader.ParseException;
+import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.RichSequence;
 
 import com.google.protobuf.ByteString;
 
@@ -55,10 +55,9 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 
 	Logger logger = Logger.getLogger(AbstractSequenceDataBank.class.getCanonicalName());
 
-		
-	public AbstractDNASequenceDataBank(String name, int subSequenceLength, 
-			File path, DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
-		super(name, DNATools.getDNA(), subSequenceLength, path, parent, lowComplexityFilter);
+	public AbstractDNASequenceDataBank(String name, int subSequenceLength, File path,
+			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
+		super(name, DNAAlphabet.SINGLETON, subSequenceLength, path, parent, lowComplexityFilter);
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;
@@ -66,8 +65,8 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	}
 
 	@Override
-	public synchronized boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, BioException {
-		logger.info("Loading databank '" + getDataBankFile()+"'.");
+	public synchronized boolean load() throws IOException, ValueOutOfBoundsException {
+		logger.info("Loading databank '" + getDataBankFile() + "'.");
 
 		long begin = System.currentTimeMillis();
 		if (!getDataBankFile().exists() || !getStoredDataBankInfoFile().exists()) {
@@ -92,7 +91,6 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	/**
 	 * @param sequenceId
 	 * @return {@link StoredSequence} of the given sequenceId.
-	 * @throws IOException
 	 */
 	public synchronized StoredSequence getSequenceFromId(int sequenceId) throws IOException {
 		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
@@ -116,14 +114,8 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		return mappedIndexFile.get();
 	}
 
-	/**
-	 * @throws IOException
-	 * @throws BioException
-	 * @throws NoSuchElementException
-	 * @throws ValueOutOfBoundsException
-	 * @throws IndexConstructionException 
-	 */
-	public void encodeSequences() throws IOException, NoSuchElementException, BioException, ValueOutOfBoundsException, IndexConstructionException {
+	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
+			IndexConstructionException, ParseException, IllegalSymbolException {
 		if (getDataBankFile().exists()) {
 			throw new IOException("File " + getDataBankFile()
 					+ " already exists. Please remove it before creating another file.");
@@ -131,7 +123,8 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		addFastaFile(getFullPath());
 	}
 
-	public synchronized void addFastaFile(File fastaFile) throws NoSuchElementException, BioException, IOException, IndexConstructionException {
+	public synchronized void addFastaFile(File fastaFile) throws NoSuchElementException, IOException,
+			IndexConstructionException, ParseException, IllegalSymbolException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
@@ -139,7 +132,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-		LightweightStreamReader readFastaDNA = LightweightIOTools.readFastaDNA(is, null);
+		RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
 
 		while (readFastaDNA.hasNext()) {
 			RichSequence s = readFastaDNA.nextRichSequence();
@@ -159,14 +152,15 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel) throws BioException,
-			IOException, IndexConstructionException {
+	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel) throws IOException,
+			IndexConstructionException, IllegalSymbolException {
 		if (!s.getAlphabet().equals(this.alphabet)) {
-			throw new BioException("Invalid alphabet for sequence " + s.getName());
+			logger.fatal("Invalid alphabet for sequence " + s.getName());
+			return null;
 		}
 
-		if (s.length() < 8) {
-			logger.error(s.getName() + "is too short (" + s.length() + ") and will not be stored in this data bank");
+		if (s.getLength() < 8) {
+			logger.error(s.getName() + "is too short (" + s.getLength() + ") and will not be stored in this data bank");
 			return null;
 		}
 
@@ -175,15 +169,15 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		final byte[] ret = intArrayToByteArray(s);
 
 		int id = getNextSequenceId();
-		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder().setId(id).setGi(s.getIdentifier()).setName(s.getName()).setAccession(
-				s.getAccession()).setVersion(s.getVersion()).setDescription(s.getDescription()).setEncodedSequence(
-				ByteString.copyFrom(ret));
+		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder().setId(id).setGi(
+				s.getIdentifier()).setName(s.getName()).setAccession(s.getAccession()).setVersion(s.getVersion()).setDescription(
+				s.getDescription()).setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();
 
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
-		
+
 		doSequenceProcessing(numberOfSequences, storedSequence);
 
 		numberOfSequences++;
@@ -207,7 +201,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	}
 
 	abstract public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence)
-			throws IllegalSymbolException, BioException, IndexConstructionException;
+			throws IndexConstructionException, IllegalSymbolException;
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {
 		if (file.exists()) {
@@ -232,7 +226,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 	public synchronized int getNumberOfSequences() {
 		return numberOfSequences;
 	}
-	
+
 	protected synchronized File getDataBankFile() {
 		if (dataBankFile == null) {
 			dataBankFile = new File(getFullPath() + ".dsdb");
@@ -247,19 +241,18 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		return storedDataBankInfoFile;
 	}
 
-
 	@Override
 	public String toString() {
 		return this.name + "@" + this.getFullPath();
 	}
 
-	public boolean check() {		
+	public boolean check() {
 		if (getDataBankFile().exists() && getStoredDataBankInfoFile().exists()) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void delete() {
 		if (getDataBankFile().exists()) {
@@ -268,16 +261,16 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 				logger.error(getDataBankFile() + " can not be deleted.");
 			}
 		}
-		
+
 		if (getStoredDataBankInfoFile().exists()) {
 			boolean delete = getStoredDataBankInfoFile().delete();
 			if (!delete) {
 				logger.error(getStoredDataBankInfoFile() + " can not be deleted.");
 			}
 		}
-		
+
 	}
-	
+
 	public long getDataBaseSize() {
 		return dataBankSize;
 	}

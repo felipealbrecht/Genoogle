@@ -7,80 +7,44 @@
 
 package bio.pih.genoogle.seq;
 
-import java.io.Serializable;
-
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.AbstractSymbolList;
-import org.biojava.bio.symbol.Alphabet;
-import org.biojava.bio.symbol.AlphabetManager;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.Symbol;
-import org.biojava.bio.symbol.SymbolList;
-
 /**
  * A symbol list hat consumes less memory and is faster to build.
  * 
  * @author albrecht
  */
-public class LightweightSymbolList extends AbstractSymbolList implements Serializable {
-	private static final long serialVersionUID = -3125317520644706924L;
+public class LightweightSymbolList implements SymbolList {
 
 	private Alphabet alphabet;
-	private Symbol[] symbols;
 	private String seqString;	
 			
-	private LightweightSymbolList() {
-	}
-
 	/**
 	 * Construct a new {@link LightweightSymbolList} from a seqString
 	 * @param alphabet
 	 * @param seqString
 	 * @return {@link LightweightSymbolList} of the given seqString.
-	 * @throws IllegalSymbolException
 	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
-		return constructLightweightSymbolList(alphabet, seqString, true);
-	}
-	/**
-	 * @param alphabet
-	 * @param seqString
-	 * @param cacheResult 
-	 * @return {@link LightweightSymbolList} related with the given seqString.
-	 * @throws IllegalSymbolException
-	 */
-	public static LightweightSymbolList constructLightweightSymbolList(Alphabet alphabet, String seqString, boolean cacheResult) throws IllegalSymbolException {
-		Symbol[] symbols = new Symbol[seqString.length()];
+	public LightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
 		
-		SymbolTokenization tokenization = null;
-		try {
-			tokenization = alphabet.getTokenization("token");
-		} catch (BioException e) {
-			e.printStackTrace();
-			return null;
-		}
 		for(int i = 0; i < seqString.length(); i++) {
-			symbols[i] = tokenization.parseTokenChar(seqString.charAt(i));
+			if (!alphabet.isValid(seqString.charAt(i))) {
+				throw new IllegalSymbolException(seqString.charAt(i));
+			}
 		}
-						
-		LightweightSymbolList lwsl = new LightweightSymbolList();					
-		lwsl.symbols = symbols; 
-		lwsl.alphabet = alphabet;
-		lwsl.seqString = seqString;
-		
-		return lwsl;
+											
+		this.alphabet = alphabet;
+		this.seqString = new String(seqString.toCharArray());
 	}
 	
-	@Override
-	public SymbolList subList(int start, int end) throws IndexOutOfBoundsException {
+	/**
+	 * Construct a new {@link LightweightSymbolList} from a a parent {@link SymbolList}.
+	 * @param alphabet
+	 * @param seqString
+	 * @return {@link LightweightSymbolList} of the given seqString.
+	 */
+	public LightweightSymbolList(SymbolList parent, int start, int end) {
 		String substring = this.seqString().substring(start - 1, end);
-		try {
-			return constructLightweightSymbolList(this.getAlphabet(), substring);
-		} catch (IllegalSymbolException e) {
-			e.printStackTrace();
-			return null;
-		}
+		this.alphabet = parent.getAlphabet();
+		this.seqString = substring;
 	}
 
 	@Override
@@ -89,13 +53,18 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	}
 		
 	@Override
-	public int length() {
-		return symbols.length;
+	public int getLength() {
+		return seqString.length();
 	}
 	
 	@Override
 	public String seqString() {
 		return seqString;
+	}
+	
+	@Override
+	public char symbolAt(int pos) {
+		return seqString.charAt(pos);
 	}
 
 	@Override
@@ -107,11 +76,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 		return value;
 	}
 	
-	@Override
-	public Symbol symbolAt(int pos) throws IndexOutOfBoundsException {
-		return symbols[pos - 1];
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
@@ -128,7 +92,6 @@ public class LightweightSymbolList extends AbstractSymbolList implements Seriali
 	 * @return SymbolList of the given DNA sequence string. 
 	 */
 	public static SymbolList createDNA(String dna) throws IllegalSymbolException {
-		Alphabet alphabet = AlphabetManager.alphabetForName("DNA");
-		return constructLightweightSymbolList(alphabet, dna, false);
+		return new LightweightSymbolList(DNAAlphabet.SINGLETON, dna);
 	}
 }

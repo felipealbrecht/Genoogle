@@ -9,11 +9,10 @@ package bio.pih.genoogle.index;
 
 import java.io.IOException;
 
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
+import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * An interface for index witch stores encoded {@link SequenceEncoder} sequences. 
@@ -33,14 +32,13 @@ public abstract class AbstractInvertedIndex {
 	/**
 	 * @param databank
 	 * @param subSequenceLength
-	 * @throws ValueOutOfBoundsException
 	 */
 	public AbstractInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
 		this.databank = databank;
 		this.subSequenceLength = subSequenceLength;
 		this.encoder = databank.getEncoder();
 
-		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(databank.getAlphabet().size());
+		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(databank.getAlphabet().getSize());
 		this.indexSize = 1 << indexBitsSize;
 		
 		this.loaded = false;
@@ -58,15 +56,12 @@ public abstract class AbstractInvertedIndex {
 	/**
 	 * @param subSequence
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
-	 * @throws ValueOutOfBoundsException
-	 * @throws IOException 
 	 */
 	abstract public long[] getMatchingSubSequence(SymbolList subSequence) throws ValueOutOfBoundsException, IOException;
 
 	/**
 	 * @param encodedSubSequence 
 	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
-	 * @throws IOException 
 	 */
 	abstract public long[] getMatchingSubSequence(int encodedSubSequence) throws IOException;
 
@@ -77,7 +72,6 @@ public abstract class AbstractInvertedIndex {
 	
 	/**
 	 * Load the respective inverted index from a file.
-	 * @throws IOException 
 	 */
 	abstract public void loadFromFile() throws IOException;
 	

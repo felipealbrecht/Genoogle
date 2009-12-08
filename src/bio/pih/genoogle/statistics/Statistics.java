@@ -9,12 +9,10 @@ package bio.pih.genoogle.statistics;
 
 import java.util.Map;
 
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.symbol.Symbol;
-import org.biojava.bio.symbol.SymbolList;
-
 import bio.pih.genoogle.encoder.DNASequenceEncoder;
+import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Maps;
 
@@ -89,7 +87,7 @@ public class Statistics {
 	 * @return {@link Map} which the probability of each score.
 	 */
 	private Map<Integer, Double> scoreProbabilities(int mismatch, int match, SymbolList query)
-			throws IndexOutOfBoundsException, BioException {
+			throws IndexOutOfBoundsException {
 
 		int[][] baseValue = new int[4][4];
 		for (int i = 0; i < 4; i++) {
@@ -119,38 +117,36 @@ public class Statistics {
 		}
 
 		int numRegularLettersInQuery = 0;
-		int length = query.length();
+		int length = query.getLength();
 		for (int i = 1; i <= length; i++) {
-			if (checkSymbol(query.symbolAt(i))) {
+			if (alphabet.isValid(query.symbolAt(i))) {
 				numRegularLettersInQuery++;
 			}
 		}
 
 		for (int i = 1; i <= length; i++) {
-			if (checkSymbol(query.symbolAt(i))) {
-				double probability = 250.00 / numRegularLettersInQuery;
-				int querySymbolValue = DNASequenceEncoder.getBitsFromSymbol(query.symbolAt(i));
+			double probability = 250.00 / numRegularLettersInQuery;
+			int querySymbolValue = DNASequenceEncoder.getBitsFromChar(query.symbolAt(i));
 
-				{
-					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.a());
-					int score = baseValue[querySymbolValue][symbolValue];
-					scoreProbabilities[score + delta] += probability;
-				}
-				{
-					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.c());
-					int score = baseValue[querySymbolValue][symbolValue];
-					scoreProbabilities[score + delta] += probability;
-				}
-				{
-					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.g());
-					int score = baseValue[querySymbolValue][symbolValue];
-					scoreProbabilities[score + delta] += probability;
-				}
-				{
-					int symbolValue = DNASequenceEncoder.getBitsFromSymbol(DNATools.t());
-					int score = baseValue[querySymbolValue][symbolValue];
-					scoreProbabilities[score + delta] += probability;
-				}
+			{
+				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.a);
+				int score = baseValue[querySymbolValue][symbolValue];
+				scoreProbabilities[score + delta] += probability;
+			}
+			{
+				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.c);
+				int score = baseValue[querySymbolValue][symbolValue];
+				scoreProbabilities[score + delta] += probability;
+			}
+			{
+				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.g);
+				int score = baseValue[querySymbolValue][symbolValue];
+				scoreProbabilities[score + delta] += probability;
+			}
+			{
+				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.t);
+				int score = baseValue[querySymbolValue][symbolValue];
+				scoreProbabilities[score + delta] += probability;
 			}
 		}
 
@@ -167,19 +163,6 @@ public class Statistics {
 		}
 
 		return scoreProbabilitiesMap;
-	}
-
-	/**
-	 * Check if the {@link Symbol} s is a valid base.
-	 * 
-	 * @param s
-	 * @return <code>true</code> if the symbol is a valid base.
-	 */
-	private boolean checkSymbol(Symbol s) {
-		if (s == DNATools.a() || s == DNATools.c() || s == DNATools.g() || s == DNATools.t()) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -579,6 +562,7 @@ public class Statistics {
 	private final double effectiveDatabaseSize;
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
+	private final Alphabet alphabet;
 
 	/**
 	 * Create the statistics values from the giver query sequence, the data bank size and number of
@@ -595,8 +579,9 @@ public class Statistics {
 	 * @param numberOfSequences
 	 *            quantity of sequences in the data bank.
 	 */
-	public Statistics(int match, int mismatch, SymbolList query, long dataBankSize, long numberOfSequences)
-			throws IndexOutOfBoundsException, BioException {
+	public Statistics(Alphabet alphabet, int match, int mismatch, SymbolList query, long dataBankSize,
+			long numberOfSequences) throws IndexOutOfBoundsException {
+		this.alphabet = alphabet;
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);
@@ -604,9 +589,9 @@ public class Statistics {
 
 		this.logK = Math.log(K);
 
-		this.lengthAdjust = lengthAdjust(K, logK, H, query.length(), dataBankSize, numberOfSequences);
+		this.lengthAdjust = lengthAdjust(K, logK, H, query.getLength(), dataBankSize, numberOfSequences);
 
-		this.effectiveQuerySize = query.length() - lengthAdjust;
+		this.effectiveQuerySize = query.getLength() - lengthAdjust;
 		this.effectiveDatabaseSize = dataBankSize - numberOfSequences * lengthAdjust;
 		this.searchSpaceSize = effectiveQuerySize * effectiveDatabaseSize;
 	}
