@@ -26,9 +26,7 @@ public class RandomSequenceGenerator {
 	
 	
 	public RandomSequenceGenerator(Alphabet alphabet, int length) {
-		this.alphabet = alphabet;
-		this.lengthFrom = length;
-		this.lengthTo = -1;
+		this(alphabet, length, -1);
 	}
 	/**
 	 * @param alphabet
@@ -60,6 +58,6 @@ public class RandomSequenceGenerator {
 	public Sequence generateSequence() throws IllegalSymbolException {
 		String name = "Generate Sequence " + getNext();
 		String symbolList = dist.generateSymbolList(lengthFrom, lengthTo);		
-		return new Sequence(name, alphabet, symbolList);
+		return new Sequence(alphabet, symbolList, name);
 	}	
 }

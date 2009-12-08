@@ -18,10 +18,9 @@ public class LightweightSymbolList implements SymbolList {
 	private String seqString;	
 			
 	/**
-	 * Construct a new {@link LightweightSymbolList} from a seqString
+	 * {@link LightweightSymbolList} constructor having a {@link Alphabet} and a String containing a sequence of the given {@link Alphabet}.
 	 * @param alphabet
 	 * @param seqString
-	 * @return {@link LightweightSymbolList} of the given seqString.
 	 */
 	public LightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
 		
@@ -36,10 +35,10 @@ public class LightweightSymbolList implements SymbolList {
 	}
 	
 	/**
-	 * Construct a new {@link LightweightSymbolList} from a a parent {@link SymbolList}.
-	 * @param alphabet
-	 * @param seqString
-	 * @return {@link LightweightSymbolList} of the given seqString.
+	 * {@link LightweightSymbolList} constructor having a parent {@link SymbolList} and the range that will be used.
+	 * @param parent
+	 * @param start
+	 * @param end
 	 */
 	public LightweightSymbolList(SymbolList parent, int start, int end) {
 		String substring = this.seqString().substring(start - 1, end);

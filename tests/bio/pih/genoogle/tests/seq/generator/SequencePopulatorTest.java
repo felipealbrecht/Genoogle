@@ -164,47 +164,47 @@ public class SequencePopulatorTest extends TestCase {
 		List<Sequence> sequences = new LinkedList<Sequence>();
 		
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
-		Sequence ss = new Sequence("Sequence 1", DNAAlphabet.SINGLETON, stringSequence);
+		Sequence ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 1");
 		sequences.add(ss);
 		
 		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
-		ss = new Sequence("Sequence 1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 1");
 		sequences.add(ss);
 		
 		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
-		ss = new Sequence("Sequence 2", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 2");
 		sequences.add(ss);
 		
 		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		ss = new Sequence("Sequence 3", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 3");
 		sequences.add(ss);
 		
 		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		ss = new Sequence("Sequence 4", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 4");
 		sequences.add(ss);
 		
 		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
-		ss = new Sequence("Sequence 5", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 5");
 		sequences.add(ss);
 		
 		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
-		ss = new Sequence("Sequence 6", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 6");
 		sequences.add(ss);
 		
 		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
-		ss = new Sequence("Sequence 7", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 7");
 		sequences.add(ss);
 		
 		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
-		ss = new Sequence("Sequence 8", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 8");
 		sequences.add(ss);
 		
 		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
-		ss = new Sequence("Sequence 9", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 9");
 		sequences.add(ss);
 		
 		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
-		ss = new Sequence("Sequence 10", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 10");
 		sequences.add(ss);
 				
 		removeIfExistFile(sequencePopulationTestFile);

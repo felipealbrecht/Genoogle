@@ -47,8 +47,6 @@ public class RichSequenceStreamReader {
 	 * @param reader
 	 * @param format
 	 * @param symParser
-	 * @param sf
-	 * @param ns
 	 */
 	public RichSequenceStreamReader(BufferedReader reader, RichSequenceFormat format, RichSequenceBuilderFactory sf) {
 		this.reader = reader;

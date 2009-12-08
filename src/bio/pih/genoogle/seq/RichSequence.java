@@ -10,7 +10,7 @@ public class RichSequence extends Sequence {
 	private final double seqVersion;
 
 	public RichSequence(Alphabet alphabet, String sequence, String name, String accession, int version,  double seqVersion) throws IllegalSymbolException {
-		super(name, alphabet, sequence);
+		super(alphabet, sequence, name);
 		this.accession = accession;
 		this.version = version;
 		this.seqVersion = seqVersion;

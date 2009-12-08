@@ -60,51 +60,51 @@ public class SubSequencesArrayIndexTest extends TestCase {
 
 		indexBuilder.constructIndex();
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
-		Sequence ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		Sequence ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 1");
 		indexBuilder.addSequence(1, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "ACATGCTCGATGTGTGTGTATCAGTACTGACCTAGCATGACTCAGTACACATGACGTCATCATGTAGCGTCTAGACTGACTACGTACGACTGCATACGACTATCAGACTGACTACGCATGACGTACGTGTACGTACTGATGACGTACTATCGTAGCATGACTACGTACGACTGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 1");
 		indexBuilder.addSequence(2, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "ATGCTAGCATTCAGTACGTACGCATGATGCTAGATCGCATGACTAGCACGTACTGCATCGTGTGTGTCATGTGACTGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 2");
 		indexBuilder.addSequence(3, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 3");
 		indexBuilder.addSequence(4, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 4");
 		indexBuilder.addSequence(5, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 5");
 		indexBuilder.addSequence(6, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 6");
 		indexBuilder.addSequence(7, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "ACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCAACTGGTCA";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 7");
 		indexBuilder.addSequence(8, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "ATCTGAGTCATGCGATCAGTGTTGGTCATGTCAGGTCAGTACTACGTAGCATGCATGCATACGATCGACTATATTGCATGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 8");
 		indexBuilder.addSequence(9, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "AAAAAAACAAAAAAAGAAAAAAATTTTTTTGCATCAGATTTTTTTTCAGTACTGCATGACTACTGTGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 9");
 		indexBuilder.addSequence(10, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "TGCAGTACGTACGTGTTGAGTGCTATGCATGTTTAGGCGCGGCGCTAGCATGCATCAGACGCATACGTGTACGTACGTACTGATTCAGACTGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 10");
 		indexBuilder.addSequence(11, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 
 		stringSequence = "ACGTAGCTTACTATTGATATGAGTCGTGACGACTGACTACGTACGTACGACTGACTACGTATCGTCAGCTGCGTCATGCATTACTGACTGACTGAGTCTGATCATGACTTGACTGACTGACTGGTACTACGTGTACTACGTGTACTACGTAGCTACGACGTACGTACTGGTACTGACTGACGTGTACGCTAGCATGCATCGATGACGTACGTGATCTACTGACTGTACTGACTGGTACGACTACGTACGACTGACTGACTGACTACGATGCTGACTGACGTTGACGTACTGAC";
-		ss = new Sequence("Sequence_1", DNAAlphabet.SINGLETON, stringSequence);
+		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 1");
 		indexBuilder.addSequence(12, encoder.encodeSymbolListToIntegerArray(ss), SUB_SEQUENCE_LENGTH);
 		indexBuilder.finishConstruction();
 		index.loadFromFile();

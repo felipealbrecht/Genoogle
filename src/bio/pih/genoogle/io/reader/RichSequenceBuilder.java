@@ -22,10 +22,8 @@ public class RichSequenceBuilder {
 	private int version;
 	private boolean versionSeen;
 	private double seqVersion = 0.0;
-	private boolean seqVersionSeen;
 	private String accession;
 	private String description;
-	private String division;
 	private String identifier;
 	private String name;
 	private Alphabet alphabet;
@@ -41,10 +39,8 @@ public class RichSequenceBuilder {
 		this.version = 0;
 		this.versionSeen = false;
 		this.seqVersion = 0.0;
-		this.seqVersionSeen = false;
 		this.accession = null;
 		this.description = null;
-		this.division = null;
 		this.identifier = null;
 		this.name = null;
 	}
@@ -58,23 +54,6 @@ public class RichSequenceBuilder {
 			this.versionSeen = true;
 		} catch (NumberFormatException e) {
 			throw new ParseException("Could not parse version as an integer");
-		}
-	}
-
-
-
-	public void setSeqVersion(String seqVersion) throws ParseException {
-		if (this.seqVersionSeen)
-			throw new ParseException("Current BioEntry already has a sequence version");
-		if (seqVersion == null)
-			this.seqVersion = 0.0;
-		else {
-			try {
-				this.seqVersion = Double.parseDouble(seqVersion);
-				this.seqVersionSeen = true;
-			} catch (NumberFormatException e) {
-				throw new ParseException("Could not parse sequence version as a double");
-			}
 		}
 	}
 
@@ -93,15 +72,6 @@ public class RichSequenceBuilder {
 		this.description = description;
 	}
 
-
-
-	public void setDivision(String division) throws ParseException {
-		if (division == null)
-			throw new ParseException("Division cannot be null");
-		if (this.division != null)
-			throw new ParseException("Current BioEntry already has a division");
-		this.division = division;
-	}
 
 
 
@@ -145,7 +115,7 @@ public class RichSequenceBuilder {
 	public RichSequence makeRichSequence() throws ParseException, IllegalSymbolException {
 		this.endSequence();
 
-		RichSequence rs = new RichSequence(this.alphabet, this.name, this.sequence, this.accession, this.version, seqVersion);
+		RichSequence rs = new RichSequence(this.alphabet, this.sequence, this.name, this.accession, this.version, seqVersion);
 		return rs;
 	}
 

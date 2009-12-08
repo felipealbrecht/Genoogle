@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import bio.pih.genoogle.seq.DNAAlphabet;
+
 /**
  * A extended FastaFormat for LightweightSymbolList. Strongly basead on
  * http://code.open-bio.org/svnweb
@@ -64,6 +66,8 @@ public class FastaFormat implements RichSequenceFormat {
 		}
 		
 		builder.setSequence(seq.toString().replaceAll("\\s+","").replaceAll("[\\.|~]","-"));
+		
+		builder.setAlphabet(DNAAlphabet.SINGLETON);
 		
 		builder.endSequence();
 

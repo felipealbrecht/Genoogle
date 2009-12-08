@@ -9,7 +9,7 @@ package bio.pih.genoogle.io.reader;
 
 
 /**
- * {@link RichSequenceBuilderFactory} that uses the {@link LightweightSequenceBuilder}
+ * Factory class to {@link RichSequenceBuilder}.
  * 
  * @author albrecht
  */

@@ -17,10 +17,9 @@ import java.io.BufferedReader;
 public class IOTools {
 	
     /**
-     * A {@link IOTools} that uses the Genoogle clases.
+     * Tools to read a fasta file.
      * @param br
-     * @param ns
-     * @return {@link StreamReader} of the DNA FASTA files. 
+     * @return {@link RichSequenceStreamReader} of the DNA FASTA files. 
      */
     public static RichSequenceStreamReader readFastaDNA(BufferedReader br) {
         return new RichSequenceStreamReader(br,
