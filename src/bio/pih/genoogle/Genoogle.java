@@ -339,7 +339,7 @@ public final class Genoogle {
 		}
 	}
 
-	private static File home = null;
+	private volatile static File home = null;
 
 	public static File getHome() {
 		if (home == null) {

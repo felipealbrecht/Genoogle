@@ -170,7 +170,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 
 		int id = getNextSequenceId();
 		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder().setId(id).setGi(
-				s.getIdentifier()).setName(s.getName()).setAccession(s.getAccession()).setVersion(s.getVersion()).setDescription(
+				s.getGi()).setName(s.getName()).setType(s.getType()).setAccession(s.getAccession()).setDescription(
 				s.getDescription()).setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();

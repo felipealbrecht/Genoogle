@@ -35,13 +35,13 @@ message StoredSequenceInfo {
 	required int32 length = 3;
 }		
 					
-message StoredSequence {
+message StoredSequence {  
   required int32 id = 1;
-  required string gi = 2;
-  required string name = 3;
-  required string accession = 4;
-  required string description = 5;
-  required int32 version = 6;
+  required string type = 2;
+  required string gi = 3;
+  required string name = 4;
+  required string accession = 5;
+  required string description = 6;
   required bytes encodedSequence = 7;
 }
 

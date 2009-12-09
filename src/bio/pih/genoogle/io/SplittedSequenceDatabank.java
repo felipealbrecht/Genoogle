@@ -250,7 +250,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		return true;
 	}
 
-	private class FastaFileInfo {
+	private static class FastaFileInfo {
 		File fastaFile;
 		long qtdBases;
 		long qtdSequences;

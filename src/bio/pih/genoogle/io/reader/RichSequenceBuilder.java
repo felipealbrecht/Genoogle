@@ -19,14 +19,12 @@ import bio.pih.genoogle.seq.RichSequence;
  */
 public class RichSequenceBuilder {
 	
-	private int version;
-	private boolean versionSeen;
-	private double seqVersion = 0.0;
+	private Alphabet alphabet;
+	private String type;
 	private String accession;
 	private String description;
-	private String identifier;
+	private String gi;
 	private String name;
-	private Alphabet alphabet;
 	private String sequence;
 
 	/**
@@ -34,62 +32,28 @@ public class RichSequenceBuilder {
 	 * sequence from scratch.
 	 */
 	public void startSequence() {
+		this.type = null;
 		this.alphabet = null;
 		this.sequence = null;
-		this.version = 0;
-		this.versionSeen = false;
-		this.seqVersion = 0.0;
 		this.accession = null;
 		this.description = null;
-		this.identifier = null;
+		this.gi = null;
 		this.name = null;
 	}
 
-	public void setVersion(int version) throws ParseException {
-		if (this.versionSeen) {
-			throw new ParseException("Current BioEntry already has a version");
-		}
-		try {
-			this.version = version;
-			this.versionSeen = true;
-		} catch (NumberFormatException e) {
-			throw new ParseException("Could not parse version as an integer");
-		}
-	}
-
-
-	public void setAccession(String accession) throws ParseException {
-		if (accession == null)
-			throw new ParseException("Accession cannot be null");
+	public void setAccession(String accession)  {
 		this.accession = accession;
 	}
 
-
-
-	public void setDescription(String description) throws ParseException {
-		if (this.description != null)
-			throw new ParseException("Current BioEntry already has a description");
+	public void setDescription(String description)  {
 		this.description = description;
 	}
 
-
-
-
-	public void setIdentifier(String identifier) throws ParseException {
-		if (identifier == null)
-			throw new ParseException("Identifier cannot be null");
-		if (this.identifier != null)
-			throw new ParseException("Current BioEntry already has a identifier");
-		this.identifier = identifier;
+	public void setGi(String gi) {
+		this.gi = gi;
 	}
 
-
-
-	public void setName(String name) throws ParseException {
-		if (name == null)
-			throw new ParseException("Name cannot be null");
-		if (this.name != null)
-			throw new ParseException("Current BioEntry already has a name");
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -103,19 +67,23 @@ public class RichSequenceBuilder {
 		this.alphabet = alphabet;
 	}
 	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	public void endSequence() throws ParseException {
-		if (this.sequence == null)
+		if (this.sequence == null) {
 			throw new ParseException("Sequence String hasnot been supplied");
-		if (this.name == null)
+		}
+		if (this.name == null) {
 			throw new ParseException("Name has not been supplied");
-		if (this.accession == null)
-			throw new ParseException("No accessions have been supplied");
+		}
 	}
 
 	public RichSequence makeRichSequence() throws ParseException, IllegalSymbolException {
 		this.endSequence();
 
-		RichSequence rs = new RichSequence(this.alphabet, this.sequence, this.name, this.accession, this.version, seqVersion);
+		RichSequence rs = new RichSequence(this.alphabet, this.sequence, this.name, this.type, this.accession, this.gi, this.description);
 		return rs;
 	}
 

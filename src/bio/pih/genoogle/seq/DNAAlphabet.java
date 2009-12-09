@@ -1,5 +1,7 @@
 package bio.pih.genoogle.seq;
 
+import java.util.Arrays;
+
 
 public class DNAAlphabet implements Alphabet {
 
@@ -13,6 +15,23 @@ public class DNAAlphabet implements Alphabet {
 	public static char c = 'c';
 	public static char g = 'g';
 	public static char t = 't';
+	
+
+	private static final char[] lLetters = {'a', 'c', 'g', 't'};
+	private static final char[] uLetters = {'A', 'C', 'G', 'T'};
+	private static final char[] lSpecialLetters = {'r', 'y', 'k', 'm', 's', 'w', 'b', 'd', 'h', 'v', 'n', 'x'};
+	private static final char[] uSpecialLetters = {'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X'};
+	private static final char[] allLetters = {'a', 'c', 'g', 't', 
+		                                     'A', 'C', 'G', 'T', 
+		                                     'r', 'y', 'k', 'm', 's', 'w', 'b', 'd', 'h', 'v', 'n', 'x', 
+		                                     'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X'};
+	static {
+		Arrays.sort(lLetters);
+		Arrays.sort(uLetters);
+		Arrays.sort(lSpecialLetters);
+		Arrays.sort(uSpecialLetters);
+		Arrays.sort(allLetters);
+	}
 
 	@Override
 	public String getName() {
@@ -26,16 +45,15 @@ public class DNAAlphabet implements Alphabet {
 
 	@Override
 	public boolean isValid(char c) {
-		if ((c == 'a' || c == 'A') || (c == 'c' || c == 'C') || (c == 'g' || c == 'G') || (c == 't' || c == 'T')) {
+		if (Arrays.binarySearch(allLetters, c) >= 0) {
 			return true;
 		}
 		return false;
 	}
 
-	private final char[] letters = {'a', 'c', 'g', 't'};
 	
 	@Override
-	public char[] getLetters() {
-		return letters.clone();
+	public char[] getLetters() {		
+		return lLetters.clone();
 	}
 }

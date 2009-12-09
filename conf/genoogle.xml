@@ -34,9 +34,9 @@
 
   <genoogle:databanks>
  
-<!--   <genoogle:split-databanks name="AS" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">-->
-<!--      <genoogle:databank name="Aquifex aeolicus" path="AE000657.fna" storage="memory" />-->
-<!--   </genoogle:split-databanks>-->
+   <genoogle:split-databanks name="AS" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+      <genoogle:databank name="Aquifex aeolicus" path="AE000657.fna" storage="memory" />
+   </genoogle:split-databanks>
 
  
    <genoogle:split-databanks name="RefSeq_11" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">

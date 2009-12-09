@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import bio.pih.genoogle.seq.DNAAlphabet;
 
 /**
@@ -24,10 +26,13 @@ import bio.pih.genoogle.seq.DNAAlphabet;
  */
 public class FastaFormat implements RichSequenceFormat {
 
-	protected static final Pattern hp = Pattern.compile(">(\\S+)(\\s+(.*))?");
-	protected static final Pattern dp = Pattern.compile("^(gi\\|(\\d+)\\|)*(\\S+)\\|(\\S+?)(\\.(\\d+))*\\|(\\S+)$");
+	static Logger logger = Logger.getLogger(FastaFormat.class.getName());
 
-	public boolean readRichSequence(BufferedReader reader, RichSequenceBuilder builder) throws IOException, ParseException {
+	protected static final Pattern hp = Pattern.compile(">(\\S+)(\\s+(.*))?");
+	protected static final Pattern dp = Pattern.compile("^(gi\\|(\\d+)\\|)*(\\S+)\\|(\\S+?)(\\.(\\d+))*\\|(\\S+)");
+
+	public boolean readRichSequence(BufferedReader reader, RichSequenceBuilder builder) throws IOException,
+			ParseException {
 
 		String line = reader.readLine();
 		if (line == null) {
@@ -64,45 +69,77 @@ public class FastaFormat implements RichSequenceFormat {
 				hasMoreSeq = false;
 			}
 		}
-		
-		builder.setSequence(seq.toString().replaceAll("\\s+","").replaceAll("[\\.|~]","-"));
-		
+
+		builder.setSequence(seq.toString().replaceAll("\\s+", "").replaceAll("[\\.|~]", "-"));
+
 		builder.setAlphabet(DNAAlphabet.SINGLETON);
-		
+
 		builder.endSequence();
 
 		return line != null;
 	}
 
+	/**
+	 * GenBank gi|gi-number|gb|accession|locus 
+	 * EMBL Data Library gi|gi-number|emb|accession|locus
+	 * DDBJ, DNA Database of Japan gi|gi-number|dbj|accession|locus
+	 */
+	protected static final Pattern giHeader = Pattern.compile(">gi\\|(\\d+)\\|(\\S+)\\|(\\S+)\\|(\\s+(.*))?");
+
+	/**
+	 * Local Sequence identifier lcl|identifier
+	 */
+	protected static final Pattern lclHeader = Pattern.compile(">lcl\\|(\\S+)(\\|(\\s*(.*))?)?");
+
 	public void processHeader(String line, RichSequenceBuilder rsiol) throws IOException, ParseException {
-		Matcher m = hp.matcher(line);
-		if (!m.matches()) {
-			throw new IOException("Stream does not appear to contain FASTA formatted data: " + line);
+		Matcher matcher = giHeader.matcher(line);
+		if (matcher.matches()) {
+			rsiol.setType("gi");
+			rsiol.setGi(matcher.group(1));
+			rsiol.setName(matcher.group(2));
+			rsiol.setAccession(matcher.group(3));
+			rsiol.setDescription(matcher.group(4));
+			return;
 		}
 
-		String name = m.group(1);
-		String desc = m.group(3);
-		String gi = null;
+		matcher = lclHeader.matcher(line);
+		if (matcher.matches()) {
+			rsiol.setType("lcl");
+			rsiol.setName(matcher.group(1));
+			rsiol.setDescription(matcher.group(3));
+			return;
+		}
 
-		m = dp.matcher(name);
-		if (m.matches()) {
-			gi = m.group(2);
-			String accession = m.group(4);
-			String verString = m.group(6);
-			int version = verString == null ? 0 : Integer.parseInt(verString);
-			name = m.group(7);
-			if (name == null)
-				name = accession;
-
-			rsiol.setAccession(accession);
-			rsiol.setVersion(version);
-			if (gi != null) {
-				rsiol.setIdentifier(gi);
-			}
+		logger.info("Unknow header file :'" + line + "'. Using brute force reader.");
+		line = line.substring(1);
+		String[] strings = line.split("\\|");
+		
+		if (strings.length == 0) {
+			rsiol.setDescription(line);			
 		} else {
-			rsiol.setAccession(name);
+			rsiol.setType(strings[0]);
 		}
-		rsiol.setName(name);
-		rsiol.setDescription(desc);
+		
+		if (strings.length > 1) {
+			rsiol.setName(strings[1]);
+		}
+		if (strings.length > 2) {
+			rsiol.setGi(strings[2]);
+		}
+		if (strings.length > 3) {
+			rsiol.setAccession(strings[3]);
+		}
+		
+		if (strings.length > 2) {
+			rsiol.setDescription(strings[strings.length - 1]);
+		}
 	}
+
+	// TODO:
+	// NBRF PIR pir||entry
+	// Patents pat|country|number
+	// GenInfo Backbone Id bbs|number
+	// General database identifier gnl|database|identifier
+	// NCBI Reference Sequence ref|accession|locus
+
 }

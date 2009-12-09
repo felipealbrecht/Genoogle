@@ -5,36 +5,32 @@ public class RichSequence extends Sequence {
 	private static final long serialVersionUID = 8654973053346425861L;
 
 	private final String accession;
+	private final String gi;
+	private final String description;
+	private final String type;
 
-	private final int version;
 
-	private final double seqVersion;
-
-	public RichSequence(Alphabet alphabet, String sequence, String name, String accession, int version,  double seqVersion) throws IllegalSymbolException {
+	public RichSequence(Alphabet alphabet, String sequence, String name, String type, String accession, String gi, String description) throws IllegalSymbolException {
 		super(alphabet, sequence, name);
-		this.accession = accession;
-		this.version = version;
-		this.seqVersion = seqVersion;
+		this.type = type;
+		this.accession = accession!=null?accession:"";
+		this.gi = gi!=null?gi:"";
+		this.description = description!=null?description:"";
+	}
+	
+	public String getType() {
+		return type;
 	}
 
-	public String getIdentifier() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getGi() {
+		return gi;
 	}
 
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public int getVersion() {
-		// TODO Auto-generated method stub
-		return 1;
+		return description;
 	}
 
 	public String getAccession() {
-		// TODO Auto-generated method stub
-		return null;
+		return accession;
 	}
-
 }

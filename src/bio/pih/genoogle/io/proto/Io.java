@@ -1122,35 +1122,35 @@ public final class Io {
     public boolean hasId() { return hasId; }
     public int getId() { return id_; }
     
-    // required string gi = 2;
+    // required string type = 2;
+    private boolean hasType;
+    private java.lang.String type_ = "";
+    public boolean hasType() { return hasType; }
+    public java.lang.String getType() { return type_; }
+    
+    // required string gi = 3;
     private boolean hasGi;
     private java.lang.String gi_ = "";
     public boolean hasGi() { return hasGi; }
     public java.lang.String getGi() { return gi_; }
     
-    // required string name = 3;
+    // required string name = 4;
     private boolean hasName;
     private java.lang.String name_ = "";
     public boolean hasName() { return hasName; }
     public java.lang.String getName() { return name_; }
     
-    // required string accession = 4;
+    // required string accession = 5;
     private boolean hasAccession;
     private java.lang.String accession_ = "";
     public boolean hasAccession() { return hasAccession; }
     public java.lang.String getAccession() { return accession_; }
     
-    // required string description = 5;
+    // required string description = 6;
     private boolean hasDescription;
     private java.lang.String description_ = "";
     public boolean hasDescription() { return hasDescription; }
     public java.lang.String getDescription() { return description_; }
-    
-    // required int32 version = 6;
-    private boolean hasVersion;
-    private int version_ = 0;
-    public boolean hasVersion() { return hasVersion; }
-    public int getVersion() { return version_; }
     
     // required bytes encodedSequence = 7;
     private boolean hasEncodedSequence;
@@ -1161,11 +1161,11 @@ public final class Io {
     @Override
     public final boolean isInitialized() {
       if (!hasId) return false;
+      if (!hasType) return false;
       if (!hasGi) return false;
       if (!hasName) return false;
       if (!hasAccession) return false;
       if (!hasDescription) return false;
-      if (!hasVersion) return false;
       if (!hasEncodedSequence) return false;
       return true;
     }
@@ -1176,20 +1176,20 @@ public final class Io {
       if (hasId()) {
         output.writeInt32(1, getId());
       }
+      if (hasType()) {
+        output.writeString(2, getType());
+      }
       if (hasGi()) {
-        output.writeString(2, getGi());
+        output.writeString(3, getGi());
       }
       if (hasName()) {
-        output.writeString(3, getName());
+        output.writeString(4, getName());
       }
       if (hasAccession()) {
-        output.writeString(4, getAccession());
+        output.writeString(5, getAccession());
       }
       if (hasDescription()) {
-        output.writeString(5, getDescription());
-      }
-      if (hasVersion()) {
-        output.writeInt32(6, getVersion());
+        output.writeString(6, getDescription());
       }
       if (hasEncodedSequence()) {
         output.writeBytes(7, getEncodedSequence());
@@ -1208,25 +1208,25 @@ public final class Io {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, getId());
       }
+      if (hasType()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(2, getType());
+      }
       if (hasGi()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(2, getGi());
+          .computeStringSize(3, getGi());
       }
       if (hasName()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(3, getName());
+          .computeStringSize(4, getName());
       }
       if (hasAccession()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(4, getAccession());
+          .computeStringSize(5, getAccession());
       }
       if (hasDescription()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(5, getDescription());
-      }
-      if (hasVersion()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, getVersion());
+          .computeStringSize(6, getDescription());
       }
       if (hasEncodedSequence()) {
         size += com.google.protobuf.CodedOutputStream
@@ -1361,6 +1361,9 @@ public final class Io {
         if (other.hasId()) {
           setId(other.getId());
         }
+        if (other.hasType()) {
+          setType(other.getType());
+        }
         if (other.hasGi()) {
           setGi(other.getGi());
         }
@@ -1372,9 +1375,6 @@ public final class Io {
         }
         if (other.hasDescription()) {
           setDescription(other.getDescription());
-        }
-        if (other.hasVersion()) {
-          setVersion(other.getVersion());
         }
         if (other.hasEncodedSequence()) {
           setEncodedSequence(other.getEncodedSequence());
@@ -1418,23 +1418,23 @@ public final class Io {
               break;
             }
             case 18: {
-              setGi(input.readString());
+              setType(input.readString());
               break;
             }
             case 26: {
-              setName(input.readString());
+              setGi(input.readString());
               break;
             }
             case 34: {
-              setAccession(input.readString());
+              setName(input.readString());
               break;
             }
             case 42: {
-              setDescription(input.readString());
+              setAccession(input.readString());
               break;
             }
-            case 48: {
-              setVersion(input.readInt32());
+            case 50: {
+              setDescription(input.readString());
               break;
             }
             case 58: {
@@ -1464,7 +1464,25 @@ public final class Io {
         return this;
       }
       
-      // required string gi = 2;
+      // required string type = 2;
+      public boolean hasType() {
+        return result.hasType();
+      }
+      public java.lang.String getType() {
+        return result.getType();
+      }
+      public Builder setType(java.lang.String value) {
+        result.hasType = true;
+        result.type_ = value;
+        return this;
+      }
+      public Builder clearType() {
+        result.hasType = false;
+        result.type_ = "";
+        return this;
+      }
+      
+      // required string gi = 3;
       public boolean hasGi() {
         return result.hasGi();
       }
@@ -1482,7 +1500,7 @@ public final class Io {
         return this;
       }
       
-      // required string name = 3;
+      // required string name = 4;
       public boolean hasName() {
         return result.hasName();
       }
@@ -1500,7 +1518,7 @@ public final class Io {
         return this;
       }
       
-      // required string accession = 4;
+      // required string accession = 5;
       public boolean hasAccession() {
         return result.hasAccession();
       }
@@ -1518,7 +1536,7 @@ public final class Io {
         return this;
       }
       
-      // required string description = 5;
+      // required string description = 6;
       public boolean hasDescription() {
         return result.hasDescription();
       }
@@ -1533,24 +1551,6 @@ public final class Io {
       public Builder clearDescription() {
         result.hasDescription = false;
         result.description_ = "";
-        return this;
-      }
-      
-      // required int32 version = 6;
-      public boolean hasVersion() {
-        return result.hasVersion();
-      }
-      public int getVersion() {
-        return result.getVersion();
-      }
-      public Builder setVersion(int value) {
-        result.hasVersion = true;
-        result.version_ = value;
-        return this;
-      }
-      public Builder clearVersion() {
-        result.hasVersion = false;
-        result.version_ = 0;
         return this;
       }
       
@@ -2576,18 +2576,18 @@ public final class Io {
       "equenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003" +
       "RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenceInfo" +
       "\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006length\030\003" +
-      " \002(\005\"\210\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005\022\n\n\002g" +
-      "i\030\002 \002(\t\022\014\n\004name\030\003 \002(\t\022\021\n\taccession\030\004 \002(\t" +
-      "\022\023\n\013description\030\005 \002(\t\022\017\n\007version\030\006 \002(\005\022\027" +
-      "\n\017encodedSequence\030\007 \002(\014\"j\n\036StoredSimilar" +
-      "SubSequencesIndex\022H\n\034storedComparationRe" +
-      "sultInfos\030\001 \003(\0132\".proto.StoredComparatio" +
-      "nResultInfo\"Y\n\033StoredComparationResultIn" +
-      "fo\022\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006length" +
-      "\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSimilarS" +
-      "ubSequences\022\027\n\017encodedSequence\030\001 \002(\005\022\027\n\017" +
-      "similarSequence\030\002 \003(\005B!\n\031bio.pih.genoogl" +
-      "e.io.protoB\002IoH\001";
+      " \002(\005\"\205\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005\022\014\n\004t" +
+      "ype\030\002 \002(\t\022\n\n\002gi\030\003 \002(\t\022\014\n\004name\030\004 \002(\t\022\021\n\ta" +
+      "ccession\030\005 \002(\t\022\023\n\013description\030\006 \002(\t\022\027\n\017e" +
+      "ncodedSequence\030\007 \002(\014\"j\n\036StoredSimilarSub" +
+      "SequencesIndex\022H\n\034storedComparationResul" +
+      "tInfos\030\001 \003(\0132\".proto.StoredComparationRe" +
+      "sultInfo\"Y\n\033StoredComparationResultInfo\022" +
+      "\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006length\030\003 " +
+      "\002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSimilarSubS" +
+      "equences\022\027\n\017encodedSequence\030\001 \002(\005\022\027\n\017sim" +
+      "ilarSequence\030\002 \003(\005B!\n\031bio.pih.genoogle.i" +
+      "o.protoB\002IoH\001";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -2622,7 +2622,7 @@ public final class Io {
           internal_static_proto_StoredSequence_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredSequence_descriptor,
-              new java.lang.String[] { "Id", "Gi", "Name", "Accession", "Description", "Version", "EncodedSequence", },
+              new java.lang.String[] { "Id", "Type", "Gi", "Name", "Accession", "Description", "EncodedSequence", },
               bio.pih.genoogle.io.proto.Io.StoredSequence.class,
               bio.pih.genoogle.io.proto.Io.StoredSequence.Builder.class);
           internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =

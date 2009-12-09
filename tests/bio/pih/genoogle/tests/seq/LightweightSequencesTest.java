@@ -54,7 +54,7 @@ public class LightweightSequencesTest extends TestCase {
 		while (readFastaDNA.hasNext()) {				
 			pos++;
 			s = readFastaDNA.nextRichSequence();
-			assertEquals(name+""+pos, s.getName());
+			assertEquals(name+""+pos+".0", s.getName());
 			if (pos == 100) {
 				assertEquals(sequence_100, s.seqString().toLowerCase());
 			}
