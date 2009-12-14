@@ -157,7 +157,7 @@ public class IndexRetrievedData {
 		int sequenceId;
 		final DNAIndexSearcher indexSearcher;
 		final DNAIndexReverseComplementSearcher reverseComplementIndexSearcher;
-		final int sumLengths;
+		final int biggestHspLength;
 		List<RetrievedArea> areas;
 		List<RetrievedArea> rcAreas;
 
@@ -170,15 +170,17 @@ public class IndexRetrievedData {
 			this.reverseComplementIndexSearcher = reverseComplementIndexSearcher;
 			this.areas = areas.size() > 0 ? areas : Collections.EMPTY_LIST;
 			this.rcAreas = rcAreas.size() > 0 ? rcAreas : Collections.EMPTY_LIST;
-			this.sumLengths = sumTotalLengths(this.areas) + sumTotalLengths(this.rcAreas);
+			this.biggestHspLength = Math.max( getBiggestHspLength(this.areas), getBiggestHspLength(this.rcAreas));
 		}
 
-		private int sumTotalLengths(List<RetrievedArea> areas) {
-			int total = 0;
+		private int getBiggestHspLength(List<RetrievedArea> areas) {
+			int biggest = 0;
 			for (RetrievedArea area : areas) {
-				total += area.length();
+				if (area.length() > biggest) {
+					biggest = area.length();
+				}
 			}
-			return total;
+			return biggest;
 		}
 
 		public List<RetrievedArea> getAreas() {
@@ -189,8 +191,8 @@ public class IndexRetrievedData {
 			return rcAreas;
 		}
 
-		public int getSumLengths() {
-			return sumLengths;
+		public int getBiggestLength() {
+			return biggestHspLength;
 		}
 
 		public int getSequenceId() {
@@ -211,6 +213,11 @@ public class IndexRetrievedData {
 
 		public DNAIndexSearcher getReverIndexSearcher() {
 			return reverseComplementIndexSearcher;
+		}
+		
+		@Override
+		public String toString() {
+			return sequenceId + " " + biggestHspLength + " " + areas + " " + rcAreas;
 		}
 	}
 

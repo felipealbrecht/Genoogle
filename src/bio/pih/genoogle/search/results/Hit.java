@@ -120,6 +120,18 @@ public class Hit {
 		return totalScore;
 	}
 	
+	private double biggestScore = Double.MIN_VALUE;
+	private double getBiggestScore() {
+		if (biggestScore == Double.MIN_VALUE) {
+			for (HSP hsp: hsps) {
+				if (hsp.getScore() > biggestScore) {
+					biggestScore = hsp.getScore();
+				}
+			}
+		} 
+		return biggestScore;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -165,7 +177,13 @@ public class Hit {
 	public static final Comparator<Hit> COMPARATOR = new Comparator<Hit>() {
 		@Override
 		public int compare(Hit o1, Hit o2) {
-			return Double.compare(o2.getTotalScore(), o1.getTotalScore());
+			int compare = Double.compare(o2.getBiggestScore(), o1.getBiggestScore());
+			if (compare != 0) {
+				return compare;
+			}
+			
+			return o2.getTotalScore() - o1.getTotalScore();
+
 		}
 	};
 }

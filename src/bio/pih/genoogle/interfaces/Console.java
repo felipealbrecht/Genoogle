@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
@@ -132,10 +133,10 @@ public class Console implements Runnable, GenoogleListener {
 
 					String[] commands = line.split("[ \t]+");
 					if (commands[0].equals(SEARCH)) {
-						if (commands.length >= 4) {
+						if (commands.length >= 3) {
 							String db = commands[1];
 							String queryFile = commands[2];
-							String outputFile = commands[3];
+														
 
 							Map<Parameter, Object> searchParameters = Maps.newHashMap();
 							searchParameters.putAll(consoleParameters);
@@ -169,7 +170,14 @@ public class Console implements Runnable, GenoogleListener {
 								OutputFormat outformat = OutputFormat.createPrettyPrint();
 								outformat.setTrimText(false);
 								outformat.setEncoding("UTF-8");
-								XMLWriter writer = new XMLWriter(new FileOutputStream(new File(outputFile + ".xml")), outformat);
+								OutputStream os;
+								if (commands.length >= 4) {
+									String outputFile = commands[3];
+									os = new FileOutputStream(new File(outputFile + ".xml"));
+								} else {
+									os = System.out;
+								}
+								XMLWriter writer = new XMLWriter(os, outformat);
 								writer.write(document);
 								writer.flush();
 
@@ -256,6 +264,7 @@ public class Console implements Runnable, GenoogleListener {
 						System.out.println("MismatchScore : score when has a mismatch at the alignment.");
 					} else {
 						System.err.println("Unknow command: " + commands[0]);
+						continue;
 					}
 
 					prev = line;

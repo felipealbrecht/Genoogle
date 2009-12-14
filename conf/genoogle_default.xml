@@ -19,11 +19,11 @@
   <genoogle:search-parameters>
     <genoogle:max-sub-sequence-distance   value="30"/>
     <genoogle:min-hsp-length              value="11" />
-    <genoogle:extend-dropoff              value="3" />
+    <genoogle:extend-dropoff              value="5" />
     <genoogle:max-hits-results            value="50" />
     <genoogle:max-threads-index-search    value="2" />
     <genoogle:max-threads-extend-align    value="4" />
-    <genoogle:min-query-slice-length      value="250" />
+    <genoogle:min-query-slice-length      value="1000" />
     <genoogle:query-split-quantity        value="1" />
   </genoogle:search-parameters>
   

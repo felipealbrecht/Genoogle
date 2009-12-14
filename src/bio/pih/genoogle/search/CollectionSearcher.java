@@ -46,7 +46,7 @@ public class CollectionSearcher extends AbstractSearcher {
 	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
 		@Override
 		public int compare(final BothStrandSequenceAreas o1, final BothStrandSequenceAreas o2) {
-			return o2.getSumLengths() - o1.getSumLengths();
+			return o2.getBiggestLength() - o1.getBiggestLength();
 		}
 	};
 

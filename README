@@ -1,4 +1,5 @@
-= GENOOGLE 0.74 BETA ABOUT =
+= GENOOGLE BETA ABOUT =
+Last version of this file is available at http://genoogle.pih.bio.br/wiki/README
 
 == Fundamental Informations ==
 Genoogle is a software for similar DNA sequences searching developed by Felipe Albrecht (felipe.albrecht@gmail.com / http://www.pih.bio.br)
@@ -43,10 +44,21 @@ To run Genoogle it is necessary:
 === Installation process ===
  * Download the package here (TBA)
  * Unpack
- * Copy the fasta files which you want to search into the fasta/files folder.
+ * Copy the fasta files data banks into the fasta/files folder.
+ * Configure the conf/genoogle.xml file and insert the copied files at the  <genoogle:split-databanks> section as new <genoogle:databank>:
+   {{{
+     <genoogle:split-databanks name="RefSeq" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+       <genoogle:databank name="Cow"       path="cow.rna.fna"       />
+       <genoogle:databank name="Frog"      path="frog.rna.fna"      />
+       <!-- ... more files -->
+     </genoogle:split-databanks>
+   }}}
  * Run the format_db.sh script.
  * Wait while the data bank is formatted and the inverted index processed.
- * Run run_web.sh or run_console.sh . (The run_web.sh has also the console interface)
+ * Execute :
+   * run_web.sh, for webservices, web page and col), 
+   * or run_standalone_web.sh, for web page that will access Genoogle by webservice,
+   * or run_console.sh, for console only interface.
  * Have fun!
 
 == Searching ==
@@ -94,16 +106,16 @@ At the end will be returned to the user, the 20 better scores.
 == Dependencies ==
 
 Genoogle uses:
- * A modified version of the [Biojava http://biojava.org/] for FASTA file parsing and DNA Alphabet informations.
- * [Dom4j http://www.dom4j.org/] for XML parsing.
- * [JUnit4 http://www.junit.org/] for unit testing.
- * [Easy Mock http://easymock.org/] and [CgLib http://cglib.sourceforge.net/] for Mock creation at the JUnits.
- * [Google Collections http://code.google.com/p/google-collections/].
- * [Protocol Buffers http://code.google.com/intl/pt-BR/apis/protocolbuffers/] for Data bank and index serialization.
- * [Log4J http://logging.apache.org/log4j/] for loggin.
- * [Jetty http://www.mortbay.org/] for embedded web server.
- * [Jax-WS https://jax-ws.dev.java.net/] for WebServices implementation.
+ * Dom4j http://www.dom4j.org/ for XML parsing.
+ * JUnit4 http://www.junit.org/ for unit testing.
+ * Easy Mock http://easymock.org/ and CgLib http://cglib.sourceforge.net/ for Mock creation at the JUnits.
+ * Google Collections http://code.google.com/p/google-collections/.
+ * Protocol Buffers http://code.google.com/intl/pt-BR/apis/protocolbuffers/ for Data bank and index serialization.
+ * Log4J http://logging.apache.org/log4j/ for loggin.
+ * Jetty http://www.mortbay.org/ for embedded web server.
+ * Jax-WS https://jax-ws.dev.java.net/ for WebServices implementation.
 
-All these libraries can be download in a single zip file.
+All these libraries can be download at http://svn.pih.bio.br/genoogle-packages/current/genoogle-libs.zip as a single zip file
+or they come together with the [http://svn.pih.bio.br/genoogle-packages/current/genoogle.tar.gz Genoogle Package].
 
 

@@ -123,10 +123,14 @@ public class Output {
 
 		Element paramsElement = factory.createElement("params");
 
-		paramsElement.addAttribute("query", params.getQuery().seqString());
 		paramsElement.addAttribute("databank", params.getDatabank());
 		paramsElement.addAttribute("maxSubSequencesDistance", Integer.toString(params.getMaxSubSequencesDistance()));
 		paramsElement.addAttribute("minHspLength", Integer.toString(params.getMinHspLength()));
+		paramsElement.addAttribute("maxHitsResults", Integer.toString(params.getMaxHitsResults()));
+		paramsElement.addAttribute("sequencesExtendDropoff", Integer.toString(params.getSequencesExtendDropoff()));
+		paramsElement.addAttribute("matchScore", Integer.toString(params.getMatchScore()));
+		paramsElement.addAttribute("mismatchScore", Integer.toString(params.getMismatchScore()));
+		
 
 		return paramsElement;
 	}
