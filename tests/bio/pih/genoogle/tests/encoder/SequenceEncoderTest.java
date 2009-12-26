@@ -19,7 +19,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
  * 
  * @author albrecht
  */
-public class SequenceCompressorTest extends TestCase {
+public class SequenceEncoderTest extends TestCase {
 
 	/**
 	 * Test if the bits value from the alphabet size is correctly calculate.

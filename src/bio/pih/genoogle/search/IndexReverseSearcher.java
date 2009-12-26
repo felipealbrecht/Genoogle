@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
-public class DNAIndexReverseSearcher extends DNAIndexSearcher {
+public class IndexReverseSearcher extends IndexSearcher {
 
-	public DNAIndexReverseSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
+	public IndexReverseSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, 
 			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, 
 			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 
 			CountDownLatch countDown, List<Throwable> fails) {

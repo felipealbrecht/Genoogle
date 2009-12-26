@@ -2,7 +2,6 @@ package bio.pih.genoogle.seq;
 
 import java.util.Arrays;
 
-
 public class DNAAlphabet implements Alphabet {
 
 	private static final long serialVersionUID = 4036186830403094421L;
@@ -15,16 +14,13 @@ public class DNAAlphabet implements Alphabet {
 	public static char c = 'c';
 	public static char g = 'g';
 	public static char t = 't';
-	
 
-	private static final char[] lLetters = {'a', 'c', 'g', 't'};
-	private static final char[] uLetters = {'A', 'C', 'G', 'T'};
-	private static final char[] lSpecialLetters = {'r', 'y', 'k', 'm', 's', 'w', 'b', 'd', 'h', 'v', 'n', 'x'};
-	private static final char[] uSpecialLetters = {'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X'};
-	private static final char[] allLetters = {'a', 'c', 'g', 't', 
-		                                     'A', 'C', 'G', 'T', 
-		                                     'r', 'y', 'k', 'm', 's', 'w', 'b', 'd', 'h', 'v', 'n', 'x', 
-		                                     'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X'};
+	private static final char[] lLetters = { 'a', 'c', 'g', 't' };
+	private static final char[] uLetters = { 'A', 'C', 'G', 'T' };
+	private static final char[] lSpecialLetters = { 'r', 'y', 'k', 'm', 's', 'w', 'b', 'd', 'h', 'v', 'n', 'x' };
+	private static final char[] uSpecialLetters = { 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X' };
+	private static final char[] allLetters = { 'a', 'c', 'g', 't', 'A', 'C', 'G', 'T', 'r', 'y', 'k', 'm', 's', 'w',
+			'b', 'd', 'h', 'v', 'n', 'x', 'R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', 'X' };
 	static {
 		Arrays.sort(lLetters);
 		Arrays.sort(uLetters);
@@ -33,11 +29,14 @@ public class DNAAlphabet implements Alphabet {
 		Arrays.sort(allLetters);
 	}
 
+	private DNAAlphabet() {
+	}
+
 	@Override
 	public String getName() {
 		return "DNA";
 	}
-	
+
 	@Override
 	public int getSize() {
 		return size;
@@ -51,9 +50,13 @@ public class DNAAlphabet implements Alphabet {
 		return false;
 	}
 
+	@Override
+	public char[] getLetters() {
+		return lLetters.clone();
+	}
 	
 	@Override
-	public char[] getLetters() {		
-		return lLetters.clone();
+	public String toString() {
+		return "DNA Alphabet";
 	}
 }

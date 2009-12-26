@@ -23,7 +23,6 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.interfaces.Console;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.InvalidConfigurationException;
-import bio.pih.genoogle.io.SequencesProvider;
 import bio.pih.genoogle.io.XMLConfigurationReader;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchManager;
@@ -200,9 +199,8 @@ public final class Genoogle {
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName,
 			Map<Parameter, Object> parameters) throws IOException, UnknowDataBankException, InterruptedException,
 			ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
-
-		SequencesProvider provider = new SequencesProvider(in);
-		return sm.doSyncSearch(provider, databankName, parameters);
+		
+		return sm.doSyncSearch(in, databankName, parameters);
 	}
 
 	/**

@@ -13,7 +13,7 @@ import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
@@ -69,9 +69,9 @@ public class SequenceAligner implements Runnable {
 			throws Exception {
 
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
-		int targetLength = DNASequenceEncoderToInteger.getSequenceLength(encodedSequence);
+		int targetLength = SequenceEncoder.getSequenceLength(encodedSequence);
 
-		DNAIndexSearcher searcher = retrievedAreas.getIndexSearcher();
+		IndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().getLength();
 
 		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getName());
@@ -88,7 +88,7 @@ public class SequenceAligner implements Runnable {
 		List<RetrievedArea> reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
 		if (reverseComplementAreas.size() > 0) {
 			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
-			DNAIndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
+			IndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
 			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedSequence, targetLength, queryLength,
 					reverseEncodedQuery, reverseComplementAreas, rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
@@ -99,7 +99,7 @@ public class SequenceAligner implements Runnable {
 	}
 
 	private List<ExtendSequences> extendAreas(int[] encodedSequence, int targetLength, int queryLength,
-			int[] encodedQuery, List<RetrievedArea> areas, DNAIndexSearcher searcher) {
+			int[] encodedQuery, List<RetrievedArea> areas, IndexSearcher searcher) {
 		List<ExtendSequences> extendedSequencesList = Lists.newLinkedList();
 		for (int i = 0; i < areas.size(); i++) {
 			RetrievedArea retrievedArea = areas.get(i);
@@ -116,8 +116,7 @@ public class SequenceAligner implements Runnable {
 
 			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery, queryAreaBegin, queryAreaEnd,
 					encodedSequence, sequenceAreaBegin, sequenceAreaEnd,
-					searcher.getSearchParams().getSequencesExtendDropoff(),
-					searcher.getDatabank().getSubSequenceLength(), searcher.getDatabank().getEncoder());
+					searcher.getSearchParams().getSequencesExtendDropoff(), searcher.getDatabank().getEncoder());
 
 			if (extendedSequencesList.contains(extensionResult)) {
 				continue;
@@ -129,7 +128,7 @@ public class SequenceAligner implements Runnable {
 	}
 
 	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence, int[] encodedSequence,
-			int targetLength, List<ExtendSequences> extendedSequencesList, DNAIndexSearcher searcher) {
+			int targetLength, List<ExtendSequences> extendedSequencesList, IndexSearcher searcher) {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
 			int matchScore = sr.getParams().getMatchScore();

@@ -9,6 +9,8 @@ package bio.pih.genoogle.io.reader;
 
 import java.io.BufferedReader;
 
+import bio.pih.genoogle.seq.Alphabet;
+
 
 /**
  * @author albrecht
@@ -21,9 +23,9 @@ public class IOTools {
      * @param br
      * @return {@link RichSequenceStreamReader} of the DNA FASTA files. 
      */
-    public static RichSequenceStreamReader readFastaDNA(BufferedReader br) {
+    public static RichSequenceStreamReader readFasta(BufferedReader br, Alphabet alphabet) {
         return new RichSequenceStreamReader(br,
-                new FastaFormat(),
+                new FastaFormat(alphabet),
                 new RichSequenceBuilderFactory());
     }
 	

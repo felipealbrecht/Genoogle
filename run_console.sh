@@ -36,6 +36,6 @@ fi
 $JAVA_HOME/bin/java \
  -server \
  -Xms1024m \
- -Xmx2048m \
+ -Xmx3072m \
  -classpath ${GENOOGLE_HOME}/genoogle.jar:${GENOOGLE_HOME}/lib/* \
   bio.pih.genoogle.Genoogle $1 $2

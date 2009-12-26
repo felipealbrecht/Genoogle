@@ -13,7 +13,7 @@ import junit.framework.TestSuite;
  * @author albrecht
  *
  */
-public class SymbolListWindowIteratorAllTests extends TestSuite {
+public class UtilAllTests extends TestSuite {
 
 	
 	/**
@@ -25,7 +25,8 @@ public class SymbolListWindowIteratorAllTests extends TestSuite {
 		
 		suite.addTestSuite(OverlappedSymbolListWindowIteratorTest.class);
 		suite.addTestSuite(NotOverlappedSymbolListWindowIteratorTest.class);
-
+		suite.addTestSuite(NucleotidiesConverterTest.class);
+		
 		return suite;
 	}
 }

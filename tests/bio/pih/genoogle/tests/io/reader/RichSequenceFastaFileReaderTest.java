@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.RichSequence;
 
@@ -35,7 +36,7 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 	public void testGiFastaFormatReader() throws NoSuchElementException, IOException, ParseException,
 			IllegalSymbolException {
 		StringReader sr = new StringReader(giSequences);
-		RichSequenceStreamReader reader = IOTools.readFastaDNA(new BufferedReader(sr));
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
 
 		RichSequence richSequence = reader.nextRichSequence();
 		assertEquals("gi", richSequence.getType());
@@ -67,7 +68,7 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 	public void testLclFastaFormatReader() throws NoSuchElementException, IOException, ParseException,
 			IllegalSymbolException {
 		StringReader sr = new StringReader(lclSequences);
-		RichSequenceStreamReader reader = IOTools.readFastaDNA(new BufferedReader(sr));
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
 
 		RichSequence richSequence = reader.nextRichSequence();
 		assertEquals("lcl", richSequence.getType());
@@ -81,32 +82,55 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 		assertEquals("RandomSequence_494 bla bla bla", richSequence.getDescription());
 		assertEquals("TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT", richSequence.seqString());
 	}
-	
+
 	String unknowSequences = ">unknow|Sequence_X\n"
-		+ "TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT\n"
-		+ ">unknow|Blah|Blum|Zum| bla bla bla\n"
-		+ "TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT\n";
+			+ "TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT\n"
+			+ ">unknow|Blah|Blum|Zum| bla bla bla\n"
+			+ "TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT\n";
 
-@Test
-public void testUnknowFastaFormatReader() throws NoSuchElementException, IOException, ParseException,
-		IllegalSymbolException {
-	StringReader sr = new StringReader(unknowSequences);
-	RichSequenceStreamReader reader = IOTools.readFastaDNA(new BufferedReader(sr));
+	@Test
+	public void testUnknowFastaFormatReader() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(unknowSequences);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
 
-	RichSequence richSequence = reader.nextRichSequence();
-	assertEquals("unknow", richSequence.getType());
-	assertEquals("Sequence_X", richSequence.getName());
-	assertEquals("", richSequence.getDescription());
-	assertEquals("", richSequence.getGi());
-	assertEquals("", richSequence.getAccession());
-	assertEquals("TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT", richSequence.seqString());
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("unknow", richSequence.getType());
+		assertEquals("", richSequence.getName());
+		assertEquals("Sequence_X", richSequence.getDescription());
+		assertEquals("", richSequence.getGi());
+		assertEquals("", richSequence.getAccession());
+		assertEquals("TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT", richSequence.seqString());
 
-	richSequence = reader.nextRichSequence();
-	assertEquals("unknow", richSequence.getType());
-	assertEquals("Blah", richSequence.getName());
-	assertEquals("Blum", richSequence.getGi());
-	assertEquals("Zum", richSequence.getAccession());
-	assertEquals(" bla bla bla", richSequence.getDescription());
-	assertEquals("TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT", richSequence.seqString());
-}
+		richSequence = reader.nextRichSequence();
+		assertEquals("unknow", richSequence.getType());
+		assertEquals("Blah", richSequence.getName());
+		assertEquals("Blum", richSequence.getGi());
+		assertEquals("Zum", richSequence.getAccession());
+		assertEquals(" bla bla bla", richSequence.getDescription());
+		assertEquals("TGCAACGATGGACTGGATGCCCCAGGAAAAGGAAAGAGGTATAACCATAACCGTTGCAACGACCGCATGT", richSequence.seqString());
+	}
+
+	String influenzaSequence = ">gb|FJ966082:1-1701| /Human/HA/H1N1/USA/2009/04/01/hemagglutinin[Influenza A virus (A/California/04/2009(H1N1))]\n"
+			+ "ATGAAGGCAATACTAGTAGTTCTGCTATATACATTTGCAACCGCAAATGCAGACACATTATGTATAGGTT\n"
+			+ "ATCATGCGAACAATTCAACAGACACTGTAGACACAGTACTAGAAAAGAATGTAACAGTAACACACTCTGT\n";
+
+	@Test
+	public void testInfluenzaSequence() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(influenzaSequence);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
+
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("gb", richSequence.getType());
+		assertEquals("FJ966082:1-1701", richSequence.getName());
+		assertEquals(" /Human/HA/H1N1/USA/2009/04/01/hemagglutinin[Influenza A virus (A/California/04/2009(H1N1))]",
+				richSequence.getDescription());
+		assertEquals("", richSequence.getGi());
+		assertEquals("", richSequence.getAccession());
+		assertEquals(
+				"ATGAAGGCAATACTAGTAGTTCTGCTATATACATTTGCAACCGCAAATGCAGACACATTATGTATAGGTTATCATGCGAACAATTCAACAGACACTGTAGACACAGTACTAGAAAAGAATGTAACAGTAACACACTCTGT",
+				richSequence.seqString());
+	}
+
 }

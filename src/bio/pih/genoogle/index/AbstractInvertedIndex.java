@@ -9,7 +9,6 @@ package bio.pih.genoogle.index;
 
 import java.io.IOException;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.seq.SymbolList;
@@ -26,7 +25,7 @@ public abstract class AbstractInvertedIndex {
 	protected final int indexSize;
 	protected final long[] EMPTY_ARRAY = new long[0];
 	
-	protected final DNASequenceEncoderToInteger encoder;
+	protected final SequenceEncoder encoder;
 	protected volatile boolean loaded;
 	
 	/**

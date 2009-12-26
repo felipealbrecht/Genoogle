@@ -10,17 +10,17 @@ package bio.pih.genoogle.encoder;
 import java.util.Hashtable;
 
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
-import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.RNAAlphabet;
 
 /**
  * Abstract class of the DNA Encoder to bit map representation.
  * 
  * @author albrecht
  */
-public class DNASequenceEncoder extends SequenceEncoder {
+public class RNASequenceEncoder extends SequenceEncoder {
 
-	protected DNASequenceEncoder(int subSequenceLength) throws ValueOutOfBoundsException {
-		super(DNAAlphabet.SINGLETON, subSequenceLength);
+	protected RNASequenceEncoder(int subSequenceLength) throws ValueOutOfBoundsException {
+		super(RNAAlphabet.SINGLETON, subSequenceLength);
 	}
 
 	// All wildschars will have this value.
@@ -29,7 +29,7 @@ public class DNASequenceEncoder extends SequenceEncoder {
 
 	static Hashtable<Character, Integer> DNACharToBitsSubstitionTable;
 	
-	static Character[] DNABitsToSymbolSubstitionTable = new Character[] { 'A', 'C', 'G', 'T' };
+	static Character[] DNABitsToSymbolSubstitionTable = new Character[] { 'A', 'C', 'G', 'U' };
 
 
 	static {
@@ -37,11 +37,11 @@ public class DNASequenceEncoder extends SequenceEncoder {
 		DNACharToBitsSubstitionTable.put('a', 0x00);
 		DNACharToBitsSubstitionTable.put('c', 0x01);
 		DNACharToBitsSubstitionTable.put('g', 0x02);
-		DNACharToBitsSubstitionTable.put('t', 0x03);
+		DNACharToBitsSubstitionTable.put('u', 0x03);
 		DNACharToBitsSubstitionTable.put('A', 0x00);
 		DNACharToBitsSubstitionTable.put('C', 0x01);
 		DNACharToBitsSubstitionTable.put('G', 0x02);
-		DNACharToBitsSubstitionTable.put('T', 0x03);
+		DNACharToBitsSubstitionTable.put('U', 0x03);
 	}
 
 
@@ -55,7 +55,7 @@ public class DNASequenceEncoder extends SequenceEncoder {
 		if (symbol == 'G' || symbol == 'g') {
 			return 2;
 		}
-		if (symbol == 'T' || symbol == 't') {
+		if (symbol == 'U' || symbol == 'u') {
 			return 3;
 		}
 		return 0;

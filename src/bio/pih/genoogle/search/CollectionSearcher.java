@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.DatabankCollection;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.search.results.Hit;
@@ -71,7 +71,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		Iterator<AbstractSequenceDataBank> it = databankCollection.databanksIterator();
 		while (it.hasNext()) {
 			AbstractSequenceDataBank innerBank = it.next();
-			final DNAIndexBothStrandSearcher indexSearcher = new DNAIndexBothStrandSearcher(id, sp, (IndexedDNASequenceDataBank) innerBank, queryExecutor, fails);
+			final IndexBothStrandSearcher indexSearcher = new IndexBothStrandSearcher(id, sp, (IndexedSequenceDataBank) innerBank, queryExecutor, fails);
 			subDataBanksCS.submit(indexSearcher);
 		}
 
@@ -108,6 +108,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 		long alignmentBegin = System.currentTimeMillis();
 
+		
 		Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
 
 		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());

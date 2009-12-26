@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.seq.Sequence;
@@ -25,10 +26,12 @@ public class SequencesProvider {
 	private final BufferedReader in;
 	private boolean isFastaFile = false;
 
-	RichSequenceStreamReader readFastaDNA;
+	RichSequenceStreamReader readFasta;
+	private final Alphabet alphabet;
 
-	public SequencesProvider(BufferedReader in) throws IOException {
+	public SequencesProvider(BufferedReader in, Alphabet alphabet) throws IOException {
 		this.in = in;
+		this.alphabet = alphabet;
 		this.in.mark(1);
 		String firstLine = this.in.readLine();
 		if (firstLine == null) {
@@ -38,13 +41,13 @@ public class SequencesProvider {
 
 		if (firstLine.charAt(0) == '>') {
 			isFastaFile = true;
-			readFastaDNA = IOTools.readFastaDNA(this.in);
+			readFasta = IOTools.readFasta(this.in, alphabet);
 		}
 	}
 
 	public synchronized boolean hasNext() throws IOException {
 		if (isFastaFile) {
-			return readFastaDNA.hasNext();
+			return readFasta.hasNext();
 		}
 		return in.ready();
 	}
@@ -80,7 +83,7 @@ public class SequencesProvider {
 			return null;
 		}
 		
-		return LightweightSymbolList.createDNA(seqString);
+		return new LightweightSymbolList(alphabet, seqString);
 	}
 
 	/**
@@ -90,6 +93,6 @@ public class SequencesProvider {
 	 * @return {@link List} of {@link SymbolList} containing the sequences read.
 	 */
 	private Sequence getNextFastaSequence() throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
-		return readFastaDNA.nextRichSequence();
+		return readFasta.nextRichSequence();
 	}
 }

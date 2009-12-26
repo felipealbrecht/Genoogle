@@ -14,10 +14,10 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.log4j.Logger;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
-import bio.pih.genoogle.encoder.DNAMaskEncoder;
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.MaskEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.seq.SymbolList;
@@ -26,19 +26,18 @@ import bio.pih.genoogle.statistics.Statistics;
 import com.google.common.collect.Lists;
 
 /**
- * Interface witch defines methods for search for similar DNA sequences and checks the status of the
- * searchers.
+ * Interface witch defines methods for search for similar sequences and checks.
  * 
  * @author albrecht
  */
-public class DNAIndexSearcher implements Runnable {
+public class IndexSearcher implements Runnable {
 
-	private static final Logger logger = Logger.getLogger(DNAIndexSearcher.class.getName());
+	private static final Logger logger = Logger.getLogger(IndexSearcher.class.getName());
 
 	protected final long id;
 	protected final SearchParams sp;
-	protected final DNASequenceEncoderToInteger encoder;
-	protected final IndexedDNASequenceDataBank databank;
+	protected final SequenceEncoder encoder;
+	protected final IndexedSequenceDataBank databank;
 	private final Statistics statistics;
 	private final List<RetrievedArea>[] retrievedAreas;
 	private final CountDownLatch countDown;
@@ -52,7 +51,7 @@ public class DNAIndexSearcher implements Runnable {
 	private final List<Throwable> fails;
 
 
-	public DNAIndexSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, String sliceQuery,
+	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
 			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		this.id = id;
@@ -176,7 +175,7 @@ public class DNAIndexSearcher implements Runnable {
 		return iess;
 	}
 
-	private int[] getEncodedSubSequences(String querySequence, DNAMaskEncoder maskEncoder) {
+	private int[] getEncodedSubSequences(String querySequence, MaskEncoder maskEncoder) {
 		if (maskEncoder == null) {
 			return getEncodedSubSequences(querySequence);
 		}
@@ -202,7 +201,7 @@ public class DNAIndexSearcher implements Runnable {
 		return statistics;
 	}
 
-	public IndexedDNASequenceDataBank getDatabank() {
+	public IndexedSequenceDataBank getDatabank() {
 		return databank;
 	}
 

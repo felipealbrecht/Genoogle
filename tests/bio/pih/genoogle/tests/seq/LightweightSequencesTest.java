@@ -20,6 +20,7 @@ import org.junit.Test;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
+import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.Sequence;
 
@@ -36,7 +37,7 @@ public class LightweightSequencesTest extends TestCase {
 		BufferedReader is = new BufferedReader(new FileReader("data" + File.separator + "populator" + File.separator + "test_sequences_dataset_dna_500_200_700.fasta"));
 
 		
-		RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
+		RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, DNAAlphabet.SINGLETON);
 		
 		String sequence_100 = "gaacccggcgagagaaggttgacgcgtacccgttaatattgatgttacgactagcgcagttcctaacgcactcggtgtcg" +
 							"ccagaagagagctagtgacgacacgtatcctggagcgacaccactaagcagagttgtccccaagaactgcggtccctgcg" +

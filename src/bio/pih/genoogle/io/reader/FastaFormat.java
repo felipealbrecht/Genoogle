@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.Alphabet;
 
 /**
  * A extended FastaFormat for LightweightSymbolList. Strongly basead on
@@ -30,6 +30,13 @@ public class FastaFormat implements RichSequenceFormat {
 
 	protected static final Pattern hp = Pattern.compile(">(\\S+)(\\s+(.*))?");
 	protected static final Pattern dp = Pattern.compile("^(gi\\|(\\d+)\\|)*(\\S+)\\|(\\S+?)(\\.(\\d+))*\\|(\\S+)");
+
+	private final Alphabet alphabet;
+	
+	public FastaFormat(Alphabet alphabet) {
+		this.alphabet = alphabet;
+		
+	}
 
 	public boolean readRichSequence(BufferedReader reader, RichSequenceBuilder builder) throws IOException,
 			ParseException {
@@ -72,7 +79,7 @@ public class FastaFormat implements RichSequenceFormat {
 
 		builder.setSequence(seq.toString().replaceAll("\\s+", "").replaceAll("[\\.|~]", "-"));
 
-		builder.setAlphabet(DNAAlphabet.SINGLETON);
+		builder.setAlphabet(alphabet);
 
 		builder.endSequence();
 
@@ -110,7 +117,6 @@ public class FastaFormat implements RichSequenceFormat {
 			return;
 		}
 
-		logger.info("Unknow header file :'" + line + "'. Using brute force reader.");
 		line = line.substring(1);
 		String[] strings = line.split("\\|");
 		
@@ -120,17 +126,17 @@ public class FastaFormat implements RichSequenceFormat {
 			rsiol.setType(strings[0]);
 		}
 		
-		if (strings.length > 1) {
+		if (strings.length > 2) {
 			rsiol.setName(strings[1]);
 		}
-		if (strings.length > 2) {
+		if (strings.length > 3) {
 			rsiol.setGi(strings[2]);
 		}
-		if (strings.length > 3) {
+		if (strings.length > 4) {
 			rsiol.setAccession(strings[3]);
 		}
 		
-		if (strings.length > 2) {
+		if (strings.length > 1) {
 			rsiol.setDescription(strings[strings.length - 1]);
 		}
 	}

@@ -16,21 +16,22 @@ import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
  * 
  * @author albrecht
  */
-public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
+public final class MaskEncoder {
 
 	private final boolean[] mask;
 	private final int patternLength;
 	private final int resultLength;
+	private final SequenceEncoder encoder;
 
 	/**
 	 * @param mask Mask where "1" means that the base should be preserved and "0" that should be removed. 
 	 * @param subSequenceLength The subsequence length, the value should be the total of "1"s at the mask. 
 	 */
-	public DNAMaskEncoder(String mask, int subSequenceLength) {
-		super(subSequenceLength);
-
+	public MaskEncoder(final String mask, final SequenceEncoder encoder) {
 		this.patternLength = mask.length();
 		this.mask = new boolean[patternLength];
+		this.encoder = encoder;
+		
 		int length = 0;
 		for (int i = 0; i < this.patternLength; i++) {
 			if (mask.charAt(i) == '1') {
@@ -38,8 +39,8 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 				length++;
 			}
 		}
-		if (length != subSequenceLength) {
-			throw new RuntimeException("The subSequenceLength (" + subSequenceLength
+		if (length != encoder.getSubSequenceLength()) {
+			throw new RuntimeException("The subSequenceLength (" + encoder.getSubSequenceLength()
 					+ ") and the count of the usable values of the mask (" + length + ") should be the same.");
 		}
 		this.resultLength = length;
@@ -61,7 +62,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 		for (int i = 1; i <= length; i++) {
 			if (this.mask[i - 1]) {
-				encoded |= (getBitsFromChar(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
+				encoded |= (encoder.getBitsFromChar(symbolList.symbolAt(i)) << ((resultLength - (i - offset)) << 1));
 			} else {
 				offset++;
 			}
@@ -82,7 +83,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 
 		for (int i = 0; i < length; i++) {
 			if (this.mask[i]) {
-				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (i - offset + 1)) << 1));
+				encoded |= (encoder.getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (i - offset + 1)) << 1));
 			} else {
 				offset++;
 			}
@@ -105,7 +106,7 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 		for (int i = begin; i < end; i++) {
 			int pos = i - begin;
 			if (this.mask[pos]) {
-				encoded |= (getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (pos - offset + 1)) << 1));
+				encoded |= (encoder.getBitsFromChar(subSequence.charAt(i)) << ((resultLength - (pos - offset + 1)) << 1));
 			} else {
 				offset++;
 			}
@@ -120,14 +121,14 @@ public class DNAMaskEncoder extends DNASequenceEncoderToInteger {
 	 * @return encoded version of the masked sequence.
 	 */
 	public int[] applySequenceMask(SymbolList sequence) {
-		assert (sequence.getAlphabet().equals(alphabet));
+		assert (sequence.getAlphabet().equals(encoder.getAlphabet()));
 		int size = sequence.getLength() / this.patternLength;
 
 		size++; // extra space for information on the length.
 		int sequenceEncoded[] = new int[size];
-		sequenceEncoded[getPositionLength()] = sequence.getLength();
+		sequenceEncoded[SequenceEncoder.getPositionLength()] = sequence.getLength();
 
-		int pos = getPositionBeginBitsVector();
+		int pos = SequenceEncoder.getPositionBeginBitsVector();
 		SymbolListWindowIterator symbolListWindowIterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(
 				sequence, this.patternLength);
 		while (symbolListWindowIterator.hasNext()) {

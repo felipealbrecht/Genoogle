@@ -29,7 +29,7 @@ import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
-import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.RichSequence;
 
@@ -58,7 +58,7 @@ import com.google.common.collect.Lists;
  * 
  * @author Pih
  */
-public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASequenceDataBank> {
+public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequenceDataBank> {
 
 	private static Logger logger = Logger.getLogger(SplittedSequenceDatabank.class.getName());
 
@@ -75,9 +75,9 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	 *            how many parts will have this sequence databank
 	 * @param mask
 	 */
-	public SplittedSequenceDatabank(String name, File path, int subSequenceLength, int qtdSubBases, String mask,
+	public SplittedSequenceDatabank(String name, Alphabet alphabet, File path, int subSequenceLength, int qtdSubBases, String mask,
 			int lowComplexityFilter) {
-		super(name, DNAAlphabet.SINGLETON, subSequenceLength, path, null, lowComplexityFilter);
+		super(name, alphabet, subSequenceLength, path, null, lowComplexityFilter);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
 	}
@@ -88,7 +88,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
-			fastaFiles.add(new FastaFileInfo(sequence.getFullPath(true)));
+			fastaFiles.add(new FastaFileInfo(sequence.getFullPath(true), alphabet));
 		}
 
 		long totalBasesCount = 0;
@@ -100,7 +100,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long totalBasesBySubBase = totalBasesCount / qtdSubBases;
 		long subCount = 0;
 
-		IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
+		IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
 		actualSequenceDatank.beginIndexBuild();
 		int totalSequences = 0;
 		long totalBases = 0;
@@ -118,7 +118,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		for (FastaFileInfo fastaFile : fastaFiles) {
 			logger.info("Adding a FASTA file from " + fastaFile.getFastaFile());
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile.getFastaFile()));
-			RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
+			RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 			while (readFastaDNA.hasNext()) {
 				RichSequence richSequence = readFastaDNA.nextRichSequence();
 				StoredSequenceInfo addSequence = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
@@ -137,7 +137,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
-					actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + subCount, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
+					actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
 					actualSequenceDatank.beginIndexBuild();
 				}
 			}
@@ -204,7 +204,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	public boolean check() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
 				if (!actualSequenceDatank.check()) {
 					return false;
 				}
@@ -220,7 +220,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 	public void delete() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedDNASequenceDataBank actualSequenceDatank = new IndexedDNASequenceDataBank("Sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
 				actualSequenceDatank.delete();
 			} catch (Exception e) {
 				logger.fatal(e);
@@ -234,7 +234,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
-			IndexedDNASequenceDataBank subDataBank = new IndexedDNASequenceDataBank(this.getName() + "_sub_" + i, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+			IndexedSequenceDataBank subDataBank = new IndexedSequenceDataBank(this.getName() + "_sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
 			boolean b = subDataBank.load();
 			if (b == false) {
 				return false;
@@ -255,13 +255,13 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedDNASeque
 		long qtdBases;
 		long qtdSequences;
 
-		public FastaFileInfo(File fastaFile) throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
+		public FastaFileInfo(File fastaFile, Alphabet alphabet) throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
 			this.fastaFile = fastaFile;
 			this.qtdBases = 0;
 			this.qtdSequences = 0;
 
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-			RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
+			RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 			logger.info("Reading informations from " + fastaFile);
 			while (readFastaDNA.hasNext()) {
 				RichSequence sequence = readFastaDNA.nextRichSequence();

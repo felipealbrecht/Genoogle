@@ -16,7 +16,8 @@ import junit.framework.TestCase;
 import org.easymock.classextension.EasyMock;
 import org.junit.Test;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.SequenceEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
@@ -29,9 +30,9 @@ import bio.pih.genoogle.seq.SymbolList;
 public class InvertedIndexBuilderTest extends TestCase {
 
 	private static int SUB_SEQUENCE_LENGTH = 10;
-	private static DNASequenceEncoderToInteger ENCODER = DNASequenceEncoderToInteger.getEncoder(SUB_SEQUENCE_LENGTH);
+	private static SequenceEncoder ENCODER = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH);
 
-	private AbstractSequenceDataBank createSequenceDatabankMock(DNASequenceEncoderToInteger encoder) throws IOException, SecurityException, NoSuchMethodException {
+	private AbstractSequenceDataBank createSequenceDatabankMock(SequenceEncoder encoder) throws IOException, SecurityException, NoSuchMethodException {
 		AbstractSequenceDataBank sequenceDataBank = EasyMock.createMock(AbstractSequenceDataBank.class);
 		
 		EasyMock.createMock(AbstractSequenceDataBank.class, new Method[] 

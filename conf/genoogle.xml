@@ -8,7 +8,7 @@
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
   <genoogle:search-manager>
-    <genoogle:max-simultaneous-searchs value="2"/>     
+    <genoogle:max-simultaneous-searchs value="5"/>
   </genoogle:search-manager>
   
   <genoogle:score>
@@ -17,13 +17,13 @@
   </genoogle:score>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="50"/>
-    <genoogle:min-hsp-length              value="10" />
+    <genoogle:max-sub-sequence-distance   value="25"/>
+    <genoogle:min-hsp-length              value="25" />
     <genoogle:extend-dropoff              value="5" />
-    <genoogle:max-hits-results            value="50" />
+    <genoogle:max-hits-results            value="10" />
     <genoogle:max-threads-index-search    value="4" />
     <genoogle:max-threads-extend-align    value="8" />
-    <genoogle:min-query-slice-length      value="1000" />
+    <genoogle:min-query-slice-length      value="3000" />
     <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
   
@@ -34,23 +34,35 @@
 
   <genoogle:databanks>
 
+<!--
   
   <genoogle:split-databanks name="NF_7" path="files/fasta" mask="1101001001011" number-of-sub-databanks="1" sub-sequence-length="7" low-complexity-filter="3">
-      <genoogle:databank name="Cow"       path="cow.rna.fna"       />
-      <genoogle:databank name="Frog"      path="frog.rna.fna"      />
-      <genoogle:databank name="Human"     path="human.rna.fna"     />
-      <genoogle:databank name="Mouse"     path="mouse.rna.fna"     />
-      <genoogle:databank name="Rat"       path="rat.rna.fna"       />
-      <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" />
+      <genoogle:databank name="Cow"       path="cow.rna.fna"       type="DNA" />
+      <genoogle:databank name="Frog"      path="frog.rna.fna"      type="DNA" />
+      <genoogle:databank name="Human"     path="human.rna.fna"     type="DNA" />
+      <genoogle:databank name="Mouse"     path="mouse.rna.fna"     type="DNA" />
+      <genoogle:databank name="Rat"       path="rat.rna.fna"       type="DNA" />
+      <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" type="DNA" />
    </genoogle:split-databanks>
 
    <genoogle:split-databanks name="m" path="files/fasta" mask="1101001001011" number-of-sub-databanks="1" sub-sequence-length="7" low-complexity-filter="3">
-      <genoogle:databank name="mouse_46559394_seq" path="mouse_46559394" />
-      <genoogle:databank name="human_31542722" path="31542722" />
-      <genoogle:databank name="rat_40786500_seq" path="rat_40786500" />
-      <genoogle:databank name="cow_134085852_seq" path="cow_134085852" />
+      <genoogle:databank name="mouse_46559394_seq" path="mouse_46559394" type="DNA" />
+      <genoogle:databank name="human_31542722"     path="31542722"       type="DNA" />
+      <genoogle:databank name="rat_40786500_seq"   path="rat_40786500"   type="DNA" />
+      <genoogle:databank name="cow_134085852_seq"  path="cow_134085852"  type="DNA" />
    </genoogle:split-databanks>
    
+-->
+
+  
+   <genoogle:split-databanks name="converted" path="files/fasta" mask="1101100110011011" type="RNA" number-of-sub-databanks="1" sub-sequence-length="10" low-complexity-filter="3">
+      <genoogle:databank name="Influenza" path="converted.rna" />
+   </genoogle:split-databanks>
+
+   <genoogle:split-databanks name="influenza" path="files/fasta" mask="1101001001011" number-of-sub-databanks="1" sub-sequence-length="7" low-complexity-filter="3">
+      <genoogle:databank name="Influenza" path="influenza.fasta" />
+   </genoogle:split-databanks>
+
  <!-- 
    <genoogle:split-databanks name="AS" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
       <genoogle:databank name="Aquifex aeolicus" path="AE000657.fna" storage="memory" />

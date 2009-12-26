@@ -7,7 +7,7 @@
 
 package bio.pih.genoogle.search;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.SequenceEncoder;
 
 /**
  * Extend sequences by its similarity to the right and to the left.
@@ -22,10 +22,10 @@ public class ExtendSequences {
 	private final int endQuerySegment;
 	private final int beginTargetSegment;
 	private final int endTargetSegment;
-	private final DNASequenceEncoderToInteger encoder;
+	private final SequenceEncoder encoder;
 
 	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, int beginQuerySegment, int endQuerySegment,
-			int beginTargetSegment, int endTargetSegment, DNASequenceEncoderToInteger encoder) {
+			int beginTargetSegment, int endTargetSegment, SequenceEncoder encoder) {
 		this.encodedQuery = encodedQuery;
 		this.encodedTarget = encodedTarget;
 
@@ -85,7 +85,7 @@ public class ExtendSequences {
 		return encodedTarget;
 	}
 
-	public DNASequenceEncoderToInteger getEncoder() {
+	public SequenceEncoder getEncoder() {
 		return encoder;
 	}
 
@@ -100,17 +100,17 @@ public class ExtendSequences {
 	 * @param subSequenceLength
 	 * @param encoder
 	 * 
-	 * TODO: Remove the param subSequenceLength and get from the encoder.
-	 * 
 	 * @return {@link ExtendSequences} of the extended sequences.
 	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
 			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
-			int dropoff, int subSequenceLength, DNASequenceEncoderToInteger encoder) {
+			int dropoff, SequenceEncoder encoder) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
 		int queryPos, databankPos;
+		
+		final int subSequenceLength = encoder.getSubSequenceLength();
 
 		// right extend
 		bestQueryPos = endQuerySegment;
@@ -124,9 +124,9 @@ public class ExtendSequences {
 
 		// http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
 		while (queryPos < queryLength && databankPos < databankLength) {
-			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos,
+			int queryValue = SequenceEncoder.getValueAtPos(encodedQuerySequence, queryPos,
 					subSequenceLength);
-			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos,
+			int databankValue = SequenceEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
 					subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
@@ -159,9 +159,9 @@ public class ExtendSequences {
 		databankPos = beginDatabankSequenceSegment - 1;
 
 		while (queryPos >= 0 && databankPos >= 0) {
-			int queryValue = DNASequenceEncoderToInteger.getValueAtPos(encodedQuerySequence, queryPos,
+			int queryValue = SequenceEncoder.getValueAtPos(encodedQuerySequence, queryPos,
 					subSequenceLength);
-			int databankValue = DNASequenceEncoderToInteger.getValueAtPos(encodedDatabankSequence, databankPos,
+			int databankValue = SequenceEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
 					subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;

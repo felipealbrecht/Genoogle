@@ -73,10 +73,10 @@ public class RichSequenceBuilder {
 	
 	public void endSequence() throws ParseException {
 		if (this.sequence == null) {
-			throw new ParseException("Sequence String hasnot been supplied");
+			throw new ParseException("Sequence String has not been supplied");
 		}
-		if (this.name == null) {
-			throw new ParseException("Name has not been supplied");
+		if (this.name == null && this.description == null) {
+			throw new ParseException("Name and description have not been supplied");
 		}
 	}
 

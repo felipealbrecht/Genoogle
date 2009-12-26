@@ -14,7 +14,7 @@ import bio.pih.genoogle.encoder.SequenceEncoder;
  * @author albrecht
  *
  */
-public class SequenceCompressorAllTests extends TestSuite {
+public class SequenceEncoderAllTests extends TestSuite {
 	
 	/**
 	 * @return all tests from {@link SequenceEncoder} and its subclasses
@@ -23,8 +23,9 @@ public class SequenceCompressorAllTests extends TestSuite {
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite("SequenceCompressorAllTests");
 		
-		suite.addTestSuite(SequenceCompressorTest.class);
-		suite.addTestSuite(DNASequenceEncoderToIntegerTest.class);
+		suite.addTestSuite(SequenceEncoderTest.class);
+		suite.addTestSuite(SequenceEncoderToIntegerTest.class);
+		suite.addTestSuite(MaskEncoderTest.class);
 	
 		return suite;
 	}

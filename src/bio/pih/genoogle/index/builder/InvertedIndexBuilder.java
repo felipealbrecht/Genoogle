@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.IndexFileOffset;
@@ -67,7 +66,7 @@ public class InvertedIndexBuilder {
 
 	private int totalEntries = -1;
 	private final MemoryInvertedIndex memoryInvertedIndex;
-	private AbstractSequenceDataBank databank;
+	private final AbstractSequenceDataBank databank;
 	private int indexSize;
 
 	private List<SequenceInfo> sequencesToAdd = Lists.newArrayList();
@@ -83,14 +82,15 @@ public class InvertedIndexBuilder {
 		this.databank = memoryInvertedIndex.getDatabank();
 		this.indexSize = memoryInvertedIndex.getIndexSize();
 		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;
-		
+
 		int lowComplexityFilterLimit = databank.getLowComplexityFilter();
 		if (lowComplexityFilterLimit < 0) {
 			this.lowComplexitySubSequences = new int[0];
 			logger.info("Low complexity sub sequences filter disabled.");
 		} else {
 			this.lowComplexitySubSequences = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilterLimit).getSubSequences();
-			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequences.length + " sub sequences.");
+			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequences.length
+					+ " sub sequences.");
 		}
 	}
 
@@ -337,7 +337,7 @@ public class InvertedIndexBuilder {
 		int offset = 0;
 		int beginOffset = 0;
 		int processedEntries = 0;
-		
+
 		logger.info("Filtered " + totalFiltered + " low complexity subsequences.");
 
 		while (processedEntries < totalEntries) {
@@ -507,12 +507,6 @@ public class InvertedIndexBuilder {
 			int sequenceId = stream.readInt();
 			int position = stream.readInt();
 			return new Entry(subSequence, sequenceId, position);
-		}
-
-		@Override
-		public String toString() {
-			return "{" + DNASequenceEncoderToInteger.getEncoder(10).decodeIntegerToString(subSequence) + ":"
-					+ sequenceId + ":" + position + "}";
 		}
 	}
 

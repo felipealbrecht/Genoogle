@@ -10,14 +10,14 @@ package bio.pih.genoogle.search;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
-public class DNAIndexReverseComplementSearcher extends DNAIndexReverseSearcher {
+public class IndexReverseComplementSearcher extends IndexReverseSearcher {
 
-	public DNAIndexReverseComplementSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank, 
+	public IndexReverseComplementSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, 
 			String rcSliceQuery, int offset, SymbolList rcQuery, int[] rcEncodedQuery, 
 			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		super(id, sp, databank, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails);

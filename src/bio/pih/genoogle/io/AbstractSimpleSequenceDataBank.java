@@ -31,19 +31,20 @@ import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
-import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.RichSequence;
 
 import com.google.protobuf.ByteString;
 
 /**
- * Abstract class for Sequence Banks which stores DNA sequences
+ * Abstract class for Sequence Banks which stores sequences.
+ * This class has the low level IO methods. 
  * 
  * @author albrecht
  * 
  */
-public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBank {
+public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDataBank {
 
 	private volatile int nextSequenceId;
 	private int numberOfSequences;
@@ -55,9 +56,10 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 
 	Logger logger = Logger.getLogger(AbstractSequenceDataBank.class.getCanonicalName());
 
-	public AbstractDNASequenceDataBank(String name, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
-		super(name, DNAAlphabet.SINGLETON, subSequenceLength, path, parent, lowComplexityFilter);
+	public AbstractSimpleSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
+			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
+		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
+		
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;
@@ -132,7 +134,7 @@ public abstract class AbstractDNASequenceDataBank extends AbstractSequenceDataBa
 		bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-		RichSequenceStreamReader readFastaDNA = IOTools.readFastaDNA(is);
+		RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 
 		while (readFastaDNA.hasNext()) {
 			RichSequence s = readFastaDNA.nextRichSequence();

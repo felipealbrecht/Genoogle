@@ -7,6 +7,7 @@
 
 package bio.pih.genoogle.search;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -79,7 +80,7 @@ public class SearchManager {
 	 *         guarantee that the first input SearchParam is the first in the
 	 *         results list. 
 	 */
-	public List<SearchResults> doSyncSearch(SequencesProvider provider, String databankName, Map<Parameter, Object> parameters) throws UnknowDataBankException,
+	public List<SearchResults> doSyncSearch(BufferedReader in, String databankName, Map<Parameter, Object> parameters) throws UnknowDataBankException,
 			InterruptedException, ExecutionException, NoSuchElementException, IOException, IllegalSymbolException, ParseException {
 
 		long begin = System.currentTimeMillis();
@@ -90,6 +91,9 @@ public class SearchManager {
 		if (databank == null) {
 			throw new UnknowDataBankException(databankName);
 		}
+		
+		SequencesProvider provider = new SequencesProvider(in, databank.getAlphabet());
+		
 		int totalSubmited = 0;
 		while(provider.hasNext()) {
 			SymbolList nextSequence = provider.getNextSequence();

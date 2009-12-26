@@ -20,8 +20,10 @@ import org.dom4j.io.SAXReader;
 import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.search.SearchManager;
+import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.RNAAlphabet;
 
 import com.google.common.collect.Lists;
 
@@ -120,7 +122,7 @@ public class XMLConfigurationReader {
 		}
 
 		List<AbstractSequenceDataBank> sequenceDataBanks = Lists.newLinkedList();
-		Iterator<AbstractDNASequenceDataBank> databankIterator = databanks.elementIterator();
+		Iterator<AbstractSimpleSequenceDataBank> databankIterator = databanks.elementIterator();
 		while (databankIterator.hasNext()) {
 			AbstractSequenceDataBank databank = getDatabank((Element) databankIterator.next(), null);
 			if (databank == null) {
@@ -134,13 +136,13 @@ public class XMLConfigurationReader {
 
 	@SuppressWarnings("unchecked")
 	private static AbstractSequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent) throws IOException, InvalidConfigurationException {
+			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
 		String lowComplexityFilterString = e.attributeValue("low-complexity-filter");
-		
-		
+		String type = e.attributeValue("type");
+				
 		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
 		int subSequenceLength; 
 		if (parent != null) {
@@ -169,16 +171,31 @@ public class XMLConfigurationReader {
 		if (lowComplexityFilterString != null) {
 			lowComplexityFilter = Integer.parseInt(lowComplexityFilterString);
 		}
+		
+		Alphabet alphabet = DNAAlphabet.SINGLETON;
+		if (type != null) {
+			if (type.toLowerCase().equals("dna")) {
+				alphabet = DNAAlphabet.SINGLETON;
+			} else if (type.toLowerCase().equals("rna")) {
+				alphabet = RNAAlphabet.SINGLETON;
+			} else {
+				throw new InvalidConfigurationException("Sequences type: " + type + " is invalid.");
+			}
+		} else {
+			if (parent != null) {
+				alphabet = parent.getAlphabet();
+			}
+		}
 
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, new File(Genoogle.getHome(), path), subSequenceLength, size, mask, lowComplexityFilter);
+			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, alphabet, new File(Genoogle.getHome(), path), subSequenceLength, size, mask, lowComplexityFilter);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
-					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank(
+					IndexedSequenceDataBank databank = (IndexedSequenceDataBank) getDatabank(
 							(Element) databankIterator.next(), splittedSequenceDatabank);
 					if (databank == null) {
 						return null;
@@ -191,23 +208,22 @@ public class XMLConfigurationReader {
 				}
 			}
 			return splittedSequenceDatabank;
-		}
-
-		if (e.getName().trim().equals("databank")) {				
+	
+		} else if (e.getName().trim().equals("databank")) {				
 			try {
-				return new IndexedDNASequenceDataBank(name, subSequenceLength, mask, new File(path), parent, lowComplexityFilter);
+				return new IndexedSequenceDataBank(name, alphabet, subSequenceLength, mask, new File(path), parent, lowComplexityFilter);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
 			return null;
 
 		} else if (e.getName().trim().equals("databank-collection")) {			
-			DatabankCollection<IndexedDNASequenceDataBank> databankCollection = new DatabankCollection<IndexedDNASequenceDataBank>(
+			DatabankCollection<IndexedSequenceDataBank> databankCollection = new DatabankCollection<IndexedSequenceDataBank>(
 					name, DNAAlphabet.SINGLETON, subSequenceLength, new File(path), parent, lowComplexityFilter);
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
-					IndexedDNASequenceDataBank databank = (IndexedDNASequenceDataBank) getDatabank(
+					IndexedSequenceDataBank databank = (IndexedSequenceDataBank) getDatabank(
 							(Element) databankIterator.next(), databankCollection);
 					if (databank == null) {
 						return null;

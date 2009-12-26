@@ -9,11 +9,11 @@ package bio.pih.genoogle.tests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import bio.pih.genoogle.tests.encoder.SequenceCompressorAllTests;
+import bio.pih.genoogle.tests.encoder.SequenceEncoderAllTests;
 import bio.pih.genoogle.tests.index.IndexAllTests;
 import bio.pih.genoogle.tests.io.reader.ReaderAllTests;
 import bio.pih.genoogle.tests.seq.SequencesAllTests;
-import bio.pih.genoogle.tests.util.SymbolListWindowIteratorAllTests;
+import bio.pih.genoogle.tests.util.UtilAllTests;
 
 /**
  * @author Albrecht	
@@ -27,8 +27,8 @@ public class GenoogleAllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Genoogle all tests");
 		suite.addTest(SequencesAllTests.suite());
-		suite.addTest(SymbolListWindowIteratorAllTests.suite());
-		suite.addTest(SequenceCompressorAllTests.suite());
+		suite.addTest(UtilAllTests.suite());
+		suite.addTest(SequenceEncoderAllTests.suite());
 		suite.addTest(IndexAllTests.suite());
 		suite.addTest(ReaderAllTests.suite());
 		suite.addTestSuite(ExtendAlignmentTest.class);

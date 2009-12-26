@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import bio.pih.genoogle.index.SubSequenceIndexInfo;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.util.CircularArrayList;
@@ -41,7 +41,7 @@ public class IndexRetrievedData {
 	 * @param searcher Index searcher that is used.
 	 */
 	@SuppressWarnings("unchecked")
-	public IndexRetrievedData(int size, SearchParams sp, int subSequenceLength, DNAIndexSearcher searcher) {
+	public IndexRetrievedData(int size, SearchParams sp, int subSequenceLength, IndexSearcher searcher) {
 
 		this.minLength = sp.getMinHspLength();
 		this.subSequenceLength = subSequenceLength;
@@ -155,15 +155,15 @@ public class IndexRetrievedData {
 
 	public final static class BothStrandSequenceAreas {
 		int sequenceId;
-		final DNAIndexSearcher indexSearcher;
-		final DNAIndexReverseComplementSearcher reverseComplementIndexSearcher;
+		final IndexSearcher indexSearcher;
+		final IndexReverseComplementSearcher reverseComplementIndexSearcher;
 		final int biggestHspLength;
 		List<RetrievedArea> areas;
 		List<RetrievedArea> rcAreas;
 
 		@SuppressWarnings("unchecked")
-		public BothStrandSequenceAreas(int sequenceId, DNAIndexSearcher indexSearcher,
-				DNAIndexReverseComplementSearcher reverseComplementIndexSearcher, List<RetrievedArea> areas,
+		public BothStrandSequenceAreas(int sequenceId, IndexSearcher indexSearcher,
+				IndexReverseComplementSearcher reverseComplementIndexSearcher, List<RetrievedArea> areas,
 				List<RetrievedArea> rcAreas) {
 			this.sequenceId = sequenceId;
 			this.indexSearcher = indexSearcher;
@@ -203,15 +203,15 @@ public class IndexRetrievedData {
 			return indexSearcher.getDatabank().getSequenceFromId(sequenceId);
 		}
 
-		public IndexedDNASequenceDataBank getDatabank() {
+		public IndexedSequenceDataBank getDatabank() {
 			return indexSearcher.getDatabank();
 		}
 
-		public DNAIndexSearcher getIndexSearcher() {
+		public IndexSearcher getIndexSearcher() {
 			return indexSearcher;
 		}
 
-		public DNAIndexSearcher getReverIndexSearcher() {
+		public IndexSearcher getReverIndexSearcher() {
 			return reverseComplementIndexSearcher;
 		}
 		

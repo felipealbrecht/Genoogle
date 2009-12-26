@@ -29,8 +29,9 @@ public class LightweightSymbolList implements SymbolList, Serializable {
 	public LightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
 		
 		for(int i = 0; i < seqString.length(); i++) {
-			if (!alphabet.isValid(seqString.charAt(i))) {
-				throw new IllegalSymbolException(seqString.charAt(i));
+			char c = seqString.charAt(i);
+			if (!alphabet.isValid(c)) {
+				throw new IllegalSymbolException(c);
 			}
 		}
 											
@@ -96,5 +97,14 @@ public class LightweightSymbolList implements SymbolList, Serializable {
 	 */
 	public static SymbolList createDNA(String dna) throws IllegalSymbolException {
 		return new LightweightSymbolList(DNAAlphabet.SINGLETON, dna);
+	}
+	
+	/**
+	 * Create a RNA {@link SymbolList} from the given RNA {@link String}.
+	 * @param rna
+	 * @return SymbolList of the given RNA sequence string. 
+	 */
+	public static SymbolList createRNA(String rna) throws IllegalSymbolException {
+		return new LightweightSymbolList(RNAAlphabet.SINGLETON, rna);
 	}
 }

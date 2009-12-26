@@ -15,12 +15,12 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.encoder.SequenceEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoderFactory;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
-import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.seq.SymbolList;
@@ -28,22 +28,22 @@ import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;
 
-public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSequenceAreas>> {
+public class IndexBothStrandSearcher implements Callable<List<BothStrandSequenceAreas>> {
 
-	private DNAIndexSearcher searcher;
-	private DNAIndexReverseComplementSearcher crSearcher;
+	private IndexSearcher searcher;
+	private IndexReverseComplementSearcher crSearcher;
 
-	private static final Logger logger = Logger.getLogger(DNAIndexBothStrandSearcher.class.getName());
+	private static final Logger logger = Logger.getLogger(IndexBothStrandSearcher.class.getName());
 	private final long id;
 	private final SearchParams sp;
-	private final IndexedDNASequenceDataBank databank;
+	private final IndexedSequenceDataBank databank;
 	private final List<RetrievedArea>[] retrievedAreas;
 	private final List<RetrievedArea>[] rcRetrievedAreas;
 	private final List<Throwable> fails;
 	private final ExecutorService executor;
 
 	@SuppressWarnings("unchecked")
-	public DNAIndexBothStrandSearcher(long id, SearchParams sp, IndexedDNASequenceDataBank databank,
+	public IndexBothStrandSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank,
 			ExecutorService executor, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
@@ -65,12 +65,12 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 		SymbolList query = sp.getQuery();
 
-		Statistics statistics = new Statistics(DNAAlphabet.SINGLETON, sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		Statistics statistics = new Statistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
 		String seqString = query.seqString();
 
 		int subSequenceLength = databank.getSubSequenceLength();
-		DNASequenceEncoderToInteger encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
+		SequenceEncoder encoder = SequenceEncoderFactory.getEncoder(databank.getAlphabet(), subSequenceLength);
 
 		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
 		String inverted = Utils.invert(query.seqString());
@@ -141,13 +141,13 @@ public class DNAIndexBothStrandSearcher implements Callable<List<BothStrandSeque
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		searcher = new DNAIndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
+		searcher = new IndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		crSearcher = new DNAIndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 		executor.submit(crSearcher);
 	}
 }

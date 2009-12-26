@@ -9,9 +9,8 @@ package bio.pih.genoogle.statistics;
 
 import java.util.Map;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.seq.Alphabet;
-import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Maps;
@@ -126,25 +125,10 @@ public class Statistics {
 
 		for (int i = 1; i <= length; i++) {
 			double probability = 250.00 / numRegularLettersInQuery;
-			int querySymbolValue = DNASequenceEncoder.getBitsFromChar(query.symbolAt(i));
+			int querySymbolValue = encoder.getBitsFromChar(query.symbolAt(i));
 
-			{
-				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.a);
-				int score = baseValue[querySymbolValue][symbolValue];
-				scoreProbabilities[score + delta] += probability;
-			}
-			{
-				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.c);
-				int score = baseValue[querySymbolValue][symbolValue];
-				scoreProbabilities[score + delta] += probability;
-			}
-			{
-				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.g);
-				int score = baseValue[querySymbolValue][symbolValue];
-				scoreProbabilities[score + delta] += probability;
-			}
-			{
-				int symbolValue = DNASequenceEncoder.getBitsFromChar(DNAAlphabet.t);
+			for (Character c : alphabet.getLetters()) {
+				int symbolValue = encoder.getBitsFromChar(c);
 				int score = baseValue[querySymbolValue][symbolValue];
 				scoreProbabilities[score + delta] += probability;
 			}
@@ -563,6 +547,7 @@ public class Statistics {
 	private final double searchSpaceSize;
 	private final double lengthAdjust;
 	private final Alphabet alphabet;
+	private final SequenceEncoder encoder;
 
 	/**
 	 * Create the statistics values from the giver query sequence, the data bank size and number of
@@ -579,9 +564,10 @@ public class Statistics {
 	 * @param numberOfSequences
 	 *            quantity of sequences in the data bank.
 	 */
-	public Statistics(Alphabet alphabet, int match, int mismatch, SymbolList query, long dataBankSize,
+	public Statistics(Alphabet alphabet, SequenceEncoder encoder, int match, int mismatch, SymbolList query, long dataBankSize,
 			long numberOfSequences) throws IndexOutOfBoundsException {
 		this.alphabet = alphabet;
+		this.encoder = encoder;
 		this.probabilities = scoreProbabilities(mismatch, match, query);
 		this.lambda = calculateLambda(probabilities, mismatch, match);
 		this.H = blastH(probabilities, lambda, mismatch, match);

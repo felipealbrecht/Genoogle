@@ -12,7 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.SequenceEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.reader.ParseException;
@@ -32,19 +33,19 @@ public abstract class AbstractSequenceDataBank {
 	protected final String name;
 	protected final Alphabet alphabet;
 	protected final int subSequenceLength;
-	protected final DNASequenceEncoderToInteger encoder;
+	protected final SequenceEncoder encoder;
 
 	protected final File path;
-	protected final DatabankCollection<? extends AbstractDNASequenceDataBank> parent;
+	protected final DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent;
 	protected final int lowComplexityFilter;
 
 	protected AbstractSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
+			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
 		this.lowComplexityFilter = lowComplexityFilter;
-		this.encoder = DNASequenceEncoderToInteger.getEncoder(subSequenceLength);
+		this.encoder = SequenceEncoderFactory.getEncoder(alphabet, subSequenceLength);
 		this.path = path;
 		this.parent = parent;
 	}
@@ -167,7 +168,7 @@ public abstract class AbstractSequenceDataBank {
 	 * @return {@link DNASequenceEncoderToInteger} witch is responsible to encode the sequences in
 	 *         this data bank.
 	 */
-	public DNASequenceEncoderToInteger getEncoder() {
+	public SequenceEncoder getEncoder() {
 		return encoder;
 	}
 

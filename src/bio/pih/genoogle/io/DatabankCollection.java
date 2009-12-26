@@ -35,7 +35,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	protected final LinkedHashMap<String, T> databanks;
 
 	public DatabankCollection(String name, Alphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractDNASequenceDataBank> parent, int lowComplexityFilter) {
+			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
 		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
 		this.databanks = new LinkedHashMap<String, T>();
 	}
@@ -157,15 +157,10 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<T> iterator = this.databanks.values().iterator();
 		sb.append("Databank Collection: ");
 		sb.append(this.getName());
-		sb.append(" [");
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
-		sb.append("]");
-
+		sb.append(" - ");
+		sb.append(alphabet.getName());
 		return sb.toString();
 	}
 	

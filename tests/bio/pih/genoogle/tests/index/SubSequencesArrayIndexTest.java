@@ -11,14 +11,15 @@ import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import bio.pih.genoogle.encoder.DNASequenceEncoderToInteger;
+import bio.pih.genoogle.encoder.SequenceEncoder;
+import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
-import bio.pih.genoogle.io.IndexedDNASequenceDataBank;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
@@ -33,14 +34,14 @@ public class SubSequencesArrayIndexTest extends TestCase {
 
 	private static final int SUB_SEQUENCE_LENGTH = 8;
 	MemoryInvertedIndex index;
-	DNASequenceEncoderToInteger encoder;
+	SequenceEncoder encoder;
 
 	@Override
 	protected void setUp() throws Exception {
-		AbstractSequenceDataBank dataBank = new IndexedDNASequenceDataBank("TestDB", 8, "11111111", File.createTempFile(
+		AbstractSequenceDataBank dataBank = new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, 8, "11111111", File.createTempFile(
 				this.getName(), ".tmp"), null, -1);
 		index = new MemoryInvertedIndex(dataBank, SUB_SEQUENCE_LENGTH);
-		encoder = DNASequenceEncoderToInteger.getEncoder(8);
+		encoder = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, 8);
 	}
 
 	@Override
