@@ -133,4 +133,23 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 				richSequence.seqString());
 	}
 
+	String fiocruzHeader = ">NP_059666|NP_059666 putative cytochrome oxidase III [Plasmodium falciparum])\n"
+			+ "ATGAAGGCAATACTAGTAGTTCTGCTATATACATTTGCAACCGCAAATGCAGACACATTATGTATAGGTTATCATGCGAACAATTCAACAGACACTGTAGACACAGTACTAGAAAAGAATGTAACAGTAACACACTCTGT";
+	@Test
+	public void testFiocruzSequence() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(fiocruzHeader);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
+
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("NP_059666", richSequence.getType());
+		assertEquals("", richSequence.getName());
+		assertEquals("NP_059666 putative cytochrome oxidase III [Plasmodium falciparum])", richSequence.getDescription());
+		assertEquals("", richSequence.getGi());
+		assertEquals("", richSequence.getAccession());
+		assertEquals(
+				"ATGAAGGCAATACTAGTAGTTCTGCTATATACATTTGCAACCGCAAATGCAGACACATTATGTATAGGTTATCATGCGAACAATTCAACAGACACTGTAGACACAGTACTAGAAAAGAATGTAACAGTAACACACTCTGT",
+				richSequence.seqString());
+	}
+
 }
