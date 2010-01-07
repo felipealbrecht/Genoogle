@@ -126,7 +126,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 					richSequence = readFastaDNA.nextRichSequence();
 				} catch (IllegalSymbolException e) {
 					if (forceFormatting) {
-						logger.info("Ignoring sequence: " + e.getMessage());
+						// illegal symbols were got at the FastaFileInfo constructor. 	
 						continue;
 					} else {
 						throw e;

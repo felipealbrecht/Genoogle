@@ -48,7 +48,7 @@ public final class Genoogle {
 	public static String line = System.getProperty("line.separator");
 
 	public static String SOFTWARE_NAME = "Genoogle";
-	public static Double VERSION = 0.76;
+	public static Double VERSION = 0.78;
 	public static String AUTHOR = "Felipe Albrecht (felipe.albrecht@gmail.com).";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
 	public static String COPYRIGHT = "Copyright (C) 2008,2009  Felipe Fernandes Albrecht";
