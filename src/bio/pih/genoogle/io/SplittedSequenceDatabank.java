@@ -75,20 +75,20 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	 *            how many parts will have this sequence databank
 	 * @param mask
 	 */
-	public SplittedSequenceDatabank(String name, Alphabet alphabet, File path, int subSequenceLength, int qtdSubBases, String mask,
-			int lowComplexityFilter) {
+	public SplittedSequenceDatabank(String name, Alphabet alphabet, File path, int subSequenceLength, int qtdSubBases,
+			String mask, int lowComplexityFilter) {
 		super(name, alphabet, subSequenceLength, path, null, lowComplexityFilter);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
 	}
 
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
-			IndexConstructionException, ParseException, IllegalSymbolException {
+	public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
+			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
-			fastaFiles.add(new FastaFileInfo(sequence.getFullPath(true), alphabet));
+			fastaFiles.add(new FastaFileInfo(sequence.getFullPath(true), alphabet, forceFormatting));
 		}
 
 		long totalBasesCount = 0;
@@ -120,7 +120,19 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 			BufferedReader is = new BufferedReader(new FileReader(fastaFile.getFastaFile()));
 			RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 			while (readFastaDNA.hasNext()) {
-				RichSequence richSequence = readFastaDNA.nextRichSequence();
+				RichSequence richSequence;
+				
+				try {
+					richSequence = readFastaDNA.nextRichSequence();
+				} catch (IllegalSymbolException e) {
+					if (forceFormatting) {
+						logger.info("Ignoring sequence: " + e.getMessage());
+						continue;
+					} else {
+						throw e;
+					}
+				}
+				
 				StoredSequenceInfo addSequence = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
 				storedDatabankBuilder.addSequencesInfo(addSequence);
 				totalSequences++;
@@ -229,7 +241,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	}
 
 	@Override
-	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException {
+	public boolean load() throws IOException, ValueOutOfBoundsException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		this.clear();
@@ -255,7 +267,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 		long qtdBases;
 		long qtdSequences;
 
-		public FastaFileInfo(File fastaFile, Alphabet alphabet) throws NoSuchElementException, IOException, ParseException, IllegalSymbolException {
+		public FastaFileInfo(File fastaFile, Alphabet alphabet, boolean forceFormatting) throws NoSuchElementException,
+				IOException, ParseException, IllegalSymbolException {
 			this.fastaFile = fastaFile;
 			this.qtdBases = 0;
 			this.qtdSequences = 0;
@@ -264,7 +277,17 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 			RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 			logger.info("Reading informations from " + fastaFile);
 			while (readFastaDNA.hasNext()) {
-				RichSequence sequence = readFastaDNA.nextRichSequence();
+				RichSequence sequence = null;
+				try {
+					sequence = readFastaDNA.nextRichSequence();
+				} catch (IllegalSymbolException e) {
+					if (forceFormatting) {
+						logger.info("Ignoring sequence: " + e.getMessage());
+						continue;
+					} else {
+						throw e;
+					}
+				}
 				qtdBases += sequence.getLength();
 				qtdSequences++;
 			}

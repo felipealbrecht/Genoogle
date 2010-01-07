@@ -64,7 +64,7 @@ public class Console implements Runnable, GenoogleListener {
 
 	private final Genoogle genoogle;
 
-	public Console() throws IllegalSymbolException, InvalidConfigurationException {
+	public Console() throws InvalidConfigurationException {
 		this.genoogle = Genoogle.getInstance();
 		genoogle.addListerner(this);		
 	}
@@ -72,7 +72,7 @@ public class Console implements Runnable, GenoogleListener {
 	/**
 	 * Starts console informing a batch file to be executed.
 	 */
-	public Console(File inputBatch) throws IllegalSymbolException, InvalidConfigurationException {
+	public Console(File inputBatch) throws InvalidConfigurationException {
 		this();
 		this.inputBatch = inputBatch;
 	}

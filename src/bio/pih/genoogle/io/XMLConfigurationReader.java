@@ -22,7 +22,6 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.search.SearchManager;
 import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.DNAAlphabet;
-import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.RNAAlphabet;
 
 import com.google.common.collect.Lists;
@@ -53,7 +52,7 @@ public class XMLConfigurationReader {
 	 * @return a brand new {@link SearchManager} with the parameters read from
 	 *         genoogle.xml and with its data banks.
 	 */
-	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, IllegalSymbolException, InvalidConfigurationException {
+	public static SearchManager getSearchManager() throws IOException, ValueOutOfBoundsException, InvalidConfigurationException {
 		Element rootElement = doc.getRootElement();
 		Element searchManagerElement = rootElement.element("search-manager");
 		SearchManager searchManager = new SearchManager(getMaxSimultaneousSearchs(searchManagerElement));

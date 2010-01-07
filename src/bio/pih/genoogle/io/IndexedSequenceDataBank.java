@@ -60,10 +60,10 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 		return true;
 	}
 
-	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
+	public void encodeSequences(boolean forceFormating) throws IOException, NoSuchElementException, ValueOutOfBoundsException,
 			IndexConstructionException, ParseException, IllegalSymbolException {
 		beginIndexBuild();
-		super.encodeSequences();
+		super.encodeSequences(forceFormating);
 		endIndexBuild();
 	}
 

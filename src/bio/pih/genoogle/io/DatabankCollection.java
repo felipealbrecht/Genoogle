@@ -115,7 +115,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
+	public void addFastaFile(File fastaFile, boolean forceFormatting) throws FileNotFoundException, NoSuchElementException,
 			IOException {
 		throw new UnsupportedOperationException();
 	}
@@ -140,7 +140,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 
 	@Override
-	public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException {
+	public boolean load() throws IOException, ValueOutOfBoundsException {
 		logger.info("Loading internals databanks");
 		long time = System.currentTimeMillis();
 		Iterator<T> iterator = this.databanks.values().iterator();
@@ -165,7 +165,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 	}
 	
 	@Override
-	public void encodeSequences() throws IOException, NoSuchElementException,
+	public void encodeSequences(boolean forceFormating) throws IOException, NoSuchElementException,
 			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
 		logger.info("Encoding internals databanks");
 		long time = System.currentTimeMillis();
@@ -173,7 +173,7 @@ public class DatabankCollection<T extends AbstractSequenceDataBank> extends Abst
 		while (iterator.hasNext()) {
 			T next = iterator.next();
 			if (!next.check()) {
-				next.encodeSequences();
+				next.encodeSequences(forceFormating);
 			}
 		}
 		logger.info("Databanks encoded in " + (System.currentTimeMillis() - time));

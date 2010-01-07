@@ -31,7 +31,7 @@ public class LightweightSymbolList implements SymbolList, Serializable {
 		for(int i = 0; i < seqString.length(); i++) {
 			char c = seqString.charAt(i);
 			if (!alphabet.isValid(c)) {
-				throw new IllegalSymbolException(c);
+				throw new IllegalSymbolException(c, i, seqString);
 			}
 		}
 											

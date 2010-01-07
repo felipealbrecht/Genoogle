@@ -16,7 +16,7 @@ public class Nucleotidies {
 		for (int i = 0; i < dnaSequence.length(); i++) {
 			char c = dnaSequence.charAt(i);
 			if (!dna.isValid(c)) {
-				throw new IllegalSymbolException(c);
+				throw new IllegalSymbolException(c, i, dnaSequence);
 			}
 			
 			if (c == 't') {
@@ -39,7 +39,7 @@ public class Nucleotidies {
 		for (int i = 0; i < rnaSequence.length(); i++) {
 			char c = rnaSequence.charAt(i);
 			if (!rna.isValid(c)) {
-				throw new IllegalSymbolException(c);
+				throw new IllegalSymbolException(c, i, rnaSequence);
 			}
 			
 			if (c == 'u') {

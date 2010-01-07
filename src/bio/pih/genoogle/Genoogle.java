@@ -66,6 +66,8 @@ public final class Genoogle {
 
 	static Logger logger = Logger.getLogger(Genoogle.class.getName());
 
+	private static boolean forceFormatting = true;
+
 	/**
 	 * Get the {@link Genoogle} execution instance.
 	 * 
@@ -82,9 +84,6 @@ public final class Genoogle {
 			} catch (ValueOutOfBoundsException e) {
 				logger.fatal(e.getMessage());
 				return null;
-			} catch (IllegalSymbolException e) {
-				logger.fatal(e.getMessage());
-				return null;
 			} catch (InvalidConfigurationException e) {
 				logger.fatal(e.getMessage());
 				return null;
@@ -97,8 +96,7 @@ public final class Genoogle {
 	/**
 	 * Private constructor.
 	 */
-	private Genoogle() throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
-			InvalidConfigurationException {
+	private Genoogle() throws IOException, ValueOutOfBoundsException, InvalidConfigurationException {
 		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		sm = XMLConfigurationReader.getSearchManager();
 	}
@@ -177,7 +175,8 @@ public final class Genoogle {
 	 *         sequence inside the given {@link BufferedReader}.
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName) throws IOException,
-			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
+			UnknowDataBankException, InterruptedException, ExecutionException, NoSuchElementException,
+			IllegalSymbolException, ParseException {
 		return doBatchSyncSearch(in, databankName, null);
 	}
 
@@ -194,12 +193,12 @@ public final class Genoogle {
 	 *            {@link Map} of {@link Parameter} which will be used in these searches.
 	 * 
 	 * @return {@link List} of {@link SearchResults}, being one {@link SearchResults} for each input
-	 *         sequence inside the given {@link BufferedReader}. 
+	 *         sequence inside the given {@link BufferedReader}.
 	 */
 	public List<SearchResults> doBatchSyncSearch(BufferedReader in, String databankName,
 			Map<Parameter, Object> parameters) throws IOException, UnknowDataBankException, InterruptedException,
 			ExecutionException, NoSuchElementException, IllegalSymbolException, ParseException {
-		
+
 		return sm.doSyncSearch(in, databankName, parameters);
 	}
 
@@ -286,8 +285,7 @@ public final class Genoogle {
 	 * "-b file" to execute the commands specified at the file or do not use parameters and use the
 	 * console.
 	 */
-	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, IllegalSymbolException,
-			InvalidConfigurationException {
+	public static void main(String[] args) throws IOException, ValueOutOfBoundsException, InvalidConfigurationException {
 		PropertyConfigurator.configure(CONF_LOG4J_PROPERTIES_FILE.getAbsolutePath());
 		logger.info(COPYRIGHT_NOTICE);
 
@@ -315,7 +313,7 @@ public final class Genoogle {
 						dataBank.delete();
 						logger.info("Data bank " + dataBank.getName() + " is not encoded.");
 						try {
-							dataBank.encodeSequences();
+							dataBank.encodeSequences(forceFormatting);
 						} catch (Exception e) {
 							logger.fatal(e);
 							return;

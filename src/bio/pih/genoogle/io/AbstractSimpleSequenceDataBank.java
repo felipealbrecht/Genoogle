@@ -38,8 +38,8 @@ import bio.pih.genoogle.seq.RichSequence;
 import com.google.protobuf.ByteString;
 
 /**
- * Abstract class for Sequence Banks which stores sequences.
- * This class has the low level IO methods. 
+ * Abstract class for Sequence Banks which stores sequences. This class has the low level IO
+ * methods.
  * 
  * @author albrecht
  * 
@@ -59,7 +59,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 	public AbstractSimpleSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
 			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
 		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
-		
+
 		this.nextSequenceId = 0;
 		this.numberOfSequences = 0;
 		this.dataBankSize = 0;
@@ -116,17 +116,17 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		return mappedIndexFile.get();
 	}
 
-	public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
-			IndexConstructionException, ParseException, IllegalSymbolException {
+	public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
+			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
 		if (getDataBankFile().exists()) {
 			throw new IOException("File " + getDataBankFile()
 					+ " already exists. Please remove it before creating another file.");
 		}
-		addFastaFile(getFullPath());
+		addFastaFile(getFullPath(), forceFormatting);
 	}
 
-	public synchronized void addFastaFile(File fastaFile) throws NoSuchElementException, IOException,
-			IndexConstructionException, ParseException, IllegalSymbolException {
+	public synchronized void addFastaFile(File fastaFile, boolean forceFormatting) throws NoSuchElementException,
+			IOException, IndexConstructionException, ParseException, IllegalSymbolException {
 		logger.info("Adding a FASTA file from " + fastaFile);
 		long begin = System.currentTimeMillis();
 		FileChannel dataBankFileChannel = new FileOutputStream(getDataBankFile(), true).getChannel();
@@ -137,9 +137,21 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 
 		while (readFastaDNA.hasNext()) {
-			RichSequence s = readFastaDNA.nextRichSequence();
+			RichSequence s = null;
+			try {
+				s = readFastaDNA.nextRichSequence();
+			} catch (IllegalSymbolException e) {
+				if (forceFormatting) {
+					logger.info(e);
+					continue;
+				} else {
+					throw e;
+				}
+			}
+
 			StoredSequenceInfo addSequence = addSequence(s, dataBankFileChannel);
 			storedDatabankBuilder.addSequencesInfo(addSequence);
+
 		}
 
 		storedDatabankBuilder.setType(SequenceType.DNA);

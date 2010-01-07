@@ -129,22 +129,32 @@ public abstract class AbstractSequenceDataBank {
 
 	/**
 	 * Add a fasta formated sequence collection into the SequenceBank.
+	 * 
+	 * @param fastaFile
+	 *            file which contains the sequences
+	 * @param forceFormatting
+	 *            <code>true</code> if it should continue the formatting process even some sequence
+	 *            has invalid character. This sequences will be ignored.
 	 */
-	abstract public void addFastaFile(File fastaFile) throws FileNotFoundException, NoSuchElementException,
-			IOException, IndexConstructionException, ParseException, IllegalSymbolException;
+	abstract public void addFastaFile(File fastaFile, boolean forceFormatting) throws FileNotFoundException,
+			NoSuchElementException, IOException, IndexConstructionException, ParseException, IllegalSymbolException;
 
 	/**
 	 * Load this sequence bank
 	 * 
-	 * @return <true> if the data bank was loaded correctly, or <code>false</code> otherwise. 
+	 * @return <true> if the data bank was loaded correctly, or <code>false</code> otherwise.
 	 */
-	abstract public boolean load() throws IOException, ValueOutOfBoundsException, IllegalSymbolException;
+	abstract public boolean load() throws IOException, ValueOutOfBoundsException;
 
 	/**
 	 * Encode the sequences into a computer legible mode
+	 * 
+	 * @param forceFormatting
+	 *            continues if some sequence had invalid character. This invalid sequence will be
+	 *            ignored.
 	 */
-	abstract public void encodeSequences() throws IOException, NoSuchElementException, ValueOutOfBoundsException,
-			IndexConstructionException, ParseException, IllegalSymbolException;
+	abstract public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
+			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException;
 
 	/**
 	 * @return the parent of this {@link AbstractSequenceDataBank} or <code>null</code> if it do not
