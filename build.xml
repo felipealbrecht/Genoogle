@@ -17,7 +17,7 @@
 
 
 		<property name="name" value="Genoogle" />
-		<property name="version" value="0.78" />
+		<property name="version" value="0.80" />
 
 		<property name="docs.dir" location="./doc/javadoc" />
 		<property name="src.dir" location="./src" />

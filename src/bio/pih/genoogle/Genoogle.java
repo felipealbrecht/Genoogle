@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009,2010  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -48,14 +48,14 @@ public final class Genoogle {
 	public static String line = System.getProperty("line.separator");
 
 	public static String SOFTWARE_NAME = "Genoogle";
-	public static Double VERSION = 0.78;
+	public static Double VERSION = 0.80;
 	public static String AUTHOR = "Felipe Albrecht (felipe.albrecht@gmail.com).";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
-	public static String COPYRIGHT = "Copyright (C) 2008,2009  Felipe Fernandes Albrecht";
+	public static String COPYRIGHT = "Copyright (C) 2008,2009,2010  Felipe Fernandes Albrecht";
 
 	public static String COPYRIGHT_NOTICE = line
 			+ "-----------------------------------------------------------------------------------------" + line
-			+ SOFTWARE_NAME + " Copyright (C) 2008,2009  " + AUTHOR + line
+			+ SOFTWARE_NAME + " Copyright (C) 2008, 2009, 2010  " + AUTHOR + line
 			+ "This program comes with ABSOLUTELY NO WARRANTY;" + line
 			+ "This is free software, and you are welcome to redistribute it under certain conditions;" + line
 			+ "See the LICENCE file or check at http://www.gnu.org/licenses/gpl-3.0.html for full license." + line
