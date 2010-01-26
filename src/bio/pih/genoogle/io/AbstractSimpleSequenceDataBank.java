@@ -13,11 +13,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
@@ -53,6 +53,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
+	private FileChannel indexFileChannel = null;
 
 	Logger logger = Logger.getLogger(AbstractSequenceDataBank.class.getCanonicalName());
 
@@ -80,7 +81,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 
 		logger.info("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() + " bases.");
-		logger.info("Databank with : " + storedDatabank.getQtdBases() / 11 + " sub-sequences bases aprox.");
+		logger.info("Databank with : " + storedDatabank.getQtdBases() / getSubSequencesOffset() + " sub-sequences bases aprox.");
 
 		this.numberOfSequences = storedDatabank.getQtdSequences();
 		this.dataBankSize = storedDatabank.getQtdBases();
@@ -90,31 +91,28 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		return true;
 	}
 
+	public int getSubSequencesOffset() {
+		return subSequenceLength;
+	}
+			
 	/**
 	 * @param sequenceId
 	 * @return {@link StoredSequence} of the given sequenceId.
 	 */
 	public synchronized StoredSequence getSequenceFromId(int sequenceId) throws IOException {
-		MappedByteBuffer mappedIndexFile = getMappedIndexFile();
+		FileChannel channel = getIndexFileChannel();
 		StoredSequenceInfo storedSequenceInfo = storedDatabank.getSequencesInfo(sequenceId);
-
+		
 		byte[] data = new byte[storedSequenceInfo.getLength()];
-		mappedIndexFile.position(storedSequenceInfo.getOffset());
-		mappedIndexFile.get(data);
-
+		ByteBuffer buffer = ByteBuffer.wrap(data);
+		channel.read(buffer, storedSequenceInfo.getOffset());
+		
 		return StoredSequence.parseFrom(data);
 	}
 
 	WeakReference<MappedByteBuffer> mappedIndexFile = new WeakReference<MappedByteBuffer>(null);
 
-	private MappedByteBuffer getMappedIndexFile() throws IOException {
-		if (mappedIndexFile.get() == null) {
-			FileChannel channel = new FileInputStream(getDataBankFile()).getChannel();
-			mappedIndexFile = new WeakReference<MappedByteBuffer>(channel.map(MapMode.READ_ONLY, 0,
-					getDataBankFile().length()));
-		}
-		return mappedIndexFile.get();
-	}
+	
 
 	public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
 			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
@@ -196,11 +194,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 
 		numberOfSequences++;
 
-		if (offset > Integer.MAX_VALUE) {
-			throw new IOException("The offset position is too big.");
-		}
-
-		return StoredSequenceInfo.newBuilder().setId(id).setOffset((int) offset).setLength(byteArray.length).build();
+		return StoredSequenceInfo.newBuilder().setId(id).setOffset(offset).setLength(byteArray.length).build();
 	}
 
 	private byte[] intArrayToByteArray(RichSequence s) {
@@ -253,6 +247,13 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 			storedDataBankInfoFile = new File(getFullPath() + ".ssdb");
 		}
 		return storedDataBankInfoFile;
+	}
+	
+	private FileChannel getIndexFileChannel() throws IOException {
+		if (indexFileChannel == null) {
+			indexFileChannel = new RandomAccessFile(getDataBankFile(), "r").getChannel();
+		}
+		return indexFileChannel; 
 	}
 
 	@Override

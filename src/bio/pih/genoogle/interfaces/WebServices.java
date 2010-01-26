@@ -40,28 +40,26 @@ import bio.pih.genoogle.search.results.SearchResults;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-@WebService(targetNamespace="http://webservices.interfaces.genoogle.pih.bio")
+@WebService(targetNamespace = "http://webservices.interfaces.genoogle.pih.bio")
 public class WebServices {
-	static Logger logger = Logger.getLogger(WebServices.class.getName());
-
-	private static Genoogle genoogle = Genoogle.getInstance();
+	private static Logger logger = Logger.getLogger(WebServices.class.getName());
+	private static Genoogle genoogle = Genoogle.getInstance(); 
 
 	@Resource
 	private WebServiceContext wsContext;
 
 	@WebMethod(exclude = true)
-	
 	@Resource
 	public void initializeContext(WebServiceContext wsContext) {
-		System.out.println("Setting WebServiceContext");
-		this.wsContext = wsContext;
+		System.out.println("Setting WebServiceContext for the Genoogle Web Services.");
+		this.wsContext = wsContext; 
 	}
-	
+
 	@WebMethod(operationName = "name")
 	public String name() {
 		return Genoogle.SOFTWARE_NAME;
 	}
-	
+
 	@WebMethod(operationName = "version")
 	public Double version() {
 		return Genoogle.VERSION;
@@ -81,21 +79,21 @@ public class WebServices {
 
 	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "parameters")
-	public List<String> parameters() {		
+	public List<String> parameters() {
 		MessageContext mc = wsContext.getMessageContext();
 		HttpSession session = ((javax.servlet.http.HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST)).getSession();
 		if (session == null) {
 			throw new WebServiceException("No session in WebServiceContext");
 		}
-		
+
 		Map<Parameter, Object> parameters = (Map<Parameter, Object>) session.getAttribute("parameters");
 		if (parameters == null) {
 			parameters = SearchParams.getSearchParamsMap();
-		} 
+		}
 
-		List<String> parametersList = Lists.newLinkedList();			
+		List<String> parametersList = Lists.newLinkedList();
 		for (Entry<Parameter, Object> entry : parameters.entrySet()) {
-			parametersList.add(entry.getKey().toString()+"="+entry.getValue().toString());
+			parametersList.add(entry.getKey().toString() + "=" + entry.getValue().toString());
 		}
 
 		return parametersList;
@@ -113,7 +111,7 @@ public class WebServices {
 
 		Map<Parameter, Object> parameters = (Map<Parameter, Object>) session.getAttribute("parameters");
 		if (parameters == null) {
-			parameters = SearchParams.getSearchParamsMap();			
+			parameters = SearchParams.getSearchParamsMap();
 		}
 
 		Parameter p = Parameter.getParameterByName(parameter);
@@ -140,15 +138,16 @@ public class WebServices {
 		if (parameters == null) {
 			parameters = SearchParams.getSearchParamsMap();
 		}
-				
+
 		SearchResults sr = genoogle.doSyncSearch(query, databank, parameters);
 		Document doc = Output.genoogleOutputToXML(sr);
 		return xmlToString(doc);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@WebMethod(operationName = "searchWithParameters")
-	public String searchWithParameters(@WebParam(name = "query") String query, @WebParam(name = "databank") String databank, @WebParam(name = "parametersList") List<String> parametersList) {
+	public String searchWithParameters(@WebParam(name = "query") String query,
+			@WebParam(name = "databank") String databank, @WebParam(name = "parametersList") List<String> parametersList) {
 		MessageContext mc = wsContext.getMessageContext();
 		HttpSession session = ((javax.servlet.http.HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST)).getSession();
 		if (session == null) {
@@ -156,14 +155,14 @@ public class WebServices {
 		}
 
 		Map<Parameter, Object> sessionParameters = (Map<Parameter, Object>) session.getAttribute("parameters");
-		Map<Parameter, Object> parameters = Maps.newHashMap(); 
+		Map<Parameter, Object> parameters = Maps.newHashMap();
 		if (sessionParameters != null) {
-			for (Entry<Parameter, Object> e: sessionParameters.entrySet()) {
+			for (Entry<Parameter, Object> e : sessionParameters.entrySet()) {
 				parameters.put(e.getKey(), e.getValue());
 			}
 		}
-		
-		for (String param: parametersList) {
+
+		for (String param : parametersList) {
 			String[] p = param.split("=");
 			if (p.length != 2) {
 				throw new InvalidParameterException(param + " is invalid.");
@@ -172,12 +171,12 @@ public class WebServices {
 			if (parameterByName == null) {
 				throw new InvalidParameterException(p[0] + " is not a parameter name.");
 			}
-			
+
 			// TODO: to verify, protect if the value is not possible.
-			Object convertValue = parameterByName.convertValue(p[1]);			
-			parameters.put(parameterByName, convertValue);			
+			Object convertValue = parameterByName.convertValue(p[1]);
+			parameters.put(parameterByName, convertValue);
 		}
-										
+
 		SearchResults sr = genoogle.doSyncSearch(query, databank, parameters);
 		Document doc = Output.genoogleOutputToXML(sr);
 		return xmlToString(doc);

@@ -23,7 +23,9 @@ public class IndexAllTests extends TestSuite {
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite("IndexAllTests");
 		
-		suite.addTestSuite(SubSequencesArrayIndexTest.class);
+		suite.addTestSuite(SubSequencesArrayIndexTest_8.class);
+		suite.addTestSuite(SubSequencesArrayIndexTest_11.class);
+		suite.addTestSuite(SubSequencesArrayIndexTest_11Masked.class);
 		suite.addTestSuite(InvertedIndexBuilderTest.class);
 
 		return suite;

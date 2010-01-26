@@ -138,7 +138,7 @@ public class SearchManager {
 	 */
 	public SearchResults doSyncSearch(SearchParams sp) throws UnknowDataBankException,
 			InterruptedException, ExecutionException {
-		logger.info("doSearch on " + sp);
+		logger.info("doSyncSearch on " + sp);
 		AbstractSequenceDataBank databank = databanks.get(sp.getDatabank());
 		if (databank == null) {
 			throw new UnknowDataBankException(sp.getDatabank());

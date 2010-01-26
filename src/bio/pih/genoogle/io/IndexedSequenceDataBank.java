@@ -68,7 +68,7 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	}
 
 	public void beginIndexBuild() throws IndexConstructionException {
-		indexBuilder = new InvertedIndexBuilder(index);
+		indexBuilder = new InvertedIndexBuilder(this);
 		indexBuilder.constructIndex();
 	}
 
@@ -82,16 +82,33 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		if (maskEncoder == null) {
-			indexBuilder.addSequence(sequenceId, encodedSequence, subSequenceLength);
+			indexBuilder.addSequence(sequenceId, encodedSequence);
 		} else {
 			SymbolList sequence = encoder.decodeIntegerArrayToSymbolList(encodedSequence);
 			int[] filteredSequence = maskEncoder.applySequenceMask(sequence);
-			indexBuilder.addSequence(sequenceId, filteredSequence, maskEncoder.getPatternLength());
+			indexBuilder.addSequence(sequenceId, filteredSequence);
 		}
 
 		return size;
 	}
+	
+	public MemoryInvertedIndex getIndex() {
+		return index;
+	}
 
+	/**
+	 * The offset between each subsequence of this data bank.
+	 * @return offset between the begin of two together subsequences. 
+	 */
+	@Override
+	public int getSubSequencesOffset() {
+		if (maskEncoder == null) {
+			return subSequenceLength;
+		} else {
+			return maskEncoder.getPatternLength();
+		}
+	}
+	
 	public MaskEncoder getMaskEncoder() {
 		return maskEncoder;
 	}

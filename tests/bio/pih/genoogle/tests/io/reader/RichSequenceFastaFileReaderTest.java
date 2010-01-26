@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
-
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;

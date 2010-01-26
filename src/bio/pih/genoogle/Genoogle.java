@@ -62,7 +62,7 @@ public final class Genoogle {
 			+ "-------------------------------------------------------------------------------------------";
 
 	SearchManager sm = null;
-	private static Genoogle singleton = null;
+	private static volatile Genoogle singleton = null;
 
 	static Logger logger = Logger.getLogger(Genoogle.class.getName());
 
@@ -314,8 +314,8 @@ public final class Genoogle {
 						logger.info("Data bank " + dataBank.getName() + " is not encoded.");
 						try {
 							dataBank.encodeSequences(forceFormatting);
-						} catch (Exception e) {
-							logger.fatal(e);
+						} catch (Exception e) {							
+							logger.fatal(e, e);
 							return;
 						}
 					}

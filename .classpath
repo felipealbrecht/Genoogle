@@ -17,41 +17,22 @@
 	<classpathentry kind="lib" path="lib/jetty/jetty-xml-7.0.0.v20091005.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-2.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/el-api.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-el.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-jdt.jar"/>
 	<classpathentry kind="lib" path="lib/jasper.jar"/>
 	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.axis_1.4.0.v200905122109/lib/axis.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.commons.discovery_0.2.0.v200905122109/lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.xml.rpc_1.1.0.v200905122109/lib/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.xml.soap_1.2.0.v200905122109/lib/saaj.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.wsdl_1.5.1.v200806030408.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/activation.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/FastInfoset.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/http.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxb-api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxb-impl.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxb-xjc.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxws-api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxws-rt.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jaxws-tools.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jsr173_api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jsr181-api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/jsr250-api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/mimepull.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/resolver.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/saaj-api.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/saaj-impl.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/stax-ex.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/streambuffer.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/Downloads/jaxws-ri/lib/woodstox.jar"/>
 	<classpathentry kind="lib" path="/home/albrecht/java/jaxen-1.1.1/jaxen-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

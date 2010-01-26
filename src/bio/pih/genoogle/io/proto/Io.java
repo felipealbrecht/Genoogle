@@ -791,11 +791,11 @@ public final class Io {
     public boolean hasId() { return hasId; }
     public int getId() { return id_; }
     
-    // required int32 offset = 2;
+    // required int64 offset = 2;
     private boolean hasOffset;
-    private int offset_ = 0;
+    private long offset_ = 0L;
     public boolean hasOffset() { return hasOffset; }
-    public int getOffset() { return offset_; }
+    public long getOffset() { return offset_; }
     
     // required int32 length = 3;
     private boolean hasLength;
@@ -818,7 +818,7 @@ public final class Io {
         output.writeInt32(1, getId());
       }
       if (hasOffset()) {
-        output.writeInt32(2, getOffset());
+        output.writeInt64(2, getOffset());
       }
       if (hasLength()) {
         output.writeInt32(3, getLength());
@@ -839,7 +839,7 @@ public final class Io {
       }
       if (hasOffset()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, getOffset());
+          .computeInt64Size(2, getOffset());
       }
       if (hasLength()) {
         size += com.google.protobuf.CodedOutputStream
@@ -1019,7 +1019,7 @@ public final class Io {
               break;
             }
             case 16: {
-              setOffset(input.readInt32());
+              setOffset(input.readInt64());
               break;
             }
             case 24: {
@@ -1049,21 +1049,21 @@ public final class Io {
         return this;
       }
       
-      // required int32 offset = 2;
+      // required int64 offset = 2;
       public boolean hasOffset() {
         return result.hasOffset();
       }
-      public int getOffset() {
+      public long getOffset() {
         return result.getOffset();
       }
-      public Builder setOffset(int value) {
+      public Builder setOffset(long value) {
         result.hasOffset = true;
         result.offset_ = value;
         return this;
       }
       public Builder clearOffset() {
         result.hasOffset = false;
-        result.offset_ = 0;
+        result.offset_ = 0L;
         return this;
       }
       
@@ -2575,7 +2575,7 @@ public final class Io {
       "\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.StoredS" +
       "equenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003" +
       "RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenceInfo" +
-      "\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\005\022\016\n\006length\030\003" +
+      "\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\003\022\016\n\006length\030\003" +
       " \002(\005\"\205\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005\022\014\n\004t" +
       "ype\030\002 \002(\t\022\n\n\002gi\030\003 \002(\t\022\014\n\004name\030\004 \002(\t\022\021\n\ta" +
       "ccession\030\005 \002(\t\022\023\n\013description\030\006 \002(\t\022\027\n\017e" +

@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
 import org.apache.log4j.Logger;
@@ -80,22 +79,49 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 		this.index = new long[indexSize][];
 
 		File memoryInvertedIndexFile = getMemoryInvertedIndexFile();
-		FileChannel memoryInvertedIndexFileChannel = new FileInputStream(memoryInvertedIndexFile).getChannel();
+		FileInputStream memoryInvertedIndexIS = new FileInputStream(memoryInvertedIndexFile);
+				
 		FileInputStream in = new FileInputStream(getMemoryInvertedOffsetIndexFile());
 		DataInputStream fileInputStream = new DataInputStream(new BufferedInputStream(in));
+		
+		long mmOffset = 0;
+		final long FOUR_GB = 1024L * 1024 * 1024 * 4;
+		final long invertedIndexFileLength = memoryInvertedIndexFile.length();
+		
+		MappedByteBuffer map = null;
+		if (invertedIndexFileLength > FOUR_GB) {			
+			map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, FOUR_GB);
+		} else {
+			map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, invertedIndexFileLength);
+		}
+		
+		long totalSubSequences = 0;
+		
+		while (fileInputStream.available() != 0) {
+			IndexFileOffset indexFilePosition = IndexFileOffset.newFrom(fileInputStream);						
 
-		MappedByteBuffer map = memoryInvertedIndexFileChannel.map(MapMode.READ_ONLY, 0,
-				memoryInvertedIndexFile.length());
-
-		while (fileInputStream.available() > 0) {
-			IndexFileOffset indexFilePosition = IndexFileOffset.newFrom(fileInputStream);
-			
 			int subSequence = indexFilePosition.subSequence;
-			int offset = indexFilePosition.offset;
 			int length = indexFilePosition.length;
-
+			long offset = indexFilePosition.offset;
+			//System.out.println(subSequence);
+			if (offset > mmOffset + FOUR_GB) {
+				if (mmOffset + FOUR_GB > invertedIndexFileLength) {
+					mmOffset += FOUR_GB;
+					map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, FOUR_GB);
+				} else {
+					mmOffset = invertedIndexFileLength - mmOffset;
+					map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, invertedIndexFileLength);
+				}				
+			}
+										
+			long reOffset = offset - mmOffset;
+			if (reOffset > Integer.MAX_VALUE) {
+				logger.fatal(reOffset + " is too big for " + reOffset);
+				System.exit(-2);
+			}
+			
 			byte[] data = new byte[length];
-			map.position(offset);
+			map.position((int) reOffset);
 			map.get(data);
 
 			InvertedIndexBuck invertedIndexBuck = InvertedIndexBuck.parseFrom(data);
@@ -104,6 +130,7 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 			for (int j = 0; j < invertedIndexBuck.getBuckCount(); j++) {
 				entries[j] = invertedIndexBuck.getBuck(j);
 			}
+			totalSubSequences += invertedIndexBuck.getBuckCount();
 
 			index[subSequence] = entries;
 		}
@@ -113,9 +140,9 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 				index[i] = EMPTY_ARRAY;
 			}
 		}
-
-		memoryInvertedIndexFileChannel.close();
+	
 		this.loaded = true;
+		logger.info(totalSubSequences + " sub sequences was loaded into the inverted index.");
 		logger.info("Inverted index loaded in " + (System.currentTimeMillis() - b));
 	}
 
@@ -156,12 +183,12 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 				logger.error(getMemoryInvertedOffsetIndexFile() + " can not be deleted.");
 			}
 		}
-		
+
 		if (getMemoryInvertedOffsetIndexFile().exists()) {
 			boolean delete = getMemoryInvertedOffsetIndexFile().delete();
 			if (!delete) {
 				logger.error(getMemoryInvertedOffsetIndexFile() + " can not be deleted.");
 			}
-		}		
+		}
 	}
 }

@@ -10,13 +10,12 @@ package bio.pih.genoogle.interfaces.webservices;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceFeature;
-
-import bio.pih.genoogle.io.XMLConfigurationReader;
 
 
 /**
@@ -35,7 +34,7 @@ public class WebServicesService
 
     static {
         URL url = null;
-        String webServiceAddress = XMLConfigurationReader.getWebServiceAddress();
+        String webServiceAddress = "http://localhost:8090/webservices?wsdl";
         try {
             URL baseUrl;
             baseUrl = bio.pih.genoogle.interfaces.webservices.WebServicesService.class.getResource(".");            

@@ -13,31 +13,26 @@ import java.io.IOException;
 
 public  class IndexFileOffset {
 	final int subSequence;
-	final int offset;
+	final long offset;
 	final int length;
 	
-	public IndexFileOffset(int subSequence, int offset, int length) {
+	public IndexFileOffset(int subSequence, long offset, int length) {
 		this.subSequence = subSequence;
 		this.offset = offset;
 		this.length = length;
 	}
 	
-	public void write(DataOutputStream stream) throws IOException {
-		stream.writeInt(subSequence);
-		stream.writeInt(offset);
-		stream.writeInt(length);
-	}
 
-	public static void writeTo(int subSequence, int sequenceId, int position, DataOutputStream stream)
+	public static void writeTo(int subSequence, long offset, int sequenceId, DataOutputStream stream)
 			throws IOException {
 		stream.writeInt(subSequence);
+		stream.writeLong(offset);
 		stream.writeInt(sequenceId);
-		stream.writeInt(position);
 	}
 
 	public static IndexFileOffset newFrom(DataInputStream stream) throws IOException {
 		int subSequence = stream.readInt();
-		int offset = stream.readInt();
+		long offset = stream.readLong();
 		int length = stream.readInt();
 		return new IndexFileOffset(subSequence, offset, length);
 	}

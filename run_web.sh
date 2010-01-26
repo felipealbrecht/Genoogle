@@ -66,8 +66,8 @@ else
 fi
 
 $JAVA_HOME/bin/java \
- -Xms1024m \
- -Xmx2048m \
+ -Xms2048m \
+ -Xmx3600m \
  -server \
  -classpath ${GENOOGLE_HOME}/genoogle.jar:${GENOOGLE_HOME}/lib/*:${GENOOGLE_HOME}/lib/jetty/*:${GENOOGLE_HOME}/lib/jetty/ext/* \
   bio.pih.genoogle.interfaces.WebServer \
