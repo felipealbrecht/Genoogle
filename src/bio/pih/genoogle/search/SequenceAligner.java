@@ -74,7 +74,7 @@ public class SequenceAligner implements Runnable {
 		IndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().getLength();
 
-		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getName());
+		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getAbsolutParent().getName());
 
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {

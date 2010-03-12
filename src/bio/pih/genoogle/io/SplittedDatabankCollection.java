@@ -25,7 +25,6 @@ import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
-import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
@@ -58,9 +57,9 @@ import com.google.common.collect.Lists;
  * 
  * @author Pih
  */
-public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequenceDataBank> {
+public class SplittedDatabankCollection extends AbstractDatabankCollection<IndexedSequenceDataBank> {
 
-	private static Logger logger = Logger.getLogger(SplittedSequenceDatabank.class.getName());
+	private static Logger logger = Logger.getLogger(SplittedDatabankCollection.class.getName());
 
 	private final int qtdSubBases;
 	private final String mask;
@@ -75,9 +74,9 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	 *            how many parts will have this sequence databank
 	 * @param mask
 	 */
-	public SplittedSequenceDatabank(String name, Alphabet alphabet, File path, int subSequenceLength, int qtdSubBases,
-			String mask, int lowComplexityFilter) {
-		super(name, alphabet, subSequenceLength, path, null, lowComplexityFilter);
+	public SplittedDatabankCollection(String name, Alphabet alphabet, File path, int subSequenceLength, int qtdSubBases,
+			String mask) {
+		super(name, alphabet, subSequenceLength, path, null);
 		this.qtdSubBases = qtdSubBases;
 		this.mask = mask;
 	}
@@ -85,6 +84,9 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	@Override
 	public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
 			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
+		
+		int totalSequences = 0;
+		long totalBases = 0;
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
 		for (AbstractSequenceDataBank sequence : databanks.values()) {
@@ -100,10 +102,8 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 		long totalBasesBySubBase = totalBasesCount / qtdSubBases;
 		long subCount = 0;
 
-		IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
+		IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this);
 		actualSequenceDatank.beginIndexBuild();
-		int totalSequences = 0;
-		long totalBases = 0;
 
 		if (!getFilePath().exists()) {
 			boolean mkdirs = getFullPath().mkdirs();
@@ -121,42 +121,43 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 			RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
 			while (readFastaDNA.hasNext()) {
 				RichSequence richSequence;
-				
+
 				try {
 					richSequence = readFastaDNA.nextRichSequence();
 				} catch (IllegalSymbolException e) {
 					if (forceFormatting) {
-						// illegal symbols were got at the FastaFileInfo constructor. 	
+						// illegal symbols were got at the FastaFileInfo constructor.
 						continue;
 					} else {
 						throw e;
 					}
 				}
-				
+
 				StoredSequenceInfo addSequence = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
 				storedDatabankBuilder.addSequencesInfo(addSequence);
 				totalSequences++;
 				totalBases += richSequence.getLength();
 
 				if (totalBases > totalBasesBySubBase) {
-					actualSequenceDatank.endIndexBuild();
-					finalizeSubDatabankConstruction(totalSequences, totalBases, dataBankFileChannel,
-							storedSequenceInfoChannel, storedDatabankBuilder);
+					finalizeSubDatabankConstruction(actualSequenceDatank, dataBankFileChannel, storedSequenceInfoChannel,
+							storedDatabankBuilder);
 					subCount++;
+					
 					logger.info("Wrote " + subCount + " of " + qtdSubBases + " sub databanks.");
 					totalSequences = 0;
 					totalBases = 0;
+					
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();
 					storedSequenceInfoChannel = new FileOutputStream(getStoredDatabakFileName(subCount), true).getChannel();
 					storedDatabankBuilder = StoredDatabank.newBuilder();
-					actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this, lowComplexityFilter);
+					
+					actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + subCount, alphabet, subSequenceLength, mask, new File(getSubDatabankName(subCount)), this);
 					actualSequenceDatank.beginIndexBuild();
 				}
 			}
 		}
-		actualSequenceDatank.endIndexBuild();
-		finalizeSubDatabankConstruction(totalSequences, totalBases, dataBankFileChannel, storedSequenceInfoChannel,
-				storedDatabankBuilder);
+		
+		finalizeSubDatabankConstruction(actualSequenceDatank, dataBankFileChannel, storedSequenceInfoChannel, storedDatabankBuilder);
 		logger.info("Wrote " + (subCount + 1) + " of " + qtdSubBases + " sub databanks.");
 	}
 
@@ -180,21 +181,17 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 		return this.getName() + "_sub_" + subCount;
 	}
 
-	private void finalizeSubDatabankConstruction(int totalSequences, long totalBases, FileChannel dataBankFileChannel,
-			FileChannel storedSequenceInfoChannel, StoredDatabank.Builder storedDatabankBuilder) throws IOException {
-		StoredDatabank storedDatabank = buildStoredDatabank(totalSequences, totalBases, storedDatabankBuilder);
+	private void finalizeSubDatabankConstruction(IndexedSequenceDataBank actualSequenceDatank, FileChannel dataBankFileChannel,
+			FileChannel storedSequenceInfoChannel, StoredDatabank.Builder storedDatabankBuilder) throws IOException, IndexConstructionException {
+		
+		actualSequenceDatank.endIndexBuild();
+		actualSequenceDatank.setStoredDatabankInfo(storedDatabankBuilder);
+		
+		StoredDatabank storedDatabank = storedDatabankBuilder.build();
+		
 		storedSequenceInfoChannel.write(ByteBuffer.wrap(storedDatabank.toByteArray()));
 		storedSequenceInfoChannel.close();
 		dataBankFileChannel.close();
-	}
-
-	private StoredDatabank buildStoredDatabank(int totalSequences, long totalBases,
-			StoredDatabank.Builder storedDatabankBuilder) {
-		storedDatabankBuilder.setType(SequenceType.DNA);
-		storedDatabankBuilder.setQtdSequences(totalSequences);
-		storedDatabankBuilder.setQtdBases(totalBases);
-		StoredDatabank storedDatabank = storedDatabankBuilder.build();
-		return storedDatabank;
 	}
 
 	private void sortFiles(List<FastaFileInfo> fastaFiles) {
@@ -216,7 +213,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	public boolean check() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 				if (!actualSequenceDatank.check()) {
 					return false;
 				}
@@ -232,7 +229,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 	public void delete() {
 		for (int i = 0; i < qtdSubBases; i++) {
 			try {
-				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+				IndexedSequenceDataBank actualSequenceDatank = new IndexedSequenceDataBank("Sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 				actualSequenceDatank.delete();
 			} catch (Exception e) {
 				logger.fatal(e);
@@ -246,7 +243,7 @@ public class SplittedSequenceDatabank extends DatabankCollection<IndexedSequence
 		long time = System.currentTimeMillis();
 		this.clear();
 		for (int i = 0; i < qtdSubBases; i++) {
-			IndexedSequenceDataBank subDataBank = new IndexedSequenceDataBank(this.getName() + "_sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this, lowComplexityFilter);
+			IndexedSequenceDataBank subDataBank = new IndexedSequenceDataBank(this.getName() + "_sub_" + i, alphabet, subSequenceLength, mask, new File(getSubDatabankName(i)), this);
 			boolean b = subDataBank.load();
 			if (b == false) {
 				return false;

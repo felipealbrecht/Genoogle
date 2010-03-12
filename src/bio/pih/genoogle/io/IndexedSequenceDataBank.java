@@ -18,6 +18,7 @@ import bio.pih.genoogle.index.MemoryInvertedIndex;
 import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
+import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.seq.Alphabet;
@@ -35,11 +36,13 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	private final MemoryInvertedIndex index;
 	private InvertedIndexBuilder indexBuilder;
 	protected final MaskEncoder maskEncoder;
+	private final String mask;
 
 	public IndexedSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, String mask, File path,
-			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter)
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent)
 			throws ValueOutOfBoundsException {
-		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
+		super(name, alphabet, subSequenceLength, path, parent);
+		this.mask = mask;
 
 		if (mask != null) {			
 			maskEncoder = new MaskEncoder(mask, encoder);
@@ -136,6 +139,12 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	public void delete() {
 		super.delete();
 		index.delete();
+	}
+	
+	protected void setStoredDatabankInfo(StoredDatabank.Builder storedDatabankBuilder) {
+		super.setStoredDatabankInfo(storedDatabankBuilder);
+		storedDatabankBuilder.setMask(mask);
+		storedDatabankBuilder.setLowComplexityFilter(getLowComplexityFilter());
 	}
 
 }

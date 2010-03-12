@@ -50,7 +50,7 @@ public class InvertedIndexBuilder {
 
 	private static final int MEMORY_CHUCK = 64 * 1024 * 1024; // 64 MEGABYTES.
 
-	Logger logger = Logger.getLogger("bio.pih.index.builder.InvertedIndexBuilder");
+	private static Logger logger = Logger.getLogger("bio.pih.index.builder.InvertedIndexBuilder");
 
 	private static final int MINIMUM_ENTRY_SET = 10;
 
@@ -86,12 +86,12 @@ public class InvertedIndexBuilder {
 		this.indexSize = memoryInvertedIndex.getIndexSize();
 		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;
 
-		int lowComplexityFilterLimit = databank.getLowComplexityFilter();
-		if (lowComplexityFilterLimit < 0) {
+		int lowComplexityFilter = databank.getLowComplexityFilter();
+		if (lowComplexityFilter < 0) {
 			this.lowComplexitySubSequences = new BitSet();
 			logger.info("Low complexity sub sequences filter disabled.");
 		} else {
-			int[] lowComplexitySubSequencesArray = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilterLimit).getSubSequences();
+			int[] lowComplexitySubSequencesArray = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilter).getSubSequences();
 			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequencesArray.length
 					+ " sub sequences.");
 

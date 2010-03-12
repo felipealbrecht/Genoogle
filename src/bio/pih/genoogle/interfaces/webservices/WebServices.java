@@ -1,14 +1,7 @@
-/*
- * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
- *
- * For further information check the LICENSE file.
- */
 
 package bio.pih.genoogle.interfaces.webservices;
 
 import java.util.List;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -66,17 +59,6 @@ public interface WebServices {
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "parameters", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.Parameters")
-    @ResponseWrapper(localName = "parametersResponse", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.ParametersResponse")
-    public List<String> parameters();
-
-    /**
-     * 
-     * @return
-     *     returns java.util.List<java.lang.String>
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
     @RequestWrapper(localName = "databanks", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.Databanks")
     @ResponseWrapper(localName = "databanksResponse", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.DatabanksResponse")
     public List<String> databanks();
@@ -91,6 +73,17 @@ public interface WebServices {
     @RequestWrapper(localName = "version", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.Version")
     @ResponseWrapper(localName = "versionResponse", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.VersionResponse")
     public Double version();
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<java.lang.String>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "parameters", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.Parameters")
+    @ResponseWrapper(localName = "parametersResponse", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.ParametersResponse")
+    public List<String> parameters();
 
     /**
      * 
@@ -128,5 +121,34 @@ public interface WebServices {
         String databank,
         @WebParam(name = "parametersList", targetNamespace = "")
         List<String> parametersList);
+
+    /**
+     * 
+     * @param fastaFiles
+     * @param subSequenceLength
+     * @param numberOfSubDatabanks
+     * @param name
+     * @param mask
+     * @param lowComplexityFilter
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "createDatabank", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.CreateDatabank")
+    @ResponseWrapper(localName = "createDatabankResponse", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", className = "bio.pih.genoogle.interfaces.webservices.CreateDatabankResponse")
+    public boolean createDatabank(
+        @WebParam(name = "name", targetNamespace = "")
+        String name,
+        @WebParam(name = "fastaFiles", targetNamespace = "")
+        List<String> fastaFiles,
+        @WebParam(name = "subSequenceLength", targetNamespace = "")
+        int subSequenceLength,
+        @WebParam(name = "mask", targetNamespace = "")
+        String mask,
+        @WebParam(name = "numberOfSubDatabanks", targetNamespace = "")
+        int numberOfSubDatabanks,
+        @WebParam(name = "lowComplexityFilter", targetNamespace = "")
+        int lowComplexityFilter);
 
 }

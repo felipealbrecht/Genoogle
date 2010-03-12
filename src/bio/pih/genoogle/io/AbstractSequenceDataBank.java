@@ -16,8 +16,11 @@ import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
+import bio.pih.genoogle.io.proto.Io.StoredDatabank;
+import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 
 /**
@@ -34,20 +37,25 @@ public abstract class AbstractSequenceDataBank {
 	protected final Alphabet alphabet;
 	protected final int subSequenceLength;
 	protected final SequenceEncoder encoder;
+	
+	protected int numberOfSequences;
+	protected long dataBankSize;
+
+	protected int lowComplexityFilter = -1;
 
 	protected final File path;
-	protected final DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent;
-	protected final int lowComplexityFilter;
+	protected final AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent;
 
 	protected AbstractSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) {
 		this.name = name;
 		this.alphabet = alphabet;
 		this.subSequenceLength = subSequenceLength;
-		this.lowComplexityFilter = lowComplexityFilter;
 		this.encoder = SequenceEncoderFactory.getEncoder(alphabet, subSequenceLength);
 		this.path = path;
 		this.parent = parent;
+		this.numberOfSequences = 0;
+		this.dataBankSize = 0;
 	}
 
 	/**
@@ -164,8 +172,14 @@ public abstract class AbstractSequenceDataBank {
 		return parent;
 	}
 
-	public int getLowComplexityFilter() {
-		return lowComplexityFilter;
+	public AbstractSequenceDataBank getAbsolutParent() {
+
+		AbstractSequenceDataBank db = this;
+		while (db.getParent() != null) {
+			db = db.getParent();
+		}
+
+		return db;
 	}
 
 	/**
@@ -194,4 +208,26 @@ public abstract class AbstractSequenceDataBank {
 	 */
 	abstract public void delete();
 
+	public void setLowComplexityFilter(int lowComplexityFilter) {
+		this.lowComplexityFilter = lowComplexityFilter;
+	}
+
+	public int getLowComplexityFilter() {
+		if (lowComplexityFilter == -1 && parent != null) {
+			return parent.getLowComplexityFilter();
+		}
+		return lowComplexityFilter;
+	}
+	
+	protected void setStoredDatabankInfo(StoredDatabank.Builder storedDatabankBuilder) {
+		storedDatabankBuilder.setQtdSequences(numberOfSequences);
+		storedDatabankBuilder.setQtdBases(dataBankSize);
+		storedDatabankBuilder.setSubSequenceLength(subSequenceLength);
+		
+		if (alphabet == DNAAlphabet.SINGLETON) {
+			storedDatabankBuilder.setType(SequenceType.DNA);
+		} else {
+			storedDatabankBuilder.setType(SequenceType.RNA);
+		}
+	}
 }

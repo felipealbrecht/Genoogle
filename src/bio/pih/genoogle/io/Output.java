@@ -9,6 +9,7 @@ package bio.pih.genoogle.io;
 
 import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.dom4j.Document;
@@ -33,8 +34,8 @@ import com.google.common.collect.Maps;
  */
 public class Output {
 
-	private final static String SIMPLE_DOUBLE_FORMAT = "%10.4f";
-	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%10.4e";
+	private final static String SIMPLE_DOUBLE_FORMAT = "%.3f%n";
+	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%5e";
 
 	/**
 	 * @param searchResults
@@ -196,9 +197,9 @@ public class Output {
 		DocumentFactory factory = DocumentFactory.getInstance();
 
 		Element hspElement = factory.createElement("hsp");
-		hspElement.addAttribute("score", Double.toString(hsp.getScore()));
-		hspElement.addAttribute("normalized-score", Double.toString(hsp.getNormalizedScore()));
-		hspElement.addAttribute("e-value", Double.toString(hsp.getEValue()));
+		hspElement.addAttribute("score", Integer.toString((int) hsp.getScore()));
+		hspElement.addAttribute("normalized-score", Integer.toString((int) hsp.getNormalizedScore()));
+		hspElement.addAttribute("e-value", eValueToString(hsp.getEValue()));
 		hspElement.addAttribute("query-from", Integer.toString(hsp.getQueryFrom()));
 		hspElement.addAttribute("query-to", Integer.toString(hsp.getQueryTo()));
 		hspElement.addAttribute("hit-from", Integer.toString(hsp.getHitFrom()));
@@ -216,15 +217,27 @@ public class Output {
 	public static String doubleToString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
-		formatter.format(SIMPLE_DOUBLE_FORMAT, value);
+		formatter.format(Locale.US, SIMPLE_DOUBLE_FORMAT, value);
 		return sb.toString();
 	}
 
 	public static String doubleToScientificString(double value) {
 		StringBuilder sb = new StringBuilder();
 		Formatter formatter = new Formatter(sb);
-		formatter.format(SCIENTIFIC_DOUBLE_FORMAT, value);
+		formatter.format(Locale.US, SCIENTIFIC_DOUBLE_FORMAT, value);
 		return sb.toString();
 	}
-
+	
+	public static String eValueToString(double eValue) {
+		if (eValue >= 0.001) {
+			return doubleToString(eValue);
+		} else {
+			if (Double.isNaN(eValue)) {
+				return "NaN";
+			}
+			String string = doubleToScientificString(eValue);
+			int indexOf = string.indexOf('-');
+			return string.substring(indexOf-1);
+		}
+	}
 }

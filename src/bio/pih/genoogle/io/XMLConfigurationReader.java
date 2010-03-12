@@ -135,7 +135,7 @@ public class XMLConfigurationReader {
 
 	@SuppressWarnings("unchecked")
 	private static AbstractSequenceDataBank getDatabank(Element e,
-			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
@@ -189,7 +189,8 @@ public class XMLConfigurationReader {
 		if (e.getName().trim().equals("split-databanks")) {
 			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
 
-			SplittedSequenceDatabank splittedSequenceDatabank = new SplittedSequenceDatabank(name, alphabet, new File(Genoogle.getHome(), path), subSequenceLength, size, mask, lowComplexityFilter);
+			SplittedDatabankCollection splittedSequenceDatabank = new SplittedDatabankCollection(name, alphabet, new File(Genoogle.getHome(), path), subSequenceLength, size, mask);
+			splittedSequenceDatabank.setLowComplexityFilter(lowComplexityFilter);
 			
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
@@ -210,31 +211,12 @@ public class XMLConfigurationReader {
 	
 		} else if (e.getName().trim().equals("databank")) {				
 			try {
-				return new IndexedSequenceDataBank(name, alphabet, subSequenceLength, mask, new File(path), parent, lowComplexityFilter);
+				return new IndexedSequenceDataBank(name, alphabet, subSequenceLength, mask, new File(path), parent);
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
 			return null;
 
-		} else if (e.getName().trim().equals("databank-collection")) {			
-			DatabankCollection<IndexedSequenceDataBank> databankCollection = new DatabankCollection<IndexedSequenceDataBank>(
-					name, DNAAlphabet.SINGLETON, subSequenceLength, new File(path), parent, lowComplexityFilter);
-			Iterator databankIterator = e.elementIterator();
-			while (databankIterator.hasNext()) {
-				try {
-					IndexedSequenceDataBank databank = (IndexedSequenceDataBank) getDatabank(
-							(Element) databankIterator.next(), databankCollection);
-					if (databank == null) {
-						return null;
-					}
-					databankCollection.addDatabank(databank);
-				} catch (DuplicateDatabankException e1) {
-					logger.fatal("Duplicate databanks named " + e1.getDatabankName()
-							+ " defined in " + e1.getDatabankName(), e1);
-					return null;
-				}
-			}
-			return databankCollection;
 		}
 		logger.error("Unknow element name " + e.getName());
 		return null;

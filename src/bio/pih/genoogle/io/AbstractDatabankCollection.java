@@ -28,15 +28,15 @@ import bio.pih.genoogle.seq.IllegalSymbolException;
  * @param <T>
  *            data bank type
  */
-public class DatabankCollection<T extends AbstractSequenceDataBank> extends AbstractSequenceDataBank {
+public abstract class AbstractDatabankCollection<T extends AbstractSequenceDataBank> extends AbstractSequenceDataBank {
 
-	Logger logger = Logger.getLogger(DatabankCollection.class.getCanonicalName());
+	Logger logger = Logger.getLogger(AbstractDatabankCollection.class.getCanonicalName());
 	
 	protected final LinkedHashMap<String, T> databanks;
 
-	public DatabankCollection(String name, Alphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
-		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
+	public AbstractDatabankCollection(String name, Alphabet alphabet, int subSequenceLength, File path,
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) {
+		super(name, alphabet, subSequenceLength, path, parent);
 		this.databanks = new LinkedHashMap<String, T>();
 	}
 

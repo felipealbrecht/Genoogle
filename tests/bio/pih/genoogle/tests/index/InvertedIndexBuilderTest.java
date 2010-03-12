@@ -33,7 +33,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 	private IndexedSequenceDataBank createSequenceDatabankMock(SequenceEncoder encoder) throws IOException,
 			SecurityException, NoSuchMethodException {
 		return new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, "1111111111", File.createTempFile(
-				this.getName(), ".tmp"), null, -1);
+				this.getName(), ".tmp"), null);
 	}
 
 	@Test

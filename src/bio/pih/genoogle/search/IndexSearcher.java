@@ -134,10 +134,6 @@ public class IndexSearcher implements Runnable {
 			logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " and "
 					+ totalHits + " hits.");
 		} catch (Throwable t) {
-			t.printStackTrace();
-			System.out.println(t);
-			logger.fatal(t);
-			logger.fatal(t.getStackTrace());
 			fails.add(t);
 		} finally {
 			countDown.countDown();

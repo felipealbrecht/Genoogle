@@ -42,7 +42,7 @@ public class SubSequencesArrayIndexTest_11Masked extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		this.dataBank = new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, mask, File.createTempFile(
-				this.getName(), ".tmp"), null, -1);		
+				this.getName(), ".tmp"), null);		
 		encoder = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH);
 	}
 

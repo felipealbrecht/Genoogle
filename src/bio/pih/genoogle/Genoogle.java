@@ -79,13 +79,13 @@ public final class Genoogle {
 			try {
 				singleton = new Genoogle();
 			} catch (IOException e) {
-				logger.fatal(e.getMessage());
+				logger.fatal(e.getMessage(), e);
 				return null;
 			} catch (ValueOutOfBoundsException e) {
-				logger.fatal(e.getMessage());
+				logger.fatal(e.getMessage(), e);
 				return null;
 			} catch (InvalidConfigurationException e) {
-				logger.fatal(e.getMessage());
+				logger.fatal(e.getMessage(), e);
 				return null;
 			}
 

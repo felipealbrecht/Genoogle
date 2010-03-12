@@ -372,19 +372,37 @@ public final class Io {
     public boolean hasType() { return hasType; }
     public bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType getType() { return type_; }
     
-    // required int32 qtdSequences = 2;
+    // required int32 subSequenceLength = 2;
+    private boolean hasSubSequenceLength;
+    private int subSequenceLength_ = 0;
+    public boolean hasSubSequenceLength() { return hasSubSequenceLength; }
+    public int getSubSequenceLength() { return subSequenceLength_; }
+    
+    // optional string mask = 3;
+    private boolean hasMask;
+    private java.lang.String mask_ = "";
+    public boolean hasMask() { return hasMask; }
+    public java.lang.String getMask() { return mask_; }
+    
+    // optional int32 lowComplexityFilter = 4;
+    private boolean hasLowComplexityFilter;
+    private int lowComplexityFilter_ = 0;
+    public boolean hasLowComplexityFilter() { return hasLowComplexityFilter; }
+    public int getLowComplexityFilter() { return lowComplexityFilter_; }
+    
+    // required int32 qtdSequences = 5;
     private boolean hasQtdSequences;
     private int qtdSequences_ = 0;
     public boolean hasQtdSequences() { return hasQtdSequences; }
     public int getQtdSequences() { return qtdSequences_; }
     
-    // required int64 qtdBases = 3;
+    // required int64 qtdBases = 6;
     private boolean hasQtdBases;
     private long qtdBases_ = 0L;
     public boolean hasQtdBases() { return hasQtdBases; }
     public long getQtdBases() { return qtdBases_; }
     
-    // repeated .proto.StoredSequenceInfo sequencesInfo = 4;
+    // repeated .proto.StoredSequenceInfo sequencesInfo = 7;
     private java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> sequencesInfo_ =
       java.util.Collections.emptyList();
     public java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> getSequencesInfoList() {
@@ -398,6 +416,7 @@ public final class Io {
     @Override
     public final boolean isInitialized() {
       if (!hasType) return false;
+      if (!hasSubSequenceLength) return false;
       if (!hasQtdSequences) return false;
       if (!hasQtdBases) return false;
       for (bio.pih.genoogle.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
@@ -412,14 +431,23 @@ public final class Io {
       if (hasType()) {
         output.writeEnum(1, getType().getNumber());
       }
+      if (hasSubSequenceLength()) {
+        output.writeInt32(2, getSubSequenceLength());
+      }
+      if (hasMask()) {
+        output.writeString(3, getMask());
+      }
+      if (hasLowComplexityFilter()) {
+        output.writeInt32(4, getLowComplexityFilter());
+      }
       if (hasQtdSequences()) {
-        output.writeInt32(2, getQtdSequences());
+        output.writeInt32(5, getQtdSequences());
       }
       if (hasQtdBases()) {
-        output.writeInt64(3, getQtdBases());
+        output.writeInt64(6, getQtdBases());
       }
       for (bio.pih.genoogle.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
-        output.writeMessage(4, element);
+        output.writeMessage(7, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -435,17 +463,29 @@ public final class Io {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, getType().getNumber());
       }
+      if (hasSubSequenceLength()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, getSubSequenceLength());
+      }
+      if (hasMask()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(3, getMask());
+      }
+      if (hasLowComplexityFilter()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, getLowComplexityFilter());
+      }
       if (hasQtdSequences()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, getQtdSequences());
+          .computeInt32Size(5, getQtdSequences());
       }
       if (hasQtdBases()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, getQtdBases());
+          .computeInt64Size(6, getQtdBases());
       }
       for (bio.pih.genoogle.io.proto.Io.StoredSequenceInfo element : getSequencesInfoList()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, element);
+          .computeMessageSize(7, element);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -580,6 +620,15 @@ public final class Io {
         if (other.hasType()) {
           setType(other.getType());
         }
+        if (other.hasSubSequenceLength()) {
+          setSubSequenceLength(other.getSubSequenceLength());
+        }
+        if (other.hasMask()) {
+          setMask(other.getMask());
+        }
+        if (other.hasLowComplexityFilter()) {
+          setLowComplexityFilter(other.getLowComplexityFilter());
+        }
         if (other.hasQtdSequences()) {
           setQtdSequences(other.getQtdSequences());
         }
@@ -637,14 +686,26 @@ public final class Io {
               break;
             }
             case 16: {
+              setSubSequenceLength(input.readInt32());
+              break;
+            }
+            case 26: {
+              setMask(input.readString());
+              break;
+            }
+            case 32: {
+              setLowComplexityFilter(input.readInt32());
+              break;
+            }
+            case 40: {
               setQtdSequences(input.readInt32());
               break;
             }
-            case 24: {
+            case 48: {
               setQtdBases(input.readInt64());
               break;
             }
-            case 34: {
+            case 58: {
               bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder subBuilder = bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addSequencesInfo(subBuilder.buildPartial());
@@ -673,7 +734,61 @@ public final class Io {
         return this;
       }
       
-      // required int32 qtdSequences = 2;
+      // required int32 subSequenceLength = 2;
+      public boolean hasSubSequenceLength() {
+        return result.hasSubSequenceLength();
+      }
+      public int getSubSequenceLength() {
+        return result.getSubSequenceLength();
+      }
+      public Builder setSubSequenceLength(int value) {
+        result.hasSubSequenceLength = true;
+        result.subSequenceLength_ = value;
+        return this;
+      }
+      public Builder clearSubSequenceLength() {
+        result.hasSubSequenceLength = false;
+        result.subSequenceLength_ = 0;
+        return this;
+      }
+      
+      // optional string mask = 3;
+      public boolean hasMask() {
+        return result.hasMask();
+      }
+      public java.lang.String getMask() {
+        return result.getMask();
+      }
+      public Builder setMask(java.lang.String value) {
+        result.hasMask = true;
+        result.mask_ = value;
+        return this;
+      }
+      public Builder clearMask() {
+        result.hasMask = false;
+        result.mask_ = "";
+        return this;
+      }
+      
+      // optional int32 lowComplexityFilter = 4;
+      public boolean hasLowComplexityFilter() {
+        return result.hasLowComplexityFilter();
+      }
+      public int getLowComplexityFilter() {
+        return result.getLowComplexityFilter();
+      }
+      public Builder setLowComplexityFilter(int value) {
+        result.hasLowComplexityFilter = true;
+        result.lowComplexityFilter_ = value;
+        return this;
+      }
+      public Builder clearLowComplexityFilter() {
+        result.hasLowComplexityFilter = false;
+        result.lowComplexityFilter_ = 0;
+        return this;
+      }
+      
+      // required int32 qtdSequences = 5;
       public boolean hasQtdSequences() {
         return result.hasQtdSequences();
       }
@@ -691,7 +806,7 @@ public final class Io {
         return this;
       }
       
-      // required int64 qtdBases = 3;
+      // required int64 qtdBases = 6;
       public boolean hasQtdBases() {
         return result.hasQtdBases();
       }
@@ -709,7 +824,7 @@ public final class Io {
         return this;
       }
       
-      // repeated .proto.StoredSequenceInfo sequencesInfo = 4;
+      // repeated .proto.StoredSequenceInfo sequencesInfo = 7;
       public java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> getSequencesInfoList() {
         return java.util.Collections.unmodifiableList(result.sequencesInfo_);
       }
@@ -2569,25 +2684,27 @@ public final class Io {
   static {
     java.lang.String descriptorData =
       "\n\010io.proto\022\005proto\"!\n\021InvertedIndexBuck\022\014" +
-      "\n\004buck\030\001 \003(\003\"\313\001\n\016StoredDatabank\0220\n\004type\030" +
+      "\n\004buck\030\001 \003(\003\"\221\002\n\016StoredDatabank\0220\n\004type\030" +
       "\001 \002(\0162\".proto.StoredDatabank.SequenceTyp" +
-      "e\022\024\n\014qtdSequences\030\002 \002(\005\022\020\n\010qtdBases\030\003 \002(" +
-      "\003\0220\n\rsequencesInfo\030\004 \003(\0132\031.proto.StoredS" +
-      "equenceInfo\"-\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003" +
-      "RNA\020\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenceInfo" +
-      "\022\n\n\002id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\003\022\016\n\006length\030\003" +
-      " \002(\005\"\205\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005\022\014\n\004t" +
-      "ype\030\002 \002(\t\022\n\n\002gi\030\003 \002(\t\022\014\n\004name\030\004 \002(\t\022\021\n\ta" +
-      "ccession\030\005 \002(\t\022\023\n\013description\030\006 \002(\t\022\027\n\017e" +
-      "ncodedSequence\030\007 \002(\014\"j\n\036StoredSimilarSub" +
-      "SequencesIndex\022H\n\034storedComparationResul" +
-      "tInfos\030\001 \003(\0132\".proto.StoredComparationRe" +
-      "sultInfo\"Y\n\033StoredComparationResultInfo\022" +
-      "\032\n\022encodedSubSequence\030\001 \002(\005\022\016\n\006length\030\003 " +
-      "\002(\005\022\016\n\006offset\030\002 \002(\003\"M\n\031StoredSimilarSubS" +
-      "equences\022\027\n\017encodedSequence\030\001 \002(\005\022\027\n\017sim" +
-      "ilarSequence\030\002 \003(\005B!\n\031bio.pih.genoogle.i" +
-      "o.protoB\002IoH\001";
+      "e\022\031\n\021subSequenceLength\030\002 \002(\005\022\014\n\004mask\030\003 \001" +
+      "(\t\022\033\n\023lowComplexityFilter\030\004 \001(\005\022\024\n\014qtdSe" +
+      "quences\030\005 \002(\005\022\020\n\010qtdBases\030\006 \002(\003\0220\n\rseque" +
+      "ncesInfo\030\007 \003(\0132\031.proto.StoredSequenceInf" +
+      "o\"-\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003RNA\020\001\022\013\n\007P" +
+      "ROTEIN\020\002\"@\n\022StoredSequenceInfo\022\n\n\002id\030\001 \002" +
+      "(\005\022\016\n\006offset\030\002 \002(\003\022\016\n\006length\030\003 \002(\005\"\205\001\n\016S" +
+      "toredSequence\022\n\n\002id\030\001 \002(\005\022\014\n\004type\030\002 \002(\t\022" +
+      "\n\n\002gi\030\003 \002(\t\022\014\n\004name\030\004 \002(\t\022\021\n\taccession\030\005" +
+      " \002(\t\022\023\n\013description\030\006 \002(\t\022\027\n\017encodedSequ" +
+      "ence\030\007 \002(\014\"j\n\036StoredSimilarSubSequencesI" +
+      "ndex\022H\n\034storedComparationResultInfos\030\001 \003" +
+      "(\0132\".proto.StoredComparationResultInfo\"Y" +
+      "\n\033StoredComparationResultInfo\022\032\n\022encoded" +
+      "SubSequence\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n\006off" +
+      "set\030\002 \002(\003\"M\n\031StoredSimilarSubSequences\022\027" +
+      "\n\017encodedSequence\030\001 \002(\005\022\027\n\017similarSequen" +
+      "ce\030\002 \003(\005B!\n\031bio.pih.genoogle.io.protoB\002I" +
+      "oH\001";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -2606,7 +2723,7 @@ public final class Io {
           internal_static_proto_StoredDatabank_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_proto_StoredDatabank_descriptor,
-              new java.lang.String[] { "Type", "QtdSequences", "QtdBases", "SequencesInfo", },
+              new java.lang.String[] { "Type", "SubSequenceLength", "Mask", "LowComplexityFilter", "QtdSequences", "QtdBases", "SequencesInfo", },
               bio.pih.genoogle.io.proto.Io.StoredDatabank.class,
               bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder.class);
           internal_static_proto_StoredSequenceInfo_descriptor =

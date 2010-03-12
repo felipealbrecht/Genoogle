@@ -1,9 +1,3 @@
-/*
- * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
- *
- * For further information check the LICENSE file.
- */
 
 package bio.pih.genoogle.interfaces.webservices;
 
@@ -37,9 +31,11 @@ public class ObjectFactory {
     private final static QName _Name_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "name");
     private final static QName _SetParameter_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "setParameter");
     private final static QName _Search_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "search");
+    private final static QName _CreateDatabank_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "createDatabank");
     private final static QName _VersionResponse_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "versionResponse");
     private final static QName _Version_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "version");
     private final static QName _ParametersResponse_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "parametersResponse");
+    private final static QName _CreateDatabankResponse_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "createDatabankResponse");
     private final static QName _Databanks_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "databanks");
     private final static QName _SearchResponse_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "searchResponse");
     private final static QName _NameResponse_QNAME = new QName("http://webservices.interfaces.genoogle.pih.bio", "nameResponse");
@@ -50,78 +46,6 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link SearchResponse }
-     * 
-     */
-    public SearchResponse createSearchResponse() {
-        return new SearchResponse();
-    }
-
-    /**
-     * Create an instance of {@link DatabanksResponse }
-     * 
-     */
-    public DatabanksResponse createDatabanksResponse() {
-        return new DatabanksResponse();
-    }
-
-    /**
-     * Create an instance of {@link VersionResponse }
-     * 
-     */
-    public VersionResponse createVersionResponse() {
-        return new VersionResponse();
-    }
-
-    /**
-     * Create an instance of {@link Version }
-     * 
-     */
-    public Version createVersion() {
-        return new Version();
-    }
-
-    /**
-     * Create an instance of {@link SetParameter }
-     * 
-     */
-    public SetParameter createSetParameter() {
-        return new SetParameter();
-    }
-
-    /**
-     * Create an instance of {@link Name }
-     * 
-     */
-    public Name createName() {
-        return new Name();
-    }
-
-    /**
-     * Create an instance of {@link NameResponse }
-     * 
-     */
-    public NameResponse createNameResponse() {
-        return new NameResponse();
-    }
-
-    /**
-     * Create an instance of {@link SearchWithParametersResponse }
-     * 
-     */
-    public SearchWithParametersResponse createSearchWithParametersResponse() {
-        return new SearchWithParametersResponse();
-    }
-
-    /**
-     * Create an instance of {@link SearchWithParameters }
-     * 
-     */
-    public SearchWithParameters createSearchWithParameters() {
-        return new SearchWithParameters();
     }
 
     /**
@@ -141,11 +65,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Search }
+     * Create an instance of {@link NameResponse }
      * 
      */
-    public Search createSearch() {
-        return new Search();
+    public NameResponse createNameResponse() {
+        return new NameResponse();
+    }
+
+    /**
+     * Create an instance of {@link SetParameter }
+     * 
+     */
+    public SetParameter createSetParameter() {
+        return new SetParameter();
+    }
+
+    /**
+     * Create an instance of {@link Name }
+     * 
+     */
+    public Name createName() {
+        return new Name();
     }
 
     /**
@@ -162,6 +102,78 @@ public class ObjectFactory {
      */
     public Databanks createDatabanks() {
         return new Databanks();
+    }
+
+    /**
+     * Create an instance of {@link CreateDatabank }
+     * 
+     */
+    public CreateDatabank createCreateDatabank() {
+        return new CreateDatabank();
+    }
+
+    /**
+     * Create an instance of {@link SearchWithParameters }
+     * 
+     */
+    public SearchWithParameters createSearchWithParameters() {
+        return new SearchWithParameters();
+    }
+
+    /**
+     * Create an instance of {@link Search }
+     * 
+     */
+    public Search createSearch() {
+        return new Search();
+    }
+
+    /**
+     * Create an instance of {@link SearchWithParametersResponse }
+     * 
+     */
+    public SearchWithParametersResponse createSearchWithParametersResponse() {
+        return new SearchWithParametersResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateDatabankResponse }
+     * 
+     */
+    public CreateDatabankResponse createCreateDatabankResponse() {
+        return new CreateDatabankResponse();
+    }
+
+    /**
+     * Create an instance of {@link Version }
+     * 
+     */
+    public Version createVersion() {
+        return new Version();
+    }
+
+    /**
+     * Create an instance of {@link DatabanksResponse }
+     * 
+     */
+    public DatabanksResponse createDatabanksResponse() {
+        return new DatabanksResponse();
+    }
+
+    /**
+     * Create an instance of {@link VersionResponse }
+     * 
+     */
+    public VersionResponse createVersionResponse() {
+        return new VersionResponse();
+    }
+
+    /**
+     * Create an instance of {@link SearchResponse }
+     * 
+     */
+    public SearchResponse createSearchResponse() {
+        return new SearchResponse();
     }
 
     /**
@@ -228,6 +240,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateDatabank }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservices.interfaces.genoogle.pih.bio", name = "createDatabank")
+    public JAXBElement<CreateDatabank> createCreateDatabank(CreateDatabank value) {
+        return new JAXBElement<CreateDatabank>(_CreateDatabank_QNAME, CreateDatabank.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link VersionResponse }{@code >}}
      * 
      */
@@ -252,6 +273,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://webservices.interfaces.genoogle.pih.bio", name = "parametersResponse")
     public JAXBElement<ParametersResponse> createParametersResponse(ParametersResponse value) {
         return new JAXBElement<ParametersResponse>(_ParametersResponse_QNAME, ParametersResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateDatabankResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://webservices.interfaces.genoogle.pih.bio", name = "createDatabankResponse")
+    public JAXBElement<CreateDatabankResponse> createCreateDatabankResponse(CreateDatabankResponse value) {
+        return new JAXBElement<CreateDatabankResponse>(_CreateDatabankResponse_QNAME, CreateDatabankResponse.class, null, value);
     }
 
     /**

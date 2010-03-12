@@ -27,7 +27,6 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
-import bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType;
 import bio.pih.genoogle.io.reader.IOTools;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
@@ -47,8 +46,6 @@ import com.google.protobuf.ByteString;
 public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDataBank {
 
 	private volatile int nextSequenceId;
-	private int numberOfSequences;
-	private long dataBankSize;
 	private StoredDatabank storedDatabank;
 
 	private File dataBankFile = null;
@@ -58,12 +55,10 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 	Logger logger = Logger.getLogger(AbstractSequenceDataBank.class.getCanonicalName());
 
 	public AbstractSimpleSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path,
-			DatabankCollection<? extends AbstractSimpleSequenceDataBank> parent, int lowComplexityFilter) {
-		super(name, alphabet, subSequenceLength, path, parent, lowComplexityFilter);
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) {
+		super(name, alphabet, subSequenceLength, path, parent);
 
 		this.nextSequenceId = 0;
-		this.numberOfSequences = 0;
-		this.dataBankSize = 0;
 		this.storedDatabank = null;
 	}
 
@@ -82,6 +77,8 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		logger.info("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() + " bases.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() / getSubSequencesOffset() + " sub-sequences bases aprox.");
+		logger.info("Databank mask : " + storedDatabank.getMask());
+		logger.info("Databank low complexity filter: " + storedDatabank.getLowComplexityFilter());
 
 		this.numberOfSequences = storedDatabank.getQtdSequences();
 		this.dataBankSize = storedDatabank.getQtdBases();
@@ -149,13 +146,9 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 
 			StoredSequenceInfo addSequence = addSequence(s, dataBankFileChannel);
 			storedDatabankBuilder.addSequencesInfo(addSequence);
-
 		}
 
-		storedDatabankBuilder.setType(SequenceType.DNA);
-		storedDatabankBuilder.setQtdSequences(numberOfSequences);
-		storedDatabankBuilder.setQtdBases(dataBankSize);
-
+		setStoredDatabankInfo(storedDatabankBuilder);
 		storedDatabank = storedDatabankBuilder.build();
 		storedSequenceInfoChannel.write(ByteBuffer.wrap(storedDatabank.toByteArray()));
 
@@ -188,11 +181,12 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		StoredSequence storedSequence = builder.build();
 
 		byte[] byteArray = storedSequence.toByteArray();
-		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
+		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));		
 
 		doSequenceProcessing(numberOfSequences, storedSequence);
 
-		numberOfSequences++;
+		this.numberOfSequences++;
+		this.dataBankSize += s.getLength();
 
 		return StoredSequenceInfo.newBuilder().setId(id).setOffset(offset).setLength(byteArray.length).build();
 	}

@@ -1,16 +1,9 @@
-/*
- * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
- *
- * For further information check the LICENSE file.
- */
 
 package bio.pih.genoogle.interfaces.webservices;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
@@ -24,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "WebServicesService", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", wsdlLocation = "http://localhost:8080/webservices?wsdl")
+@WebServiceClient(name = "WebServicesService", targetNamespace = "http://webservices.interfaces.genoogle.pih.bio", wsdlLocation = "http://localhost:8090/webservices?wsdl")
 public class WebServicesService
     extends Service
 {
@@ -34,13 +27,12 @@ public class WebServicesService
 
     static {
         URL url = null;
-        String webServiceAddress = "http://localhost:8090/webservices?wsdl";
         try {
             URL baseUrl;
-            baseUrl = bio.pih.genoogle.interfaces.webservices.WebServicesService.class.getResource(".");            
-			url = new URL(baseUrl, webServiceAddress);
+            baseUrl = bio.pih.genoogle.interfaces.webservices.WebServicesService.class.getResource(".");
+            url = new URL(baseUrl, "http://localhost:8090/webservices?wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: '"+webServiceAddress+"', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost:8090/webservices?wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         WEBSERVICESSERVICE_WSDL_LOCATION = url;

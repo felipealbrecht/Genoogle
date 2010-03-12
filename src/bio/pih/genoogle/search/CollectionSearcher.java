@@ -21,8 +21,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import bio.pih.genoogle.io.AbstractDatabankCollection;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
-import bio.pih.genoogle.io.DatabankCollection;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.results.HSP;
@@ -41,7 +41,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	private static Logger logger = Logger.getLogger(CollectionSearcher.class.getName());
 
-	private final DatabankCollection<AbstractSequenceDataBank> databankCollection;
+	private final AbstractDatabankCollection<AbstractSequenceDataBank> databankCollection;
 
 	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
 		@Override
@@ -50,7 +50,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		}
 	};
 
-	public CollectionSearcher(long code, SearchParams sp, DatabankCollection<AbstractSequenceDataBank> databank) {
+	public CollectionSearcher(long code, SearchParams sp, AbstractDatabankCollection<AbstractSequenceDataBank> databank) {
 		super(code, sp, databank);
 		this.databankCollection = databank;
 	}
@@ -75,10 +75,6 @@ public class CollectionSearcher extends AbstractSearcher {
 			subDataBanksCS.submit(indexSearcher);
 		}
 
-		if (fails.size() > 0) {
-			sr.addAllFails(fails);
-			return sr;
-		}
 
 		List<BothStrandSequenceAreas> sequencesRetrievedAreas = null;
 		try {
@@ -99,9 +95,15 @@ public class CollectionSearcher extends AbstractSearcher {
 			sr.addFail(e);
 			return sr;
 		}
-
+		
 		queryExecutor.shutdown();
 		subDatabanksExecutor.shutdown();
+		
+		if (fails.size() > 0) {
+			sr.addAllFails(fails);
+			return sr;
+		}
+
 
 		logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " "
 				+ (System.currentTimeMillis() - begin));

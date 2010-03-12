@@ -41,7 +41,7 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		this.dataBank = new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, "11111111111", File.createTempFile(
-				this.getName(), ".tmp"), null, -1);
+				this.getName(), ".tmp"), null);
 		encoder = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH);
 	}
 
@@ -50,8 +50,8 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 		this.dataBank = null;
 	}
 
-	private void populateNonSoRandomSequences(IndexedSequenceDataBank dataBank) throws IllegalSymbolException, IOException,
-			IndexConstructionException {
+	private void populateNonSoRandomSequences(IndexedSequenceDataBank dataBank) throws IllegalSymbolException,
+			IOException, IndexConstructionException {
 		InvertedIndexBuilder indexBuilder = new InvertedIndexBuilder(dataBank);
 		indexBuilder.constructIndex();
 		String stringSequence = "CATGACTGGCATCAGTGCATGCATGCAGTCAGTATATATGACGC";
@@ -101,26 +101,26 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 		stringSequence = "ACGTAGCTTACTATTGATATGAGTCGTGACGACTGACTACGTACGTACGACTGACTACGTATCGTCAGCTGCGTCATGCATTACTGACTGACTGAGTCTGATCATGACTTGACTGACTGACTGGTACTACGTGTACTACGTGTACTACGTAGCTACGACGTACGTACTGGTACTGACTGACGTGTACGCTAGCATGCATCGATGACGTACGTGATCTACTGACTGTACTGACTGGTACGACTACGTACGACTGACTGACTGACTACGATGCTGACTGACGTTGACGTACTGAC";
 		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "Sequence 11");
 		indexBuilder.addSequence(12, encoder.encodeSymbolListToIntegerArray(ss));
-		
+
 		stringSequence = "GGTTAATAAACGCAACGACAGTAATCCCCCGCTGCCATAGTGACAGACCGAGAGAAGCGAGCGGAGAAACCATAATATAATTTACCACTTACCTATTCATTTATCTACAGAAACAATGGACAACTCCGGCAAAGAAAAGGAGGCTATTCAGCTCATGGCTGAAGCCGACAAGAAAGTGAAGTCTTCCGGCTCTTTTTTAGGAGGAATGTTTGGAGGAAATCACAAAGTGGAGGAGGCTTGTGAGATGTACGCCAGAGCCGCCAACATGTTCAAAATGGCCAAGAACTGGAGTGCTGCAGGCAATGCTTTCTGTCAGGCAGCCAGAATTCATATGCAGCTTCAGAATAAACACGATTCTGCCACCAGCTACGTTGATGCTGGAAACGCCTTCAAGAAAGCAGATCCCAAGAGGCTATCAAGTGCTTAAACGCAGCAATTGATATTTACACAGACATGGTAAGATGTTTTTGTAGCTGTCAAAATCATATAATGTTGAGCCAGGCTGTTCTATTCCTGTACTGTGTTTGATCTGTGAACATTTTAAACGGCTACACA";
 		ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "NM_001045156.1");
 		indexBuilder.addSequence(13, encoder.encodeSymbolListToIntegerArray(ss));
-				
+
 		indexBuilder.finishConstruction();
-		MemoryInvertedIndex index = dataBank.getIndex();		
+		MemoryInvertedIndex index = dataBank.getIndex();
 		index.loadFromFile();
 	}
 
 	public void testIfFindSubSequences() throws IllegalSymbolException, ValueOutOfBoundsException, IOException,
 			IndexConstructionException {
 		populateNonSoRandomSequences(dataBank);
-		
+
 		MemoryInvertedIndex index = dataBank.getIndex();
 
 		long[] matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("AAAAAAAAAAA"));
 
 		assertEquals(6, matchingSubSequence.length);
-		
+
 		assertEquals(4, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[0]));
 		assertEquals(0, SubSequenceIndexInfo.getStart(matchingSubSequence[0]));
 
@@ -139,7 +139,6 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 		assertEquals(4, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[5]));
 		assertEquals(55, SubSequenceIndexInfo.getStart(matchingSubSequence[5]));
 
-		
 		matchingSubSequence = index.getMatchingSubSequence(LightweightSymbolList.createDNA("TCAGTGCATGC"));
 		assertEquals(2, matchingSubSequence.length);
 
@@ -148,17 +147,17 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 
 		assertEquals(10, SubSequenceIndexInfo.getSequenceId(matchingSubSequence[1]));
 		assertEquals(11, SubSequenceIndexInfo.getStart(matchingSubSequence[1]));
-		
-		
+
 		String stringSequence = "GGTTAATAAACGCAACGACAGTAATCCCCCGCTGCCATAGTGACAGACCGAGAGAAGCGAGCGGAGAAACCATAATATAATTTACCACTTACCTATTCATTTATCTACAGAAACAATGGACAACTCCGGCAAAGAAAAGGAGGCTATTCAGCTCATGGCTGAAGCCGACAAGAAAGTGAAGTCTTCCGGCTCTTTTTTAGGAGGAATGTTTGGAGGAAATCACAAAGTGGAGGAGGCTTGTGAGATGTACGCCAGAGCCGCCAACATGTTCAAAATGGCCAAGAACTGGAGTGCTGCAGGCAATGCTTTCTGTCAGGCAGCCAGAATTCATATGCAGCTTCAGAATAAACACGATTCTGCCACCAGCTACGTTGATGCTGGAAACGCCTTCAAGAAAGCAGATCCCAAGAGGCTATCAAGTGCTTAAACGCAGCAATTGATATTTACACAGACATGGTAAGATGTTTTTGTAGCTGTCAAAATCATATAATGTTGAGCCAGGCTGTTCTATTCCTGTACTGTGTTTGATCTGTGAACATTTTAAACGGCTACACA";
 		Sequence ss = new Sequence(DNAAlphabet.SINGLETON, stringSequence, "NM_001045156.1");
-		SymbolListWindowIterator iterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(ss, SUB_SEQUENCE_LENGTH);
-	
+		SymbolListWindowIterator iterator = SymbolListWindowIteratorFactory.getNotOverlappedFactory().newSymbolListWindowIterator(
+				ss, SUB_SEQUENCE_LENGTH);
+
 		int pos = 0;
 		while (iterator.hasNext()) {
 			SymbolList symbolList = iterator.next();
 			int encodedSubSequence = encoder.encodeSubSequenceToInteger(symbolList);
-			matchingSubSequence = index.getMatchingSubSequence(encodedSubSequence);		
+			matchingSubSequence = index.getMatchingSubSequence(encodedSubSequence);
 			assertTrue(matchingSubSequence.length > 0);
 			int sequenceId = SubSequenceIndexInfo.getSequenceId(matchingSubSequence[0]);
 			int start = SubSequenceIndexInfo.getStart(matchingSubSequence[0]);
@@ -166,6 +165,6 @@ public class SubSequencesArrayIndexTest_11 extends TestCase {
 			assertEquals(13, sequenceId);
 			pos += SUB_SEQUENCE_LENGTH;
 		}
-				
+
 	}
 }

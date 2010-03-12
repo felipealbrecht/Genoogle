@@ -7,8 +7,8 @@
 
 package bio.pih.genoogle.search;
 
+import bio.pih.genoogle.io.AbstractDatabankCollection;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
-import bio.pih.genoogle.io.DatabankCollection;
 
 /**
  * Construct a Searcher appropriate to the kind of {@link AbstractSequenceDataBank}.
@@ -23,8 +23,8 @@ public class SearcherFactory {
 	 */
 	static public AbstractSearcher getSearcher(long id, SearchParams sp, AbstractSequenceDataBank databank) {
 
-		if (databank instanceof DatabankCollection) {
-			return new CollectionSearcher(id, sp, (DatabankCollection<AbstractSequenceDataBank>) databank);
+		if (databank instanceof AbstractDatabankCollection) {
+			return new CollectionSearcher(id, sp, (AbstractDatabankCollection<AbstractSequenceDataBank>) databank);
 		}
 
 		throw new UnsupportedOperationException("Factory for " + databank.getClass().getName()

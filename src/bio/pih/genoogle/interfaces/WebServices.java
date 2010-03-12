@@ -8,12 +8,14 @@
 package bio.pih.genoogle.interfaces;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
@@ -31,11 +33,19 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import bio.pih.genoogle.Genoogle;
+import bio.pih.genoogle.index.IndexConstructionException;
+import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
+import bio.pih.genoogle.io.DuplicateDatabankException;
+import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.Output;
+import bio.pih.genoogle.io.SplittedDatabankCollection;
+import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchParams;
 import bio.pih.genoogle.search.SearchParams.Parameter;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.DNAAlphabet;
+import bio.pih.genoogle.seq.IllegalSymbolException;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,7 +53,7 @@ import com.google.common.collect.Maps;
 @WebService(targetNamespace = "http://webservices.interfaces.genoogle.pih.bio")
 public class WebServices {
 	private static Logger logger = Logger.getLogger(WebServices.class.getName());
-	private static Genoogle genoogle = Genoogle.getInstance(); 
+	private static Genoogle genoogle = Genoogle.getInstance();
 
 	@Resource
 	private WebServiceContext wsContext;
@@ -52,7 +62,7 @@ public class WebServices {
 	@Resource
 	public void initializeContext(WebServiceContext wsContext) {
 		System.out.println("Setting WebServiceContext for the Genoogle Web Services.");
-		this.wsContext = wsContext; 
+		this.wsContext = wsContext;
 	}
 
 	@WebMethod(operationName = "name")
@@ -180,6 +190,59 @@ public class WebServices {
 		SearchResults sr = genoogle.doSyncSearch(query, databank, parameters);
 		Document doc = Output.genoogleOutputToXML(sr);
 		return xmlToString(doc);
+	}
+
+	@WebMethod
+	public boolean createDatabank(@WebParam(name = "name") String name,
+			@WebParam(name = "fastaFiles") List<String> fastaFiles,
+			@WebParam(name = "subSequenceLength") int subSequenceLength, @WebParam(name = "mask") String mask,
+			@WebParam(name = "numberOfSubDatabanks") int numberOfSubDatabanks,
+			@WebParam(name = "lowComplexityFilter") int lowComplexityFilter) {
+
+		// TODO: check if it as at least one element
+		File pwd = new File(fastaFiles.get(0)).getParentFile();
+
+		// TODO: get alphabet.
+		SplittedDatabankCollection splittedSequenceDatabank = new SplittedDatabankCollection(name, DNAAlphabet.SINGLETON, pwd, subSequenceLength, numberOfSubDatabanks, mask);
+
+		for (String f : fastaFiles) {
+			File fastaFile = new File(f);
+
+			// TODO: do not use IndexedSequenceDataBank to store temporary fasta file informations.
+			IndexedSequenceDataBank databank = new IndexedSequenceDataBank(fastaFile.getName(), DNAAlphabet.SINGLETON, subSequenceLength, mask, new File(fastaFile.getName()),
+					splittedSequenceDatabank);
+
+			try {
+				splittedSequenceDatabank.addDatabank(databank);
+			} catch (DuplicateDatabankException e) {
+				// TODO Auto-generated catch block				
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			splittedSequenceDatabank.encodeSequences(false);
+		} catch (NoSuchElementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ValueOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IndexConstructionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalSymbolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return true;
 	}
 
 	private String xmlToString(Document doc) {
