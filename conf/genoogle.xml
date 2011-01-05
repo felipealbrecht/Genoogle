@@ -33,49 +33,14 @@
   </genoogle:web-service>
 
   <genoogle:databanks>
-<!--
-    <genoogle:split-databanks name="bigonedb" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
-      <genoogle:databank name="bigone_" path="bigone" />
-   </genoogle:split-databanks>
--->
-<!--
-   <genoogle:split-databanks name="RefSeq_11" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
-      <genoogle:databank name="Cow"       path="cow.rna.fna"       />
-      <genoogle:databank name="Frog"      path="frog.rna.fna"      />
-      <genoogle:databank name="Human"     path="human.rna.fna"     />
-      <genoogle:databank name="Mouse"     path="mouse.rna.fna"     />
-      <genoogle:databank name="Rat"       path="rat.rna.fna"       />
-      <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" />
-    </genoogle:split-databanks>
--->
-<!--   
-   <genoogle:split-databanks name="Cow" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
-      <genoogle:databank name="Cow"       path="cow.rna.fna"       />
-  </genoogle:split-databanks>
--->
    
-  <genoogle:split-databanks name="Human" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
-      <genoogle:databank name="human"       path="human.rna.fna"   />
+  <genoogle:split-databanks name="AE000657" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+      <genoogle:databank name="AE000657"       path="AE000657.fna"   />
   </genoogle:split-databanks>
 
-<!--  
-  <genoogle:split-databanks name="Mouse_Rat" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
-      <genoogle:databank name="Mouse"     path="mouse.rna.fna"     />
-      <genoogle:databank name="Rat"       path="rat.rna.fna"       />
+  <genoogle:split-databanks name="ecoli" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+      <genoogle:databank name="ecoli"       path="ecoli.nt"   />
   </genoogle:split-databanks>
--->
-
-
-<!--
-   <genoogle:split-databanks name="RefSeq_10" path="files/fasta" mask="11101000100110111" number-of-sub-databanks="1" sub-sequence-length="10" low-complexity-filter="5">
-      <genoogle:databank name="Cow"       path="cow.rna.fna"       />
-      <genoogle:databank name="Frog"      path="frog.rna.fna"      />
-      <genoogle:databank name="Human"     path="human.rna.fna"     />
-      <genoogle:databank name="Mouse"     path="mouse.rna.fna"     />
-      <genoogle:databank name="Rat"       path="rat.rna.fna"       />
-      <genoogle:databank name="Zebrafish" path="zebrafish.rna.fna" />
-    </genoogle:split-databanks>
--->
  
   </genoogle:databanks>  	
 </genoogle:conf>

@@ -133,7 +133,6 @@ public class XMLConfigurationReader {
 		return sequenceDataBanks;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static AbstractSequenceDataBank getDatabank(Element e,
 			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
 		String name = e.attributeValue("name");
@@ -159,7 +158,7 @@ public class XMLConfigurationReader {
 		}
 		
 		if (path.equals(name)) {
-			throw new InvalidConfigurationException("It is not possible to have a FASTA (" + path + ") file with the same name (" + name + ").");
+			throw new InvalidConfigurationException("It is not possible to have a FASTA file (" + path + ") with the same name (" + name + ") of the data base.");
 		}
 		
 		if ((parent != null) && path.equals(parent.getName())) {

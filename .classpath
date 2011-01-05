@@ -16,6 +16,28 @@
 	<classpathentry kind="lib" path="lib/jetty/jetty-webapp-7.0.0.v20091005.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/jetty-xml-7.0.0.v20091005.jar"/>
 	<classpathentry kind="lib" path="lib/jetty/servlet-api-2.5.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/FastInfoset.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/http.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxb-xjc.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxws-api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxws-rt.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jaxws-tools.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jsr173_api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jsr181-api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jsr250-api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/mimepull.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/protobuf-java-2.0.2.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/resolver.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/saaj-api.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/saaj-impl.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/stax-ex.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/streambuffer.jar"/>
+	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/woodstox.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/el-api.jar"/>
@@ -27,12 +49,5 @@
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.axis_1.4.0.v200905122109/lib/axis.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.commons.discovery_0.2.0.v200905122109/lib/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.xml.rpc_1.1.0.v200905122109/lib/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.xml.soap_1.2.0.v200905122109/lib/saaj.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/javax.wsdl_1.5.1.v200806030408.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/eclipse/plugins/org.apache.commons.logging_1.0.4.v200904062259.jar"/>
-	<classpathentry kind="lib" path="/home/albrecht/java/jaxen-1.1.1/jaxen-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
