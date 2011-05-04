@@ -51,11 +51,11 @@ public final class Genoogle {
 	public static Double VERSION = 0.80;
 	public static String AUTHOR = "Felipe Albrecht (felipe.albrecht@gmail.com).";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
-	public static String COPYRIGHT = "Copyright (C) 2008,2009,2010  Felipe Fernandes Albrecht";
+	public static String COPYRIGHT = "Copyright (C) 2008,2009,2010,2011  Felipe Fernandes Albrecht";
 
 	public static String COPYRIGHT_NOTICE = line
 			+ "-----------------------------------------------------------------------------------------" + line
-			+ SOFTWARE_NAME + " Copyright (C) 2008, 2009, 2010  " + AUTHOR + line
+			+ SOFTWARE_NAME + " Copyright (C) 2008, 2009, 2010, 2011  " + AUTHOR + line
 			+ "This program comes with ABSOLUTELY NO WARRANTY;" + line
 			+ "This is free software, and you are welcome to redistribute it under certain conditions;" + line
 			+ "See the LICENCE file or check at http://www.gnu.org/licenses/gpl-3.0.html for full license." + line

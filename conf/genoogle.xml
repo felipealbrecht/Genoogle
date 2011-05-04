@@ -3,14 +3,14 @@
 <!-- Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br) -->
 <!-- Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)           -->
 <!--                                                                                          -->
-<!-- For further information check the LICENSE file.                                          --> 
+<!-- For further information check the LICENSE file.                                          -->
 
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
   <genoogle:search-manager>
     <genoogle:max-simultaneous-searchs value="4"/>
   </genoogle:search-manager>
-  
+
   <genoogle:score>
     <genoogle:match value="1"/>
     <genoogle:mismatch value="-3" />
@@ -26,21 +26,21 @@
     <genoogle:min-query-slice-length      value="2000" />
     <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
-  
+
   <genoogle:web-service>
     <genoogle:server-address         value="http://localhost:8090/webservices?wsdl"/>
     <genoogle:use-sessions           value="true"/>
   </genoogle:web-service>
 
   <genoogle:databanks>
-   
-  <genoogle:split-databanks name="AE000657" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+
+   <genoogle:split-databanks name="AE000657" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
       <genoogle:databank name="AE000657"       path="AE000657.fna"   />
   </genoogle:split-databanks>
 
   <genoogle:split-databanks name="ecoli" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
       <genoogle:databank name="ecoli"       path="ecoli.nt"   />
   </genoogle:split-databanks>
- 
-  </genoogle:databanks>  	
+
+  </genoogle:databanks>
 </genoogle:conf>

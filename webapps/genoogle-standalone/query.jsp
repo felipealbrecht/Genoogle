@@ -2,6 +2,7 @@
 %><%@page import="bio.pih.genoogle.interfaces.webservices.WebServicesService"
 %><%@page import="javax.xml.ws.BindingProvider"
 %><%@page import="org.apache.log4j.Logger"
+%><%@page import="java.util.List"
 %><%
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
@@ -9,21 +10,30 @@
  *
  * For further information check the LICENSE file.
  */
- 
+
 final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 
 	WebServices proxy;
-	
+
 	if (session.getAttribute("proxy") == null) {
 		WebServicesService webServicesService = new WebServicesService();
-		proxy = webServicesService.getWebServicesPort();		
+		proxy = webServicesService.getWebServicesPort();
 			((BindingProvider) proxy).getRequestContext().put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
 		session.setAttribute("proxy", proxy);
 	} else {
 		proxy = (WebServices) session.getAttribute("proxy");
 	}
-	
-	
+
+
+        List<String> databanks =  proxy.databanks();
+
+        // TOODO: Be possivle to choice the database, for while, the first one is used.
+        if (databanks.size() == 0) {
+                 out.println("No databases available, please, ask for the administrator format some one");
+                 return;
+        }
+        String databankName = databanks.get(0);
+
 
 	if (request.getParameter("query") != null) {
 		String query = request.getParameter("query");
@@ -51,11 +61,11 @@ final Logger logger = Logger.getLogger("bio.pih.web.Query.jsp");
 			return;
 		}
 		long begin = System.currentTimeMillis();
-		String result = proxy.search(query, "AS");
-		long total = System.currentTimeMillis() - begin;		
+		String result = proxy.search(query, databankName);
+		long total = System.currentTimeMillis() - begin;
 		response.setContentType("text/xml; charset=UTF-8");
 		out.print(result);
 		out.print("<!-- TOTAL TIME: "+total+" -->");
-		
+
 	}
 %>

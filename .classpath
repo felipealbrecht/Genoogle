@@ -31,7 +31,6 @@
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/jsr250-api.jar"/>
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/mimepull.jar"/>
-	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/protobuf-java-2.0.2.jar"/>
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/resolver.jar"/>
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/saaj-api.jar"/>
 	<classpathentry kind="lib" path="webapps/genoogle-webservices/WEB-INF/lib/saaj-impl.jar"/>
@@ -47,7 +46,7 @@
 	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
-	<classpathentry kind="lib" path="lib/protobuf-java-2.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
