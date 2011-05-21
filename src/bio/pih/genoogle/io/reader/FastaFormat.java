@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.util.log.Log;
 
 import bio.pih.genoogle.seq.Alphabet;
 
@@ -25,6 +26,9 @@ import bio.pih.genoogle.seq.Alphabet;
  * 
  */
 public class FastaFormat implements RichSequenceFormat {
+
+	// TODO: Put this value as parameter.
+	private static final int READ_AHEAD_LIMIT =  (int) Math.pow(2, 20); // Every line read, will look ahead 1M 
 
 	static Logger logger = Logger.getLogger(FastaFormat.class.getName());
 
@@ -62,11 +66,16 @@ public class FastaFormat implements RichSequenceFormat {
 		StringBuffer seq = new StringBuffer();
 		boolean hasMoreSeq = true;
 		while (hasMoreSeq) {
-			reader.mark(500);
+			reader.mark(READ_AHEAD_LIMIT);
+			// TODO: Not read with readline, but read ant put into a buffer.
 			line = reader.readLine();
 			if (line != null) {
 				line = line.trim();
 				if (line.length() > 0 && line.charAt(0) == '>') {
+					logger.debug("New header: '" + line + "'.");
+					if (line.length() > READ_AHEAD_LIMIT) {
+						throw new IOException("Sequence header length ("+line.length()+") too long. The limit is " + READ_AHEAD_LIMIT+ ".");
+					}
 					reader.reset();
 					hasMoreSeq = false;
 				} else {
@@ -97,6 +106,11 @@ public class FastaFormat implements RichSequenceFormat {
 	 * Local Sequence identifier lcl|identifier
 	 */
 	protected static final Pattern lclHeader = Pattern.compile(">lcl\\|(\\S+)(\\|(\\s*(.*))?)?");
+	
+	/**
+	 * >EMBLCDS:BAJ49870 BAJ49870.1 Candidatus Caldiarchaeum subterraneum archaeal cell division control protein 6
+	 */	
+	protected static final Pattern emblHeader = Pattern.compile(">(\\S+):(\\S+)(\\s+)(\\S+\\.\\d)(\\s+)(\\S+(.*))");
 
 	public void processHeader(String line, RichSequenceBuilder rsiol) throws IOException, ParseException {
 		Matcher matcher = giHeader.matcher(line);
@@ -114,6 +128,15 @@ public class FastaFormat implements RichSequenceFormat {
 			rsiol.setType("lcl");
 			rsiol.setName(matcher.group(1));
 			rsiol.setDescription(matcher.group(3));
+			return;
+		}
+		
+		matcher = emblHeader.matcher(line);
+		if (matcher.matches()) {
+			rsiol.setType(matcher.group(1));
+			rsiol.setGi(matcher.group(2));
+			rsiol.setName(matcher.group(4));
+			rsiol.setDescription(matcher.group(6));			
 			return;
 		}
 

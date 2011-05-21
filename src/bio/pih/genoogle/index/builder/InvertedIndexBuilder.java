@@ -43,12 +43,12 @@ import com.google.common.collect.Lists;
 /**
  * Class which uses SortBased method to create the inverted index. Possibly will be merged with the
  * {@link MemoryInvertedIndex}.
- * 
+ *
  * @author albrecht
  */
 public class InvertedIndexBuilder {
 
-	private static final int MEMORY_CHUCK = 64 * 1024 * 1024; // 64 MEGABYTES.
+	private static final int MEMORY_CHUCK = 256 * 1024 * 1024; // 512 MEGABYTES.
 
 	private static Logger logger = Logger.getLogger("bio.pih.index.builder.InvertedIndexBuilder");
 
@@ -391,6 +391,8 @@ public class InvertedIndexBuilder {
 
 		int totalWrote = 0;
 		// merging
+		// TODO: Some printout to show de status.
+		// TODO: Rathen than the "while", use a MinHeap to get the next element.
 		for (int i = 0; i < totalEntries; i++) {
 			SortedEntriesBufferManager smallerOwner = null;
 			for (SortedEntriesBufferManager bm : entryBufferManagers) {
@@ -508,7 +510,7 @@ public class InvertedIndexBuilder {
 
 		public void write(DataOutputStream stream) throws IOException {
 			stream.writeInt(subSequence);
-			stream.writeInt(sequenceId);			
+			stream.writeInt(sequenceId);
 			stream.writeLong(position);
 		}
 
@@ -558,8 +560,8 @@ public class InvertedIndexBuilder {
 
 			int subSequence = intBuffer.get();
 			int sequenceId = intBuffer.get();
-			long position = (((long) intBuffer.get()) << 32) | intBuffer.get(); 
-			
+			long position = (((long) intBuffer.get()) << 32) | intBuffer.get();
+
 			return new Entry(subSequence, sequenceId, position);
 		}
 

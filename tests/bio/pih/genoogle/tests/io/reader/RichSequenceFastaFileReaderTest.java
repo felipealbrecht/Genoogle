@@ -151,5 +151,45 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 				"ATGAAGGCAATACTAGTAGTTCTGCTATATACATTTGCAACCGCAAATGCAGACACATTATGTATAGGTTATCATGCGAACAATTCAACAGACACTGTAGACACAGTACTAGAAAAGAATGTAACAGTAACACACTCTGT",
 				richSequence.seqString());
 	}
+	
+	String emblCdsHeader = ">EMBLCDS:BAJ49870 BAJ49870.1 Candidatus Caldiarchaeum subterraneum archaeal cell division control protein 6\n" +
+	"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA";
 
+	@Test
+	public void testEmblCdsSequence() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(emblCdsHeader);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
+
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("EMBLCDS", richSequence.getType());
+		assertEquals("BAJ49870.1", richSequence.getName());
+		assertEquals("Candidatus Caldiarchaeum subterraneum archaeal cell division control protein 6", richSequence.getDescription());
+		assertEquals("BAJ49870", richSequence.getGi());
+		assertEquals("", richSequence.getAccession());
+		assertEquals(
+				"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA",
+				richSequence.seqString());
+	}
+	
+	// 
+	String emblCdsHeader2 = ">EMBLCDS:EBW45059 EBW45059.1 marine metagenome hypothetical protein#EMBLCDS:EDG62044 EDG62044.1 marine metagenome hypothetical protein\n" +
+	"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA";
+
+	@Test
+	public void testEmblCdsSequence2() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(emblCdsHeader2);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
+
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("EMBLCDS", richSequence.getType());
+		assertEquals("EBW45059.1", richSequence.getName());
+		assertEquals("marine metagenome hypothetical protein#EMBLCDS:EDG62044 EDG62044.1 marine metagenome hypothetical protein", richSequence.getDescription());
+		assertEquals("EBW45059", richSequence.getGi());
+		assertEquals("", richSequence.getAccession());
+		assertEquals(
+				"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA",
+				richSequence.seqString());
+	}
 }
