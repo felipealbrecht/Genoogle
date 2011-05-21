@@ -21,7 +21,7 @@
 
 		<property name="docs.dir" location="./doc/javadoc" />
 		<property name="src.dir" location="./src" />
-		<property name="src_tmp.dir" location="src_tmp/" />    
+		<property name="src_tmp.dir" location="src_tmp/" />
 
 		<!-- Main build directory -->
 		<property name="build.dir" location="./ant-build" />
@@ -48,8 +48,8 @@
 		<property name="packages" value="bio.pih.*" />
 
         <!-- Packing info -->
-		<property name="packing.dir" location="packing/genoogle" />    
-		
+		<property name="packing.dir" location="packing/genoogle" />
+
 
 		<!-- Tests properties -->
 		<property name="reports.tests" value="${build.dir}/tests/report" />
@@ -107,16 +107,18 @@
 
 		<copy file="${jar.genoogle}" tofile="${packing.dir}/genoogle.jar"/>
 
+                <copy file="format_db.sh" tofile="${packing.dir}/format_db.sh"/>
+
 		<copy file="run_console.sh" tofile="${packing.dir}/run_console.sh"/>
-		<copy file="format_db.sh" tofile="${packing.dir}/format_db.sh"/>
 		<copy file="run_web.sh" tofile="${packing.dir}/run_web.sh"/>
+		<copy file="run_standalone_web.sh" tofile="${packing.dir}/run_standalone_web.sh"/>
 
 		<copy file="./conf/genoogle_default.xml" tofile="${packing.dir}/conf/genoogle.xml"/>
 		<copy file="./conf/log4j.properties" tofile="${packing.dir}/conf/log4j.properties"/>
-	
+
 		<mkdir dir="${packing.dir}/files/fasta"/>
 		<copy file="files/fasta/AE000657.fna" tofile="${packing.dir}/files/fasta/AE000657.fna"/>
-		
+
 		<copy todir="${packing.dir}/lib">
 			<fileset dir="./lib"/>
 		</copy>
@@ -132,11 +134,11 @@
 	<target name="packing" depends="packing_dir">
 		<tar destfile="genoogle.tar" basedir="./packing"/>
 		<gzip destfile="${targz.genoogle}" src="genoogle.tar"/>
-	    
+
 		<delete file="genoogle.tar"/>
 		<delete dir="./packing"/>
 	</target>
-   
+
 
 	<!-- Creates the API documentation -->
 	<target name="javadoc" depends="compile" description="Creates the API documentation">
