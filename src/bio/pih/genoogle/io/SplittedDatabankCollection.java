@@ -133,8 +133,8 @@ public class SplittedDatabankCollection extends AbstractDatabankCollection<Index
 					}
 				}
 
-				StoredSequenceInfo addSequence = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
-				storedDatabankBuilder.addSequencesInfo(addSequence);
+				StoredSequenceInfo sequenceInfo = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
+				storedDatabankBuilder.addSequencesInfo(sequenceInfo);
 				totalSequences++;
 				totalBases += richSequence.getLength();
 

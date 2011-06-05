@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.util.log.Log;
 
 import bio.pih.genoogle.seq.Alphabet;
 
@@ -62,6 +61,8 @@ public class FastaFormat implements RichSequenceFormat {
 		builder.startSequence();
 
 		processHeader(line, builder);
+		
+		builder.setHeader(line);
 
 		StringBuffer seq = new StringBuffer();
 		boolean hasMoreSeq = true;
@@ -112,31 +113,31 @@ public class FastaFormat implements RichSequenceFormat {
 	 */	
 	protected static final Pattern emblHeader = Pattern.compile(">(\\S+):(\\S+)(\\s+)(\\S+\\.\\d)(\\s+)(\\S+(.*))");
 
-	public void processHeader(String line, RichSequenceBuilder rsiol) throws IOException, ParseException {
+	public void processHeader(String line, RichSequenceBuilder sequenceBuilder) throws IOException, ParseException {
 		Matcher matcher = giHeader.matcher(line);
 		if (matcher.matches()) {
-			rsiol.setType("gi");
-			rsiol.setGi(matcher.group(1));
-			rsiol.setName(matcher.group(2));
-			rsiol.setAccession(matcher.group(3));
-			rsiol.setDescription(matcher.group(4));
+			sequenceBuilder.setType("gi");
+			sequenceBuilder.setGi(matcher.group(1));
+			sequenceBuilder.setName(matcher.group(2));
+			sequenceBuilder.setAccession(matcher.group(3));
+			sequenceBuilder.setDescription(matcher.group(4));
 			return;
 		}
 
 		matcher = lclHeader.matcher(line);
 		if (matcher.matches()) {
-			rsiol.setType("lcl");
-			rsiol.setName(matcher.group(1));
-			rsiol.setDescription(matcher.group(3));
+			sequenceBuilder.setType("lcl");
+			sequenceBuilder.setName(matcher.group(1));
+			sequenceBuilder.setDescription(matcher.group(3));
 			return;
 		}
 		
 		matcher = emblHeader.matcher(line);
 		if (matcher.matches()) {
-			rsiol.setType(matcher.group(1));
-			rsiol.setGi(matcher.group(2));
-			rsiol.setName(matcher.group(4));
-			rsiol.setDescription(matcher.group(6));			
+			sequenceBuilder.setType(matcher.group(1));
+			sequenceBuilder.setGi(matcher.group(2));
+			sequenceBuilder.setName(matcher.group(4));
+			sequenceBuilder.setDescription(matcher.group(6));			
 			return;
 		}
 
@@ -144,23 +145,23 @@ public class FastaFormat implements RichSequenceFormat {
 		String[] strings = line.split("\\|");
 		
 		if (strings.length == 0) {
-			rsiol.setDescription(line);			
+			sequenceBuilder.setDescription(line);			
 		} else {
-			rsiol.setType(strings[0]);
+			sequenceBuilder.setType(strings[0]);
 		}
 		
 		if (strings.length > 2) {
-			rsiol.setName(strings[1]);
+			sequenceBuilder.setName(strings[1]);
 		}
 		if (strings.length > 3) {
-			rsiol.setGi(strings[2]);
+			sequenceBuilder.setGi(strings[2]);
 		}
 		if (strings.length > 4) {
-			rsiol.setAccession(strings[3]);
+			sequenceBuilder.setAccession(strings[3]);
 		}
 		
 		if (strings.length > 1) {
-			rsiol.setDescription(strings[strings.length - 1]);
+			sequenceBuilder.setDescription(strings[strings.length - 1]);
 		}
 	}
 

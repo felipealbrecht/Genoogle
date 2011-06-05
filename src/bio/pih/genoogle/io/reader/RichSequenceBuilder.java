@@ -26,6 +26,7 @@ public class RichSequenceBuilder {
 	private String gi;
 	private String name;
 	private String sequence;
+	private String header;
 
 	/**
 	 * Sets the sequence info back to default values, ie. in order to start constructing a new
@@ -39,6 +40,7 @@ public class RichSequenceBuilder {
 		this.description = null;
 		this.gi = null;
 		this.name = null;
+		this.header = null;
 	}
 
 	public void setAccession(String accession)  {
@@ -70,10 +72,17 @@ public class RichSequenceBuilder {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
 	
 	public void endSequence() throws ParseException {
 		if (this.sequence == null) {
-			throw new ParseException("Sequence String has not been supplied");
+			throw new ParseException("Sequence content has not been supplied");
+		}
+		if (this.header == null) {
+			throw new ParseException("Sequence header has not been supplied");
 		}
 		if (this.name == null && this.description == null) {
 			throw new ParseException("Name and description have not been supplied");
@@ -83,9 +92,8 @@ public class RichSequenceBuilder {
 	public RichSequence makeRichSequence() throws ParseException, IllegalSymbolException {
 		this.endSequence();
 
-		RichSequence rs = new RichSequence(this.alphabet, this.sequence, this.name, this.type, this.accession, this.gi, this.description);
+		RichSequence rs = new RichSequence(this.alphabet, this.sequence, this.name, this.type, this.accession, this.gi, this.description, this.header);
 		return rs;
 	}
-
 
 }
