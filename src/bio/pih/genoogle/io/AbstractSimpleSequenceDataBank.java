@@ -174,9 +174,13 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		final byte[] ret = intArrayToByteArray(s);
 
 		int id = getNextSequenceId();
-		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder().setId(id).setGi(
-				s.getGi()).setName(s.getName()).setType(s.getType()).setAccession(s.getAccession()).setDescription(
-				s.getDescription()).setEncodedSequence(ByteString.copyFrom(ret));
+		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder()
+					.setId(id).setGi(s.getGi())
+					.setName(s.getName())
+					.setType(s.getType())
+					.setAccession(s.getAccession())
+					.setDescription(s.getDescription())
+					.setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();
 
@@ -219,7 +223,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		}
 	}
 
-	protected int getNextSequenceId() {
+	protected synchronized int getNextSequenceId() {
 		int id = nextSequenceId;
 		nextSequenceId++;
 		return id;
