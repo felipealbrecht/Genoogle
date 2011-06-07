@@ -42,5 +42,20 @@
       <genoogle:databank name="ecoli"       path="ecoli.nt"   />
   </genoogle:split-databanks>
 
+  <genoogle:split-databanks name="Escherichia_coli_TY" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+      <genoogle:databank    name="Escherichia_coli_TY"       path="Escherichia_coli_TY-2482.contig.fa"   />
+  </genoogle:split-databanks>
+
+  <!--
+  <genoogle:split-databanks name="testcdsbig" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+      <genoogle:databank name="testcdsdbdb"       path="testcds"   />
+  </genoogle:split-databanks>
+
+  <genoogle:split-databanks name="cds" path="files/fasta" mask="10101010010101001101101" number-of-sub-databanks="4" sub-sequence-length="12" low-complexity-filter="5">
+      <genoogle:databank name="cdsdb"       path="emblcds"   />
+  </genoogle:split-databanks>
+  -->
+
+
   </genoogle:databanks>
 </genoogle:conf>

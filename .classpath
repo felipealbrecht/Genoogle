@@ -48,5 +48,7 @@
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-collect-snapshot-20080820.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="/Users/albrecht/development/lucene-3.1.0/lucene-core-3.1.0.jar" sourcepath="/Users/albrecht/development/lucene-3.1.0/src/java"/>
+	<classpathentry kind="lib" path="/Users/albrecht/development/lucene-3.1.0/lucene-core-3.1.0-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
