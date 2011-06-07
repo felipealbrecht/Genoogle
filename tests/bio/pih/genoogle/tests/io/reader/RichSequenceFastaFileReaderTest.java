@@ -192,4 +192,23 @@ public class RichSequenceFastaFileReaderTest extends TestCase {
 				"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA",
 				richSequence.seqString());
 	}
+	
+	String contigSequenceHeader = ">contig00001_1 length=19730\n" +
+	"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA";
+	
+	@Test
+	public void testContigSequence() throws NoSuchElementException, IOException, ParseException,
+			IllegalSymbolException {
+		StringReader sr = new StringReader(contigSequenceHeader);
+		RichSequenceStreamReader reader = IOTools.readFasta(new BufferedReader(sr), DNAAlphabet.SINGLETON);
+
+		RichSequence richSequence = reader.nextRichSequence();
+		assertEquals("contig", richSequence.getType());
+		assertEquals("00001_1", richSequence.getName());
+		assertEquals("length=19730", richSequence.getDescription());
+		assertEquals("contig00001_1 length=19730", richSequence.getHeader());
+		assertEquals(
+				"ATGTCGGCTGCTTTGGATGAGTCTACACAGCTCTCCGAAAAACCGCCGAAGCGTTAGGAGTAGAGATTCCGAGA",
+				richSequence.seqString());
+	}
 }

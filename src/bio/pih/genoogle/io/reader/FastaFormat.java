@@ -62,7 +62,7 @@ public class FastaFormat implements RichSequenceFormat {
 
 		processHeader(line, builder);
 		
-		builder.setHeader(line);
+		builder.setHeader(line.substring(1));
 
 		StringBuffer seq = new StringBuffer();
 		boolean hasMoreSeq = true;
@@ -112,6 +112,11 @@ public class FastaFormat implements RichSequenceFormat {
 	 * >EMBLCDS:BAJ49870 BAJ49870.1 Candidatus Caldiarchaeum subterraneum archaeal cell division control protein 6
 	 */	
 	protected static final Pattern emblHeader = Pattern.compile(">(\\S+):(\\S+)(\\s+)(\\S+\\.\\d)(\\s+)(\\S+(.*))");
+	
+	/**
+	 * >contig00001_1 length=19730
+	 */	
+	protected static final Pattern ecoli = Pattern.compile(">contig(\\S+)(\\s+)(\\S+(.*))");
 
 	public void processHeader(String line, RichSequenceBuilder sequenceBuilder) throws IOException, ParseException {
 		Matcher matcher = giHeader.matcher(line);
@@ -138,6 +143,13 @@ public class FastaFormat implements RichSequenceFormat {
 			sequenceBuilder.setGi(matcher.group(2));
 			sequenceBuilder.setName(matcher.group(4));
 			sequenceBuilder.setDescription(matcher.group(6));			
+			return;
+		}
+		matcher = ecoli.matcher(line);
+		if (matcher.matches()) {
+			sequenceBuilder.setType("contig");
+			sequenceBuilder.setName(matcher.group(1));
+			sequenceBuilder.setDescription(matcher.group(3));
 			return;
 		}
 
