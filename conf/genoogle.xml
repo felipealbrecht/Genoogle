@@ -8,7 +8,7 @@
 <genoogle:conf xmlns:genoogle="http://genoogle.pih.bio.br">
 
   <genoogle:search-manager>
-    <genoogle:max-simultaneous-searchs value="4"/>
+    <genoogle:max-simultaneous-searchs value="16"/>
   </genoogle:search-manager>
 
   <genoogle:score>
@@ -20,9 +20,9 @@
     <genoogle:max-sub-sequence-distance   value="11"/>
     <genoogle:min-hsp-length              value="11" />
     <genoogle:extend-dropoff              value="5" />
-    <genoogle:max-hits-results            value="50" />
+    <genoogle:max-hits-results            value="3" />
     <genoogle:max-threads-index-search    value="4" />
-    <genoogle:max-threads-extend-align    value="8" />
+    <genoogle:max-threads-extend-align    value="16" />
     <genoogle:min-query-slice-length      value="2000" />
     <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
@@ -38,7 +38,7 @@
       <genoogle:databank name="AE000657"       path="AE000657.fna"   />
   </genoogle:split-databanks>
 
-  <genoogle:split-databanks name="ecoli" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
+  <genoogle:split-databanks name="ecoli" path="files/fasta" mask="1110100100110111" number-of-sub-databanks="1" sub-sequence-length="10" low-complexity-filter="5">
       <genoogle:databank name="ecoli"       path="ecoli.nt"   />
   </genoogle:split-databanks>
 

@@ -48,7 +48,7 @@ public final class Genoogle {
 	public static String line = System.getProperty("line.separator");
 
 	public static String SOFTWARE_NAME = "Genoogle";
-	public static Double VERSION = 0.80;
+	public static Double VERSION = 0.81;
 	public static String AUTHOR = "Felipe Albrecht (felipe.albrecht@gmail.com).";
 	public static String WEB_PAGE = "http://genoogle.pih.bio.br";
 	public static String COPYRIGHT = "Copyright (C) 2008,2009,2010,2011  Felipe Fernandes Albrecht";
@@ -238,6 +238,7 @@ public final class Genoogle {
 		} catch (IllegalSymbolException e) {
 			logger.error(e.getMessage(), e);
 		} catch (InterruptedException e) {
+			// TODO: Stop thread (do for all interrupted exceptions)
 			logger.error(e.getMessage(), e);
 		} catch (ExecutionException e) {
 			logger.error(e.getMessage(), e);

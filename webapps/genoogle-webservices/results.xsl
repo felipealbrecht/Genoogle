@@ -56,8 +56,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	  <p>
 	    <pre>
 		  <xsl:value-of select="query"/><br/>
-		  <xsl:value-of select="path"/><br/>
-		  <xsl:value-of select="target"/>
+		  <xsl:value-of select="align"/><br/>
+		  <xsl:value-of select="targt"/>
 	    </pre>
 	  </p>
 	</p>

@@ -23,6 +23,8 @@ import bio.pih.genoogle.search.SearchParams;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.search.results.Hit;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.RichSequence;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Maps;
 
@@ -34,7 +36,7 @@ import com.google.common.collect.Maps;
  */
 public class Output {
 
-	private final static String SIMPLE_DOUBLE_FORMAT = "%.3f%n";
+	private final static String SIMPLE_DOUBLE_FORMAT = "%.3f";
 	private final static String SCIENTIFIC_DOUBLE_FORMAT = "%5e";
 
 	/**
@@ -55,9 +57,17 @@ public class Output {
 
 		Element iterationsElement = output.addElement("iterations");
 		for (int i = 0; i < searchResults.size(); i++) {
-			Element iterationElement = iterationsElement.addElement("iteration").addAttribute("number",
-					String.valueOf(i));
-			iterationElement.add(searchResultToXML(searchResults.get(i)));
+			SearchResults searchResult = searchResults.get(i);
+			
+			Element iterationElement = iterationsElement.addElement("iteration");
+			iterationElement.addAttribute("number", String.valueOf(i));
+			
+			SymbolList query = searchResult.getParams().getQuery();
+			if (query instanceof RichSequence) {
+				iterationElement.addAttribute("query", ((RichSequence) query).getHeader());
+			}
+			
+			iterationElement.add(searchResultToXML(searchResult));
 		}
 
 		return doc;
@@ -94,13 +104,14 @@ public class Output {
 				Double.toString(Genoogle.VERSION)).addAttribute("copyright", Genoogle.COPYRIGHT);
 		return output;
 	}
-	
+		
 	/**
 	 * @param searchResult
 	 * @return {@link Element} containing the {@link SearchResults} at XML form.
 	 */
 	public static Element searchResultToXML(SearchResults searchResult) {
 		assert searchResult != null;
+		// TODO: Revise this behavor to throws the exception before.
 		if (searchResult.hasFail()) {
 			for (Throwable e : searchResult.getFails()) {
 				e.printStackTrace(System.err);
@@ -208,8 +219,8 @@ public class Output {
 		hspElement.addAttribute("align-len", Integer.toString(hsp.getAlignLength()));
 
 		hspElement.addElement("query").addText(hsp.getQuerySeq());
-		hspElement.addElement("path").addText(hsp.getPathSeq());
-		hspElement.addElement("target").addText(hsp.getTargetSeq());
+		hspElement.addElement("align").addText(hsp.getPathSeq());
+		hspElement.addElement("targt").addText(hsp.getTargetSeq());
 
 		return hspElement;
 	}
@@ -237,7 +248,10 @@ public class Output {
 			}
 			String string = doubleToScientificString(eValue);
 			int indexOf = string.indexOf('-');
-			return string.substring(indexOf-1);
+			if (indexOf == -1 ) {
+				indexOf = string.indexOf('+');
+			}
+ 			return string.substring(indexOf-1);
 		}
 	}
 }
