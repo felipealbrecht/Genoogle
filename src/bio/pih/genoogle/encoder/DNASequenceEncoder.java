@@ -7,8 +7,6 @@
 
 package bio.pih.genoogle.encoder;
 
-import java.util.Hashtable;
-
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.seq.DNAAlphabet;
 
@@ -26,23 +24,10 @@ public class DNASequenceEncoder extends SequenceEncoder {
 	// All wildschars will have this value.
 	// TODO: implements a way to put at the end of the sequence the "correct" base information.
 	static byte defaultWildcharValue = 0x00;
-
-	static Hashtable<Character, Integer> DNACharToBitsSubstitionTable;
+	
 	
 	static Character[] DNABitsToSymbolSubstitionTable = new Character[] { 'A', 'C', 'G', 'T' };
 
-
-	static {
-		DNACharToBitsSubstitionTable = new Hashtable<Character, Integer>();
-		DNACharToBitsSubstitionTable.put('a', 0x00);
-		DNACharToBitsSubstitionTable.put('c', 0x01);
-		DNACharToBitsSubstitionTable.put('g', 0x02);
-		DNACharToBitsSubstitionTable.put('t', 0x03);
-		DNACharToBitsSubstitionTable.put('A', 0x00);
-		DNACharToBitsSubstitionTable.put('C', 0x01);
-		DNACharToBitsSubstitionTable.put('G', 0x02);
-		DNACharToBitsSubstitionTable.put('T', 0x03);
-	}
 
 
 	public final int getBitsFromChar(char symbol) {

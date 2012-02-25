@@ -21,6 +21,7 @@ message StoredDatabank {
   	DNA = 0;
   	RNA = 1;
   	PROTEIN = 2;
+  	TRANSLATED_PROTEIN = 4;
   }
   
   required SequenceType type = 1;

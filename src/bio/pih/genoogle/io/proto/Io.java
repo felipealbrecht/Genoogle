@@ -464,11 +464,13 @@ public final class Io {
       DNA(0, 0),
       RNA(1, 1),
       PROTEIN(2, 2),
+      TRANSLATED_PROTEIN(3, 4),
       ;
       
       public static final int DNA_VALUE = 0;
       public static final int RNA_VALUE = 1;
       public static final int PROTEIN_VALUE = 2;
+      public static final int TRANSLATED_PROTEIN_VALUE = 4;
       
       
       public final int getNumber() { return value; }
@@ -478,6 +480,7 @@ public final class Io {
           case 0: return DNA;
           case 1: return RNA;
           case 2: return PROTEIN;
+          case 4: return TRANSLATED_PROTEIN;
           default: return null;
         }
       }
@@ -508,7 +511,7 @@ public final class Io {
       }
       
       private static final SequenceType[] VALUES = {
-        DNA, RNA, PROTEIN, 
+        DNA, RNA, PROTEIN, TRANSLATED_PROTEIN, 
       };
       
       public static SequenceType valueOf(
@@ -4390,27 +4393,27 @@ public final class Io {
   static {
     java.lang.String[] descriptorData = {
       "\n\016proto/io.proto\022\005proto\"!\n\021InvertedIndex" +
-      "Buck\022\014\n\004buck\030\001 \003(\003\"\221\002\n\016StoredDatabank\0220\n" +
+      "Buck\022\014\n\004buck\030\001 \003(\003\"\251\002\n\016StoredDatabank\0220\n" +
       "\004type\030\001 \002(\0162\".proto.StoredDatabank.Seque" +
       "nceType\022\031\n\021subSequenceLength\030\002 \002(\005\022\014\n\004ma" +
       "sk\030\003 \001(\t\022\033\n\023lowComplexityFilter\030\004 \001(\005\022\024\n" +
       "\014qtdSequences\030\005 \002(\005\022\020\n\010qtdBases\030\006 \002(\003\0220\n" +
       "\rsequencesInfo\030\007 \003(\0132\031.proto.StoredSeque" +
-      "nceInfo\"-\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003RNA\020" +
-      "\001\022\013\n\007PROTEIN\020\002\"@\n\022StoredSequenceInfo\022\n\n\002" +
-      "id\030\001 \002(\005\022\016\n\006offset\030\002 \002(\003\022\016\n\006length\030\003 \002(\005",
-      "\"\205\001\n\016StoredSequence\022\n\n\002id\030\001 \002(\005\022\014\n\004type\030" +
-      "\002 \002(\t\022\n\n\002gi\030\003 \002(\t\022\014\n\004name\030\004 \002(\t\022\021\n\tacces" +
-      "sion\030\005 \002(\t\022\023\n\013description\030\006 \002(\t\022\027\n\017encod" +
-      "edSequence\030\007 \002(\014\"j\n\036StoredSimilarSubSequ" +
-      "encesIndex\022H\n\034storedComparationResultInf" +
-      "os\030\001 \003(\0132\".proto.StoredComparationResult" +
-      "Info\"Y\n\033StoredComparationResultInfo\022\032\n\022e" +
-      "ncodedSubSequence\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022" +
-      "\016\n\006offset\030\002 \002(\003\"M\n\031StoredSimilarSubSeque" +
-      "nces\022\027\n\017encodedSequence\030\001 \002(\005\022\027\n\017similar",
-      "Sequence\030\002 \003(\005B!\n\031bio.pih.genoogle.io.pr" +
-      "otoB\002IoH\001"
+      "nceInfo\"E\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003RNA\020" +
+      "\001\022\013\n\007PROTEIN\020\002\022\026\n\022TRANSLATED_PROTEIN\020\004\"@" +
+      "\n\022StoredSequenceInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offs",
+      "et\030\002 \002(\003\022\016\n\006length\030\003 \002(\005\"\205\001\n\016StoredSeque" +
+      "nce\022\n\n\002id\030\001 \002(\005\022\014\n\004type\030\002 \002(\t\022\n\n\002gi\030\003 \002(" +
+      "\t\022\014\n\004name\030\004 \002(\t\022\021\n\taccession\030\005 \002(\t\022\023\n\013de" +
+      "scription\030\006 \002(\t\022\027\n\017encodedSequence\030\007 \002(\014" +
+      "\"j\n\036StoredSimilarSubSequencesIndex\022H\n\034st" +
+      "oredComparationResultInfos\030\001 \003(\0132\".proto" +
+      ".StoredComparationResultInfo\"Y\n\033StoredCo" +
+      "mparationResultInfo\022\032\n\022encodedSubSequenc" +
+      "e\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"" +
+      "M\n\031StoredSimilarSubSequences\022\027\n\017encodedS",
+      "equence\030\001 \002(\005\022\027\n\017similarSequence\030\002 \003(\005B!" +
+      "\n\031bio.pih.genoogle.io.protoB\002IoH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

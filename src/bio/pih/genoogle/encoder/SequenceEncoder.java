@@ -17,7 +17,7 @@ import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
 /**
  * Class with the main informations of the encoding sequences.
- * 
+ *
  * @author albrecht
  */
 public abstract class SequenceEncoder {
@@ -96,18 +96,18 @@ public abstract class SequenceEncoder {
 	public int getSubSequenceLength() {
 		return subSequenceLength;
 	}
-	
+
 	public Alphabet getAlphabet() {
 		return alphabet;
 	}
-		
+
 	public abstract int getBitsFromChar(char symbol);
-	
+
 	public abstract char getSymbolFromBits(int bits);
-	
+
 	/**
 	 * Encode a subsequence of the encoder length to its int representation
-	 * 
+	 *
 	 * @param subSymbolList
 	 * @return an int containing the representation of the subsequence
 	 */
@@ -143,7 +143,7 @@ public abstract class SequenceEncoder {
 
 	/**
 	 * Decode an int vector to its sequence string representation
-	 * 
+	 *
 	 * @param encoded
 	 * @return the sequence string
 	 */
@@ -180,7 +180,7 @@ public abstract class SequenceEncoder {
 
 	/**
 	 * Encode a {@link SymbolList} of length 1 to (2^16)-1 to an array of int.
-	 * 
+	 *
 	 * @param sequence
 	 * @return an array of int as bit vector
 	 */

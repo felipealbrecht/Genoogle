@@ -61,8 +61,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	@Override
 	public SearchResults call() {
-		long begin = System.currentTimeMillis();
-		List<Throwable> fails = Lists.newLinkedList();
+		long begin = System.currentTimeMillis();		
 
 		int indexSearchers = databankCollection.size();
 
@@ -74,6 +73,7 @@ public class CollectionSearcher extends AbstractSearcher {
 		ExecutorService queryExecutor = Executors.newFixedThreadPool(sp
 				.getMaxThreadsIndexSearch());
 
+		List<Throwable> fails = Lists.newLinkedList();
 		fails = Collections.synchronizedList(fails);
 		Iterator<AbstractSequenceDataBank> it = databankCollection
 				.databanksIterator();
