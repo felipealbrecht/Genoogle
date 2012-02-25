@@ -7,7 +7,6 @@
 
 package bio.pih.genoogle.seq;
 
-import java.util.Arrays;
 
 public class AminoAcidAlphabet implements Alphabet {
 

@@ -306,6 +306,7 @@ public abstract class SequenceEncoder {
 		int vectorValue = encodedSequence[posInArray];
 		int shift = posInInt * 2;
 		int value = vectorValue >> (shift - 2);
+		// TODO: only works for DNA. should use bitsMask in place of 3.
 		return value & 3;
 	}
 }

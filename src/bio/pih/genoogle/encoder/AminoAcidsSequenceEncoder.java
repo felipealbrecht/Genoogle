@@ -11,7 +11,6 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.seq.AminoAcidAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
-import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
 import bio.pih.genoogle.seq.SymbolList;
 
 /**
