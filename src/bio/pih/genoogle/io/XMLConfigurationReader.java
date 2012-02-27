@@ -69,7 +69,7 @@ public class XMLConfigurationReader {
 
 		return searchManager;
 	}
-	
+
 	/**
 	 * @return how many simultaneous searchs a searchManager can handle.
 	 */
@@ -78,11 +78,10 @@ public class XMLConfigurationReader {
 		String value = maxSimultaneousSearchs.attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
-	
+
 	private static Integer match = null;
 	private static Integer mismatch = null;
-	
+
 	public static int getMatchScore() {
 		if (match == null) {
 			Element rootElement = doc.getRootElement();
@@ -90,11 +89,11 @@ public class XMLConfigurationReader {
 			Element matchElement = scoreElement.element("match");
 			String value = matchElement.attributeValue("value");
 			match = Integer.parseInt(value);
-		}		
+		}
 
 		return match.intValue();
 	}
-	
+
 	public static int getMismatchScore() {
 		if (mismatch == null) {
 			Element rootElement = doc.getRootElement();
@@ -102,15 +101,14 @@ public class XMLConfigurationReader {
 			Element mismatchElement = scoreElement.element("mismatch");
 			String value = mismatchElement.attributeValue("value");
 			mismatch = Integer.parseInt(value);
-		}		
+		}
 
 		return mismatch.intValue();
 	}
-	
-	
+
 	/**
-	 * @return {@link List} of {@link AbstractSequenceDataBank} that are configured in
-	 *         the XML file.
+	 * @return {@link List} of {@link AbstractSequenceDataBank} that are
+	 *         configured in the XML file.
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<AbstractSequenceDataBank> getDataBanks() throws IOException, InvalidConfigurationException {
@@ -134,22 +132,27 @@ public class XMLConfigurationReader {
 		return sequenceDataBanks;
 	}
 
-	private static AbstractSequenceDataBank getDatabank(Element e,
-			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
+	private static AbstractSequenceDataBank getDatabank(Element e, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws IOException, InvalidConfigurationException {
 		String name = e.attributeValue("name");
 		String path = readPath(e.attributeValue("path"));
 		String mask = e.attributeValue("mask");
 		String lowComplexityFilterString = e.attributeValue("low-complexity-filter");
 		String type = e.attributeValue("type");
-				
+		String remoteSimilarity = e.attributeValue("remoteSimilarity");
+
+		boolean remoteSimilarityDatabank = false;
+		if (remoteSimilarity != null) {
+			remoteSimilarityDatabank = Boolean.parseBoolean(remoteSimilarity);
+		}
+
 		String subSequenceLengthString = e.attributeValue("sub-sequence-length");
-		int subSequenceLength; 
+		int subSequenceLength;
 		if (parent != null) {
 			subSequenceLength = parent.getSubSequenceLength();
 		} else {
 			subSequenceLength = Integer.parseInt(subSequenceLengthString);
 		}
-		
+
 		if (name == null) {
 			throw new InvalidConfigurationException("Missing attribute name in element " + e.getName());
 		}
@@ -157,29 +160,29 @@ public class XMLConfigurationReader {
 		if (path == null) {
 			throw new InvalidConfigurationException("Missing attribute path in element " + e.getName());
 		}
-		
+
 		if (path.equals(name)) {
 			throw new InvalidConfigurationException("It is not possible to have a FASTA file (" + path + ") with the same name (" + name + ") of the data base.");
 		}
-		
+
 		if ((parent != null) && path.equals(parent.getName())) {
 			throw new InvalidConfigurationException("It is not possible to have a FASTA (" + path + ") file with the same name (" + parent.getName() + ") of the its parent data bank.");
 		}
-		
+
 		int lowComplexityFilter = -1;
 		if (lowComplexityFilterString != null) {
 			lowComplexityFilter = Integer.parseInt(lowComplexityFilterString);
 		}
-		
+
 		Alphabet alphabet = DNAAlphabet.SINGLETON;
 		if (type != null) {
 			if (type.toLowerCase().equals("dna")) {
 				alphabet = DNAAlphabet.SINGLETON;
 			} else if (type.toLowerCase().equals("rna")) {
 				alphabet = RNAAlphabet.SINGLETON;
-			}else if (type.toLowerCase().equals("protein")) { 
+			} else if (type.toLowerCase().equals("protein")) {
 				alphabet = AminoAcidAlphabet.SINGLETON;
-			}else {
+			} else {
 				throw new InvalidConfigurationException("Sequences type: " + type + " is invalid.");
 			}
 		} else {
@@ -193,27 +196,30 @@ public class XMLConfigurationReader {
 
 			SplittedDatabankCollection splittedSequenceDatabank = new SplittedDatabankCollection(name, alphabet, new File(Genoogle.getHome(), path), subSequenceLength, size, mask);
 			splittedSequenceDatabank.setLowComplexityFilter(lowComplexityFilter);
-			
+
 			Iterator databankIterator = e.elementIterator();
 			while (databankIterator.hasNext()) {
 				try {
-					IndexedSequenceDataBank databank = (IndexedSequenceDataBank) getDatabank(
-							(Element) databankIterator.next(), splittedSequenceDatabank);
+					IndexedSequenceDataBank databank = (IndexedSequenceDataBank) getDatabank((Element) databankIterator.next(), splittedSequenceDatabank);
 					if (databank == null) {
 						return null;
 					}
 					splittedSequenceDatabank.addDatabank(databank);
 				} catch (DuplicateDatabankException e1) {
-					logger.fatal("Duplicate databanks named " + e1.getDatabankName()
-							+ " defined in " + e1.getDatabankName(), e1);
+					logger.fatal("Duplicate databanks named " + e1.getDatabankName() + " defined in " + e1.getDatabankName(), e1);
 					return null;
 				}
 			}
 			return splittedSequenceDatabank;
-	
-		} else if (e.getName().trim().equals("databank")) {				
+
+		} else if (e.getName().trim().equals("databank")) {
+			File file = new File(path);
 			try {
-				return new IndexedSequenceDataBank(name, alphabet, subSequenceLength, mask, new File(path), parent);
+				if (remoteSimilarityDatabank == false) {
+					return new IndexedSequenceDataBank(name, alphabet, subSequenceLength, mask, file, parent);
+				} else {
+					return new RemoteSimilaritySequenceDataBank(name, alphabet, subSequenceLength, file, parent); 										
+				}
 			} catch (ValueOutOfBoundsException e1) {
 				logger.fatal("Error creating IndexedDNASequenceDataBank.", e1);
 			}
@@ -232,8 +238,7 @@ public class XMLConfigurationReader {
 	 * @return max SubSequence distance
 	 */
 	public static int getMaxSubSequenceDistance() {
-		String value = getSearchParameters().element("max-sub-sequence-distance")
-				.attributeValue("value");
+		String value = getSearchParameters().element("max-sub-sequence-distance").attributeValue("value");
 		return Integer.parseInt(value);
 	}
 
@@ -245,17 +250,18 @@ public class XMLConfigurationReader {
 		String value = getSearchParameters().element("extend-dropoff").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	/**
-	 * @return default minimum length of a HSP to be keep to the next seaching phase.
+	 * @return default minimum length of a HSP to be keep to the next seaching
+	 *         phase.
 	 */
 	public static int getMinHspLength() {
 		String value = getSearchParameters().element("min-hsp-length").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	/**
-	 * @return how many Hits results. 
+	 * @return how many Hits results.
 	 */
 	public static int getMaxResults() {
 		String value = getSearchParameters().element("max-hits-results").attributeValue("value");
@@ -263,21 +269,23 @@ public class XMLConfigurationReader {
 	}
 
 	/**
-	 * @return Max number of threads that will be used to search sub-sequences at the index.
+	 * @return Max number of threads that will be used to search sub-sequences
+	 *         at the index.
 	 */
 	public static int getMaxThreadsIndexSearch() {
 		String value = getSearchParameters().element("max-threads-index-search").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	/**
-	 * @return Max number of threads that will be used to extend and align the HSP.
+	 * @return Max number of threads that will be used to extend and align the
+	 *         HSP.
 	 */
 	public static int getMaxThreadsExtendAlign() {
 		String value = getSearchParameters().element("max-threads-extend-align").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	/**
 	 * @return minimum size of each input query slice.
 	 */
@@ -285,28 +293,27 @@ public class XMLConfigurationReader {
 		String value = getSearchParameters().element("min-query-slice-length").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	/**
-	 *  @return how many slices the input query will be divided.
+	 * @return how many slices the input query will be divided.
 	 */
 	public static int getQuerySplitQuantity() {
 		String value = getSearchParameters().element("query-split-quantity").attributeValue("value");
 		return Integer.parseInt(value);
 	}
-	
+
 	private static String readPath(String path) {
 		return path.replace('/', File.separatorChar);
 	}
 
-
 	private static Element getWebService() {
 		return doc.getRootElement().element("web-service");
 	}
-	
+
 	public static String getWebServiceAddress() {
 		return getWebService().element("server-address").attributeValue("value");
 	}
-	
+
 	public static Boolean useSessions() {
 		String value = getWebService().element("use-sessions").attributeValue("value");
 		return Boolean.parseBoolean(value);

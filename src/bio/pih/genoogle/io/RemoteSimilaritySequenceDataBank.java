@@ -40,7 +40,6 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	SequenceEncoder reducedEncoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 3);
 
 	public RemoteSimilaritySequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws ValueOutOfBoundsException {
-
 		super(name, alphabet, subSequenceLength, null, path, parent);
 	}
 
