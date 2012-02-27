@@ -192,7 +192,11 @@ public class XMLConfigurationReader {
 		}
 
 		if (e.getName().trim().equals("split-databanks")) {
-			int size = Integer.parseInt(e.attributeValue("number-of-sub-databanks"));
+			String numberOfSubDatabanksAttr = e.attributeValue("number-of-sub-databanks");
+			if (numberOfSubDatabanksAttr == null) {
+				throw new RuntimeException("Missing atribute 'number-of-sub-databanks' in the databank " + name);
+			}
+			int size = Integer.parseInt(numberOfSubDatabanksAttr);
 
 			SplittedDatabankCollection splittedSequenceDatabank = new SplittedDatabankCollection(name, alphabet, new File(Genoogle.getHome(), path), subSequenceLength, size, mask);
 			splittedSequenceDatabank.setLowComplexityFilter(lowComplexityFilter);

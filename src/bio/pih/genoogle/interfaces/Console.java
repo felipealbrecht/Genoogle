@@ -194,7 +194,7 @@ public class Console implements Runnable, GenoogleListener {
 
 					} else if (commands[0].equals(LIST)) {
 						for (AbstractSequenceDataBank db : genoogle.getDatabanks()) {
-							System.out.println(db.toString());
+							System.out.println(db.getName() + " - " + db.getAlphabet().getName() + "(" + db.getClass().getName()+ ")");
 						}
 
 					} else if (commands[0].equals(DEFAULT)) {

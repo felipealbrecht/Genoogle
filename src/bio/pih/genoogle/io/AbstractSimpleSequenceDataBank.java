@@ -33,6 +33,7 @@ import bio.pih.genoogle.io.reader.RichSequenceStreamReader;
 import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.RichSequence;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.protobuf.ByteString;
 
@@ -199,7 +200,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		return new StoredSequenceInfo[] {info};
 	}
 
-	protected byte[] intArrayToByteArray(RichSequence s) {
+	protected byte[] intArrayToByteArray(SymbolList s) {
 		int[] encoded = encoder.encodeSymbolListToIntegerArray(s);
 
 		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 4);

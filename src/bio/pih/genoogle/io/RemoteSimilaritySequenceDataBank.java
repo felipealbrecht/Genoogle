@@ -85,46 +85,54 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	private StoredSequenceInfo processRead1(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein1(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 1, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead2(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein2(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 2, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead3(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein3(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 3, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead4(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinReverse1(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 4, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead5(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinReverse2(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 5, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead6(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinReverse3(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, dataBankFileChannel);
+		return storeInDatabase(s, reduced, 6, dataBankFileChannel);
 	}
 
-	private StoredSequenceInfo storeInDatabase(RichSequence s, SymbolList converted, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
+	private StoredSequenceInfo storeInDatabase(RichSequence s, SymbolList converted, int read, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		long offset = dataBankFileChannel.position();
 
-		final byte[] ret = intArrayToByteArray(s);
+		final byte[] ret = intArrayToByteArray(converted);
 
 		int id = getNextSequenceId();
-		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder().setId(id).setGi(s.getGi()).setName(s.getName()).setType(s.getType()).setAccession(s.getAccession()).setDescription(s.getDescription()).setEncodedSequence(ByteString.copyFrom(ret));
+		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder()
+			.setId(id)
+			.setGi(s.getGi())
+			.setName(s.getName())
+			.setType(s.getType())
+			.setAccession(s.getAccession())
+			.setDescription(s.getDescription())
+			.setRead(read)
+			.setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();
 
@@ -140,7 +148,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	}
 
 	@Override
-	protected byte[] intArrayToByteArray(RichSequence s) {
+	protected byte[] intArrayToByteArray(SymbolList s) {
 		int[] encoded = reducedEncoder.encodeSymbolListToIntegerArray(s);
 
 		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 4);

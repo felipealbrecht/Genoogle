@@ -143,7 +143,11 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	
 	protected void setStoredDatabankInfo(StoredDatabank.Builder storedDatabankBuilder) {
 		super.setStoredDatabankInfo(storedDatabankBuilder);
-		storedDatabankBuilder.setMask(mask);
+		if (mask == null) {
+			storedDatabankBuilder.setMask("");
+		} else {
+			storedDatabankBuilder.setMask(mask);
+		}
 		storedDatabankBuilder.setLowComplexityFilter(getLowComplexityFilter());
 	}
 

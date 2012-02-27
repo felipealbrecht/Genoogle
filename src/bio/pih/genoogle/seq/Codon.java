@@ -104,7 +104,7 @@ public class Codon {
 		
 		codonToProteinMap.put("UAG", AminoAcid.end);
 		codonToProteinMap.put("UAA", AminoAcid.end);
-		codonToProteinMap.put("AUGA", AminoAcid.end);		
+		codonToProteinMap.put("UGA", AminoAcid.end);		
 	}	
 	
 	public AminoAcid convert(String codon) {
@@ -113,8 +113,37 @@ public class Codon {
 		}		
 		// TODO: changer the method to have an convertRNA and a DNA inputs, 
 		// so it will be not necessary
-		String c = codon.toUpperCase().replace('T', 'U');		
-		System.out.println(c);
+		
+		/*
+		 * http://en.wikipedia.org/wiki/FASTA_format
+		R	A G (puRine)
+		Y	C T U (pYrimidine)
+		K	G T U (Ketone[citation needed])
+		M	A C (aMino group[citation needed])
+		S	C G (Strong interaction[citation needed])
+		W	A T U (Weak interaction[citation needed])
+		B	C G T U (not A) (B comes after A)
+		D	A G T U (not C) (D comes after C)
+		H	A C T U (not G) (H comes after G)
+		V	A C G (not T, not U) (V comes after U)
+		N	A C G T U (aNy)
+		X	Masked
+		*/ 
+		
+		String c = codon.toUpperCase().replace('T', 'U')
+			.replace('R', 'A')
+			.replace('Y', 'C')
+			.replace('K', 'G')
+			.replace('M', 'A')
+			.replace('S', 'C')
+			.replace('W', 'A')
+			.replace('B', 'C')
+			.replace('D', 'A')
+			.replace('H', 'A')
+			.replace('V', 'A')
+			.replace('N', 'A')
+			.replace('X', 'A');
+				
 		return codonToProteinMap.get(c);
 	}
 }
