@@ -85,7 +85,6 @@ public class SplittedDatabankCollection extends AbstractDatabankCollection<Index
 	public void encodeSequences(boolean forceFormatting) throws IOException, NoSuchElementException,
 			ValueOutOfBoundsException, IndexConstructionException, ParseException, IllegalSymbolException {
 		
-		int totalSequences = 0;
 		long totalBases = 0;
 
 		List<FastaFileInfo> fastaFiles = Lists.newLinkedList();
@@ -133,18 +132,18 @@ public class SplittedDatabankCollection extends AbstractDatabankCollection<Index
 					}
 				}
 
-				StoredSequenceInfo sequenceInfo = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
-				storedDatabankBuilder.addSequencesInfo(sequenceInfo);
-				totalSequences++;
-				totalBases += richSequence.getLength();
-
+				StoredSequenceInfo[] infos = actualSequenceDatank.addSequence(richSequence, dataBankFileChannel);
+				for (int i = 0; i < infos.length; i++) {
+					storedDatabankBuilder.addSequencesInfo(infos[i]);					
+					totalBases += infos[i].getLength();					
+				}
+				
 				if (totalBases > totalBasesBySubBase) {
 					finalizeSubDatabankConstruction(actualSequenceDatank, dataBankFileChannel, storedSequenceInfoChannel,
 							storedDatabankBuilder);
 					subCount++;
 					
 					logger.info("Wrote " + subCount + " of " + qtdSubBases + " sub databanks.");
-					totalSequences = 0;
 					totalBases = 0;
 					
 					dataBankFileChannel = new FileOutputStream(getDatabankFile(subCount)).getChannel();

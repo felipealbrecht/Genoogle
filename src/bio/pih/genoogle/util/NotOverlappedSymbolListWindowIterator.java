@@ -7,7 +7,6 @@
 
 package bio.pih.genoogle.util;
 
-import bio.pih.genoogle.seq.LightweightSymbolList;
 import bio.pih.genoogle.seq.SymbolList;
 
 /**
@@ -27,7 +26,7 @@ public class NotOverlappedSymbolListWindowIterator extends AbstractSymbolListWin
 
 	@Override
 	public SymbolList next() {
-		SymbolList subList = new LightweightSymbolList(sequence, actualPos+1, actualPos + windowSize);
+		SymbolList subList = sequence.subSymbolList(actualPos+1, actualPos + windowSize);
 		actualPos+= windowSize;
 		return subList;
 	}

@@ -18,4 +18,8 @@ public interface SymbolList extends Serializable {
 	char symbolAt(int pos);
 
 	String seqString();
+	
+	SymbolList subSymbolList(int start, int end);
+	
+	SymbolList reverse();
 }

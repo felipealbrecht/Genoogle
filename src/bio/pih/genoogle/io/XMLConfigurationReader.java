@@ -21,6 +21,7 @@ import bio.pih.genoogle.Genoogle;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.search.SearchManager;
 import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.AminoAcidAlphabet;
 import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.RNAAlphabet;
 
@@ -176,7 +177,9 @@ public class XMLConfigurationReader {
 				alphabet = DNAAlphabet.SINGLETON;
 			} else if (type.toLowerCase().equals("rna")) {
 				alphabet = RNAAlphabet.SINGLETON;
-			} else {
+			}else if (type.toLowerCase().equals("protein")) { 
+				alphabet = AminoAcidAlphabet.SINGLETON;
+			}else {
 				throw new InvalidConfigurationException("Sequences type: " + type + " is invalid.");
 			}
 		} else {

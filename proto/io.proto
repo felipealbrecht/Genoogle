@@ -21,7 +21,7 @@ message StoredDatabank {
   	DNA = 0;
   	RNA = 1;
   	PROTEIN = 2;
-  	TRANSLATED_PROTEIN = 4;
+  	TRANSLATED_PROTEIN = 3;
   }
   
   required SequenceType type = 1;
@@ -41,12 +41,13 @@ message StoredSequenceInfo {
 					
 message StoredSequence {  
   required int32 id = 1;
-  required string type = 2;
+  required string type = 2; 
   required string gi = 3;
   required string name = 4;
   required string accession = 5;
   required string description = 6;
-  required bytes encodedSequence = 7;
+  required int32 read = 7;
+  required bytes encodedSequence = 8;
 }
 
 

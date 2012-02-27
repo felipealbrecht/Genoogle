@@ -39,16 +39,34 @@ public class LightweightSymbolList implements SymbolList, Serializable {
 		this.seqString = new String(seqString.toCharArray());
 	}
 	
+	
 	/**
 	 * {@link LightweightSymbolList} constructor having a parent {@link SymbolList} and the range that will be used.
 	 * @param parent
 	 * @param start
 	 * @param end
+	 * 
+	 * Uses subSymbolList
 	 */
+	@Deprecated
 	public LightweightSymbolList(SymbolList parent, int start, int end) {
 		String substring = parent.seqString().substring(start - 1, end);
 		this.alphabet = parent.getAlphabet();
 		this.seqString = substring;
+	}
+	
+	public SymbolList subSymbolList(int start, int end) {
+		return new LightweightSymbolList(this, start, end);
+	}
+	
+	public SymbolList reverse() {
+		StringBuilder sb = new StringBuilder(this.seqString);
+		try {
+			return new LightweightSymbolList(this.alphabet, sb.reverse().toString());
+		} catch (IllegalSymbolException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override

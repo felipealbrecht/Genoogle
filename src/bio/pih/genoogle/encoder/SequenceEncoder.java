@@ -185,7 +185,9 @@ public abstract class SequenceEncoder {
 	 * @return an array of int as bit vector
 	 */
 	public int[] encodeSymbolListToIntegerArray(SymbolList sequence) {
-		assert (sequence.getAlphabet().equals(alphabet));
+		if (!sequence.getAlphabet().equals(alphabet)) {
+			throw new RuntimeException("SymbolList alphabet ("+sequence.toString()+") is not the same from the encoder ("+alphabet+")");
+		}
 		int size = sequence.getLength() / subSequenceLength;
 		int extra = sequence.getLength() % subSequenceLength;
 		if (extra != 0) { // extra space for incomplete sub-sequence
@@ -208,7 +210,7 @@ public abstract class SequenceEncoder {
 			}
 			if (pos < size) {
 				int from = sequence.getLength() - extra + 1;
-				sequenceEncoded[pos] = encodeSubSequenceToInteger(new LightweightSymbolList(sequence, from, sequence.getLength()));
+				sequenceEncoded[pos] = encodeSubSequenceToInteger(sequence.subSymbolList(from, sequence.getLength()));
 			}
 		}
 

@@ -33,8 +33,8 @@ import bio.pih.genoogle.seq.SymbolList;
  */
 public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 
-	private final MemoryInvertedIndex index;
-	private InvertedIndexBuilder indexBuilder;
+	protected final MemoryInvertedIndex index;
+	protected InvertedIndexBuilder indexBuilder;
 	protected final MaskEncoder maskEncoder;
 	private final String mask;
 
@@ -98,7 +98,7 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	public MemoryInvertedIndex getIndex() {
 		return index;
 	}
-
+	
 	/**
 	 * The offset between each subsequence of this data bank.
 	 * @return offset between the begin of two together subsequences. 

@@ -46,7 +46,7 @@ import com.google.protobuf.ByteString;
 public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDataBank {
 
 	private volatile int nextSequenceId;
-	private StoredDatabank storedDatabank;
+	protected StoredDatabank storedDatabank;
 
 	private File dataBankFile = null;
 	private File storedDataBankInfoFile = null;
@@ -129,12 +129,12 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder storedDatabankBuilder = StoredDatabank.newBuilder();
 
 		BufferedReader is = new BufferedReader(new FileReader(fastaFile));
-		RichSequenceStreamReader readFastaDNA = IOTools.readFasta(is, alphabet);
+		RichSequenceStreamReader fastaFileStream = IOTools.readFasta(is, alphabet);
 
-		while (readFastaDNA.hasNext()) {
+		while (fastaFileStream.hasNext()) {
 			RichSequence s = null;
 			try {
-				s = readFastaDNA.nextRichSequence();
+				s = fastaFileStream.nextRichSequence();
 			} catch (IllegalSymbolException e) {
 				if (forceFormatting) {
 					logger.info(e);
@@ -144,8 +144,10 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 				}
 			}
 
-			StoredSequenceInfo addSequence = addSequence(s, dataBankFileChannel);
-			storedDatabankBuilder.addSequencesInfo(addSequence);
+			StoredSequenceInfo[] info = addSequence(s, dataBankFileChannel);
+			for (int i = 0; i < info.length; i++) {
+				storedDatabankBuilder.addSequencesInfo(info[i]);	
+			}
 		}
 
 		setStoredDatabankInfo(storedDatabankBuilder);
@@ -157,7 +159,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		logger.info("FASTA file added in " + (System.currentTimeMillis() - begin) + "ms");
 	}
 
-	synchronized StoredSequenceInfo addSequence(RichSequence s, FileChannel dataBankFileChannel) throws IOException,
+	synchronized StoredSequenceInfo[] addSequence(RichSequence s, FileChannel dataBankFileChannel) throws IOException,
 			IndexConstructionException, IllegalSymbolException {
 		if (!s.getAlphabet().equals(this.alphabet)) {
 			logger.fatal("Invalid alphabet for sequence " + s.getName());
@@ -191,11 +193,13 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 
 		this.numberOfSequences++;
 		this.dataBankSize += s.getLength();
-
-		return StoredSequenceInfo.newBuilder().setId(id).setOffset(offset).setLength(byteArray.length).build();
+		
+		StoredSequenceInfo info = StoredSequenceInfo.newBuilder().setId(id).setOffset(offset).setLength(byteArray.length).build();
+		
+		return new StoredSequenceInfo[] {info};
 	}
 
-	private byte[] intArrayToByteArray(RichSequence s) {
+	protected byte[] intArrayToByteArray(RichSequence s) {
 		int[] encoded = encoder.encodeSymbolListToIntegerArray(s);
 
 		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 4);
