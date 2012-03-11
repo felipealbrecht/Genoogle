@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009, 2010, 2011, 2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -15,24 +15,24 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
+import pih.bio.genoogle.seq.protein.Converter;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
-import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
-import bio.pih.genoogle.seq.IllegalSymbolException;
+import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;
 
-public class IndexBothStrandSearcher implements Callable<List<BothStrandSequenceAreas>> {
+public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceAreas>> {
 
 	private IndexSearcher searcher;
 	private IndexReverseComplementSearcher crSearcher;
 
-	private static final Logger logger = Logger.getLogger(IndexBothStrandSearcher.class.getName());
+	private static final Logger logger = Logger.getLogger(IndexSixFramesSearcher.class.getName());
 	private final long id;
 	private final SearchParams sp;
 	private final IndexedSequenceDataBank databank;
@@ -40,9 +40,10 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 	private final List<RetrievedArea>[] rcRetrievedAreas;
 	private final List<Throwable> fails;
 	private final ExecutorService executor;
+	private final SequenceEncoder encoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 3);
 
 	@SuppressWarnings("unchecked")
-	public IndexBothStrandSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank,
+	public IndexSixFramesSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank,
 			ExecutorService executor, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
@@ -58,6 +59,7 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 		}
 	}
 
+	// TODO: Fix statistics (correct alphabet and match and mismatch scores)	
 	@Override
 	public List<BothStrandSequenceAreas> call() throws InterruptedException {
 		long searchBegin = System.currentTimeMillis();
@@ -66,56 +68,32 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 
 		Statistics statistics = new Statistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
-		String seqString = query.seqString();
+		SymbolList read1 = Converter.proteinToReducedAA(Converter.dnaToProtein(query));
+		SymbolList read2 = Converter.proteinToReducedAA(Converter.dnaToProtein2(query));
+		SymbolList read3 = Converter.proteinToReducedAA(Converter.dnaToProtein3(query));
+		SymbolList complement1 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement1(query));
+		SymbolList complement2 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement2(query));
+		SymbolList complement3 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement3(query));
 
-		int subSequenceLength = databank.getSubSequenceLength();
-		SequenceEncoder encoder = SequenceEncoderFactory.getEncoder(databank.getAlphabet(), subSequenceLength);
-
-		int[] encodedQuery = encoder.encodeSymbolListToIntegerArray(query);
-		String inverted = Utils.invert(query.seqString());
-		String rcString = Utils.sequenceComplement(inverted);
-
-		SymbolList rcQuery = null;
-
-		// this try/catch should never happens, because the rc string is create by a verified sequence. 
-		try {
-			rcQuery = query.createSequence(rcString);
-		} catch (IllegalSymbolException e) {			
-			logger.fatal(e);
-			return null;
-		}
-
-		int[] rcEncodedQuery = encoder.encodeSymbolListToIntegerArray(rcQuery);
-
-		int length = query.getLength();
-
-		int querySplitQuantity = sp.getQuerySplitQuantity();
-		int minLength = sp.getMinQuerySliceLength();
-		int sliceSize = length / querySplitQuantity;
-
-		while (sliceSize < minLength && querySplitQuantity != 1) {
-			querySplitQuantity--;
-			sliceSize = length / querySplitQuantity;
-		}
-
-		CountDownLatch indexSearchersCountDown = new CountDownLatch(querySplitQuantity * 2);
-
-		logger.info("(" + id + ") " + querySplitQuantity + " threads with slice query with " + length + " bases.");
-		for (int i = 0; i < querySplitQuantity; i++) {
-			int begin = (sliceSize * i);
-			int end = (sliceSize * i) + sliceSize + (sp.getMinHspLength() - subSequenceLength);
-			if (end > length) {
-				end = length;
-			}
-			logger.info("(" + id + ") " + i + " [" + begin + " - " + end + "].");
-			String sliceQuery = seqString.substring(begin, end);
-			String rcSliceQuery = rcString.substring(begin, end);
-			submitSearch(sliceQuery, begin, query, encodedQuery, statistics, indexSearchersCountDown);
-			submitRCSearch(rcSliceQuery, begin, rcQuery, rcEncodedQuery, statistics, indexSearchersCountDown);
-		}
-
+		int[] encodedRead1 = encoder.encodeSymbolListToIntegerArray(read1);
+		int[] encodedRead2 = encoder.encodeSymbolListToIntegerArray(read2);
+		int[] encodedRead3 = encoder.encodeSymbolListToIntegerArray(read3);
+		int[] encodedComplement1 = encoder.encodeSymbolListToIntegerArray(complement1);
+		int[] encodedComplement2 = encoder.encodeSymbolListToIntegerArray(complement2);
+		int[] encodedComplement3 = encoder.encodeSymbolListToIntegerArray(complement3);
+		
+		CountDownLatch indexSearchersCountDown = new CountDownLatch(6);
+		
+		submitSearch(read1.seqString(), 0, read1, encodedRead1, statistics, indexSearchersCountDown);
+		submitSearch(read2.seqString(), 0, read2, encodedRead2, statistics, indexSearchersCountDown);
+		submitSearch(read3.seqString(), 0, read3, encodedRead3, statistics, indexSearchersCountDown);
+		
+		submitRCSearch(complement1.seqString(), 0, complement1, encodedComplement1, statistics, indexSearchersCountDown);
+		submitRCSearch(complement2.seqString(), 0, complement2, encodedComplement3, statistics, indexSearchersCountDown);
+		submitRCSearch(complement3.seqString(), 0, complement3, encodedComplement2, statistics, indexSearchersCountDown);
+		
 		indexSearchersCountDown.await();
-
+		
 		if (fails.size() > 0) {
 			return null;
 		}
@@ -140,13 +118,13 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		searcher = new IndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
+		searcher = new IndexSearcher(id, sp, databank, encoder, 3, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, encoder, 3, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 		executor.submit(crSearcher);
 	}
 }

@@ -79,6 +79,8 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		info = processRead6(s, dataBankFileChannel);
 		infos[5] = info;
 		
+		// TODO: store the "real" sequence.
+		
 		return infos;
 	}
 
@@ -101,19 +103,19 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	}
 
 	private StoredSequenceInfo processRead4(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
-		SymbolList protein = Converter.dnaToProteinReverse1(s);
+		SymbolList protein = Converter.dnaToProteinComplement1(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
 		return storeInDatabase(s, reduced, 4, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead5(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
-		SymbolList protein = Converter.dnaToProteinReverse2(s);
+		SymbolList protein = Converter.dnaToProteinComplement2(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
 		return storeInDatabase(s, reduced, 5, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead6(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
-		SymbolList protein = Converter.dnaToProteinReverse3(s);
+		SymbolList protein = Converter.dnaToProteinComplement3(s);
 		SymbolList reduced = Converter.proteinToReducedAA(protein);
 		return storeInDatabase(s, reduced, 6, dataBankFileChannel);
 	}

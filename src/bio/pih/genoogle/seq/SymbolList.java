@@ -13,6 +13,8 @@ public interface SymbolList extends Serializable {
 
 	Alphabet getAlphabet();
 	
+	SymbolList createSequence(String seqSring) throws IllegalSymbolException;
+	
 	int getLength();
 	
 	char symbolAt(int pos);

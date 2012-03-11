@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
+import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
@@ -19,6 +20,13 @@ import bio.pih.genoogle.statistics.Statistics;
 
 public class IndexReverseSearcher extends IndexSearcher {
 
+	public IndexReverseSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength,
+			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, 
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 
+			CountDownLatch countDown, List<Throwable> fails) {
+		super(id, sp, databank, encoder, subSequenceLength, sliceQuery, offset, query, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+	}	
+	
 	public IndexReverseSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, 
 			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, 
 			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 

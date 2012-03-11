@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009, 2010, 2011, 2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -50,8 +50,7 @@ public class IndexSearcher implements Runnable {
 
 	private final List<Throwable> fails;
 
-
-	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
+	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength, String sliceQuery,
 			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		this.id = id;
@@ -65,10 +64,19 @@ public class IndexSearcher implements Runnable {
 		this.statistics = statistics;
 		this.countDown = countDown;
 		this.fails = fails;
-		this.encoder = databank.getEncoder();
-		this.subSequenceLength = databank.getMaskEncoder() == null ? databank.getSubSequenceLength()
-				: databank.getMaskEncoder().getPatternLength();
+		this.encoder = encoder;
+		this.subSequenceLength = subSequenceLength;
+	}
 
+	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
+			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
+		
+		this(id, sp, databank, databank.getEncoder(),
+				databank.getMaskEncoder() == null ? databank.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength(),
+				sliceQuery,
+				offset, fullQuery, encodedQuery, retrievedAreas, 
+				statistics, countDown, fails);
 	}
 
 	@Override

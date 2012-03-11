@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * A symbol list hat consumes less memory and is faster to build.
- * 
+ * TODO: Mission: To remove references from this class in the code base. Only the file/input readers should contain.
  * @author albrecht
  */
 public class LightweightSymbolList implements SymbolList, Serializable {
@@ -26,19 +26,25 @@ public class LightweightSymbolList implements SymbolList, Serializable {
 	 * @param alphabet
 	 * @param seqString
 	 */
-	public LightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {
-		
+	public LightweightSymbolList(Alphabet alphabet, String seqString) throws IllegalSymbolException {		
+		checkSequence(alphabet, seqString);											
+		this.alphabet = alphabet;
+		this.seqString = new String(seqString.toCharArray());
+	}
+
+	@Override
+	public SymbolList createSequence(String seqSring) throws IllegalSymbolException {		
+		return new LightweightSymbolList(this.alphabet, seqSring);
+	}
+
+	private void checkSequence(Alphabet alphabet, String seqString) throws IllegalSymbolException {
 		for(int i = 0; i < seqString.length(); i++) {
 			char c = seqString.charAt(i);
 			if (!alphabet.isValid(c)) {
 				throw new IllegalSymbolException(c, i, seqString);
 			}
 		}
-											
-		this.alphabet = alphabet;
-		this.seqString = new String(seqString.toCharArray());
 	}
-	
 	
 	/**
 	 * {@link LightweightSymbolList} constructor having a parent {@link SymbolList} and the range that will be used.

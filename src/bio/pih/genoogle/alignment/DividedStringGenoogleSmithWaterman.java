@@ -14,6 +14,7 @@ package bio.pih.genoogle.alignment;
  */
 public class DividedStringGenoogleSmithWaterman {
 
+	// TODO: replace with a matrix values.
 	private final int match;
 	private final int replace;
 	private final int insert;

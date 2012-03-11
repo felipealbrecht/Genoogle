@@ -128,6 +128,7 @@ public class ExtendSequences {
 					subSequenceLength);
 			int databankValue = SequenceEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
 					subSequenceLength);
+			// TODO: subsitute to: "getMatrixValues(queryValue, databankValue) > 0
 			if (queryValue == databankValue) {
 				score++;
 				if (score >= bestScore) {
