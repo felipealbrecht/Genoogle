@@ -13,7 +13,6 @@ import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
 import pih.bio.genoogle.seq.protein.Converter;
-
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
@@ -127,7 +126,7 @@ public class SequenceAligner implements Runnable {
 		if (reverseComplementAreas.size() > 0) {
 			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
 			IndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
-			List<ExtendSequences> rcExtendedSequences = extendAreas(reducedDatabankSequence, targetLength, queryLength,
+			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength,
 					reverseEncodedQuery, reverseComplementAreas, rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
 			alignHSPs(hit, queryLength, storedSequence, targetLength, rcExtendedSequences, rcSearcher);

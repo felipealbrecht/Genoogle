@@ -79,9 +79,9 @@ public class InvertedIndexBuilder {
 
 	private long totalFiltered = 0;
 
-	public InvertedIndexBuilder(IndexedSequenceDataBank indexedSequenceDaaBank) {
-		this.memoryInvertedIndex = indexedSequenceDaaBank.getIndex();
-		this.subSequenceOffSet = indexedSequenceDaaBank.getSubSequencesOffset();
+	public InvertedIndexBuilder(IndexedSequenceDataBank indexedSequenceDataBank) {
+		this.memoryInvertedIndex = indexedSequenceDataBank.getIndex();
+		this.subSequenceOffSet = indexedSequenceDataBank.getSubSequencesOffset();
 		this.databank = memoryInvertedIndex.getDatabank();
 		this.indexSize = memoryInvertedIndex.getIndexSize();
 		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;

@@ -163,6 +163,12 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		return size;
 	}
 	
+	@Override
+	public int getSubSequencesOffset() {
+		return reducedEncoder.getSubSequenceLength();
+	}
+	
+	
 	public SequenceEncoder getAaEncoder() {
 		return aaEncoder;
 	}
