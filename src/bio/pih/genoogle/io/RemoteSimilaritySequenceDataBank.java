@@ -37,6 +37,7 @@ import com.google.protobuf.ByteString;
  */
 public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
+	// TODO: Put a check that aaEncoder ss length is multiple or divisible by reducedEncoder ss length
 	SymbolListWindowIteratorFactory factory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
 	SequenceEncoder aaEncoder = SequenceEncoderFactory.getEncoder(AminoAcidAlphabet.SINGLETON, 6);
 	SequenceEncoder reducedEncoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 3);

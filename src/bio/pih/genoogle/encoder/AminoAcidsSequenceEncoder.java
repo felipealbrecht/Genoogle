@@ -24,7 +24,8 @@ public class AminoAcidsSequenceEncoder extends SequenceEncoder {
 		super(AminoAcidAlphabet.SINGLETON, subSequenceLength);
 	}
 		
-	char letters[] = {'G', 'A', 'V', 'L', 'I', 'S', 'T', 'D', 'E', 'N', 'Q', 'K', 'R', 'H', 'F', 'C', 'W', 'Y', 'M', 'P', '>', '#'};
+	// TODO: read it from alphabet.
+	char letters[] = {'G', 'A', 'V', 'L', 'I', 'S', 'T', 'D', 'E', 'N', 'Q', 'K', 'R', 'H', 'F', 'C', 'W', 'Y', 'M', 'P', '$', '#'};
 
 
 	public final int getBitsFromChar(char symbol) {
@@ -88,7 +89,7 @@ public class AminoAcidsSequenceEncoder extends SequenceEncoder {
 		if (symbol == 'P') {
 			return 19;
 		}
-		if (symbol == '>') {
+		if (symbol == '$') {
 			return 20;
 		}
 		if (symbol == '#') {
@@ -108,7 +109,7 @@ public class AminoAcidsSequenceEncoder extends SequenceEncoder {
 		System.out.println(e.bitsMask);
 		System.out.println(e.subSequenceLength);
 		                                                    
-		SymbolList s = LightweightSymbolList.createProtein("GAVLISTDENQKRHFCWYMP>#");
+		SymbolList s = LightweightSymbolList.createProtein("GAVLISTDENQKRHFCWYMP$#");
 		int[] encodeSubSequenceToInteger = e.encodeSymbolListToIntegerArray(s);
 		String ss = e.decodeIntegerArrayToString(encodeSubSequenceToInteger);
 		

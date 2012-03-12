@@ -7,6 +7,8 @@
 
 package bio.pih.genoogle.alignment;
 
+import bio.pih.genoogle.seq.SymbolList;
+
 
 /**
  * Sequences alignment output generation.
@@ -15,6 +17,60 @@ package bio.pih.genoogle.alignment;
  */
 public abstract class GenoogleSequenceAlignment {
 
+	/**
+	 * @param query
+	 * @param subject
+	 * @return the score of the alignment
+	 */
+	public abstract int pairwiseAlignment(SymbolList query, SymbolList subject);
+
+	/**
+	 * @return {@link String} containing the representation of the query aligned.
+	 */
+	public abstract String getQueryAligned();
+
+	/**
+	 * @return {@link String} containing the representation of the target aligned.
+	 */
+	public abstract String getTargetAligned();
+
+	/**
+	 * @return {@link String} containing the representation of the alignment path.
+	 */
+	public abstract String getPath();
+
+	/**
+	 * @return where the alignment begins at the query sequence.
+	 */
+	public abstract int getQueryStart();
+
+	/**
+	 * @return where the alignment ends at the query sequence.
+	 */
+	public abstract int getQueryEnd();
+
+	/**
+	 * @return where the alignment begins at the target sequence.
+	 */
+	public abstract int getTargetStart();
+
+	/**
+	 * @return where the alignment ends at the target sequence.
+	 */
+	public abstract int getTargetEnd();
+
+	/**
+	 * @return alignment score.
+	 */
+	public abstract int getScore();
+
+	/**
+	 * Get the identity size, it is, how many exact matches occurred in the alignment.
+	 * 
+	 * @return the alignment identity size.
+	 */
+	public abstract int getIdentitySize();
+	
 	/**
 	 * This method provides a BLAST-like formated alignment from the given <code>String</code>s, in which the sequence coordinates and the information "Query" or "Target", respectively is added to each line. Each line contains 60 sequence characters including the gap symbols plus the meta information. There is one white line between two pairs of sequences.
 	 * 

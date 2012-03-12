@@ -9,7 +9,7 @@ package bio.pih.genoogle.search.results;
 
 import java.util.Comparator;
 
-import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
+import bio.pih.genoogle.alignment.GenoogleSequenceAlignment;
 import bio.pih.genoogle.alignment.GenoogleSmithWaterman;
 
 /**
@@ -21,7 +21,7 @@ public class HSP {
 
 	private static final long serialVersionUID = -7701610542981141900L;
 
-	private final DividedStringGenoogleSmithWaterman alignment;
+	private final GenoogleSequenceAlignment alignment;
 	private final double normalizedScore;
 	private final double eValue;
 
@@ -30,7 +30,7 @@ public class HSP {
 	private final int hitFrom;
 	private final int hitTo;
 
-	public HSP(DividedStringGenoogleSmithWaterman alignment, int queryFrom, int queryTo, int hitFrom, int hitTo,
+	public HSP(GenoogleSequenceAlignment alignment, int queryFrom, int queryTo, int hitFrom, int hitTo,
 			double normalizedScore, double eValue) {
 		this.alignment = alignment;
 		this.queryFrom = queryFrom;
@@ -114,7 +114,7 @@ public class HSP {
 	/**
 	 * @return {@link GenoogleSmithWaterman} containing the alignment informations.
 	 */
-	public DividedStringGenoogleSmithWaterman getAlignment() {
+	public GenoogleSequenceAlignment getAlignment() {
 		return alignment;
 	}
 
@@ -138,8 +138,8 @@ public class HSP {
 	public static final Comparator<HSP> COMPARATOR = new Comparator<HSP>() {
 		@Override
 		public int compare(HSP o1, HSP o2) {
-			DividedStringGenoogleSmithWaterman osw1 = o1.getAlignment();
-			DividedStringGenoogleSmithWaterman osw2 = o2.getAlignment();
+			GenoogleSequenceAlignment osw1 = o1.getAlignment();
+			GenoogleSequenceAlignment osw2 = o2.getAlignment();
 			return Double.compare(osw2.getScore(), osw1.getScore());
 		}
 	};

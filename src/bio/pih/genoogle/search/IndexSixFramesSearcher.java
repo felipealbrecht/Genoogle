@@ -68,12 +68,19 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 
 		Statistics statistics = new Statistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
-		SymbolList read1 = Converter.proteinToReducedAA(Converter.dnaToProtein(query));
-		SymbolList read2 = Converter.proteinToReducedAA(Converter.dnaToProtein2(query));
-		SymbolList read3 = Converter.proteinToReducedAA(Converter.dnaToProtein3(query));
-		SymbolList complement1 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement1(query));
-		SymbolList complement2 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement2(query));
-		SymbolList complement3 = Converter.proteinToReducedAA(Converter.dnaToProteinComplement3(query));
+		SymbolList dnaToProtein1 = Converter.dnaToProtein(query);
+		SymbolList dnaToProtein2 = Converter.dnaToProtein2(query);
+		SymbolList dnaToProtein3 = Converter.dnaToProtein3(query);
+		SymbolList dnaToProteinComplement1 = Converter.dnaToProteinComplement1(query);
+		SymbolList dnaToProteinComplement2 = Converter.dnaToProteinComplement2(query);
+		SymbolList dnaToProteinComplement3 = Converter.dnaToProteinComplement3(query);
+		
+		SymbolList read1 = Converter.proteinToReducedAA(dnaToProtein1);		
+		SymbolList read2 = Converter.proteinToReducedAA(dnaToProtein2);		
+		SymbolList read3 = Converter.proteinToReducedAA(dnaToProtein3);		
+		SymbolList complement1 = Converter.proteinToReducedAA(dnaToProteinComplement1);		
+		SymbolList complement2 = Converter.proteinToReducedAA(dnaToProteinComplement2);
+		SymbolList complement3 = Converter.proteinToReducedAA(dnaToProteinComplement3);
 
 		int[] encodedRead1 = encoder.encodeSymbolListToIntegerArray(read1);
 		int[] encodedRead2 = encoder.encodeSymbolListToIntegerArray(read2);
@@ -84,13 +91,13 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		
 		CountDownLatch indexSearchersCountDown = new CountDownLatch(6);
 		
-		submitSearch(read1.seqString(), 0, read1, encodedRead1, statistics, indexSearchersCountDown);
-		submitSearch(read2.seqString(), 0, read2, encodedRead2, statistics, indexSearchersCountDown);
-		submitSearch(read3.seqString(), 0, read3, encodedRead3, statistics, indexSearchersCountDown);
+		submitSearch(read1.seqString(), 0, dnaToProtein1, encodedRead1, statistics, indexSearchersCountDown);
+		submitSearch(read2.seqString(), 0, dnaToProtein2, encodedRead2, statistics, indexSearchersCountDown);
+		submitSearch(read3.seqString(), 0, dnaToProtein3, encodedRead3, statistics, indexSearchersCountDown);
 		
-		submitRCSearch(complement1.seqString(), 0, complement1, encodedComplement1, statistics, indexSearchersCountDown);
-		submitRCSearch(complement2.seqString(), 0, complement2, encodedComplement3, statistics, indexSearchersCountDown);
-		submitRCSearch(complement3.seqString(), 0, complement3, encodedComplement2, statistics, indexSearchersCountDown);
+		submitRCSearch(complement1.seqString(), 0, dnaToProteinComplement1, encodedComplement1, statistics, indexSearchersCountDown);
+		submitRCSearch(complement2.seqString(), 0, dnaToProteinComplement2, encodedComplement3, statistics, indexSearchersCountDown);
+		submitRCSearch(complement3.seqString(), 0, dnaToProteinComplement3, encodedComplement2, statistics, indexSearchersCountDown);
 		
 		indexSearchersCountDown.await();
 		
@@ -118,12 +125,14 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
+		System.out.println(fullQuery);
 		searcher = new IndexSearcher(id, sp, databank, encoder, 3, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
+		System.out.println(fullQuery);
 		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, encoder, 3, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 		executor.submit(crSearcher);
 	}

@@ -32,7 +32,7 @@ public class AminoAcid {
 	public static AminoAcid tyrosine = new AminoAcid("Tyrosine", "Try", 'Y');
 	public static AminoAcid methionine = new AminoAcid("Methionine", "Met", 'M');
 	public static AminoAcid proline = new AminoAcid("Proline", "Pro", 'P');
-	public static AminoAcid start = new AminoAcid("START", "STR", '>');
+	public static AminoAcid start = new AminoAcid("START", "STR", '$');
 	public static AminoAcid end = new AminoAcid("END", "END", '#');
 	
 	private AminoAcid (String name, String acronym, char symbol) {

@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009,2010,2011,2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -55,11 +55,11 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 		long begin = System.currentTimeMillis();
 
 		ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
-
+		
 		List<Throwable> fails = Lists.newLinkedList();
 		fails = Collections.synchronizedList(fails);
-		final IndexSixFramesSearcher indexSearcher = new IndexSixFramesSearcher(id, sp, databank, queryExecutor, fails);
-
+		final IndexSixFramesSearcher indexSearcher = new IndexSixFramesSearcher(id, sp, databank, queryExecutor, fails);		
+		
 		List<BothStrandSequenceAreas> sequencesRetrievedAreas = null;
 		try {
 			sequencesRetrievedAreas = indexSearcher.call();
@@ -81,7 +81,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 		Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
 
-		ExecutorService alignerExecutor = Executors.newFixedThreadPool(1); //sp.getMaxThreadsExtendAlign());
+		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());
 
 		int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : sequencesRetrievedAreas.size();
 		maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
@@ -92,7 +92,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 			for (int i = 0; i < maxHits; i++) {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, 
-						sr, databank, databank.getEncoder(), databank.getReducedEncoder(), databank.getAaEncoder());
+						sr, databank, databank.getEncoder(), databank.getAaEncoder(), databank.getReducedEncoder());
 				alignerExecutor.submit(sequenceAligner);
 			}
 		} catch (IOException e) {

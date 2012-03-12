@@ -311,8 +311,8 @@ public abstract class SequenceEncoder {
 		int posInArray = (pos / subSequenceLength) + 1;
 		int posInInt = (subSequenceLength) - (pos % subSequenceLength);
 		int vectorValue = encodedSequence[posInArray];
-		int shift = posInInt * 2;
-		int value = vectorValue >> (shift - 2);
+		int shift = posInInt * this.bitsByAlphabetSize;
+		int value = vectorValue >> (shift - this.bitsByAlphabetSize);
 		return value & this.bitsMask;
 	}
 }

@@ -12,7 +12,7 @@ public class AminoAcidAlphabet implements Alphabet {
 
 	private static final long serialVersionUID = -621945776486639225L;
 
-	char letters[] = {'G', 'A', 'V', 'L', 'I', 'S', 'T', 'D', 'E', 'N', 'Q', 'K', 'R', 'H', 'F', 'C', 'W', 'Y', 'M', 'P', '>', '#'};
+	char letters[] = {'G', 'A', 'V', 'L', 'I', 'S', 'T', 'D', 'E', 'N', 'Q', 'K', 'R', 'H', 'F', 'C', 'W', 'Y', 'M', 'P', '$', '#'};
 
 	public static Alphabet SINGLETON = new AminoAcidAlphabet ();
 		

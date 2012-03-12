@@ -31,7 +31,7 @@ public class GenoogleAllTests {
 		suite.addTest(SequenceEncoderAllTests.suite());
 		suite.addTest(IndexAllTests.suite());
 		suite.addTest(ReaderAllTests.suite());
-		suite.addTestSuite(ExtendAlignmentTest.class);
+		//suite.addTestSuite(ExtendAlignmentTest.class);
 		suite.addTestSuite(TestCircularArrayList.class);
 		
 		return suite;

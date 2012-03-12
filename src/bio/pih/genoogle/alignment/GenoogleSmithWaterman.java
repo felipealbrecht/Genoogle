@@ -114,11 +114,10 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 
 	int maxI = 0, maxJ = 0, queryStart = 0, targetStart = 0;
 
-	/**
-	 * @param query
-	 * @param subject
-	 * @return the score of the alignment
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#pairwiseAlignment(bio.pih.genoogle.seq.SymbolList, bio.pih.genoogle.seq.SymbolList)
 	 */
+	@Override
 	public int pairwiseAlignment(SymbolList query, SymbolList subject) {
 		int[][] scoreMatrix = new int[query.getLength() + 1][subject.getLength() + 1];
 		int builderLength = (int) (Math.max(query.getLength(), subject.getLength()) * 1.20);
@@ -309,58 +308,66 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		}
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the query aligned.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getQueryAligned()
 	 */
+	@Override
 	public String getQueryAligned() {
 		return align[0];
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the target aligned.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getTargetAligned()
 	 */
+	@Override
 	public String getTargetAligned() {
 		return align[1];
 	}
 
-	/**
-	 * @return {@link String} containing the representation of the alignment path.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getPath()
 	 */
+	@Override
 	public String getPath() {
 		return path;
 	}
 
-	/**
-	 * @return where the alignment begins at the query sequence.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getQueryStart()
 	 */
+	@Override
 	public int getQueryStart() {
 		return queryStart + 1;
 	}
 
-	/**
-	 * @return where the alignment ends at the query sequence.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getQueryEnd()
 	 */
+	@Override
 	public int getQueryEnd() {
 		return maxI;
 	}
 
-	/**
-	 * @return where the alignment begins at the target sequence.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getTargetStart()
 	 */
+	@Override
 	public int getTargetStart() {
 		return targetStart + 1;
 	}
 
-	/**
-	 * @return where the alignment ends at the target sequence.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getTargetEnd()
 	 */
+	@Override
 	public int getTargetEnd() {
 		return maxJ;
 	}
 
-	/**
-	 * @return alignment score.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getScore()
 	 */
+	@Override
 	public int getScore() {
 		return score;
 	}
@@ -408,11 +415,10 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 		}
 	}
 
-	/**
-	 * Get the identity size, it is, how many exact matches occurred in the alignment.
-	 * 
-	 * @return the alignment identity size.
+	/* (non-Javadoc)
+	 * @see bio.pih.genoogle.alignment.X#getIdentitySize()
 	 */
+	@Override
 	public int getIdentitySize() {
 		return identitySize;
 	}
