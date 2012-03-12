@@ -190,7 +190,8 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));		
 
-		doSequenceProcessing(numberOfSequences, storedSequence);
+		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
+		doSequenceProcessing(numberOfSequences, encodedSequence);
 
 		this.numberOfSequences++;
 		this.dataBankSize += s.getLength();
@@ -211,7 +212,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		return byteBuf.array();
 	}
 
-	abstract public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence)
+	abstract public int doSequenceProcessing(int sequenceId, int[] encodedSequence)
 			throws IndexConstructionException, IllegalSymbolException;
 
 	protected static void checkFile(File file, boolean readOnly) throws IOException {

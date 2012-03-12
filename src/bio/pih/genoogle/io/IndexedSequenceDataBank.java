@@ -19,7 +19,6 @@ import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.index.builder.InvertedIndexBuilder;
 import bio.pih.genoogle.io.proto.Io.StoredDatabank;
-import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.seq.Alphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
@@ -81,8 +80,7 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	}
 
 	@Override
-	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IndexConstructionException, IllegalSymbolException {
-		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
+	public int doSequenceProcessing(int sequenceId, int[] encodedSequence) throws IndexConstructionException, IllegalSymbolException {
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		if (maskEncoder == null) {
 			indexBuilder.addSequence(sequenceId, encodedSequence);
@@ -91,7 +89,6 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 			int[] filteredSequence = maskEncoder.applySequenceMask(sequence);
 			indexBuilder.addSequence(sequenceId, filteredSequence);
 		}
-
 		return size;
 	}
 	

@@ -10,6 +10,7 @@ package bio.pih.genoogle.encoder;
 import org.apache.log4j.Logger;
 
 import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.AminoAcidAlphabet;
 import bio.pih.genoogle.seq.DNAAlphabet;
 import bio.pih.genoogle.seq.RNAAlphabet;
 import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
@@ -20,6 +21,7 @@ public class SequenceEncoderFactory {
 
 	private static DNASequenceEncoder[] dnaEncoders = new DNASequenceEncoder[17];
 	private static RNASequenceEncoder[] rnaEncoders = new RNASequenceEncoder[17];
+	private static AminoAcidsSequenceEncoder[] aaEncoder = new AminoAcidsSequenceEncoder[17];
 	private static Reduced_AA_8_SequenceEncoder[] reduced_AA_8 = new Reduced_AA_8_SequenceEncoder[17];
 	
 	/**
@@ -42,6 +44,11 @@ public class SequenceEncoderFactory {
 			return dnaEncoders[subSequenceLength];
 		}
 		
+		if (alphabet == AminoAcidAlphabet.SINGLETON) {
+			aaEncoder[subSequenceLength] = new AminoAcidsSequenceEncoder(subSequenceLength);
+			return aaEncoder[subSequenceLength];
+		}
+			
 		if (alphabet == Reduced_AA_8_Alphabet.SINGLETON) {
 			reduced_AA_8[subSequenceLength] = new Reduced_AA_8_SequenceEncoder(subSequenceLength);
 			return reduced_AA_8[subSequenceLength];

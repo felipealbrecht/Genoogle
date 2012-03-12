@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
+import pih.bio.genoogle.seq.protein.Converter;
+
 import bio.pih.genoogle.alignment.DividedStringGenoogleSmithWaterman;
 import bio.pih.genoogle.encoder.SequenceEncoder;
+import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
@@ -21,6 +24,8 @@ import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.search.results.Hit;
 import bio.pih.genoogle.search.results.SearchResults;
+import bio.pih.genoogle.seq.LightweightSymbolList;
+import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.common.collect.Lists;
 
@@ -34,6 +39,10 @@ public class SequenceAligner implements Runnable {
 	private final BothStrandSequenceAreas retrievedAreas;
 	private final SearchResults sr;
 	private final StoredSequence storedSequence;
+	private final SequenceEncoder encoderExtension;
+	private final SequenceEncoder encoderAlignment;
+	private final SequenceEncoder encoderDatabank;
+	private final AbstractSequenceDataBank databank;
 
 	/**
 	 * @param countDown
@@ -44,13 +53,23 @@ public class SequenceAligner implements Runnable {
 	 * @param sr
 	 *            Where the results are stored.
 	 */
-	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr)
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank)
 			throws IOException {
+		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder());
+	}
+	
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank, 
+			SequenceEncoder encoderDatabank, SequenceEncoder encoderExtension, SequenceEncoder encoderAlignment)
+	throws IOException {
 		this.countDown = countDown;
 		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;
+		this.databank = databank;
 		this.storedSequence = retrievedAreas.getStoredSequence();
-	}
+		this.encoderDatabank = encoderDatabank;
+		this.encoderExtension = encoderExtension;
+		this.encoderAlignment = encoderAlignment;
+}
 
 	@Override
 	public void run() {
@@ -68,31 +87,50 @@ public class SequenceAligner implements Runnable {
 	private void extendAndAlignHSPs(BothStrandSequenceAreas retrievedAreas, StoredSequence storedSequence)
 			throws Exception {
 
-		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
-		int targetLength = SequenceEncoder.getSequenceLength(encodedSequence);
+		int[] encodedDatabankSequence = Utils.getEncodedSequenceAsArray(storedSequence);
+		int targetLength = SequenceEncoder.getSequenceLength(encodedDatabankSequence);
 
+		
+		int[] convertedDatabankSequence = null;
+		int[] reducedDatabankSequence = null;
+		SymbolList converted = null;
+		
+		if (encoderDatabank != encoderExtension || encoderDatabank != encoderAlignment) {
+			String databankSequence = encoderDatabank.decodeIntegerArrayToString(encodedDatabankSequence);			
+			converted = Converter.dnaToProtein(LightweightSymbolList.createProtein(databankSequence));
+			convertedDatabankSequence = encoderAlignment.encodeSymbolListToIntegerArray(converted);
+			SymbolList reduced = Converter.proteinToReducedAA(converted);
+			reducedDatabankSequence = encoderExtension.encodeSymbolListToIntegerArray(reduced);			
+		} else {
+			 convertedDatabankSequence = encodedDatabankSequence;
+			 reducedDatabankSequence = encodedDatabankSequence;
+			 String databankSequence = encoderDatabank.decodeIntegerArrayToString(encodedDatabankSequence);
+			 converted = new LightweightSymbolList(databank.getAlphabet(),databankSequence);
+		}
+		
+		
 		IndexSearcher searcher = retrievedAreas.getIndexSearcher();
 		int queryLength = searcher.getQuery().getLength();
 
-		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, searcher.getDatabank().getAbsolutParent().getName());
+		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, databank.getAbsolutParent().getName());
 
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {
 			int[] encodedQuery = searcher.getEncodedQuery();
-			List<ExtendSequences> extendedSequences = extendAreas(encodedSequence, targetLength, queryLength,
+			List<ExtendSequences> extendedSequences = extendAreas(reducedDatabankSequence, targetLength, queryLength,
 					encodedQuery, areas, searcher);
 			extendedSequences = mergeExtendedAreas(extendedSequences);
-			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength, extendedSequences, searcher);
+			alignHSPs(hit, queryLength, storedSequence, targetLength, extendedSequences, searcher);
 		}
 
 		List<RetrievedArea> reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
 		if (reverseComplementAreas.size() > 0) {
 			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
 			IndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
-			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedSequence, targetLength, queryLength,
+			List<ExtendSequences> rcExtendedSequences = extendAreas(reducedDatabankSequence, targetLength, queryLength,
 					reverseEncodedQuery, reverseComplementAreas, rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
-			alignHSPs(hit, queryLength, storedSequence, encodedSequence, targetLength, rcExtendedSequences, rcSearcher);
+			alignHSPs(hit, queryLength, storedSequence, targetLength, rcExtendedSequences, rcSearcher);
 		}
 
 		sr.addHit(hit);
@@ -116,7 +154,7 @@ public class SequenceAligner implements Runnable {
 
 			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery, queryAreaBegin, queryAreaEnd,
 					encodedSequence, sequenceAreaBegin, sequenceAreaEnd,
-					searcher.getSearchParams().getSequencesExtendDropoff(), searcher.getDatabank().getEncoder());
+					searcher.getSearchParams().getSequencesExtendDropoff(), encoderExtension, encoderAlignment);
 
 			if (extendedSequencesList.contains(extensionResult)) {
 				continue;
@@ -127,7 +165,7 @@ public class SequenceAligner implements Runnable {
 		return extendedSequencesList;
 	}
 
-	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence, int[] encodedSequence,
+	private void alignHSPs(Hit hit, int queryLength, StoredSequence storedSequence,
 			int targetLength, List<ExtendSequences> extendedSequencesList, IndexSearcher searcher) {
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {

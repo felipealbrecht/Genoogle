@@ -81,7 +81,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 		Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
 
-		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());
+		ExecutorService alignerExecutor = Executors.newFixedThreadPool(1); //sp.getMaxThreadsExtendAlign());
 
 		int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : sequencesRetrievedAreas.size();
 		maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
@@ -91,7 +91,8 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 		try {
 			for (int i = 0; i < maxHits; i++) {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
-				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, sr);
+				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, 
+						sr, databank, databank.getEncoder(), databank.getReducedEncoder(), databank.getAaEncoder());
 				alignerExecutor.submit(sequenceAligner);
 			}
 		} catch (IOException e) {

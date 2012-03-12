@@ -40,6 +40,11 @@ public abstract class SequenceEncoder {
 		this.subSequenceLength = subSequenceLength;
 		this.bitsByAlphabetSize = bitsByAlphabetSize(alphabet.getSize());
 		this.bitsMask = ((1 << bitsByAlphabetSize) - 1);
+		
+		// Check if the sub sequence length and alphabet can be stored inside a 32 bits integer.
+		if (this.bitsByAlphabetSize * this.subSequenceLength > 32) {
+			throw new RuntimeException("The subsequence length ("+this.subSequenceLength+") is to long for this alphabet. Use a smaller subsequence length.");
+		}
 	}
 
 	/**
@@ -302,13 +307,12 @@ public abstract class SequenceEncoder {
 	}
 
 	// TODO: 1o. aplico a mask e depois faco o shift right, nao seria melhor fazer inverso?
-	public static int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
+	public int getValueAtPos(int[] encodedSequence, int pos, int subSequenceLength) {
 		int posInArray = (pos / subSequenceLength) + 1;
 		int posInInt = (subSequenceLength) - (pos % subSequenceLength);
 		int vectorValue = encodedSequence[posInArray];
 		int shift = posInInt * 2;
 		int value = vectorValue >> (shift - 2);
-		// TODO: only works for DNA. should use bitsMask in place of 3.
-		return value & 3;
+		return value & this.bitsMask;
 	}
 }

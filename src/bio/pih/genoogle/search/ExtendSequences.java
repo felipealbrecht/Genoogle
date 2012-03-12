@@ -22,10 +22,10 @@ public class ExtendSequences {
 	private final int endQuerySegment;
 	private final int beginTargetSegment;
 	private final int endTargetSegment;
-	private final SequenceEncoder encoder;
+	private final SequenceEncoder alignmentEncoder;
 
 	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, int beginQuerySegment, int endQuerySegment,
-			int beginTargetSegment, int endTargetSegment, SequenceEncoder encoder) {
+			int beginTargetSegment, int endTargetSegment, SequenceEncoder alignmentEncoder) {
 		this.encodedQuery = encodedQuery;
 		this.encodedTarget = encodedTarget;
 
@@ -33,7 +33,7 @@ public class ExtendSequences {
 		this.endQuerySegment = endQuerySegment;
 		this.beginTargetSegment = beginTargetSegment;
 		this.endTargetSegment = endTargetSegment;
-		this.encoder = encoder;
+		this.alignmentEncoder = alignmentEncoder;
 	}
 
 	String queryExtendedString = null;
@@ -43,7 +43,7 @@ public class ExtendSequences {
 	 */
 	public String getQuerySequenceExtended() {
 		if (queryExtendedString == null) {
-			queryExtendedString = encoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);
+			queryExtendedString = alignmentEncoder.decodeIntegerArrayToString(encodedQuery, beginQuerySegment, endQuerySegment);
 		}
 		return queryExtendedString;
 	}
@@ -55,7 +55,7 @@ public class ExtendSequences {
 	 */
 	public String getTargetSequenceExtended() {
 		if (targetExtendedString == null) {
-			targetExtendedString = encoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment,
+			targetExtendedString = alignmentEncoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment,
 					endTargetSegment);
 		}
 		return targetExtendedString;
@@ -86,7 +86,7 @@ public class ExtendSequences {
 	}
 
 	public SequenceEncoder getEncoder() {
-		return encoder;
+		return alignmentEncoder;
 	}
 
 	/**
@@ -104,13 +104,13 @@ public class ExtendSequences {
 	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
 			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
-			int dropoff, SequenceEncoder encoder) {
+			int dropoff, SequenceEncoder extensionEncoder, SequenceEncoder alignmentEncoder) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
 		int queryPos, databankPos;
 		
-		final int subSequenceLength = encoder.getSubSequenceLength();
+		final int subSequenceLength = extensionEncoder.getSubSequenceLength();
 
 		// right extend
 		bestQueryPos = endQuerySegment;
@@ -119,14 +119,14 @@ public class ExtendSequences {
 		queryPos = endQuerySegment + 1;
 		databankPos = endDatabankSequenceSegment + 1;
 
-		int queryLength = encodedQuerySequence[0];
-		int databankLength = encodedDatabankSequence[0];
+		int queryLength = SequenceEncoder.getSequenceLength(encodedQuerySequence);
+		int databankLength = SequenceEncoder.getSequenceLength(encodedDatabankSequence);
 
 		// http://2.bp.blogspot.com/_a7jkcMVp5Vg/SMMSwfT7jXI/AAAAAAAAF5Q/vrtrqwk-z1c/s1600-h/usetheforce.jpg
 		while (queryPos < queryLength && databankPos < databankLength) {
-			int queryValue = SequenceEncoder.getValueAtPos(encodedQuerySequence, queryPos,
+			int queryValue = extensionEncoder.getValueAtPos(encodedQuerySequence, queryPos,
 					subSequenceLength);
-			int databankValue = SequenceEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
+			int databankValue = extensionEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
 					subSequenceLength);
 			// TODO: subsitute to: "getMatrixValues(queryValue, databankValue) > 0
 			if (queryValue == databankValue) {
@@ -160,9 +160,9 @@ public class ExtendSequences {
 		databankPos = beginDatabankSequenceSegment - 1;
 
 		while (queryPos >= 0 && databankPos >= 0) {
-			int queryValue = SequenceEncoder.getValueAtPos(encodedQuerySequence, queryPos,
+			int queryValue = extensionEncoder.getValueAtPos(encodedQuerySequence, queryPos,
 					subSequenceLength);
-			int databankValue = SequenceEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
+			int databankValue = extensionEncoder.getValueAtPos(encodedDatabankSequence, databankPos,
 					subSequenceLength);
 			if (queryValue == databankValue) {
 				score++;
@@ -181,7 +181,7 @@ public class ExtendSequences {
 			databankPos--;
 		}
 
-		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, encoder);
+		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, alignmentEncoder);
 	}
 
 	@Override

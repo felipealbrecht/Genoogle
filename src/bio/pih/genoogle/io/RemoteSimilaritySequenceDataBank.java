@@ -20,6 +20,7 @@ import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.proto.Io.StoredSequenceInfo;
 import bio.pih.genoogle.seq.Alphabet;
+import bio.pih.genoogle.seq.AminoAcidAlphabet;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
 import bio.pih.genoogle.seq.RichSequence;
@@ -37,6 +38,7 @@ import com.google.protobuf.ByteString;
 public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 	SymbolListWindowIteratorFactory factory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
+	SequenceEncoder aaEncoder = SequenceEncoderFactory.getEncoder(AminoAcidAlphabet.SINGLETON, 6);
 	SequenceEncoder reducedEncoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 3);
 
 	public RemoteSimilaritySequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws ValueOutOfBoundsException {
@@ -79,45 +81,37 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		info = processRead6(s, dataBankFileChannel);
 		infos[5] = info;
 		
-		// TODO: store the "real" sequence.
-		
 		return infos;
 	}
 
 	private StoredSequenceInfo processRead1(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein1(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 1, dataBankFileChannel);
+		return storeInDatabase(s, protein, 1, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead2(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein2(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 2, dataBankFileChannel);
+		return storeInDatabase(s, protein, 2, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead3(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein3(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 3, dataBankFileChannel);
+		return storeInDatabase(s, protein, 3, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead4(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinComplement1(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 4, dataBankFileChannel);
+		return storeInDatabase(s, protein, 4, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead5(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinComplement2(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 5, dataBankFileChannel);
+		return storeInDatabase(s, protein, 5, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo processRead6(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProteinComplement3(s);
-		SymbolList reduced = Converter.proteinToReducedAA(protein);
-		return storeInDatabase(s, reduced, 6, dataBankFileChannel);
+		return storeInDatabase(s, protein, 6, dataBankFileChannel);
 	}
 
 	private StoredSequenceInfo storeInDatabase(RichSequence s, SymbolList converted, int read, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
@@ -136,12 +130,13 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 			.setRead(read)
 			.setEncodedSequence(ByteString.copyFrom(ret));
 
-		StoredSequence storedSequence = builder.build();
-
+		StoredSequence storedSequence = builder.build();		
 		byte[] byteArray = storedSequence.toByteArray();
 		dataBankFileChannel.write(ByteBuffer.wrap(byteArray));
 
-		doSequenceProcessing(numberOfSequences, storedSequence);
+		SymbolList reducedAA = Converter.proteinToReducedAA(converted);
+		int[] reducedEncoded = reducedEncoder.encodeSymbolListToIntegerArray(reducedAA);
+		doSequenceProcessing(numberOfSequences, reducedEncoded);
 
 		this.numberOfSequences++;
 		this.dataBankSize += s.getLength();
@@ -151,7 +146,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 	@Override
 	protected byte[] intArrayToByteArray(SymbolList s) {
-		int[] encoded = reducedEncoder.encodeSymbolListToIntegerArray(s);
+		int[] encoded = aaEncoder.encodeSymbolListToIntegerArray(s);
 
 		ByteBuffer byteBuf = ByteBuffer.allocate(encoded.length * 4);
 		for (int i = 0; i < encoded.length; i++) {
@@ -162,10 +157,17 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	}
 
 	@Override
-	public int doSequenceProcessing(int sequenceId, StoredSequence storedSequence) throws IndexConstructionException, IllegalSymbolException {
-		int[] encodedSequence = Utils.getEncodedSequenceAsArray(storedSequence);
+	public int doSequenceProcessing(int sequenceId, int[] encodedSequence) throws IndexConstructionException, IllegalSymbolException {
 		int size = SequenceEncoder.getSequenceLength(encodedSequence);
 		indexBuilder.addSequence(sequenceId, encodedSequence);
 		return size;
+	}
+	
+	public SequenceEncoder getAaEncoder() {
+		return aaEncoder;
+	}
+	
+	public SequenceEncoder getReducedEncoder() {
+		return reducedEncoder;
 	}
 }

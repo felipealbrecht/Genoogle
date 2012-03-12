@@ -134,7 +134,7 @@ public class CollectionSearcher extends AbstractSearcher {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas
 						.get(i);
 				SequenceAligner sequenceAligner = new SequenceAligner(
-						alignnmentsCountDown, retrievedArea, sr);
+						alignnmentsCountDown, retrievedArea, sr, databankCollection);
 				alignerExecutor.submit(sequenceAligner);
 			}
 		} catch (IOException e) {
