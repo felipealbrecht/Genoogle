@@ -36,29 +36,6 @@ public class ExtendSequences {
 
 	String queryExtendedString = null;
 
-//	/**
-//	 * @return extended query.
-//	 */
-//	public String getQuerySequenceExtended() {
-//		if (queryExtendedString == null) {
-//			queryExtendedString = 
-//		}
-//		return queryExtendedString;
-//	}
-//
-//	String targetExtendedString = null;
-//
-//	/**
-//	 * @return extended target.
-//	 */
-//	public String getTargetSequenceExtended() {
-//		if (targetExtendedString == null) {
-//			targetExtendedString = alignmentEncoder.decodeIntegerArrayToString(encodedTarget, beginTargetSegment,
-//					endTargetSegment);
-//		}
-//		return targetExtendedString;
-//	}
-
 	public int getBeginQuerySegment() {
 		return beginQuerySegment;
 	}
