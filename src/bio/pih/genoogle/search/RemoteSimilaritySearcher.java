@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import bio.pih.genoogle.alignment.SubstitutionTable;
 import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.results.HSP;
@@ -92,7 +93,9 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 			for (int i = 0; i < maxHits; i++) {
 				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, 
-						sr, databank, databank.getEncoder(), databank.getAaEncoder(), databank.getReducedEncoder());
+						sr, databank, databank.getEncoder(), databank.getAaEncoder(), databank.getReducedEncoder(), 
+						// TODO: be possible to set the substitution matrix
+						SubstitutionTable.BLOSUM62);
 				alignerExecutor.submit(sequenceAligner);
 			}
 		} catch (IOException e) {

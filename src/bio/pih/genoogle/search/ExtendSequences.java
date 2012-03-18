@@ -7,6 +7,7 @@
 
 package bio.pih.genoogle.search;
 
+import bio.pih.genoogle.alignment.SubstitutionTable;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 
 /**
@@ -75,7 +76,7 @@ public class ExtendSequences {
 	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
 			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
-			int dropoff, SequenceEncoder extensionEncoder) {
+			int dropoff, SequenceEncoder extensionEncoder, final SubstitutionTable substitutionTable) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -97,19 +98,24 @@ public class ExtendSequences {
 		while (queryPos < queryLength && databankPos < databankLength) {
 			int queryValue = extensionEncoder.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
 			int databankValue = extensionEncoder.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
-			// TODO: subsitute to: "getMatrixValues(queryValue, databankValue) > 0
-			if (queryValue == databankValue) {
-				score++;
-				if (score >= bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
+
+			if (substitutionTable == null) {
+				if (queryValue == databankValue) {
+					score++;
 				}
 			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
+				char a = extensionEncoder.getSymbolFromBits(queryValue);
+				char b = extensionEncoder.getSymbolFromBits(databankValue);				
+				score += substitutionTable.getValue(a, b);				
+			}
+			
+			if (score >= bestScore) {
+				bestScore = score;
+				bestQueryPos = queryPos;
+				bestDatabankPos = databankPos;
+			} 
+			if (bestScore - score > dropoff) {
+				break;
 			}
 			queryPos++;
 			databankPos++;
@@ -131,18 +137,23 @@ public class ExtendSequences {
 		while (queryPos >= 0 && databankPos >= 0) {
 			int queryValue = extensionEncoder.getValueAtPos(encodedQuerySequence, queryPos, subSequenceLength);
 			int databankValue = extensionEncoder.getValueAtPos(encodedDatabankSequence, databankPos, subSequenceLength);
-			if (queryValue == databankValue) {
-				score++;
-				if (score >= bestScore) {
-					bestScore = score;
-					bestQueryPos = queryPos;
-					bestDatabankPos = databankPos;
+			if (substitutionTable == null) {
+				if (queryValue == databankValue) {
+					score++;
 				}
 			} else {
-				score--;
-				if (bestScore - score > dropoff) {
-					break;
-				}
+				char a = extensionEncoder.getSymbolFromBits(queryValue);
+				char b = extensionEncoder.getSymbolFromBits(databankValue);				
+				score += substitutionTable.getValue(a, b);				
+			}
+			
+			if (score >= bestScore) {
+				bestScore = score;
+				bestQueryPos = queryPos;
+				bestDatabankPos = databankPos;
+			} 
+			if (bestScore - score > dropoff) {
+				break;
 			}
 			queryPos--;
 			databankPos--;

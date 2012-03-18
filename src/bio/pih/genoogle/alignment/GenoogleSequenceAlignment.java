@@ -7,7 +7,6 @@
 
 package bio.pih.genoogle.alignment;
 
-import bio.pih.genoogle.seq.SymbolList;
 
 
 /**
@@ -22,7 +21,7 @@ public abstract class GenoogleSequenceAlignment {
 	 * @param subject
 	 * @return the score of the alignment
 	 */
-	public abstract int pairwiseAlignment(SymbolList query, SymbolList subject);
+//	public abstract int pairwiseAlignment(SymbolList query, SymbolList subject);
 
 	/**
 	 * @return {@link String} containing the representation of the query aligned.
@@ -70,6 +69,26 @@ public abstract class GenoogleSequenceAlignment {
 	 * @return the alignment identity size.
 	 */
 	public abstract int getIdentitySize();
+	
+	/**
+	 * This just computes the maximum of four integers.
+	 * 
+	 * @param w
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return the maximum of four <code>int</code>s.
+	 */
+	public int max(int w, int x, int y, int z) {
+		if ((w > x) && (w > y) && (w > z))
+			return w;
+		if ((x > y) && (x > z))
+			return x;
+		if ((y > z))
+			return y;
+		return z;
+	}
+
 	
 	/**
 	 * This method provides a BLAST-like formated alignment from the given <code>String</code>s, in which the sequence coordinates and the information "Query" or "Target", respectively is added to each line. Each line contains 60 sequence characters including the gap symbols plus the meta information. There is one white line between two pairs of sequences.

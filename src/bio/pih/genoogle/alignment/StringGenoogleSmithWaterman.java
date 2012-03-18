@@ -322,25 +322,6 @@ public class StringGenoogleSmithWaterman extends GenoogleSmithWaterman {
 		return score;
 	}
 
-	/**
-	 * This just computes the maximum of four integers.
-	 * 
-	 * @param w
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return the maximum of four <code>int</code>s.
-	 */
-	private int max(int w, int x, int y, int z) {
-		if ((w > x) && (w > y) && (w > z))
-			return w;
-		if ((x > y) && (x > z))
-			return x;
-		if ((y > z))
-			return y;
-		return z;
-	}
-
 	@Override
 	public int getIdentitySize() {
 		return identitySize;

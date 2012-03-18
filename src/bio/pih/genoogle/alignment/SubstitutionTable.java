@@ -5,12 +5,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
+import bio.pih.genoogle.io.XMLConfigurationReader;
+
 public class SubstitutionTable {
 		
 	public static final SubstitutionTable BLOSUM62 = SubstitutionTable.internalLoad("files/blosum/BLOSUM62.txt");
+	public static final SubstitutionTable DUMMY = new DummySubstitutionTable(XMLConfigurationReader.getMatchScore(), XMLConfigurationReader.getMismatchScore());
+	
 	
 	private final static int  MATRIX_SIZE = 255;
 	private int[][] valuesTable;
+	
+	private SubstitutionTable()  { }
 	
 	private SubstitutionTable(int[][] valuesTable) {
 		this.valuesTable = valuesTable;
@@ -58,12 +64,10 @@ public class SubstitutionTable {
 		String[] chars = line.split("\\s+");
 		
 		for (int i = 0; i < chars.length; i++) {
-			System.out.println(chars[i]);
 			charPosition.put(i, chars[i].charAt(0));
 			// TODO: check MATRIX_SIZE
 		}
 		
-		System.out.println(charPosition);
 		int cPos = 0;
 		
 		while ((line = br.readLine()) != null && cPos < chars.length ) {
@@ -91,5 +95,22 @@ public class SubstitutionTable {
 //		}
 		
 		return new SubstitutionTable(valuesTable);
+	}
+	
+	private static final class DummySubstitutionTable extends SubstitutionTable {
+		int matchScore;
+		int misMatchScore;
+		
+		public DummySubstitutionTable(int m, int d) {
+			this.matchScore = m;
+			this.misMatchScore = d;
+		}
+		
+		public int getValue(char a, char b) {
+			if (a == b) {
+				return matchScore;
+			}
+			return misMatchScore;
+		}
 	}
 }

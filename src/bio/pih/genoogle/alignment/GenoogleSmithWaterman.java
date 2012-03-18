@@ -117,7 +117,7 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	/* (non-Javadoc)
 	 * @see bio.pih.genoogle.alignment.X#pairwiseAlignment(bio.pih.genoogle.seq.SymbolList, bio.pih.genoogle.seq.SymbolList)
 	 */
-	@Override
+
 	public int pairwiseAlignment(SymbolList query, SymbolList subject) {
 		int[][] scoreMatrix = new int[query.getLength() + 1][subject.getLength() + 1];
 		int builderLength = (int) (Math.max(query.getLength(), subject.getLength()) * 1.20);
@@ -370,25 +370,6 @@ public class GenoogleSmithWaterman extends GenoogleSequenceAlignment {
 	@Override
 	public int getScore() {
 		return score;
-	}
-
-	/**
-	 * This just computes the maximum of four integers.
-	 * 
-	 * @param w
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return the maximum of four <code>int</code>s.
-	 */
-	private int max(int w, int x, int y, int z) {
-		if ((w > x) && (w > y) && (w > z))
-			return w;
-		if ((x > y) && (x > z))
-			return x;
-		if ((y > z))
-			return y;
-		return z;
 	}
 
 	/**

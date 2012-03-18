@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
-import bio.pih.genoogle.alignment.StringGenoogleSmithWaterman;
+import bio.pih.genoogle.alignment.SubstitutionMatrixSmithWaterman;
+import bio.pih.genoogle.alignment.SubstitutionTable;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
@@ -40,6 +41,7 @@ public class SequenceAligner implements Runnable {
 //	private final SequenceEncoder encoderDatabankReduced;
 //	private final SequenceEncoder encoderDatabankInputReader;
 	private final AbstractSequenceDataBank databank;
+	private final SubstitutionTable substitutionTable;
 
 	/**
 	 * @param countDown
@@ -51,19 +53,21 @@ public class SequenceAligner implements Runnable {
 	 * @param sr
 	 *            Where the results are stored.
 	 */
-	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank) throws IOException {
-		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder());
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, 
+			AbstractSequenceDataBank databank) throws IOException {
+		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder(), SubstitutionTable.DUMMY);
 	}
 
-	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank, SequenceEncoder encoderDatabankInputReader, SequenceEncoder encoderDatabankConverted, SequenceEncoder encoderDatabankReduced) throws IOException {
+	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, 
+			AbstractSequenceDataBank databank, SequenceEncoder encoderDatabankInputReader, SequenceEncoder encoderDatabankConverted, 
+			SequenceEncoder encoderDatabankReduced, SubstitutionTable substitutionTable) throws IOException {
 		this.countDown = countDown;
 		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;
 		this.databank = databank;
+		this.substitutionTable = substitutionTable;
 		this.storedSequence = retrievedAreas.getStoredSequence();
-//		this.encoderDatabankInputReader = encoderDatabankInputReader;
 		this.encoderDatabankConverted = encoderDatabankConverted;
-//		this.encoderDatabankReduced = encoderDatabankReduced;
 	}
 
 	@Override
@@ -94,7 +98,10 @@ public class SequenceAligner implements Runnable {
 
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {
-			int[] encodedQuery = searcher.getEncodedQuery();
+			// TODO: ver isso ai
+			int[] encodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(searcher.getQuery());
+			
+			//int[] encodedQuery = searcher.getEncodedQuery();
 			List<ExtendSequences> extendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, encodedQuery, areas, searcher);
 			extendedSequences = mergeExtendedAreas(extendedSequences);
 			alignHSPs(hit, query, queryLength, targetLength, extendedSequences, searcher, databankSequence);
@@ -127,7 +134,7 @@ public class SequenceAligner implements Runnable {
 				queryAreaBegin = queryLength;
 			}
 
-			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery, queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin, sequenceAreaEnd, searcher.getSearchParams().getSequencesExtendDropoff(), encoderDatabankConverted);
+			ExtendSequences extensionResult = ExtendSequences.doExtension(encodedQuery, queryAreaBegin, queryAreaEnd, encodedSequence, sequenceAreaBegin, sequenceAreaEnd, searcher.getSearchParams().getSequencesExtendDropoff(), encoderDatabankConverted, substitutionTable);
 
 			if (extendedSequencesList.contains(extensionResult)) {
 				continue;
@@ -143,9 +150,7 @@ public class SequenceAligner implements Runnable {
 		String queryString = query.seqString();
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
-			int matchScore = sr.getParams().getMatchScore();
-			int mismatchScore = sr.getParams().getMismatchScore();
-			StringGenoogleSmithWaterman smithWaterman = new StringGenoogleSmithWaterman(matchScore, mismatchScore, mismatchScore, mismatchScore, mismatchScore);
+			SubstitutionMatrixSmithWaterman smithWaterman = new SubstitutionMatrixSmithWaterman(substitutionTable, -5, -5);
 
 			int beginQuerySegment;
 			int endnQuerySegment;

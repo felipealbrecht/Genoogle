@@ -17,12 +17,12 @@
   </genoogle:score>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="3"/>
-    <genoogle:min-hsp-length              value="5" />
+    <genoogle:max-sub-sequence-distance   value="0"/>
+    <genoogle:min-hsp-length              value="6" />
     <genoogle:extend-dropoff              value="5" />
     <genoogle:max-hits-results            value="50" />
-    <genoogle:max-threads-index-search    value="1" />
-    <genoogle:max-threads-extend-align    value="1" />
+    <genoogle:max-threads-index-search    value="32" />
+    <genoogle:max-threads-extend-align    value="32" />
     <genoogle:min-query-slice-length      value="2000" />
     <genoogle:query-split-quantity        value="2" />
   </genoogle:search-parameters>
