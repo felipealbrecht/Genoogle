@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009,2010,2011,2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -156,8 +156,9 @@ public class FastaFormat implements RichSequenceFormat {
 		line = line.substring(1);
 		String[] strings = line.split("\\|");
 		
-		if (strings.length == 0) {
-			sequenceBuilder.setDescription(line);			
+		if (strings.length == 1) {
+			sequenceBuilder.setDescription(line);
+			sequenceBuilder.setType("custon");
 		} else {
 			sequenceBuilder.setType(strings[0]);
 		}
