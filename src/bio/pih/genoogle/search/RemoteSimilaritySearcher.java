@@ -134,7 +134,8 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 		ListIterator<HSP> iterator = HSPs.listIterator();
 		while (iterator.hasNext()) {
 			HSP hsp = iterator.next();
-			if (hsp.getEValue() >= 0.1) {
+//			if (hsp.getEValue() >= 0.1) {
+			if (hsp.getScore() <= 5 || hsp.getAlignLength() < 4) {
 				iterator.remove();
 			}
 		}

@@ -98,10 +98,8 @@ public class SequenceAligner implements Runnable {
 
 		List<RetrievedArea> areas = retrievedAreas.getAreas();
 		if (areas.size() > 0) {
-			// TODO: ver isso ai
+			// TODO: put in the RemoteSimilaritySearcher.
 			int[] encodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(searcher.getQuery());
-			
-			//int[] encodedQuery = searcher.getEncodedQuery();
 			List<ExtendSequences> extendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, encodedQuery, areas, searcher);
 			extendedSequences = mergeExtendedAreas(extendedSequences);
 			alignHSPs(hit, query, queryLength, targetLength, extendedSequences, searcher, databankSequence);
@@ -109,8 +107,9 @@ public class SequenceAligner implements Runnable {
 
 		List<RetrievedArea> reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
 		if (reverseComplementAreas.size() > 0) {
-			int[] reverseEncodedQuery = retrievedAreas.getReverIndexSearcher().getEncodedQuery();
+			// TODO: put in the RemoteSimilaritySearcher
 			IndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
+			int[] reverseEncodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(rcSearcher.getQuery());
 			List<ExtendSequences> rcExtendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas, rcSearcher);
 			rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
 			alignHSPs(hit, query, queryLength, targetLength, rcExtendedSequences, rcSearcher, databankSequence);

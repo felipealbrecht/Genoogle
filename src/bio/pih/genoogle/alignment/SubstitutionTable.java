@@ -44,7 +44,7 @@ public class SubstitutionTable {
 		
 		for (int i = 0; i < MATRIX_SIZE; i++) {
 			for (int j = 0; j < MATRIX_SIZE; j++) {
-				valuesTable[i][j] = Integer.MIN_VALUE;
+				valuesTable[i][j] = -10;
 			}
 		}
 		

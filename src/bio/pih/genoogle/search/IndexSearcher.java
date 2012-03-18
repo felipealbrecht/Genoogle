@@ -47,11 +47,13 @@ public class IndexSearcher implements Runnable {
 	private final int offset;
 	private final int[] encodedQuery;
 	private final String sliceQuery;
+	
+	private final int frame;
 
 	private final List<Throwable> fails;
 
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength, String sliceQuery,
-			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas, int frame,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
@@ -61,6 +63,7 @@ public class IndexSearcher implements Runnable {
 		this.fullQuery = fullQuery;
 		this.encodedQuery = encodedQuery;
 		this.retrievedAreas = retrievedAreas;
+		this.frame = frame;
 		this.statistics = statistics;
 		this.countDown = countDown;
 		this.fails = fails;
@@ -69,13 +72,12 @@ public class IndexSearcher implements Runnable {
 	}
 
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
-			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas, int frame,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		
 		this(id, sp, databank, databank.getEncoder(),
 				databank.getMaskEncoder() == null ? databank.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength(),
-				sliceQuery,
-				offset, fullQuery, encodedQuery, retrievedAreas, 
+				sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, frame,				
 				statistics, countDown, fails);
 	}
 
