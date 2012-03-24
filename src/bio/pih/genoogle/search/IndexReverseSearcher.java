@@ -21,7 +21,7 @@ import bio.pih.genoogle.statistics.Statistics;
 public class IndexReverseSearcher extends IndexSearcher {
 
 	public IndexReverseSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength,
-			String sliceQuery, int offset, SymbolList query, int[] encodedQuery, int frame,
+			String sliceQuery, int offset, SymbolList query, int[] encodedQuery,
 			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, 
 			CountDownLatch countDown, List<Throwable> fails) {
 		super(id, sp, databank, encoder, subSequenceLength, sliceQuery, offset, query, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);

@@ -55,7 +55,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 	public SearchResults call() {
 		long begin = System.currentTimeMillis();
 
-		ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
+		ExecutorService queryExecutor = Executors.newFixedThreadPool(1);//testcdssp.getMaxThreadsIndexSearch());
 		
 		List<Throwable> fails = Lists.newLinkedList();
 		fails = Collections.synchronizedList(fails);
@@ -134,8 +134,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 		ListIterator<HSP> iterator = HSPs.listIterator();
 		while (iterator.hasNext()) {
 			HSP hsp = iterator.next();
-//			if (hsp.getEValue() >= 0.1) {
-			if (hsp.getScore() <= 5 || hsp.getAlignLength() < 4) {
+			if (hsp.getAlignLength() < 10) {
 				iterator.remove();
 			}
 		}

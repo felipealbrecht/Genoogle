@@ -48,12 +48,10 @@ public class IndexSearcher implements Runnable {
 	private final int[] encodedQuery;
 	private final String sliceQuery;
 	
-	private final int frame;
-
 	private final List<Throwable> fails;
 
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength, String sliceQuery,
-			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas, int frame,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		this.id = id;
 		this.sp = sp;
@@ -63,7 +61,6 @@ public class IndexSearcher implements Runnable {
 		this.fullQuery = fullQuery;
 		this.encodedQuery = encodedQuery;
 		this.retrievedAreas = retrievedAreas;
-		this.frame = frame;
 		this.statistics = statistics;
 		this.countDown = countDown;
 		this.fails = fails;
@@ -72,12 +69,12 @@ public class IndexSearcher implements Runnable {
 	}
 
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
-			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas, int frame,
+			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
 			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
 		
 		this(id, sp, databank, databank.getEncoder(),
 				databank.getMaskEncoder() == null ? databank.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength(),
-				sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, frame,				
+				sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas,				
 				statistics, countDown, fails);
 	}
 
@@ -165,9 +162,12 @@ public class IndexSearcher implements Runnable {
 			throws ValueOutOfBoundsException, IOException {
 
 		long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
+		//System.out.println(indexPositions.length);
+		//long begin = System.nanoTime();
 		for (long subSequenceIndexInfo : indexPositions) {
 			retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
 		}
+		//System.out.println((System.nanoTime() - begin)/1000000);
 	}
 
 	private int[] getEncodedSubSequences(String querySequence) {
