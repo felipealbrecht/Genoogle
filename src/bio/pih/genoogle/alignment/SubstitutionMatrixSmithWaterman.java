@@ -10,7 +10,7 @@ package bio.pih.genoogle.alignment;
 
 public class SubstitutionMatrixSmithWaterman extends GenoogleSequenceAlignment {
 
-	private final SubstitutionTable substitutionTable;
+	private final SubstitutionMatrix substitutionTable;
 	
 	/*
 	 * Variables needed for traceback
@@ -25,7 +25,7 @@ public class SubstitutionMatrixSmithWaterman extends GenoogleSequenceAlignment {
 	private final int insert;
 
 
-	public SubstitutionMatrixSmithWaterman(SubstitutionTable substitutionTable, int delete, int insert) {		
+	public SubstitutionMatrixSmithWaterman(SubstitutionMatrix substitutionTable, int delete, int insert) {		
 		this.substitutionTable = substitutionTable;		
 		this.delete = delete;
 		this.insert = insert;		
@@ -116,10 +116,10 @@ public class SubstitutionMatrixSmithWaterman extends GenoogleSequenceAlignment {
 					if (scoreMatrix[i][j]
 							- (scoreMatrix[i - 1][j - 1] + substitutionTable.getValue(queryChar, subjectChar) ) == 0) {
 						if (queryChar == subjectChar) {
-							pathBuilder.append('|');
+							pathBuilder.append(queryChar);
 							identitySize++;
 						} else {
-							if (substitutionTable.getValue(queryChar, subjectChar) > 0) {
+							if (substitutionTable.getValue(queryChar, subjectChar) >= 0) {
 								pathBuilder.append('+');	
 							} else {
 								pathBuilder.append(' ');

@@ -23,6 +23,7 @@ import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.SymbolList;
+import bio.pih.genoogle.statistics.MatchDismatchStatistics;
 import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 
 		SymbolList query = sp.getQuery();
 
-		Statistics statistics = new Statistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		Statistics statistics = new MatchDismatchStatistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
 		String seqString = query.seqString();
 

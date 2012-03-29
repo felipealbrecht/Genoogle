@@ -13,7 +13,7 @@ import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
 import bio.pih.genoogle.alignment.SubstitutionMatrixSmithWaterman;
-import bio.pih.genoogle.alignment.SubstitutionTable;
+import bio.pih.genoogle.alignment.SubstitutionMatrix;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
@@ -41,7 +41,7 @@ public class SequenceAligner implements Runnable {
 //	private final SequenceEncoder encoderDatabankReduced;
 //	private final SequenceEncoder encoderDatabankInputReader;
 	private final AbstractSequenceDataBank databank;
-	private final SubstitutionTable substitutionTable;
+	private final SubstitutionMatrix substitutionTable;
 
 	/**
 	 * @param countDown
@@ -55,12 +55,12 @@ public class SequenceAligner implements Runnable {
 	 */
 	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, 
 			AbstractSequenceDataBank databank) throws IOException {
-		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder(), SubstitutionTable.DUMMY);
+		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder(), SubstitutionMatrix.DUMMY);
 	}
 
 	public SequenceAligner(CountDownLatch countDown, BothStrandSequenceAreas retrievedAreas, SearchResults sr, 
 			AbstractSequenceDataBank databank, SequenceEncoder encoderDatabankInputReader, SequenceEncoder encoderDatabankConverted, 
-			SequenceEncoder encoderDatabankReduced, SubstitutionTable substitutionTable) throws IOException {
+			SequenceEncoder encoderDatabankReduced, SubstitutionMatrix substitutionTable) throws IOException {
 		this.countDown = countDown;
 		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;

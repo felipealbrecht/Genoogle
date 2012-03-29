@@ -140,7 +140,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		doSequenceProcessing(numberOfSequences, reducedEncoded);
 
 		this.numberOfSequences++;
-		this.dataBankSize += s.getLength();
+		this.dataBankSize += converted.getLength();
 
 		return StoredSequenceInfo.newBuilder().setId(id).setOffset(offset).setLength(byteArray.length).build();
 	}

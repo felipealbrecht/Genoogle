@@ -16,15 +16,13 @@ import java.util.concurrent.ExecutorService;
 import org.apache.log4j.Logger;
 
 import pih.bio.genoogle.seq.protein.Converter;
+import bio.pih.genoogle.alignment.SubstitutionMatrix;
 import bio.pih.genoogle.encoder.SequenceEncoder;
-import bio.pih.genoogle.encoder.SequenceEncoderFactory;
-import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
 import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
-import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
 import bio.pih.genoogle.seq.SymbolList;
-import bio.pih.genoogle.statistics.Statistics;
+import bio.pih.genoogle.statistics.SubstitutionMatrixStatistics;
 
 import com.google.common.collect.Lists;
 
@@ -44,6 +42,7 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 	private final SequenceEncoder encoder;
 
 		
+	@SuppressWarnings("unchecked")
 	public IndexSixFramesSearcher(long id, SearchParams sp, RemoteSimilaritySequenceDataBank databank,
 			ExecutorService executor, List<Throwable> fails) {
 		this.id = id;
@@ -67,8 +66,6 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		long searchBegin = System.currentTimeMillis();
 
 		SymbolList query = sp.getQuery();
-
-		Statistics statistics = new Statistics(databank.getAlphabet(), databank.getEncoder(), sp.getMatchScore(), sp.getMismatchScore(), query, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 
 		SymbolList dnaToProtein1 = Converter.dnaToProtein(query);
 		SymbolList dnaToProtein2 = Converter.dnaToProtein2(query);
@@ -95,13 +92,13 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		
 		CountDownLatch indexSearchersCountDown = new CountDownLatch(6);
 		
-		submitSearch(read1.seqString(), 0, dnaToProtein1, encodedReducedRead1, statistics, indexSearchersCountDown, 1);
-		submitSearch(read2.seqString(), 0, dnaToProtein2, encodedReducedRead2, statistics, indexSearchersCountDown, 2);
-		submitSearch(read3.seqString(), 0, dnaToProtein3, encodedReducedRead3, statistics, indexSearchersCountDown, 3);
+		submitSearch(read1.seqString(), 0, dnaToProtein1, encodedReducedRead1, indexSearchersCountDown, 1);
+		submitSearch(read2.seqString(), 0, dnaToProtein2, encodedReducedRead2, indexSearchersCountDown, 2);
+		submitSearch(read3.seqString(), 0, dnaToProtein3, encodedReducedRead3, indexSearchersCountDown, 3);
 		
-		submitRCSearch(complement1.seqString(), 0, dnaToProteinComplement1, encodedReducedComplement1, statistics, indexSearchersCountDown, 1);
-		submitRCSearch(complement2.seqString(), 0, dnaToProteinComplement2, encodedReducedComplement3, statistics, indexSearchersCountDown, 2);
-		submitRCSearch(complement3.seqString(), 0, dnaToProteinComplement3, encodedReducedComplement2, statistics, indexSearchersCountDown, 3);
+		submitRCSearch(complement1.seqString(), 0, dnaToProteinComplement1, encodedReducedComplement1, indexSearchersCountDown, 1);
+		submitRCSearch(complement2.seqString(), 0, dnaToProteinComplement2, encodedReducedComplement3, indexSearchersCountDown, 2);
+		submitRCSearch(complement3.seqString(), 0, dnaToProteinComplement3, encodedReducedComplement2, indexSearchersCountDown, 3);
 		
 		indexSearchersCountDown.await();
 		
@@ -128,15 +125,19 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 	}
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			Statistics statistics, CountDownLatch countDown, int frame) {
-		System.out.println(fullQuery);
+			CountDownLatch countDown, int frame) {
+		SubstitutionMatrixStatistics statistics = new SubstitutionMatrixStatistics(databank.getAaEncoder().getAlphabet(), SubstitutionMatrix.BLOSUM62,
+				 fullQuery, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		
 		searcher = new IndexSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength() , sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			Statistics statistics, CountDownLatch countDown, int frame) {
-		System.out.println(fullQuery);
+			CountDownLatch countDown, int frame) {
+		SubstitutionMatrixStatistics statistics = new SubstitutionMatrixStatistics(databank.getAaEncoder().getAlphabet(), SubstitutionMatrix.BLOSUM62, 
+				fullQuery, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
+		
 		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength(), sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
 		executor.submit(crSearcher);
 	}

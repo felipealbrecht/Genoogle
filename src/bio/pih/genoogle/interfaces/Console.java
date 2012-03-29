@@ -270,39 +270,39 @@ public class Console implements Runnable, GenoogleListener {
 					prev = line;
 					System.out.print("genoogle console> ");
 				} catch (IndexOutOfBoundsException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (UnsupportedEncodingException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (FileNotFoundException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (ParseException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (IOException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (NoSuchElementException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (UnknowDataBankException e) {
-					logger.error(e);
+					logger.error(e.getStackTrace(), e);
 					continue;
 				} catch (InterruptedException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (ExecutionException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				} catch (IllegalSymbolException e) {
-					logger.fatal(e);
+					logger.fatal(e.getStackTrace(), e);
 					continue;
 				}
 			}
 		} catch (IOException e) {
-			logger.fatal(e);
+			logger.fatal(e.getStackTrace(), e);
 			return;
 		}
 	}

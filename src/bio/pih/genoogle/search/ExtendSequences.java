@@ -7,7 +7,7 @@
 
 package bio.pih.genoogle.search;
 
-import bio.pih.genoogle.alignment.SubstitutionTable;
+import bio.pih.genoogle.alignment.SubstitutionMatrix;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 
 /**
@@ -76,7 +76,7 @@ public class ExtendSequences {
 	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
 			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
-			int dropoff, SequenceEncoder extensionEncoder, final SubstitutionTable substitutionTable) {
+			int dropoff, SequenceEncoder extensionEncoder, final SubstitutionMatrix substitutionTable) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
