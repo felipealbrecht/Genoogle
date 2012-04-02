@@ -8,7 +8,7 @@
 package bio.pih.genoogle.util;
 
 import bio.pih.genoogle.search.IndexRetrievedData;
-import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
+import bio.pih.genoogle.search.RetrievedArea;
 
 /**
  * Circular Array used to store the {@link IndexRetrievedData} retrieved from the inverted index.

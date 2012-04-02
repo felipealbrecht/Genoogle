@@ -17,7 +17,7 @@
   </genoogle:score>
 
   <genoogle:search-parameters>
-    <genoogle:max-sub-sequence-distance   value="12"/>
+    <genoogle:max-sub-sequence-distance   value="0"/>
     <genoogle:min-hsp-length              value="6" />
     <genoogle:extend-dropoff              value="20" />
     <genoogle:max-hits-results            value="100" />

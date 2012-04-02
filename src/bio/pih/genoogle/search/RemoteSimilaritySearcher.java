@@ -9,7 +9,6 @@ package bio.pih.genoogle.search;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
@@ -20,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import bio.pih.genoogle.alignment.SubstitutionMatrix;
 import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
-import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.search.results.Hit;
 import bio.pih.genoogle.search.results.SearchResults;
@@ -36,15 +34,8 @@ import com.google.common.collect.Lists;
 public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 	private static Logger logger = Logger.getLogger(RemoteSimilaritySearcher.class.getName());
-
+	
 	private final RemoteSimilaritySequenceDataBank databank;
-
-	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
-		@Override
-		public int compare(final BothStrandSequenceAreas o1, final BothStrandSequenceAreas o2) {
-			return o2.getBiggestLength() - o1.getBiggestLength();
-		}
-	};
 
 	public RemoteSimilaritySearcher(long code, SearchParams sp, RemoteSimilaritySequenceDataBank databank) {
 		super(code, sp, databank);
@@ -55,13 +46,13 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 	public SearchResults call() {
 		long begin = System.currentTimeMillis();
 
-		ExecutorService queryExecutor = Executors.newFixedThreadPool(1);//testcdssp.getMaxThreadsIndexSearch());
+		ExecutorService queryExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsIndexSearch());
 		
 		List<Throwable> fails = Lists.newLinkedList();
 		fails = Collections.synchronizedList(fails);
 		final IndexSixFramesSearcher indexSearcher = new IndexSixFramesSearcher(id, sp, databank, queryExecutor, fails);		
 		
-		List<BothStrandSequenceAreas> sequencesRetrievedAreas = null;
+		List<RetrievedSequenceAreas> sequencesRetrievedAreas = null;
 		try {
 			sequencesRetrievedAreas = indexSearcher.call();
 		} catch (InterruptedException e) {
@@ -80,7 +71,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 		long alignmentBegin = System.currentTimeMillis();
 
-		Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
+		Collections.sort(sequencesRetrievedAreas, RetrievedSequenceAreas.AREAS_LENGTH_COMPARATOR);
 
 		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());
 
@@ -91,7 +82,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 		try {
 			for (int i = 0; i < maxHits; i++) {
-				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
+				RetrievedSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
 				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, 
 						sr, databank, databank.getEncoder(), databank.getAaEncoder(), databank.getReducedEncoder(), 
 						// TODO: be possible to set the substitution matrix

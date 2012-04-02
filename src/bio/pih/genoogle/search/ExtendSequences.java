@@ -23,9 +23,10 @@ public class ExtendSequences {
 	private final int endQuerySegment;
 	private final int beginTargetSegment;
 	private final int endTargetSegment;
+	private final int readFrame;
 
 	public ExtendSequences(int[] encodedQuery, int[] encodedTarget, int beginQuerySegment, int endQuerySegment,
-			int beginTargetSegment, int endTargetSegment) {
+			int beginTargetSegment, int endTargetSegment, int readFrame) {
 		this.encodedQuery = encodedQuery;
 		this.encodedTarget = encodedTarget;
 
@@ -33,10 +34,16 @@ public class ExtendSequences {
 		this.endQuerySegment = endQuerySegment;
 		this.beginTargetSegment = beginTargetSegment;
 		this.endTargetSegment = endTargetSegment;
+		
+		this.readFrame = readFrame;
 	}
 
 	String queryExtendedString = null;
 
+	public int getReadFrame() {
+		return readFrame;
+	}
+	
 	public int getBeginQuerySegment() {
 		return beginQuerySegment;
 	}
@@ -76,7 +83,7 @@ public class ExtendSequences {
 	 */
 	public static ExtendSequences doExtension(int[] encodedQuerySequence, int beginQuerySegment, int endQuerySegment,
 			int[] encodedDatabankSequence, int beginDatabankSequenceSegment, int endDatabankSequenceSegment,
-			int dropoff, SequenceEncoder extensionEncoder, final SubstitutionMatrix substitutionTable) {
+			int dropoff, SequenceEncoder extensionEncoder, final SubstitutionMatrix substitutionTable, final int readFrame) {
 		int score = 0;
 		int bestScore = 0;
 		int bestQueryPos, bestDatabankPos;
@@ -159,7 +166,7 @@ public class ExtendSequences {
 			databankPos--;
 		}
 
-		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos);
+		return new ExtendSequences(encodedQuerySequence, encodedDatabankSequence, bestQueryPos, rightBestQueryPos, bestDatabankPos, rightBestDatabankPos, readFrame);
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import bio.pih.genoogle.io.AbstractDatabankCollection;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
-import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.search.results.Hit;
 import bio.pih.genoogle.search.results.SearchResults;
@@ -45,14 +44,6 @@ public class CollectionSearcher extends AbstractSearcher {
 
 	private final AbstractDatabankCollection<AbstractSequenceDataBank> databankCollection;
 
-	static Comparator<BothStrandSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<BothStrandSequenceAreas>() {
-		@Override
-		public int compare(final BothStrandSequenceAreas o1,
-				final BothStrandSequenceAreas o2) {
-			return o2.getBiggestLength() - o1.getBiggestLength();
-		}
-	};
-
 	public CollectionSearcher(long code, SearchParams sp,
 			AbstractDatabankCollection<AbstractSequenceDataBank> databank) {
 		super(code, sp, databank);
@@ -67,7 +58,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 		ExecutorService subDatabanksExecutor = Executors
 				.newFixedThreadPool(indexSearchers);
-		CompletionService<List<BothStrandSequenceAreas>> subDataBanksCS = new ExecutorCompletionService<List<BothStrandSequenceAreas>>(
+		CompletionService<List<RetrievedSequenceAreas>> subDataBanksCS = new ExecutorCompletionService<List<RetrievedSequenceAreas>>(
 				subDatabanksExecutor);
 
 		ExecutorService queryExecutor = Executors.newFixedThreadPool(sp
@@ -85,11 +76,11 @@ public class CollectionSearcher extends AbstractSearcher {
 			subDataBanksCS.submit(indexSearcher);
 		}
 
-		List<BothStrandSequenceAreas> sequencesRetrievedAreas = null;
+		List<RetrievedSequenceAreas> sequencesRetrievedAreas = null;
 		try {
 			sequencesRetrievedAreas = Lists.newLinkedList();
 			for (int i = 0; i < indexSearchers; i++) {
-				List<BothStrandSequenceAreas> list;
+				List<RetrievedSequenceAreas> list;
 				list = subDataBanksCS.take().get();
 				if (list == null) {
 					logger.error("Results from searcher " + i + " was empty.");
@@ -118,7 +109,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 		long alignmentBegin = System.currentTimeMillis();
 
-		Collections.sort(sequencesRetrievedAreas, AREAS_LENGTH_COMPARATOR);
+		Collections.sort(sequencesRetrievedAreas, RetrievedSequenceAreas.AREAS_LENGTH_COMPARATOR);
 
 		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp
 				.getMaxThreadsExtendAlign());
@@ -131,7 +122,7 @@ public class CollectionSearcher extends AbstractSearcher {
 
 		try {
 			for (int i = 0; i < maxHits; i++) {
-				BothStrandSequenceAreas retrievedArea = sequencesRetrievedAreas
+				RetrievedSequenceAreas retrievedArea = sequencesRetrievedAreas
 						.get(i);
 				SequenceAligner sequenceAligner = new SequenceAligner(
 						alignnmentsCountDown, retrievedArea, sr, databankCollection);

@@ -19,8 +19,6 @@ import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
-import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
-import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.MatchDismatchStatistics;
@@ -28,7 +26,7 @@ import bio.pih.genoogle.statistics.Statistics;
 
 import com.google.common.collect.Lists;
 
-public class IndexBothStrandSearcher implements Callable<List<BothStrandSequenceAreas>> {
+public class IndexBothStrandSearcher implements Callable<List<RetrievedSequenceAreas>> {
 
 	private IndexSearcher searcher;
 	private IndexReverseComplementSearcher crSearcher;
@@ -37,8 +35,8 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 	private final long id;
 	private final SearchParams sp;
 	private final IndexedSequenceDataBank databank;
-	private final List<RetrievedArea>[] retrievedAreas;
-	private final List<RetrievedArea>[] rcRetrievedAreas;
+	private final ArrayList<RetrievedArea>[] retrievedAreas;
+	private final ArrayList<RetrievedArea>[] rcRetrievedAreas;
 	private final List<Throwable> fails;
 	private final ExecutorService executor;
 
@@ -60,7 +58,7 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 	}
 
 	@Override
-	public List<BothStrandSequenceAreas> call() throws InterruptedException {
+	public List<RetrievedSequenceAreas> call() throws InterruptedException {
 		long searchBegin = System.currentTimeMillis();
 
 		SymbolList query = sp.getQuery();
@@ -121,15 +119,15 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 			return null;
 		}
 
-		List<BothStrandSequenceAreas> results = Lists.newLinkedList();
+		List<RetrievedSequenceAreas> results = Lists.newLinkedList();
 
 		int numberOfSequences = databank.getNumberOfSequences();
 		for (int i = 0; i < numberOfSequences; i++) {
-			List<RetrievedArea> areas1 = retrievedAreas[i];
-			List<RetrievedArea> areas2 = rcRetrievedAreas[i];
+			ArrayList<RetrievedArea> areas1 = retrievedAreas[i];
+			ArrayList<RetrievedArea> areas2 = rcRetrievedAreas[i];
 
 			if (areas1.size() > 0 || areas2.size() > 0) {
-				BothStrandSequenceAreas retrievedAreas = new BothStrandSequenceAreas(i, searcher, crSearcher, areas1, areas2);
+				RetrievedSequenceAreas retrievedAreas = new RetrievedSequenceAreas(i, searcher, crSearcher, 1, areas1, areas2);
 				results.add(retrievedAreas);
 			}
 		}
@@ -141,13 +139,13 @@ public class IndexBothStrandSearcher implements Callable<List<BothStrandSequence
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		searcher = new IndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
+		searcher = new IndexSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails, 1);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
 			Statistics statistics, CountDownLatch countDown) {
-		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails, 1);
 		executor.submit(crSearcher);
 	}
 }

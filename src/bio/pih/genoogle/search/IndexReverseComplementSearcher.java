@@ -12,7 +12,6 @@ import java.util.concurrent.CountDownLatch;
 
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
-import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
 
@@ -21,14 +20,14 @@ public class IndexReverseComplementSearcher extends IndexReverseSearcher {
 
 	public IndexReverseComplementSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength,
 			String rcSliceQuery, int offset, SymbolList rcQuery, int[] rcEncodedQuery, 
-			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
-		super(id, sp, databank, encoder, subSequenceLength, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails, int readFrame) {
+		super(id, sp, databank, encoder, subSequenceLength, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails, readFrame);
 	}
 	
 	public IndexReverseComplementSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, 
 			String rcSliceQuery, int offset, SymbolList rcQuery, int[] rcEncodedQuery, 
-			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
-		super(id, sp, databank, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+			List<RetrievedArea>[] rcRetrievedAreas, Statistics statistics, CountDownLatch countDown, List<Throwable> fails, int readFrame) {
+		super(id, sp, databank, rcSliceQuery, offset, rcQuery, rcEncodedQuery, rcRetrievedAreas, statistics, countDown, fails, readFrame);
 	}
 
 	@Override

@@ -19,14 +19,12 @@ import pih.bio.genoogle.seq.protein.Converter;
 import bio.pih.genoogle.alignment.SubstitutionMatrix;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
-import bio.pih.genoogle.search.IndexRetrievedData.BothStrandSequenceAreas;
-import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.SubstitutionMatrixStatistics;
 
 import com.google.common.collect.Lists;
 
-public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceAreas>> {
+public class IndexSixFramesSearcher implements Callable<List<RetrievedSequenceAreas>> {
 
 	private IndexSearcher searcher;
 	private IndexReverseComplementSearcher crSearcher;
@@ -35,8 +33,12 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 	private final long id;
 	private final SearchParams sp;
 	private final RemoteSimilaritySequenceDataBank databank;
-	private final List<RetrievedArea>[] retrievedAreas;
-	private final List<RetrievedArea>[] rcRetrievedAreas;
+	private final ArrayList<RetrievedArea>[] retrievedAreasFrame1;
+	private final ArrayList<RetrievedArea>[] retrievedAreasFrame2;
+	private final ArrayList<RetrievedArea>[] retrievedAreasFrame3;
+	private final ArrayList<RetrievedArea>[] rcRetrievedAreasFrame1;
+	private final ArrayList<RetrievedArea>[] rcRetrievedAreasFrame2;
+	private final ArrayList<RetrievedArea>[] rcRetrievedAreasFrame3;
 	private final List<Throwable> fails;
 	private final ExecutorService executor;
 	private final SequenceEncoder encoder;
@@ -52,17 +54,25 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		this.fails = fails;
 		int numberOfSequences = databank.getNumberOfSequences();
 		this.encoder = databank.getReducedEncoder();
-		this.retrievedAreas = new ArrayList[numberOfSequences];
-		this.rcRetrievedAreas = new ArrayList[numberOfSequences];
+		this.retrievedAreasFrame1 = new ArrayList[numberOfSequences];
+		this.retrievedAreasFrame2 = new ArrayList[numberOfSequences];
+		this.retrievedAreasFrame3 = new ArrayList[numberOfSequences];
+		this.rcRetrievedAreasFrame1 = new ArrayList[numberOfSequences];
+		this.rcRetrievedAreasFrame2 = new ArrayList[numberOfSequences];
+		this.rcRetrievedAreasFrame3 = new ArrayList[numberOfSequences];
 		for (int i = 0; i < numberOfSequences; i++) {
-			retrievedAreas[i] = new ArrayList<RetrievedArea>(0);
-			rcRetrievedAreas[i] = new ArrayList<RetrievedArea>(0);
+			retrievedAreasFrame1[i] = new ArrayList<RetrievedArea>(0);
+			retrievedAreasFrame2[i] = new ArrayList<RetrievedArea>(0);
+			retrievedAreasFrame3[i] = new ArrayList<RetrievedArea>(0);
+			rcRetrievedAreasFrame1[i] = new ArrayList<RetrievedArea>(0);
+			rcRetrievedAreasFrame2[i] = new ArrayList<RetrievedArea>(0);
+			rcRetrievedAreasFrame3[i] = new ArrayList<RetrievedArea>(0);
 		}
 	}
 
 	// TODO: Fix statistics (correct alphabet and match and mismatch scores)	
 	@Override
-	public List<BothStrandSequenceAreas> call() throws InterruptedException {
+	public List<RetrievedSequenceAreas> call() throws InterruptedException {
 		long searchBegin = System.currentTimeMillis();
 
 		SymbolList query = sp.getQuery();
@@ -73,6 +83,13 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		SymbolList dnaToProteinComplement1 = Converter.dnaToProteinComplement1(query);
 		SymbolList dnaToProteinComplement2 = Converter.dnaToProteinComplement2(query);
 		SymbolList dnaToProteinComplement3 = Converter.dnaToProteinComplement3(query);
+		
+		System.out.println(dnaToProtein1);
+		System.out.println(dnaToProtein2);
+		System.out.println(dnaToProtein3);
+		System.out.println(dnaToProteinComplement1);
+		System.out.println(dnaToProteinComplement2);
+		System.out.println(dnaToProteinComplement3);
 		
 		SymbolList read1 = Converter.proteinToReducedAA(dnaToProtein1);		
 		SymbolList read2 = Converter.proteinToReducedAA(dnaToProtein2);		
@@ -92,13 +109,13 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 		
 		CountDownLatch indexSearchersCountDown = new CountDownLatch(6);
 		
-		submitSearch(read1.seqString(), 0, dnaToProtein1, encodedReducedRead1, indexSearchersCountDown, 1);
-		submitSearch(read2.seqString(), 0, dnaToProtein2, encodedReducedRead2, indexSearchersCountDown, 2);
-		submitSearch(read3.seqString(), 0, dnaToProtein3, encodedReducedRead3, indexSearchersCountDown, 3);
+		submitSearch(read1.seqString(), 0, dnaToProtein1, encodedReducedRead1, indexSearchersCountDown, 1, retrievedAreasFrame1);
+		submitSearch(read2.seqString(), 0, dnaToProtein2, encodedReducedRead2, indexSearchersCountDown, 2, retrievedAreasFrame2);
+		submitSearch(read3.seqString(), 0, dnaToProtein3, encodedReducedRead3, indexSearchersCountDown, 3, retrievedAreasFrame3);
 		
-		submitRCSearch(complement1.seqString(), 0, dnaToProteinComplement1, encodedReducedComplement1, indexSearchersCountDown, 1);
-		submitRCSearch(complement2.seqString(), 0, dnaToProteinComplement2, encodedReducedComplement3, indexSearchersCountDown, 2);
-		submitRCSearch(complement3.seqString(), 0, dnaToProteinComplement3, encodedReducedComplement2, indexSearchersCountDown, 3);
+		submitRCSearch(complement1.seqString(), 0, dnaToProteinComplement1, encodedReducedComplement1, indexSearchersCountDown, 1, rcRetrievedAreasFrame1);
+		submitRCSearch(complement2.seqString(), 0, dnaToProteinComplement2, encodedReducedComplement3, indexSearchersCountDown, 2, rcRetrievedAreasFrame2);
+		submitRCSearch(complement3.seqString(), 0, dnaToProteinComplement3, encodedReducedComplement2, indexSearchersCountDown, 3, rcRetrievedAreasFrame3);
 		
 		indexSearchersCountDown.await();
 		
@@ -106,15 +123,19 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 			return null;
 		}
 
-		List<BothStrandSequenceAreas> results = Lists.newLinkedList();
+		List<RetrievedSequenceAreas> results = Lists.newLinkedList();
 
 		int numberOfSequences = databank.getNumberOfSequences();
 		for (int i = 0; i < numberOfSequences; i++) {
-			List<RetrievedArea> areas1 = retrievedAreas[i];
-			List<RetrievedArea> areas2 = rcRetrievedAreas[i];
-
-			if (areas1.size() > 0 || areas2.size() > 0) {
-				BothStrandSequenceAreas retrievedAreas = new BothStrandSequenceAreas(i, searcher, crSearcher, areas1, areas2);
+			ArrayList<RetrievedArea> areas1 = retrievedAreasFrame1[i];
+			ArrayList<RetrievedArea> areas2 = retrievedAreasFrame2[i];
+			ArrayList<RetrievedArea> areas3 = retrievedAreasFrame3[i];
+			ArrayList<RetrievedArea> areas4 = rcRetrievedAreasFrame1[i];
+			ArrayList<RetrievedArea> areas5 = rcRetrievedAreasFrame2[i];
+			ArrayList<RetrievedArea> areas6 = rcRetrievedAreasFrame3[i];
+			
+			if (areas1.size() > 0 || areas2.size() > 0 || areas3.size() > 0 || areas4.size() > 0 || areas5.size() > 0 || areas6.size() > 0) {
+				RetrievedSequenceAreas retrievedAreas = new RetrievedSequenceAreas(i, searcher, crSearcher, 3, areas1, areas2, areas3, areas4, areas5, areas6);
 				results.add(retrievedAreas);
 			}
 		}
@@ -125,20 +146,20 @@ public class IndexSixFramesSearcher implements Callable<List<BothStrandSequenceA
 	}
 
 	private void submitSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			CountDownLatch countDown, int frame) {
+			CountDownLatch countDown, int frame, List<RetrievedArea>[] retrievedAreas) {
 		SubstitutionMatrixStatistics statistics = new SubstitutionMatrixStatistics(databank.getAaEncoder().getAlphabet(), SubstitutionMatrix.BLOSUM62,
 				 fullQuery, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 		
-		searcher = new IndexSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength() , sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails);
+		searcher = new IndexSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength() , sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails, frame);
 		executor.submit(searcher);
 	}
 
 	private void submitRCSearch(String sliceQuery, int offset, SymbolList fullQuery, int[] encodedQuery,
-			CountDownLatch countDown, int frame) {
+			CountDownLatch countDown, int frame, List<RetrievedArea>[] retrievedAreas) {
 		SubstitutionMatrixStatistics statistics = new SubstitutionMatrixStatistics(databank.getAaEncoder().getAlphabet(), SubstitutionMatrix.BLOSUM62, 
 				fullQuery, databank.getTotalDataBaseSize(), databank.getTotalNumberOfSequences());
 		
-		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength(), sliceQuery, offset, fullQuery, encodedQuery, rcRetrievedAreas, statistics, countDown, fails);
+		crSearcher = new IndexReverseComplementSearcher(id, sp, databank, encoder, encoder.getSubSequenceLength(), sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas, statistics, countDown, fails, frame);
 		executor.submit(crSearcher);
 	}
 }

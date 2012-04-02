@@ -18,7 +18,6 @@ import bio.pih.genoogle.encoder.MaskEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
-import bio.pih.genoogle.search.IndexRetrievedData.RetrievedArea;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
@@ -50,9 +49,11 @@ public class IndexSearcher implements Runnable {
 	
 	private final List<Throwable> fails;
 
+	private final int readFrame;
+
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, SequenceEncoder encoder, int subSequenceLength, String sliceQuery,
 			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
-			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
+			Statistics statistics, CountDownLatch countDown, List<Throwable> fails, int readFrame) {
 		this.id = id;
 		this.sp = sp;
 		this.databank = databank;
@@ -66,16 +67,17 @@ public class IndexSearcher implements Runnable {
 		this.fails = fails;
 		this.encoder = encoder;
 		this.subSequenceLength = subSequenceLength;
+		this.readFrame = readFrame;
 	}
 
 	public IndexSearcher(long id, SearchParams sp, IndexedSequenceDataBank databank, String sliceQuery,
 			int offset, SymbolList fullQuery, int[] encodedQuery, List<RetrievedArea>[] retrievedAreas,
-			Statistics statistics, CountDownLatch countDown, List<Throwable> fails) {
+			Statistics statistics, CountDownLatch countDown, List<Throwable> fails, int readFrame) {
 		
 		this(id, sp, databank, databank.getEncoder(),
 				databank.getMaskEncoder() == null ? databank.getSubSequenceLength() : databank.getMaskEncoder().getPatternLength(),
 				sliceQuery, offset, fullQuery, encodedQuery, retrievedAreas,				
-				statistics, countDown, fails);
+				statistics, countDown, fails, readFrame);
 	}
 
 	@Override
@@ -213,6 +215,10 @@ public class IndexSearcher implements Runnable {
 
 	public SearchParams getSearchParams() {
 		return sp;
+	}
+	
+	public int getReadFrame() {
+		return readFrame;
 	}
 
 	protected HSP createHSP(ExtendSequences extensionResult, GenoogleSequenceAlignment smithWaterman,
