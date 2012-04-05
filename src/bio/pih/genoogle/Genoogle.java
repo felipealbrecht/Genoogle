@@ -22,13 +22,17 @@ import org.apache.log4j.PropertyConfigurator;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.interfaces.Console;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
+import bio.pih.genoogle.io.AbstractSimpleSequenceDataBank;
 import bio.pih.genoogle.io.InvalidConfigurationException;
+import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
+import bio.pih.genoogle.io.Utils;
 import bio.pih.genoogle.io.XMLConfigurationReader;
+import bio.pih.genoogle.io.proto.Io.StoredSequence;
 import bio.pih.genoogle.io.reader.ParseException;
 import bio.pih.genoogle.search.SearchManager;
 import bio.pih.genoogle.search.SearchParams;
-import bio.pih.genoogle.search.UnknowDataBankException;
 import bio.pih.genoogle.search.SearchParams.Parameter;
+import bio.pih.genoogle.search.UnknowDataBankException;
 import bio.pih.genoogle.search.results.SearchResults;
 import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.LightweightSymbolList;
@@ -280,6 +284,23 @@ public final class Genoogle {
 
 		return sr;
 	}
+	
+
+	public String getSequence(String db, int id) {
+		AbstractSequenceDataBank databank = sm.getDatabank(db);
+		if (databank instanceof RemoteSimilaritySequenceDataBank) {
+			try {
+				RemoteSimilaritySequenceDataBank abstractSimpleSequenceDataBank = (RemoteSimilaritySequenceDataBank) databank;
+				StoredSequence sequence = abstractSimpleSequenceDataBank.getSequenceFromId(id);				
+				int[] encodedDatabankSequence = Utils.getEncodedSequenceAsArray(sequence);
+				return abstractSimpleSequenceDataBank.getAaEncoder().decodeIntegerArrayToString(encodedDatabankSequence);				
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			throw new RuntimeException("Databank " + db + " is a collection. Get sequence is not supported. Yet.");
+		}
+	}
 
 	/**
 	 * Main method: Use the "-g" option to encode and create inverted index for the data banks or
@@ -356,4 +377,5 @@ public final class Genoogle {
 		logger.info(" -g              : encode all not encoded databanks specified at conf/genoogle.conf .");
 		logger.info(" -b <BATCH_FILE> : starts genoogle and execute the <BATCH_FILE> .");
 	}
+
 }

@@ -72,7 +72,11 @@ public class SearchManager {
 	public void addDatabank(AbstractSequenceDataBank databank) {
 		databanks.put(databank.getName(), databank);
 	}
-
+	
+	public AbstractSequenceDataBank getDatabank(String name) {
+		return databanks.get(name);
+	}
+	
 	/**
 	 * Process a batch of {@link SearchParams}
 	 * 

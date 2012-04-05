@@ -51,6 +51,7 @@ public class Console implements Runnable, GenoogleListener {
 	private static final String GC = "gc";
 	private static final String PARAMETERS = "parameters";
 	private static final String SET = "set";
+	private static final String SEQ = "seq";
 	private static final String BATCH = "batch";
 	private static final String SEARCH = "search";
 	private static final String PREV = "prev";
@@ -222,6 +223,19 @@ public class Console implements Runnable, GenoogleListener {
 						consoleParameters.put(p, value);
 						System.out.println(paramName + " is " + paramValue);
 
+					} else if (commands[0].equals(SEQ)) {
+						if (commands.length != 3) {
+							System.out.println("SEQ database id");
+							continue;
+						}
+						
+						String db = commands[1];
+						int id = Integer.parseInt(commands[2]);
+						
+						String seq = genoogle.getSequence(db, id);
+						
+						System.out.println(seq);
+						
 					} else if (commands[0].equals(PREV) || commands[0].equals("p")) {
 						executePrev = true;
 						continue;
