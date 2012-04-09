@@ -13,12 +13,12 @@ import bio.pih.genoogle.seq.RichSequence;
 
 /**
  * Constructs a Lightweight sequence builder.
- * 
+ *
  * @author Felipe Albrecht
  * @since 1.5
  */
 public class RichSequenceBuilder {
-	
+
 	private Alphabet alphabet;
 	private String type;
 	private String accession;
@@ -59,16 +59,16 @@ public class RichSequenceBuilder {
 		this.name = name;
 	}
 
-	
+
 	public void setSequence(String sequence) {
-		this.sequence = sequence;		
+		this.sequence = sequence;
 	}
-	
+
 
 	public void setAlphabet(Alphabet alphabet) {
 		this.alphabet = alphabet;
 	}
-	
+
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -76,7 +76,7 @@ public class RichSequenceBuilder {
 	public void setHeader(String header) {
 		this.header = header;
 	}
-	
+
 	public void endSequence() throws ParseException {
 		if (this.sequence == null) {
 			throw new ParseException("Sequence content has not been supplied");
@@ -85,7 +85,7 @@ public class RichSequenceBuilder {
 			throw new ParseException("Sequence header has not been supplied");
 		}
 		if (this.description == null) {
-			throw new ParseException("Name and description from the have not been supplied");
+			throw new ParseException("Description does not have been supplied: " + this.header);
 		}
 	}
 
