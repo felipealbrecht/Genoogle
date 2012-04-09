@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import pih.bio.genoogle.seq.protein.Converter;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
@@ -25,6 +24,7 @@ import bio.pih.genoogle.seq.IllegalSymbolException;
 import bio.pih.genoogle.seq.Reduced_AA_8_Alphabet;
 import bio.pih.genoogle.seq.RichSequence;
 import bio.pih.genoogle.seq.SymbolList;
+import bio.pih.genoogle.seq.protein.Converter;
 import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
 import com.google.protobuf.ByteString;
@@ -62,25 +62,25 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 	private StoredSequenceInfo[] processReads(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		StoredSequenceInfo info;
-		StoredSequenceInfo[] infos = new StoredSequenceInfo[6];
+		StoredSequenceInfo[] infos = new StoredSequenceInfo[1];
 		
 		info = processRead1(s, dataBankFileChannel);
 		infos[0] = info;
 		
-		info = processRead2(s, dataBankFileChannel);
-		infos[1] = info;
-		
-		info = processRead3(s, dataBankFileChannel);
-		infos[2] = info;
-		
-		info = processRead4(s, dataBankFileChannel);
-		infos[3] = info;
-		
-		info = processRead5(s, dataBankFileChannel);
-		infos[4] = info;
-
-		info = processRead6(s, dataBankFileChannel);
-		infos[5] = info;
+//		info = processRead2(s, dataBankFileChannel);
+//		infos[1] = info;
+//		
+//		info = processRead3(s, dataBankFileChannel);
+//		infos[2] = info;
+//		
+//		info = processRead4(s, dataBankFileChannel);
+//		infos[3] = info;
+//		
+//		info = processRead5(s, dataBankFileChannel);
+//		infos[4] = info;
+//
+//		info = processRead6(s, dataBankFileChannel);
+//		infos[5] = info;
 		
 		return infos;
 	}
@@ -121,6 +121,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		final byte[] ret = intArrayToByteArray(converted);
 
 		int id = getNextSequenceId();
+		
 		bio.pih.genoogle.io.proto.Io.StoredSequence.Builder builder = StoredSequence.newBuilder()
 			.setId(id)
 			.setGi(s.getGi())

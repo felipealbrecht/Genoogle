@@ -2,8 +2,7 @@ package bio.pih.genoogle.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
@@ -11,29 +10,20 @@ import bio.pih.genoogle.io.proto.Io.StoredSequence;
 
 public class RetrievedSequenceAreas {
 	
-	public static Comparator<RetrievedSequenceAreas> AREAS_LENGTH_COMPARATOR = new Comparator<RetrievedSequenceAreas>() {
-		@Override
-		public int compare(final RetrievedSequenceAreas o1, final RetrievedSequenceAreas o2) {
-			return o2.getBiggestLength() - o1.getBiggestLength();
-		}
-	};
-
-	
 	private final ArrayList<RetrievedArea> LIST_EMPTY = new ArrayList<RetrievedArea>(0);
 	
-	private int sequenceId;
-	private final IndexSearcher indexSearcher;
-	private final IndexReverseComplementSearcher reverseComplementIndexSearcher;
+	private final int sequenceId;
 	private final int biggestHspLength;
 	private final ArrayList<RetrievedArea>[] areas;
 	private final ArrayList<RetrievedArea>[] rcAreas;
 	private final int frames;
+	private final IndexedSequenceDataBank databank;
 
-	public RetrievedSequenceAreas(int sequenceId, IndexSearcher indexSearcher, IndexReverseComplementSearcher reverseComplementIndexSearcher, int frames, ArrayList<RetrievedArea> ... areas) {
+	@SuppressWarnings("unchecked")
+	public RetrievedSequenceAreas(int sequenceId, IndexedSequenceDataBank databank, ArrayList<RetrievedArea> ... areas) {
 		this.sequenceId = sequenceId;
-		this.indexSearcher = indexSearcher;
-		this.reverseComplementIndexSearcher = reverseComplementIndexSearcher;
-		this.frames = frames;
+		this.databank = databank;
+		this.frames = areas.length / 2;
 		this.areas = new ArrayList[frames];
 		this.rcAreas = new ArrayList[frames];
 		for (int i = 0; i < frames; i++) {
@@ -63,6 +53,10 @@ public class RetrievedSequenceAreas {
 		return areas;
 	}
 
+	public StoredSequence getStoredSequence() throws IOException {
+		return databank.getSequenceFromId(sequenceId);
+	}
+
 	public List<RetrievedArea>[] getReverseComplementAreas() {
 		return rcAreas;
 	}
@@ -75,24 +69,8 @@ public class RetrievedSequenceAreas {
 		return sequenceId;
 	}
 
-	public StoredSequence getStoredSequence() throws IOException {
-		return indexSearcher.getDatabank().getSequenceFromId(sequenceId);
-	}
-
-	public IndexedSequenceDataBank getDatabank() {
-		return indexSearcher.getDatabank();
-	}
-
-	public IndexSearcher getIndexSearcher() {
-		return indexSearcher;
-	}
-
-	public IndexSearcher getReverIndexSearcher() {
-		return reverseComplementIndexSearcher;
-	}
-
 	@Override
 	public String toString() {
-		return sequenceId + " " + biggestHspLength + " " + areas + " " + rcAreas;
+		return sequenceId + " " + biggestHspLength + " " + Arrays.toString(areas) + " " + Arrays.toString(rcAreas);
 	}
 }

@@ -18,6 +18,7 @@ import bio.pih.genoogle.encoder.MaskEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.index.ValueOutOfBoundsException;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
+import bio.pih.genoogle.io.RemoteSimilaritySequenceDataBank;
 import bio.pih.genoogle.search.results.HSP;
 import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.Statistics;
@@ -224,9 +225,32 @@ public class IndexSearcher implements Runnable {
 	protected HSP createHSP(ExtendSequences extensionResult, GenoogleSequenceAlignment smithWaterman,
 			double normalizedScore, double evalue, int queryLength, int targetLength) {
 
-		return new HSP(smithWaterman, getQueryStart(extensionResult, smithWaterman), getQueryEnd(extensionResult,
-				smithWaterman), getTargetStart(extensionResult, smithWaterman), getTargetEnd(extensionResult,
-				smithWaterman), normalizedScore, evalue);
+		int queryStart;
+		int queryEnd;
+		int targetStart;
+		int targetEnd;
+		
+		if (databank instanceof RemoteSimilaritySequenceDataBank) {
+			queryStart = getQueryStart(extensionResult, smithWaterman);
+			queryEnd = getQueryEnd(extensionResult, smithWaterman);
+			targetStart = getTargetStart(extensionResult, smithWaterman);
+			targetEnd = getTargetEnd(extensionResult, smithWaterman);
+			
+			queryStart =  ((queryStart - 1) * 3) + this.readFrame;
+			queryEnd =  ((queryEnd - 1) * 3) + this.readFrame;
+			targetStart =  ((targetStart - 1) * 3) + this.readFrame;
+			targetEnd =  ((targetEnd - 1) * 3) + this.readFrame;
+			
+			assert queryStart >= 1;
+			assert queryEnd <= fullQuery.getLength() * 3;
+			assert targetStart >= 1;			
+		} else {
+			queryStart = getQueryStart(extensionResult, smithWaterman);
+			queryEnd = getQueryEnd(extensionResult, smithWaterman);
+			targetStart = getTargetStart(extensionResult, smithWaterman);
+			targetEnd = getTargetEnd(extensionResult, smithWaterman);			
+		}
+		return new HSP(smithWaterman, queryStart, queryEnd, targetStart, targetEnd, normalizedScore, evalue);
 	}
 
 	private int getQueryStart(ExtendSequences extensionResult, GenoogleSequenceAlignment smithWaterman) {

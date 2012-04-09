@@ -52,9 +52,9 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 		fails = Collections.synchronizedList(fails);
 		final IndexSixFramesSearcher indexSearcher = new IndexSixFramesSearcher(id, sp, databank, queryExecutor, fails);		
 		
-		List<RetrievedSequenceAreas> sequencesRetrievedAreas = null;
+		IndexSearchResults indexSearchResults = null;
 		try {
-			sequencesRetrievedAreas = indexSearcher.call();
+			indexSearchResults  = indexSearcher.call();
 		} catch (InterruptedException e) {
 			sr.addFail(e);
 			return sr;
@@ -71,19 +71,17 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 
 		long alignmentBegin = System.currentTimeMillis();
 
-		Collections.sort(sequencesRetrievedAreas, RetrievedSequenceAreas.AREAS_LENGTH_COMPARATOR);
-
 		ExecutorService alignerExecutor = Executors.newFixedThreadPool(sp.getMaxThreadsExtendAlign());
 
-		int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : sequencesRetrievedAreas.size();
-		maxHits = Math.min(maxHits, sequencesRetrievedAreas.size());
+		int maxHits = sp.getMaxHitsResults() > 0 ? sp.getMaxHitsResults() : indexSearchResults.size();
+		maxHits = Math.min(maxHits, indexSearchResults.size());
 
 		CountDownLatch alignnmentsCountDown = new CountDownLatch(maxHits);
 
 		try {
 			for (int i = 0; i < maxHits; i++) {
-				RetrievedSequenceAreas retrievedArea = sequencesRetrievedAreas.get(i);
-				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, retrievedArea, 
+				RetrievedSequenceAreas retrievedArea = indexSearchResults.get(i);
+				SequenceAligner sequenceAligner = new SequenceAligner(alignnmentsCountDown, indexSearchResults.getIndexSearchers(), retrievedArea, 
 						sr, databank, databank.getEncoder(), databank.getAaEncoder(), databank.getReducedEncoder(), 
 						// TODO: be possible to set the substitution matrix
 						SubstitutionMatrix.BLOSUM62);

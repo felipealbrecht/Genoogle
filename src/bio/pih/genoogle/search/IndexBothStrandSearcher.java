@@ -24,9 +24,7 @@ import bio.pih.genoogle.seq.SymbolList;
 import bio.pih.genoogle.statistics.MatchDismatchStatistics;
 import bio.pih.genoogle.statistics.Statistics;
 
-import com.google.common.collect.Lists;
-
-public class IndexBothStrandSearcher implements Callable<List<RetrievedSequenceAreas>> {
+public class IndexBothStrandSearcher implements Callable<IndexSearchResults> {
 
 	private IndexSearcher searcher;
 	private IndexReverseComplementSearcher crSearcher;
@@ -58,7 +56,7 @@ public class IndexBothStrandSearcher implements Callable<List<RetrievedSequenceA
 	}
 
 	@Override
-	public List<RetrievedSequenceAreas> call() throws InterruptedException {
+	public IndexSearchResults call() throws InterruptedException {
 		long searchBegin = System.currentTimeMillis();
 
 		SymbolList query = sp.getQuery();
@@ -119,15 +117,16 @@ public class IndexBothStrandSearcher implements Callable<List<RetrievedSequenceA
 			return null;
 		}
 
-		List<RetrievedSequenceAreas> results = Lists.newLinkedList();
-
+		IndexSearchResults results = new IndexSearchResults(searcher, crSearcher);
+		
 		int numberOfSequences = databank.getNumberOfSequences();
 		for (int i = 0; i < numberOfSequences; i++) {
 			ArrayList<RetrievedArea> areas1 = retrievedAreas[i];
 			ArrayList<RetrievedArea> areas2 = rcRetrievedAreas[i];
 
 			if (areas1.size() > 0 || areas2.size() > 0) {
-				RetrievedSequenceAreas retrievedAreas = new RetrievedSequenceAreas(i, searcher, crSearcher, 1, areas1, areas2);
+				@SuppressWarnings("unchecked")
+				RetrievedSequenceAreas retrievedAreas = new RetrievedSequenceAreas(i, searcher.getDatabank(), areas1, areas2);
 				results.add(retrievedAreas);
 			}
 		}

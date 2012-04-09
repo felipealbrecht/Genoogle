@@ -40,6 +40,7 @@ public class SequenceAligner implements Runnable {
 	// private final SequenceEncoder encoderDatabankInputReader;
 	private final AbstractSequenceDataBank databank;
 	private final SubstitutionMatrix substitutionTable;
+	private final IndexSearcher[] indexes;
 
 	/**
 	 * @param countDown
@@ -51,12 +52,13 @@ public class SequenceAligner implements Runnable {
 	 * @param sr
 	 *            Where the results are stored.
 	 */
-	public SequenceAligner(CountDownLatch countDown, RetrievedSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank) throws IOException {
-		this(countDown, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder(), SubstitutionMatrix.DUMMY);
+	public SequenceAligner(CountDownLatch countDown, IndexSearcher[] indexes, RetrievedSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank) throws IOException {
+		this(countDown, indexes, retrievedAreas, sr, databank, databank.getEncoder(), databank.getEncoder(), databank.getEncoder(), SubstitutionMatrix.DUMMY);
 	}
 
-	public SequenceAligner(CountDownLatch countDown, RetrievedSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank, SequenceEncoder encoderDatabankInputReader, SequenceEncoder encoderDatabankConverted, SequenceEncoder encoderDatabankReduced, SubstitutionMatrix substitutionTable) throws IOException {
+	public SequenceAligner(CountDownLatch countDown, IndexSearcher[]  indexes, RetrievedSequenceAreas retrievedAreas, SearchResults sr, AbstractSequenceDataBank databank, SequenceEncoder encoderDatabankInputReader, SequenceEncoder encoderDatabankConverted, SequenceEncoder encoderDatabankReduced, SubstitutionMatrix substitutionTable) throws IOException {
 		this.countDown = countDown;
+		this.indexes = indexes;
 		this.retrievedAreas = retrievedAreas;
 		this.sr = sr;
 		this.databank = databank;
@@ -79,22 +81,19 @@ public class SequenceAligner implements Runnable {
 	}
 
 	private void extendAndAlignHSPs(RetrievedSequenceAreas retrievedAreas, StoredSequence storedSequence) throws Exception {
-
-		IndexSearcher searcher = retrievedAreas.getIndexSearcher();
-		SymbolList query = searcher.getQuery();
-		int queryLength = query.getLength();
-
 		int[] encodedDatabankSequence = Utils.getEncodedSequenceAsArray(storedSequence);
-		int targetLength = SequenceEncoder.getSequenceLength(encodedDatabankSequence);
-
+		int targetLength = SequenceEncoder.getSequenceLength(encodedDatabankSequence);		
+		int offset = (indexes.length / 2);
 		String databankSequence = encoderDatabankConverted.decodeIntegerArrayToString(encodedDatabankSequence);
-
 		Hit hit = new Hit(storedSequence.getName(), storedSequence.getGi(), storedSequence.getDescription(), storedSequence.getAccession(), targetLength, databank.getAbsolutParent().getName());
-
 		
 		List<RetrievedArea>[] areas = retrievedAreas.getAreas();
 		for (int i = 0; i < retrievedAreas.getFrames(); i++) {
-			if (areas[i].size() > 0) {
+			if (areas[i].size() > 0) {				
+				IndexSearcher searcher = indexes[i];
+				SymbolList query = searcher.getQuery();
+				int queryLength = query.getLength();
+				
 				// TODO: put in the RemoteSimilaritySearcher.
 				int[] encodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(searcher.getQuery());
 				List<ExtendSequences> extendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, encodedQuery, areas[i], searcher);
@@ -107,11 +106,13 @@ public class SequenceAligner implements Runnable {
 		for (int i = 0; i < retrievedAreas.getFrames(); i++) {
 			if (reverseComplementAreas[i].size() > 0) {
 				// TODO: put in the RemoteSimilaritySearcher
-				IndexSearcher rcSearcher = retrievedAreas.getReverIndexSearcher();
-				int[] reverseEncodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(rcSearcher.getQuery());
-				List<ExtendSequences> rcExtendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas[i], rcSearcher);
+				IndexSearcher searcher = indexes[i+offset];
+				SymbolList query = searcher.getQuery();
+				int queryLength = query.getLength();
+				int[] reverseEncodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(query);
+				List<ExtendSequences> rcExtendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, reverseEncodedQuery, reverseComplementAreas[i], searcher);
 				rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
-				alignHSPs(hit, query, queryLength, targetLength, rcExtendedSequences, rcSearcher, databankSequence);
+				alignHSPs(hit, query, queryLength, targetLength, rcExtendedSequences, searcher, databankSequence);
 			}
 		}
 		
