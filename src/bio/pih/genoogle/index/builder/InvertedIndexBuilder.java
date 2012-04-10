@@ -145,7 +145,7 @@ public class InvertedIndexBuilder {
 				logger.error(entriesTempFilePhase1 + " can not be deleted.");
 			}
 		}
-		entriesTempFilePhase1 = File.createTempFile(databank.getFullPath().getName(), ".sbms_1.tmp");
+		entriesTempFilePhase1 = File.createTempFile("genoogle_" + databank.getFullPath().getName(), ".sbms_1.tmp");
 		entriesTempFilePhase1.deleteOnExit();
 		FileOutputStream fileOutputStream = new FileOutputStream(getEntriesFilePhase1());
 		entriesOutputPhase1 = new DataOutputStream(new BufferedOutputStream(fileOutputStream));
@@ -161,7 +161,7 @@ public class InvertedIndexBuilder {
 				logger.error(entriesTempFilePhase2 + " can not be deleted.");
 			}
 		}
-		entriesTempFilePhase2 = File.createTempFile(databank.getFullPath().getName(), ".sbms_2.tmp");
+		entriesTempFilePhase2 = File.createTempFile("genoogle_" + databank.getFullPath().getName(), ".sbms_2.tmp");
 		entriesTempFilePhase2.deleteOnExit();
 		FileOutputStream fileOutputStream = new FileOutputStream(getEntriesFilePhase2());
 		entriesOutputStreamPhase2 = new DataOutputStream(new BufferedOutputStream(fileOutputStream));

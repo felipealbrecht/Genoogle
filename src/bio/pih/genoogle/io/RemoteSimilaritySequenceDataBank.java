@@ -48,13 +48,13 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 	synchronized StoredSequenceInfo[] addSequence(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		if (!s.getAlphabet().equals(this.alphabet)) {
-			logger.fatal("Invalid alphabet for sequence " + s.getName());
-			return null;
+			logger.fatal("Invalid symbol in the sequence for sequence " + s.getName() + ". This sequence will be ignored.");
+			return new StoredSequenceInfo[] {};
 		}
 
 		if (s.getLength() < 8) {
 			logger.error(s.getName() + "is too short (" + s.getLength() + ") and will not be stored in this data bank");
-			return null;
+			return new StoredSequenceInfo[] {};
 		}
 
 		return processReads(s, dataBankFileChannel);

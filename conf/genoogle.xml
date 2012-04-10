@@ -48,12 +48,21 @@
   </genoogle:split-databanks>
 -->
 
-  <!-- <genoogle:databank name="Escherichia_coli_TY" remoteSimilarity="true" path="files/fasta/Escherichia_coli_TY-2482.contig.fa" sub-sequence-length="11" low-complexity-filter="5"/> -->
+  <!--
+   <genoogle:databank name="Escherichia_coli_TY" remoteSimilarity="true" path="files/fasta/Escherichia_coli_TY-2482.contig.fa" sub-sequence-length="11" low-complexity-filter="5"/>
+  <genoogle:databank name="virusdb" remoteSimilarity="true" path="files/fasta/virusdb" sub-sequence-length="11" low-complexity-filter="5"/>
+   -->
 
-  <genoogle:databank name="virusdb" remoteSimilarity="true" path="files/fasta/virusdb" sub-sequence-length="11" low-complexity-filter="5"/> -->
+  <genoogle:databank name="bigbig" remoteSimilarity="true" path="files/fasta/bigbig" sub-sequence-length="11" low-complexity-filter="5"/>
 
+<!--
   <genoogle:databank name="seqdb" remoteSimilarity="true" path="files/fasta/seqdb" sub-sequence-length="11" low-complexity-filter="5"/>
 
+  <genoogle:databank name="cdstest" remoteSimilarity="true" path="files/fasta/cdstest" sub-sequence-length="11" low-complexity-filter="5"/>
+
+  <genoogle:databank name="emblcds" remoteSimilarity="true" path="files/fasta/emblcds" sub-sequence-length="11" low-complexity-filter="5"/>
+
+-->
   <!--
   <genoogle:split-databanks name="uniref" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11" low-complexity-filter="5">
       <genoogle:databank    name="cow"       path="cow.rna.fna"   />
