@@ -37,13 +37,14 @@ import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.proto.Io.InvertedIndexBuck;
+import bio.pih.genoogle.util.BinaryHeap;
 
 import com.google.common.collect.Lists;
 
 /**
- * Class which uses SortBased method to create the inverted index. Possibly will be merged with the
- * {@link MemoryInvertedIndex}.
- *
+ * Class which uses SortBased method to create the inverted index. Possibly will
+ * be merged with the {@link MemoryInvertedIndex}.
+ * 
  * @author albrecht
  */
 public class InvertedIndexBuilder {
@@ -84,7 +85,7 @@ public class InvertedIndexBuilder {
 		this.subSequenceOffSet = indexedSequenceDataBank.getSubSequencesOffset();
 		this.databank = memoryInvertedIndex.getDatabank();
 		this.indexSize = memoryInvertedIndex.getIndexSize();
-		this.totalMemoryUsedToStoreSubSequences = memoryChuck / 4;
+		this.totalMemoryUsedToStoreSubSequences = memoryChuck;
 
 		int lowComplexityFilter = databank.getLowComplexityFilter();
 		if (lowComplexityFilter < 0) {
@@ -92,19 +93,16 @@ public class InvertedIndexBuilder {
 			logger.info("Low complexity sub sequences filter disabled.");
 		} else {
 			int[] lowComplexitySubSequencesArray = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilter).getSubSequences();
-			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequencesArray.length
-					+ " sub sequences.");
+			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequencesArray.length + " sub sequences.");
 
-			this.lowComplexitySubSequences = new BitSet(databank.getAlphabet().getSize()
-					^ databank.getSubSequenceLength());
+			this.lowComplexitySubSequences = new BitSet(databank.getAlphabet().getSize() ^ databank.getSubSequenceLength());
 			for (int lowComplexSubSequence : lowComplexitySubSequencesArray) {
 				this.lowComplexitySubSequences.set(lowComplexSubSequence);
 			}
 		}
 	}
 
-	public InvertedIndexBuilder(IndexedSequenceDataBank indexedSequenceDaaBank, int totalSortMemory)
-			throws IndexConstructionException {
+	public InvertedIndexBuilder(IndexedSequenceDataBank indexedSequenceDaaBank, int totalSortMemory) throws IndexConstructionException {
 		this(indexedSequenceDaaBank);
 		this.setTotalSortMemory(totalSortMemory);
 	}
@@ -220,7 +218,7 @@ public class InvertedIndexBuilder {
 		totalSubSequencesToAdd += encodedSequence.length - 1;
 		sequencesToAdd.add(sequenceInfo);
 
-		if (totalMemorytoAdd > totalMemoryUsedToStoreSubSequences) {
+		if (totalMemorytoAdd > totalMemoryUsedToStoreSubSequences || totalSubSequencesToAdd * Entry.INSTANCE_SIZE > totalMemoryUsedToStoreSubSequences) {
 			try {
 				addSequences(sequencesToAdd);
 			} catch (IOException e) {
@@ -343,8 +341,7 @@ public class InvertedIndexBuilder {
 		}
 	}
 
-	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException,
-			IndexConstructionException {
+	private void indexConstructionPhase2(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
 		long totalUsedMemory = 0;
 		long offset = 0;
 		long beginOffset = 0;
@@ -376,8 +373,7 @@ public class InvertedIndexBuilder {
 		getEntriesOutpuPhase2().flush();
 	}
 
-	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException,
-			IndexConstructionException {
+	private void indexConstructionPhase3(List<SortedEntriesInfo> sortedEntriesInfos) throws IOException, IndexConstructionException {
 
 		List<SortedEntriesBufferManager> entryBufferManagers = Lists.newArrayList();
 
@@ -467,10 +463,12 @@ public class InvertedIndexBuilder {
 	}
 
 	private static class Entry {
-		public static final int INSTANCE_SIZE = 8 /* Instance */
-		+ 4 /* subSequence */
-		+ 4 /* sequenceId */
-		+ 8; /* position */
+		// public static final int INSTANCE_SIZE = 8 /* Instance */
+		// + 4 /* subSequence */
+		// + 4 /* sequenceId */
+		// + 8; /* position */
+		// memory alignment turn to 32 bytes
+		public static final int INSTANCE_SIZE = 32;
 
 		private static final int DISK_SPACE = 4 /* subSequence */
 		+ 4 /* sequenceId */
@@ -514,8 +512,7 @@ public class InvertedIndexBuilder {
 			stream.writeLong(position);
 		}
 
-		public static void writeTo(int subSequence, int sequenceId, long position, DataOutputStream stream)
-				throws IOException {
+		public static void writeTo(int subSequence, int sequenceId, long position, DataOutputStream stream) throws IOException {
 			stream.writeInt(subSequence);
 			stream.writeInt(sequenceId);
 			stream.writeLong(position);
