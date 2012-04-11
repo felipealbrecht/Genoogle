@@ -354,8 +354,8 @@ public class InvertedIndexBuilder {
 			List<Entry> allEntries = Lists.newArrayList();
 			beginOffset = offset;
 			totalUsedMemory = 0;
-
-			while (totalUsedMemory < memoryChuck && processedEntries < totalEntries) {
+			
+			while (totalUsedMemory < memoryChuck && processedEntries < totalEntries && allEntries.size() * Entry.DISK_SPACE < Integer.MAX_VALUE) {
 				allEntries.add(Entry.newFrom(getEntriesInputPhase1()));
 				processedEntries++;
 				totalUsedMemory += Entry.INSTANCE_SIZE;
@@ -405,6 +405,7 @@ public class InvertedIndexBuilder {
 			if (!smallerOwner.hasRemaining()) {
 				entryBufferManagers.remove(smallerOwner);
 			}
+			
 		}
 
 		getEntriesOutpuPhase1().flush();
@@ -547,7 +548,7 @@ public class InvertedIndexBuilder {
 
 		public SortedEntriesBufferManager(IntBuffer intBuffer) {
 			this.intBuffer = intBuffer;
-			this.actual = getNextEntry();
+			this.actual = getNextEntry();			
 		}
 
 		private Entry getNextEntry() {
