@@ -36,6 +36,7 @@ import bio.pih.genoogle.seq.RichSequence;
 import bio.pih.genoogle.seq.SymbolList;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.CodedInputStream;
 
 /**
  * Abstract class for Sequence Banks which stores sequences. This class has the low level IO
@@ -73,7 +74,9 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 			return false;
 		}
 
-		this.storedDatabank = StoredDatabank.parseFrom(new FileInputStream(getStoredDataBankInfoFile()));
+                CodedInputStream cis = CodedInputStream.newInstance(new FileInputStream(getStoredDataBankInfoFile()));
+                cis.setSizeLimit(0x7FFFFFFF);
+		this.storedDatabank = StoredDatabank.parseFrom(cis);
 
 		logger.info("Databank with : " + storedDatabank.getQtdSequences() + " sequences.");
 		logger.info("Databank with : " + storedDatabank.getQtdBases() + " bases.");

@@ -49,7 +49,7 @@ import com.google.common.collect.Lists;
  */
 public class InvertedIndexBuilder {
 
-	private static final int MEMORY_CHUCK = 256 * 1024 * 1024; // 512 MEGABYTES.
+	private static final int MEMORY_CHUCK = 1024 * 1024 * 1024; // 512 MEGABYTES.
 
 	private static Logger logger = Logger.getLogger("bio.pih.index.builder.InvertedIndexBuilder");
 
@@ -389,7 +389,7 @@ public class InvertedIndexBuilder {
 		// merging
 		// TODO: Some printout to show de status.
 		// TODO: Rathen than the "while", use a MinHeap to get the next element.
-		for (int i = 0; i < totalEntries; i++) {
+		for (long i = 0; i < totalEntries; i++) {
 			SortedEntriesBufferManager smallerOwner = null;
 			for (SortedEntriesBufferManager bm : entryBufferManagers) {
 				if (smallerOwner == null) {

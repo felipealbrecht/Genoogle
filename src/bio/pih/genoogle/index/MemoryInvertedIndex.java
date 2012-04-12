@@ -85,33 +85,34 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 		DataInputStream fileInputStream = new DataInputStream(new BufferedInputStream(in));
 		
 		long mmOffset = 0;
-		final long FOUR_GB = 1024L * 1024 * 1024 * 4;
+		final long TWO_GB = Integer.MAX_VALUE;
 		final long invertedIndexFileLength = memoryInvertedIndexFile.length();
 		
-		MappedByteBuffer map = null;
-		if (invertedIndexFileLength > FOUR_GB) {			
-			map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, FOUR_GB);
+                MappedByteBuffer map = null;        
+		if (invertedIndexFileLength > TWO_GB) {			
+			map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, TWO_GB);
 		} else {
 			map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, invertedIndexFileLength);
 		}
 		
 		long totalSubSequences = 0;
 		
-		while (fileInputStream.available() != 0) {
+		while (fileInputStream.available() > 0) {
 			IndexFileOffset indexFilePosition = IndexFileOffset.newFrom(fileInputStream);						
 
 			int subSequence = indexFilePosition.subSequence;
 			int length = indexFilePosition.length;
 			long offset = indexFilePosition.offset;
 			//System.out.println(subSequence);
-			if (offset > mmOffset + FOUR_GB) {
-				if (mmOffset + FOUR_GB > invertedIndexFileLength) {
-					mmOffset += FOUR_GB;
-					map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, FOUR_GB);
-				} else {
-					mmOffset = invertedIndexFileLength - mmOffset;
-					map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, invertedIndexFileLength);
-				}				
+			if (offset + length > mmOffset + TWO_GB) {
+				mmOffset += (TWO_GB - length);
+                                if (mmOffset + TWO_GB > invertedIndexFileLength) {
+                                    long l = invertedIndexFileLength - mmOffset;
+                                    System.out.println(l);
+				    map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, l);
+                                } else {
+                                    map = memoryInvertedIndexIS.getChannel().map(MapMode.READ_ONLY, mmOffset, TWO_GB);
+                                }
 			}
 										
 			long reOffset = offset - mmOffset;
@@ -119,7 +120,6 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 				logger.fatal(reOffset + " is too big for " + reOffset);
 				System.exit(-2);
 			}
-			
 			byte[] data = new byte[length];
 			map.position((int) reOffset);
 			map.get(data);
