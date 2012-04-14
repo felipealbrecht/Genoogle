@@ -24,20 +24,19 @@ public abstract class AbstractInvertedIndex {
 	protected final int subSequenceLength;
 	protected final int indexSize;
 	protected final long[] EMPTY_ARRAY = new long[0];
-	
 	protected final SequenceEncoder encoder;
-	protected volatile boolean loaded;
+	protected volatile boolean loaded;	
 	
 	/**
 	 * @param databank
 	 * @param subSequenceLength
 	 */
-	public AbstractInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
+	public AbstractInvertedIndex(AbstractSequenceDataBank databank, SequenceEncoder encoder) {
 		this.databank = databank;
-		this.subSequenceLength = subSequenceLength;
-		this.encoder = databank.getEncoder();
-
-		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(databank.getAlphabet().getSize());
+		this.encoder = encoder;
+		this.subSequenceLength = encoder.getSubSequenceLength();
+		
+		int indexBitsSize = subSequenceLength * SequenceEncoder.bitsByAlphabetSize(encoder.getAlphabet().getSize());
 		this.indexSize = 1 << indexBitsSize;
 		
 		this.loaded = false;

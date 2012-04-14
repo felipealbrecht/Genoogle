@@ -17,6 +17,7 @@ import java.nio.channels.FileChannel.MapMode;
 
 import org.apache.log4j.Logger;
 
+import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.proto.Io.InvertedIndexBuck;
 import bio.pih.genoogle.seq.SymbolList;
@@ -36,8 +37,8 @@ public class MemoryInvertedIndex extends AbstractInvertedIndex {
 	 * @param databank
 	 * @param subSequenceLength
 	 */
-	public MemoryInvertedIndex(AbstractSequenceDataBank databank, int subSequenceLength) {
-		super(databank, subSequenceLength);
+	public MemoryInvertedIndex(AbstractSequenceDataBank databank, SequenceEncoder indexedSequenceEncoder) {
+		super(databank, indexedSequenceEncoder);
 	}
 
 	@Override

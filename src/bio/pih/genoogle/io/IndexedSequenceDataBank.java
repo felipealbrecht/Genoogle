@@ -36,20 +36,27 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	protected InvertedIndexBuilder indexBuilder;
 	protected final MaskEncoder maskEncoder;
 	private final String mask;
+	private final int subSequenceOffset;
 
 	public IndexedSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, String mask, File path,
-			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent)
+			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) {
+		this(name, alphabet, subSequenceLength, parent.getEncoder(), mask, path,parent);
+	}
+	
+	public IndexedSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, SequenceEncoder indexedSequenceEncoder, 
+			String mask, File path, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent)
 			throws ValueOutOfBoundsException {
-		super(name, alphabet, subSequenceLength, path, parent);
+		super(name, alphabet, subSequenceLength, path, parent);		
 		this.mask = mask;
-
+		this.subSequenceOffset = indexedSequenceEncoder.getSubSequenceLength();
+		
 		if (mask != null) {			
 			maskEncoder = new MaskEncoder(mask, encoder);
 		} else {
 			maskEncoder = null;
 		}
 
-		index = new MemoryInvertedIndex(this, subSequenceLength);
+		index = new MemoryInvertedIndex(this, indexedSequenceEncoder);
 	}
 
 	@Override
@@ -103,7 +110,7 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 	@Override
 	public int getSubSequencesOffset() {
 		if (maskEncoder == null) {
-			return subSequenceLength;
+			return subSequenceOffset;
 		} else {
 			return maskEncoder.getPatternLength();
 		}

@@ -37,7 +37,6 @@ import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.IndexedSequenceDataBank;
 import bio.pih.genoogle.io.proto.Io.InvertedIndexBuck;
-import bio.pih.genoogle.util.BinaryHeap;
 
 import com.google.common.collect.Lists;
 
@@ -92,10 +91,10 @@ public class InvertedIndexBuilder {
 			this.lowComplexitySubSequences = new BitSet();
 			logger.info("Low complexity sub sequences filter disabled.");
 		} else {
-			int[] lowComplexitySubSequencesArray = new LowComplexitySubSequences(databank.getSubSequenceLength(), lowComplexityFilter).getSubSequences();
+			int[] lowComplexitySubSequencesArray = new LowComplexitySubSequences(indexedSequenceDataBank.getSubSequencesOffset(), lowComplexityFilter).getSubSequences();
 			logger.info("Low complexity sub sequences filter for " + lowComplexitySubSequencesArray.length + " sub sequences.");
 
-			this.lowComplexitySubSequences = new BitSet(databank.getAlphabet().getSize() ^ databank.getSubSequenceLength());
+			this.lowComplexitySubSequences = new BitSet(databank.getAlphabet().getSize() ^ indexedSequenceDataBank.getSubSequencesOffset());
 			for (int lowComplexSubSequence : lowComplexitySubSequencesArray) {
 				this.lowComplexitySubSequences.set(lowComplexSubSequence);
 			}
