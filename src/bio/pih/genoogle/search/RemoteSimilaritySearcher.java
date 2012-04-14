@@ -67,7 +67,7 @@ public class RemoteSimilaritySearcher extends AbstractSearcher {
 			return sr;
 		}
 
-		logger.info("DNAIndexBothStrandSearcher total Time of " + this.toString() + " " + (System.currentTimeMillis() - begin));
+		logger.info("Index Searcher " + this.toString() + " " + (System.currentTimeMillis() - begin));
 
 		long alignmentBegin = System.currentTimeMillis();
 

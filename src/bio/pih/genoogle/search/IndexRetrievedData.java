@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009,2010,2011,2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -11,7 +11,7 @@ import java.util.List;
 
 import bio.pih.genoogle.index.SubSequenceIndexInfo;
 import bio.pih.genoogle.util.CircularArrayList;
-import bio.pih.genoogle.util.CircularArrayList.Iterator;
+import bio.pih.genoogle.util.Poll;
 
 import com.google.common.collect.Lists;
 
@@ -24,6 +24,7 @@ public class IndexRetrievedData {
 
 	private final List<RetrievedArea>[] retrievedAreasArray;
 	private final CircularArrayList[] openedAreasArray;
+        private final Poll poll = new Poll();
 	private final int minLength;
 	private final int subSequenceLength;
 	private final int maxSubSequenceDistance;
@@ -35,14 +36,23 @@ public class IndexRetrievedData {
 	 * @param subSequenceLength Sub sequences length.
 	 * @param searcher Index searcher that is used.
 	 */
-	@SuppressWarnings("unchecked")
 	public IndexRetrievedData(int size, SearchParams sp, int subSequenceLength, IndexSearcher searcher) {
+            this(size, sp, subSequenceLength, searcher, null);
+        }
+	
+        @SuppressWarnings("unchecked")
+        public IndexRetrievedData(int size, SearchParams sp, int subSequenceLength, IndexSearcher searche, List<RetrievedArea>[] retrievedData) {
 
 		this.minLength = sp.getMinHspLength();
 		this.subSequenceLength = subSequenceLength;
 		this.maxSubSequenceDistance = sp.getMaxSubSequencesDistance();
+               
+                if (retrievedData == null) {
+		    this.retrievedAreasArray = new List[size];
+                } else {
+                    this.retrievedAreasArray = retrievedData;
+                }  
 
-		retrievedAreasArray = new List[size];
 		openedAreasArray = new CircularArrayList[size];
 	}
 
@@ -66,47 +76,46 @@ public class IndexRetrievedData {
 	 */
 	private final void mergeOrRemoveOrNew(int queryPos, int sequencePos, int sequenceId) {
 
-		boolean merged = false;
 
 		CircularArrayList openedList = openedAreasArray[sequenceId];
 
 		if (openedList == null) {
-			openedList = new CircularArrayList();
+			openedList = poll.pop();
+                }
+
+                if (openedList.size() == 0) {
 			openedAreasArray[sequenceId] = openedList;
-			openedList.addFast(queryPos, sequencePos, subSequenceLength);
+			openedList.add(queryPos, sequencePos, subSequenceLength);
 
 		} else {
+		        boolean merged = false;
 			int totalRemove = 0;
-
-			int size = openedList.size();
-			if (size == 0) {
-				merged = false;
-			} else {
-				Iterator iterator = openedList.getIterator();
-				while (iterator.hasNext()) {
-					final RetrievedArea openedArea = iterator.next();
-					// Try merge with previous area.
-					if (openedArea.testAndSet(queryPos, sequencePos, maxSubSequenceDistance, subSequenceLength)) {
-						merged = true;
-
-						openedList.rePos(openedArea, iterator.getPos());
-
-						// Check if the area end is away from the actual sequence position.
-					} else if (queryPos - openedArea.getQueryAreaEnd() > maxSubSequenceDistance) {
-						// Count areas to remove.
-						totalRemove++;
-						if (openedArea.length() >= minLength) {
-							if (retrievedAreasArray[sequenceId] == null) {
-								retrievedAreasArray[sequenceId] = Lists.newArrayList();
-							}
-							retrievedAreasArray[sequenceId].add(openedArea.copy());
+                        int pos = 0;
+                        for (RetrievedArea openedArea = openedList.get(pos); (openedArea = openedList.get(pos)) != null; pos++) {
+				// Try merge with previous area.
+				if (openedArea.testAndSet(queryPos, sequencePos, maxSubSequenceDistance, subSequenceLength)) {
+				    merged = true;
+				    openedList.rePos(openedArea, pos);
+				    // Check if the area end is away from the actual sequence position.
+				} else if (queryPos - openedArea.getQueryAreaEnd() > maxSubSequenceDistance) {
+					// Count areas to remove.
+					totalRemove++;
+					if (openedArea.length() >= minLength) {
+					        if (retrievedAreasArray[sequenceId] == null) {
+							retrievedAreasArray[sequenceId] = Lists.newArrayList();
 						}
+						retrievedAreasArray[sequenceId].add(openedArea.copy());
 					}
 				}
 			}
 
 			if (totalRemove != 0) {
 				openedList.removeElements(totalRemove);
+                                if (openedList.size() == 0) {
+                                    poll.push(openedList);
+                                    openedAreasArray[sequenceId] = null;
+                                }
+
 			}
 
 			if (!merged) {
@@ -121,12 +130,10 @@ public class IndexRetrievedData {
 	 */
 	public List<RetrievedArea>[] finish() {
 		for (int sequenceId = 0; sequenceId < openedAreasArray.length; sequenceId++) {
-			CircularArrayList openedAreaList = openedAreasArray[sequenceId];
-			if (openedAreaList != null) {
-				Iterator iterator = openedAreaList.getIterator();
-				while (iterator.hasNext()) {
-					RetrievedArea openedArea = iterator.next();
-					assert (openedArea != null);
+			CircularArrayList openedList = openedAreasArray[sequenceId];
+			if (openedList != null) {
+                            int pos = 0;
+                            for (RetrievedArea openedArea = openedList.get(pos); (openedArea = openedList.get(pos)) != null; pos++) {
 					if (openedArea.length() >= minLength) {
 						if (retrievedAreasArray[sequenceId] == null) {
 							retrievedAreasArray[sequenceId] = Lists.newArrayList();

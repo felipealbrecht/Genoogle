@@ -1,6 +1,6 @@
 /*
  * Genoogle: Similar DNA Sequences Searching Engine and Tools. (http://genoogle.pih.bio.br)
- * Copyright (C) 2008,2009  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
+ * Copyright (C) 2008,2009,2010,2011,2012  Felipe Fernandes Albrecht (felipe.albrecht@gmail.com)
  *
  * For further information check the LICENSE file.
  */
@@ -21,7 +21,6 @@ public class CircularArrayList {
 	private RetrievedArea[] elementData;
 	private int head = 0, tail = 0;
 	private int size = 0;
-	private Iterator it = new Iterator();
 
 	private static final int DEFAULT_SIZE = 5;
 
@@ -46,12 +45,10 @@ public class CircularArrayList {
 		return head == tail; // or size == 0
 	}
 
-	public void ensureCapacity(int minCapacity) {
+	private void ensureCapacity(int minCapacity) {
 		int oldCapacity = elementData.length;
 		if (minCapacity > oldCapacity) {
 			int newCapacity = (oldCapacity * 3) / 2 + 1;
-			if (newCapacity < minCapacity)
-				newCapacity = minCapacity;
 			RetrievedArea newData[] = new RetrievedArea[newCapacity];
 			toArray(newData);
 			tail = size;
@@ -74,7 +71,7 @@ public class CircularArrayList {
 		return a;
 	}
 
-	public boolean add(int queryPos, int sequencePos, int subSequenceLength) {
+	public void add(int queryPos, int sequencePos, int subSequenceLength) {
 		ensureCapacity(size + 1 + 1);
 		RetrievedArea retrievedArea = elementData[tail];
 		if (retrievedArea != null) {
@@ -86,23 +83,17 @@ public class CircularArrayList {
 		tail = (tail + 1) % elementData.length;
 		size++;
 		assert ((head + size) % elementData.length == tail);
-		return true;
-
 	}
 
-	public boolean addFast(int queryPos, int sequencePos, int subSequenceLength) {
-		elementData[tail] = new RetrievedArea(queryPos, sequencePos, subSequenceLength);
-		tail = (tail + 1) % elementData.length;
-		size++;
-		assert (tail > head);
-		return true;
-	}
 /**
  * Set the informed position to this correct position. 
  * @param openedArea {@link RetrievedArea} which will be moved
  * @param pos which should be moved
  */
-	public void rePos(RetrievedArea openedArea, int pos) {
+        
+
+	public void rePos(RetrievedArea openedArea, int _pos) {
+		int pos =  (_pos + head) % elementData.length;
 		assert (elementData[pos] == openedArea);
 		int prev = pos;
 		pos = (pos + 1) % elementData.length;
@@ -136,35 +127,15 @@ public class CircularArrayList {
 		assert (head >= 0);
 	}
 
+	public RetrievedArea get(int pos) {
+                if ((pos + 1) > size) {
+                    return null;
+                }
+		RetrievedArea retrievedArea = elementData[(pos + head) % elementData.length];
+		return retrievedArea;
+	}
+
 	public void clear() {
 		head = tail = size = 0;
-	}
-
-	public Iterator getIterator() {
-		it.reset();
-		return it;
-	}
-
-	public class Iterator {
-		int pos = -1;
-
-		public boolean hasNext() {
-			return pos + 1 < size;
-		}
-
-		public RetrievedArea next() {
-			pos++;
-			RetrievedArea retrievedArea = elementData[(pos + head) % elementData.length];
-			return retrievedArea;
-		}
-
-		public void reset() {
-			pos = -1;
-		}
-
-		public int getPos() {
-			return (pos + head) % elementData.length;
-		}
-
 	}
 }

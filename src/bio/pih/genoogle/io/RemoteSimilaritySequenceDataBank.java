@@ -40,7 +40,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 	// TODO: Put a check that aaEncoder ss length is multiple or divisible by reducedEncoder ss length
 	SymbolListWindowIteratorFactory factory = SymbolListWindowIteratorFactory.getNotOverlappedFactory();
 	SequenceEncoder aaEncoder = SequenceEncoderFactory.getEncoder(AminoAcidAlphabet.SINGLETON, 6);
-	SequenceEncoder reducedEncoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 6);
+	SequenceEncoder reducedEncoder = SequenceEncoderFactory.getEncoder(Reduced_AA_8_Alphabet.SINGLETON, 9);
 
 	public RemoteSimilaritySequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, File path, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) throws ValueOutOfBoundsException {
 		super(name, alphabet, subSequenceLength, null, path, parent);
@@ -53,7 +53,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 		}
 
 		if (s.getLength() < 8) {
-			logger.error(s.getName() + "is too short (" + s.getLength() + ") and will not be stored in this data bank");
+			logger.info(s.getName() + "is too short (" + s.getLength() + ") and will not be stored in this data bank");
 			return new StoredSequenceInfo[] {};
 		}
 

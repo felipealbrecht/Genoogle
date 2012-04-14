@@ -48,20 +48,13 @@ public class IndexSixFramesSearcher implements Callable<IndexSearchResults> {
 		this.fails = fails;
 		int numberOfSequences = databank.getNumberOfSequences();
 		this.encoder = databank.getReducedEncoder();
-		this.retrievedAreasFrame1 = new ArrayList[numberOfSequences];
+
+                this.retrievedAreasFrame1 = new ArrayList[numberOfSequences];
 		this.retrievedAreasFrame2 = new ArrayList[numberOfSequences];
-		this.retrievedAreasFrame3 = new ArrayList[numberOfSequences];
+        	this.retrievedAreasFrame3 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame1 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame2 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame3 = new ArrayList[numberOfSequences];
-		for (int i = 0; i < numberOfSequences; i++) {
-			retrievedAreasFrame1[i] = new ArrayList<RetrievedArea>(0);
-			retrievedAreasFrame2[i] = new ArrayList<RetrievedArea>(0);
-			retrievedAreasFrame3[i] = new ArrayList<RetrievedArea>(0);
-			rcRetrievedAreasFrame1[i] = new ArrayList<RetrievedArea>(0);
-			rcRetrievedAreasFrame2[i] = new ArrayList<RetrievedArea>(0);
-			rcRetrievedAreasFrame3[i] = new ArrayList<RetrievedArea>(0);
-		}
 	}
 
 	// TODO: Fix statistics (correct alphabet and match and mismatch scores)	
@@ -119,7 +112,7 @@ public class IndexSixFramesSearcher implements Callable<IndexSearchResults> {
 			ArrayList<RetrievedArea> areas5 = rcRetrievedAreasFrame2[i];
 			ArrayList<RetrievedArea> areas6 = rcRetrievedAreasFrame3[i];
 			
-			if (areas1.size() > 0 || areas2.size() > 0 || areas3.size() > 0 || areas4.size() > 0 || areas5.size() > 0 || areas6.size() > 0) {
+			if (areas1 != null || areas2 != null || areas3 != null || areas4 != null || areas5 != null || areas6 != null) {
 				@SuppressWarnings("unchecked")
 				RetrievedSequenceAreas retrievedAreas = new RetrievedSequenceAreas(i, searcher1.getDatabank(), areas1, areas2, areas3, areas4, areas5, areas6);
 				results.add(retrievedAreas);

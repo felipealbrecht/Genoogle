@@ -40,7 +40,6 @@ public abstract class SequenceEncoder {
 		this.subSequenceLength = subSequenceLength;
 		this.bitsByAlphabetSize = bitsByAlphabetSize(alphabet.getSize());
 		this.bitsMask = ((1 << bitsByAlphabetSize) - 1);
-		
 		// Check if the sub sequence length and alphabet can be stored inside a 32 bits integer.
 		if (this.bitsByAlphabetSize * this.subSequenceLength > 32) {
 			throw new RuntimeException("The subsequence length ("+this.subSequenceLength+") is to long for this alphabet. Use a smaller subsequence length.");

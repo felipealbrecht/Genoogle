@@ -171,7 +171,7 @@ public abstract class AbstractSimpleSequenceDataBank extends AbstractSequenceDat
 		}
 
 		if (s.getLength() < subSequenceLength) {
-			logger.error(s.getName() + "is too short (" + s.getLength() + ") for actual sub-sequence length (" + this.subSequenceLength + " ) and will not be stored in this data bank");
+			logger.info(s.getName() + "is too short (" + s.getLength() + ") for actual sub-sequence length (" + this.subSequenceLength + " ) and will not be stored in this data bank");
 			return new StoredSequenceInfo[] {};
 		}
 

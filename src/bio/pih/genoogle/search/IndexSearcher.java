@@ -91,6 +91,7 @@ public class IndexSearcher implements Runnable {
 	@Override
 	public void run() {
 		try {
+                        long s = System.currentTimeMillis();
 			int queryLength = sliceQuery.length();
 			if (queryLength < subSequenceLength) {
 				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short. Its length is "
@@ -109,38 +110,41 @@ public class IndexSearcher implements Runnable {
 			retrievedData.finish();
 
 			List<RetrievedArea>[] retrievedAreasArray = retrievedData.getRetrievedAreasArray();
+                        long s1 = System.currentTimeMillis();
+
+			if (this.retrievedAreas == retrievedAreasArray) {
+                                logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init));
+                                return;
+                        }
 
 			int totalHits = 0;
 			final int length = retrievedAreasArray.length;
 
 			for (int i = 0; i < length; i++) {
 				List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
+                                // TODO LOCK HERE BY THE "I"
 				if (localRetrievedAreas != null) {
 					totalHits += localRetrievedAreas.size();
-					List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
-					synchronized (retrievedAreasList) {
-
-						if (retrievedAreasList.size() == 0) {
-							retrievedAreasList.addAll(localRetrievedAreas);
-						}
-
-						else {
-							List<RetrievedArea> toAdd = Lists.newArrayList();
-							for (RetrievedArea existingArea : retrievedAreasList) {
-								for (RetrievedArea newArea : localRetrievedAreas) {
-									if (!existingArea.testAndSet(newArea.getQueryAreaBegin(),
-											newArea.getSequenceAreaBegin(), sp.getMaxSubSequencesDistance(),
-											subSequenceLength)) {
-										toAdd.add(newArea);
-									}
+				        List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
+                                        // LOCK HERE
+                                        if (retrievedAreasList == null) {
+                                            retrievedAreas[i] = localRetrievedAreas;
+                                        }
+					else {
+						List<RetrievedArea> toAdd = Lists.newArrayList();
+						for (RetrievedArea existingArea : retrievedAreasList) {
+							for (RetrievedArea newArea : localRetrievedAreas) {
+								if (!existingArea.testAndSet(newArea.getQueryAreaBegin(),
+										newArea.getSequenceAreaBegin(), sp.getMaxSubSequencesDistance(),
+										subSequenceLength)) {
+									toAdd.add(newArea);
 								}
 							}
-							retrievedAreasList.addAll(toAdd);
 						}
+						retrievedAreasList.addAll(toAdd);
 					}
 				}
 			}
-
 			logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " and "
 					+ totalHits + " hits.");
 		} catch (Throwable t) {
@@ -153,8 +157,13 @@ public class IndexSearcher implements Runnable {
 	private IndexRetrievedData getIndexPositions(final int[] iess, final int offset) throws ValueOutOfBoundsException,
 			IOException {
 
-		IndexRetrievedData retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this);
-
+		IndexRetrievedData retrievedData;
+                if (fullQuery.getLength() == sliceQuery.length())  {
+		    retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this, this.retrievedAreas);
+                } else {
+		    retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this);
+                }
+                
 		for (int ss = 0; ss < iess.length; ss++) {
 			retrieveIndexPosition(iess[ss], retrievedData, ss + offset);
 		}
@@ -164,13 +173,12 @@ public class IndexSearcher implements Runnable {
 	private void retrieveIndexPosition(int encodedSubSequence, IndexRetrievedData retrievedData, int queryPos)
 			throws ValueOutOfBoundsException, IOException {
 
-		long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
+		final long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
 		//System.out.println(indexPositions.length);
 		//long begin = System.nanoTime();
-		for (long subSequenceIndexInfo : indexPositions) {
-			retrievedData.addSubSequenceInfoIntRepresention(queryPos, subSequenceIndexInfo);
+                for (int i = 0; i < indexPositions.length; i++) {
+			retrievedData.addSubSequenceInfoIntRepresention(queryPos, indexPositions[i]);
 		}
-		//System.out.println((System.nanoTime() - begin)/1000000);
 	}
 
 	private int[] getEncodedSubSequences(String querySequence) {

@@ -27,8 +27,17 @@ public class RetrievedSequenceAreas {
 		this.areas = new ArrayList[frames];
 		this.rcAreas = new ArrayList[frames];
 		for (int i = 0; i < frames; i++) {
-			this.areas[i] = areas[i].size() > 0 ? areas[i] : LIST_EMPTY;
-			this.rcAreas[i] = areas[i+frames].size() > 0 ? areas[i+frames] : LIST_EMPTY;
+                        if (areas[i] != null && areas[i].size() > 0) {
+                            this.areas[i] = areas[i]; 
+                        } else {
+                            this.areas[i] = LIST_EMPTY;
+                        }
+
+                        if (areas[i+frames] != null && areas[i+frames].size() > 0 ) {
+                            this.rcAreas[i] = areas[i+frames]; 
+                        } else {
+                            this.rcAreas[i] = LIST_EMPTY;
+                        }
 		}
 		this.biggestHspLength = Math.max(getBiggestHspLength(this.areas), getBiggestHspLength(this.rcAreas));
 	}
