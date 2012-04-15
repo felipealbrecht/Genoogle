@@ -91,15 +91,15 @@ public class IndexSearcher implements Runnable {
 	@Override
 	public void run() {
 		try {
-                        long s = System.currentTimeMillis();
 			int queryLength = sliceQuery.length();
 			if (queryLength < subSequenceLength) {
-				throw new RuntimeException("Sequence: \"" + sliceQuery + "\" is too short. Its length is "
+				logger.info("Sequence: \"" + sliceQuery + "\" is too short. Its length is "
 						+ queryLength + " but should to be at least " + subSequenceLength + ".");
+				return;
 			}
 
 			logger.info("[" + this.toString() + "] Begining the search at " + databank.getName()
-					+ " with the sequence with " + sliceQuery.length() + "bases and min subSequenceLength >= "
+					+ " with the sequence with " + sliceQuery.length() + " bases and min subSequenceLength >= "
 					+ this.sp.getMinHspLength());
 
 			int[] iess = getEncodedSubSequences(sliceQuery, databank.getMaskEncoder());
@@ -110,26 +110,23 @@ public class IndexSearcher implements Runnable {
 			retrievedData.finish();
 
 			List<RetrievedArea>[] retrievedAreasArray = retrievedData.getRetrievedAreasArray();
-                        long s1 = System.currentTimeMillis();
 
 			if (this.retrievedAreas == retrievedAreasArray) {
-                                logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init));
-                                return;
-                        }
+				logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " with " + retrievedData.hits + " hits.");
+                return;
+			}
 
-			int totalHits = 0;
 			final int length = retrievedAreasArray.length;
 
 			for (int i = 0; i < length; i++) {
 				List<RetrievedArea> localRetrievedAreas = retrievedAreasArray[i];
-                                // TODO LOCK HERE BY THE "I"
+                // TODO LOCK HERE BY THE "I"
 				if (localRetrievedAreas != null) {
-					totalHits += localRetrievedAreas.size();
-				        List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
-                                        // LOCK HERE
-                                        if (retrievedAreasList == null) {
-                                            retrievedAreas[i] = localRetrievedAreas;
-                                        }
+					List<RetrievedArea> retrievedAreasList = retrievedAreas[i];
+                    // LOCK HERE
+                    if (retrievedAreasList == null) {
+                    	retrievedAreas[i] = localRetrievedAreas;
+                    }
 					else {
 						List<RetrievedArea> toAdd = Lists.newArrayList();
 						for (RetrievedArea existingArea : retrievedAreasList) {
@@ -145,8 +142,7 @@ public class IndexSearcher implements Runnable {
 					}
 				}
 			}
-			logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " and "
-					+ totalHits + " hits.");
+			logger.info("[" + this.toString() + "] Index search time:" + (System.currentTimeMillis() - init) + " with " + retrievedData.hits + " hits.");
 		} catch (Throwable t) {
 			fails.add(t);
 		} finally {
@@ -158,15 +154,15 @@ public class IndexSearcher implements Runnable {
 			IOException {
 
 		IndexRetrievedData retrievedData;
-                if (fullQuery.getLength() == sliceQuery.length())  {
-		    retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this, this.retrievedAreas);
-                } else {
+        if (fullQuery.getLength() == sliceQuery.length())  {
+        	retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this, this.retrievedAreas);
+        } else {
 		    retrievedData = new IndexRetrievedData(databank.getNumberOfSequences(), sp, subSequenceLength, this);
-                }
+        }
                 
 		for (int ss = 0; ss < iess.length; ss++) {
 			retrieveIndexPosition(iess[ss], retrievedData, ss + offset);
-		}
+		}		
 		return retrievedData;
 	}
 
@@ -174,15 +170,14 @@ public class IndexSearcher implements Runnable {
 			throws ValueOutOfBoundsException, IOException {
 
 		final long[] indexPositions = databank.getMatchingSubSequence(encodedSubSequence);
-		//System.out.println(indexPositions.length);
-		//long begin = System.nanoTime();
-                for (int i = 0; i < indexPositions.length; i++) {
+
+        for (int i = 0; i < indexPositions.length; i++) {
 			retrievedData.addSubSequenceInfoIntRepresention(queryPos, indexPositions[i]);
 		}
 	}
 
 	private int[] getEncodedSubSequences(String querySequence) {
-		int size = querySequence.length() - subSequenceLength;
+		int size = querySequence.length() - (subSequenceLength - 1);
 		int[] iess = new int[size];
 
 		for (int i = 0; i < size; i++) {
@@ -197,7 +192,7 @@ public class IndexSearcher implements Runnable {
 			return getEncodedSubSequences(querySequence);
 		}
 
-		int size = querySequence.length() - maskEncoder.getPatternLength();
+		int size = querySequence.length() - (maskEncoder.getPatternLength() - 1);
 		int[] iess = new int[size];
 
 		for (int i = 0; i < size; i++) {

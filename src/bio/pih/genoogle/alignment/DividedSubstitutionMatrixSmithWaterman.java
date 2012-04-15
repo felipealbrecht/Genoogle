@@ -12,13 +12,10 @@ package bio.pih.genoogle.alignment;
  * instances and delegate to them the alignment execution. This class is useful to save memory for
  * alignment of the very long sequences.
  */
-public class DividedStringGenoogleSmithWaterman {
+public class DividedSubstitutionMatrixSmithWaterman extends GenoogleSequenceAlignment  {
 
-	private final int match;
-	private final int replace;
 	private final int insert;
 	private final int delete;
-	private final int gapExtend;
 	private final int lengthThreshould;
 
 	StringBuilder queryAlignedBuilder = new StringBuilder();
@@ -35,6 +32,7 @@ public class DividedStringGenoogleSmithWaterman {
 	private int targetStart;
 	private int targetEnd;
 	private int identitySize;
+	private final SubstitutionMatrix substitutionTable;
 
 	/**
 	 * Constructor which inform the scores for the alignment.
@@ -52,13 +50,10 @@ public class DividedStringGenoogleSmithWaterman {
 	 * @param lengthThreshould
 	 *            minimum length of each sub-query or sub-target sequences.
 	 */
-	public DividedStringGenoogleSmithWaterman(int match, int replace, int insert, int delete, int gapExtend,
-			int lengthThreshould) {
-		this.match = match;
-		this.replace = replace;
+	public DividedSubstitutionMatrixSmithWaterman(SubstitutionMatrix substitutionTable, int insert, int delete, int lengthThreshould) {
+		this.substitutionTable = substitutionTable;
 		this.insert = insert;
 		this.delete = delete;
-		this.gapExtend = gapExtend;
 		this.lengthThreshould = lengthThreshould;
 	}
 
@@ -73,7 +68,7 @@ public class DividedStringGenoogleSmithWaterman {
 	public int pairwiseAlignment(String query, String target) {
 
 		if (query.length() <= lengthThreshould || target.length() <= lengthThreshould) {
-			StringGenoogleSmithWaterman aligner = new StringGenoogleSmithWaterman(match, replace, insert, delete, gapExtend);
+			SubstitutionMatrixSmithWaterman aligner = new SubstitutionMatrixSmithWaterman(substitutionTable, insert, delete);
 			aligner.pairwiseAlignment(query, target);
 			this.queryAligned = aligner.getQueryAligned();
 			this.targetAligned = aligner.getTargetAligned();
@@ -130,7 +125,7 @@ public class DividedStringGenoogleSmithWaterman {
 			String queryPiece = query.substring(queryPos, endQueryPiece);
 			String targetPiece = target.substring(targetPos, endTargetPiece);
 
-			StringGenoogleSmithWaterman aligner = new StringGenoogleSmithWaterman(match, replace, insert, delete, gapExtend);
+			SubstitutionMatrixSmithWaterman aligner = new SubstitutionMatrixSmithWaterman(substitutionTable, insert, delete);
 			aligner.pairwiseAlignment(queryPiece, targetPiece);
 			score += aligner.getScore();
 			identitySize += aligner.getIdentitySize();
@@ -167,7 +162,7 @@ public class DividedStringGenoogleSmithWaterman {
 	 * @param targetPiece
 	 * @param aligner
 	 */
-	private void setBeginSubAlignment(String queryPiece, String targetPiece, StringGenoogleSmithWaterman aligner) {
+	private void setBeginSubAlignment(String queryPiece, String targetPiece, SubstitutionMatrixSmithWaterman aligner) {
 		int i;
 		for (i = 1; i < aligner.getQueryStart() && i < aligner.getTargetStart(); i++) {
 			char queryChar = queryPiece.charAt(i);
@@ -176,12 +171,16 @@ public class DividedStringGenoogleSmithWaterman {
 			queryAlignedBuilder.append(queryChar);
 			targetAlignedBuilder.append(targetChar);
 			if (queryChar == targetChar) {
-				pathAlignedBuilder.append('|');
-				score += match;
+				pathAlignedBuilder.append(queryChar);
+				score += substitutionTable.getValue(queryChar, targetChar);
 				identitySize++;
 			} else {
-				pathAlignedBuilder.append(' ');
-				score += replace;
+				if (substitutionTable.getValue(queryChar, targetChar) >= 0) {
+					pathAlignedBuilder.append('+');	
+				} else {
+					pathAlignedBuilder.append(' ');
+				}
+				
 			}
 
 		}

@@ -49,9 +49,9 @@ public class IndexSixFramesSearcher implements Callable<IndexSearchResults> {
 		int numberOfSequences = databank.getNumberOfSequences();
 		this.encoder = databank.getReducedEncoder();
 
-                this.retrievedAreasFrame1 = new ArrayList[numberOfSequences];
+        this.retrievedAreasFrame1 = new ArrayList[numberOfSequences];
 		this.retrievedAreasFrame2 = new ArrayList[numberOfSequences];
-        	this.retrievedAreasFrame3 = new ArrayList[numberOfSequences];
+        this.retrievedAreasFrame3 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame1 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame2 = new ArrayList[numberOfSequences];
 		this.rcRetrievedAreasFrame3 = new ArrayList[numberOfSequences];

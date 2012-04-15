@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
 
+import bio.pih.genoogle.alignment.DividedSubstitutionMatrixSmithWaterman;
 import bio.pih.genoogle.alignment.SubstitutionMatrix;
-import bio.pih.genoogle.alignment.SubstitutionMatrixSmithWaterman;
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.io.AbstractSequenceDataBank;
 import bio.pih.genoogle.io.Utils;
@@ -92,9 +92,7 @@ public class SequenceAligner implements Runnable {
 			if (areas[i].size() > 0) {				
 				IndexSearcher searcher = indexes[i];
 				SymbolList query = searcher.getQuery();
-				int queryLength = query.getLength();
-				
-				// TODO: put in the RemoteSimilaritySearcher.
+				int queryLength = query.getLength();				
 				int[] encodedQuery = encoderDatabankConverted.encodeSymbolListToIntegerArray(searcher.getQuery());
 				List<ExtendSequences> extendedSequences = extendAreas(encodedDatabankSequence, targetLength, queryLength, encodedQuery, areas[i], searcher);
 				extendedSequences = mergeExtendedAreas(extendedSequences);
@@ -105,7 +103,6 @@ public class SequenceAligner implements Runnable {
 		List<RetrievedArea>[] reverseComplementAreas = retrievedAreas.getReverseComplementAreas();
 		for (int i = 0; i < retrievedAreas.getFrames(); i++) {
 			if (reverseComplementAreas[i].size() > 0) {
-				// TODO: put in the RemoteSimilaritySearcher
 				IndexSearcher searcher = indexes[i+offset];
 				SymbolList query = searcher.getQuery();
 				int queryLength = query.getLength();
@@ -114,9 +111,7 @@ public class SequenceAligner implements Runnable {
 				rcExtendedSequences = mergeExtendedAreas(rcExtendedSequences);
 				alignHSPs(hit, query, queryLength, targetLength, rcExtendedSequences, searcher, databankSequence);
 			}
-		}
-		
-
+		}		
 		sr.addHit(hit);
 	}
 
@@ -151,7 +146,7 @@ public class SequenceAligner implements Runnable {
 		String queryString = query.seqString();
 
 		for (ExtendSequences extensionResult : extendedSequencesList) {
-			SubstitutionMatrixSmithWaterman smithWaterman = new SubstitutionMatrixSmithWaterman(substitutionTable, -5, -5);
+			DividedSubstitutionMatrixSmithWaterman smithWaterman = new DividedSubstitutionMatrixSmithWaterman(substitutionTable, -5, -5, 2000);
 
 			int beginQuerySegment;
 			int endnQuerySegment;

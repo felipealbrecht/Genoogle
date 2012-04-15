@@ -97,7 +97,7 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 		SymbolList reducedAA = Converter.proteinToReducedAA(converted);
 		int[] reducedEncoded = reducedEncoder.encodeSymbolListToIntegerArray(reducedAA);
-		doSequenceProcessing(numberOfSequences, reducedEncoded);
+		doSequenceProcessing(id, reducedEncoded);
 
 		this.numberOfSequences++;
 		this.dataBankSize += converted.getLength();

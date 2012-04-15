@@ -47,8 +47,7 @@ public class SubstitutionMatrixSmithWaterman extends GenoogleSequenceAlignment {
 		alignBuilder[0] = new StringBuilder(builderLength);
 		alignBuilder[1] = new StringBuilder(builderLength);
 
-
-			nonAfinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder);
+		nonAfinedGapAlignment(query, subject, scoreMatrix, pathBuilder, alignBuilder);
 
 		this.score = scoreMatrix[maxI][maxJ];
 		this.path = pathBuilder.reverse().toString();
