@@ -1,11 +1,8 @@
-= GENOOGLE BETA ABOUT =
-Last version of this file is available at http://genoogle.pih.bio.br/wiki/README
-
 == Fundamental Informations ==
 Genoogle is a software for similar DNA sequences searching developed by Felipe Albrecht (felipe.albrecht@gmail.com / http://www.pih.bio.br)
 
 Genoogle uses indexing and parallel processing techniques and it is developed in Java.
-Genoogle is free for use but it is not open source, yet.
+Genoogle is free and open source.
 The name Genoogle comes from Genes + Google, the final world domination plan is to develop a software to locate genes likes Google is to locate information in the Web and Genoogle does *not* have *any* affiliation with Google Inc and I hope its name will not cause problem.
 
 It is a Beta Version of Genoogle, it means: it lacks some features and have some know and a lot of unknow bugs. 
@@ -115,7 +112,6 @@ Genoogle uses:
  * Jetty http://www.mortbay.org/ for embedded web server.
  * Jax-WS https://jax-ws.dev.java.net/ for WebServices implementation.
 
-All these libraries can be download at http://svn.pih.bio.br/genoogle-packages/current/genoogle-libs.zip as a single zip file
-or they come together with the [http://svn.pih.bio.br/genoogle-packages/current/genoogle.tar.gz Genoogle Package].
+All these libraries are in the https://github.com/felipealbrecht/Genoogle/tree/master/lib directory.
 
 
