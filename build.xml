@@ -15,13 +15,14 @@
 		<!-- Check for JUnit support in Ant (only in >= 1.3) -->
 		<available classpath="${java.class.path}" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTest" property="junit.support" />
 
-
 		<property name="name" value="Genoogle" />
 		<property name="version" value="0.80" />
 
 		<property name="docs.dir" location="./doc/javadoc" />
 		<property name="src.dir" location="./src" />
 		<property name="src_tmp.dir" location="src_tmp/" />
+
+		<property name="tests.src.dir" location="./tests" />
 
 		<!-- Main build directory -->
 		<property name="build.dir" location="./ant-build" />
@@ -67,9 +68,23 @@
 
 	<!-- Compile the Genoogle Sources -->
 	<target name="compile" depends="prepare">
-		<javac encoding="ISO-8859-15" srcdir="${src.dir}" destdir="${build.classes.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}"  debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" encoding="ISO-8859-15" srcdir="${src.dir}" destdir="${build.classes.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}"  debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- Compile the Genoogle Sources -->
+	<target name="tests-compile" depends="prepare">
+		<javac includeantruntime="false" encoding="ISO-8859-15" srcdir="${tests.src.dir}" destdir="${tests.src.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}"  debug="true" debuglevel="lines,vars,source">
+			<classpath>
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${build.dir}">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
@@ -169,10 +184,15 @@
 	</target>
 
 	<!-- Runs tests if the Ant optional JUnit support is available -->
-	<target name="run-tests" depends="compile">
+	<target name="run-tests" depends="compile, tests-compile">
 		<property name="test.subtree" value="**" />
 		<echo message="Running tests:           ${test.subtree}" />
-		<junit maxmemory="128m" printsummary="yes" haltonfailure="no" reloading="no">
+
+		<echo message="${build.classes.dir}" />
+		<echo message="${classpath}" />
+		<echo message="${java.class.path}" />
+
+		<junit fork="true" maxmemory="128m" printsummary="yes" haltonfailure="no">
 			<formatter type="plain" usefile="true" />
 			<classpath>
 				<!-- main classes from build -->
@@ -181,11 +201,15 @@
 				<pathelement path="${classpath}" />
 				<!-- classes specified in system classpath -->
 				<pathelement path="${java.class.path}" />
+				<pathelement path="${tests.src.dir}" />
+				<fileset dir="./lib">
+					<include name="**/*.jar" />
+				</fileset>
 			</classpath>
 
 			<!-- The junit task doesn't support 'if' so we test for JUnit here -->
-			<batchtest fork="no" todir="${reports.tests}" if="junit.present">
-				<fileset dir="${build.classes.dir}">
+			<batchtest fork="yes" todir="${reports.tests}">
+				<fileset dir="${tests.src.dir}">
 					<include name="${test.subtree}/*Test.class" />
 					<include name="${test.subtree}/*TestSuite.class" />
 					<exclude name="**/Abstract*Test.class" />
