@@ -26,9 +26,9 @@ import bio.pih.genoogle.seq.SymbolList;
 
 /**
  * A data bank witch index its sequences and uses similar subsequences index.
- * 
+ *
  * @author albrecht
- * 
+ *
  */
 public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 
@@ -42,15 +42,15 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 			AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent) {
 		this(name, alphabet, subSequenceLength, parent.getEncoder(), mask, path,parent);
 	}
-	
-	public IndexedSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, SequenceEncoder indexedSequenceEncoder, 
+
+	public IndexedSequenceDataBank(String name, Alphabet alphabet, int subSequenceLength, SequenceEncoder indexedSequenceEncoder,
 			String mask, File path, AbstractDatabankCollection<? extends AbstractSimpleSequenceDataBank> parent)
 			throws ValueOutOfBoundsException {
-		super(name, alphabet, subSequenceLength, path, parent);		
+		super(name, alphabet, subSequenceLength, path, parent);
 		this.mask = mask;
 		this.subSequenceOffset = indexedSequenceEncoder.getSubSequenceLength();
-		
-		if (mask != null) {			
+
+		if (mask != null) {
 			maskEncoder = new MaskEncoder(mask, encoder);
 		} else {
 			maskEncoder = null;
@@ -98,14 +98,14 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 		}
 		return size;
 	}
-	
+
 	public MemoryInvertedIndex getIndex() {
 		return index;
 	}
-	
+
 	/**
 	 * The offset between each subsequence of this data bank.
-	 * @return offset between the begin of two together subsequences. 
+	 * @return offset between the begin of two together subsequences.
 	 */
 	@Override
 	public int getSubSequencesOffset() {
@@ -115,18 +115,18 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 			return maskEncoder.getPatternLength();
 		}
 	}
-	
+
 	public MaskEncoder getMaskEncoder() {
 		return maskEncoder;
 	}
-	
+
 	/**
-	 * Receive an encodedSubSequence, that is a sub-sequence 8 bases length encoded into a short, 
+	 * Receive an encodedSubSequence, that is a sub-sequence 8 bases length encoded into a short,
 	 * and return an Array of integer containing the sequence and position that is <b>exactly equals</b> the subsequence.
-	 * @param encodedSubSequence 
-	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it. 
+	 * @param encodedSubSequence
+	 * @return a list containing the {@link SubSequenceIndexInfo} encoded, use {@link SubSequenceIndexInfo} to decode it.
 	 */
-	
+
 	public long[] getMatchingSubSequence(int encodedSubSequence) throws ValueOutOfBoundsException, IOException {
 		return index.getMatchingSubSequence(encodedSubSequence);
 	}
@@ -144,7 +144,7 @@ public class IndexedSequenceDataBank extends AbstractSimpleSequenceDataBank {
 		super.delete();
 		index.delete();
 	}
-	
+
 	protected void setStoredDatabankInfo(StoredDatabank.Builder storedDatabankBuilder) {
 		super.setStoredDatabankInfo(storedDatabankBuilder);
 		if (mask == null) {
