@@ -12,8 +12,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.junit.Test;
-
 import bio.pih.genoogle.encoder.SequenceEncoder;
 import bio.pih.genoogle.encoder.SequenceEncoderFactory;
 import bio.pih.genoogle.index.IndexConstructionException;
@@ -26,17 +24,16 @@ import bio.pih.genoogle.seq.SymbolList;
 
 public class InvertedIndexBuilderTest extends TestCase {
 
-	private static int SUB_SEQUENCE_LENGTH = 10;
-	private static SequenceEncoder ENCODER = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON,
-			SUB_SEQUENCE_LENGTH);
+	private static final String MASK = "1111111111";
+	private static int SUB_SEQUENCE_LENGTH = MASK.length();
+	private static SequenceEncoder ENCODER = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH);
 
 	private IndexedSequenceDataBank createSequenceDatabankMock(SequenceEncoder encoder) throws IOException,
 			SecurityException, NoSuchMethodException {
-		return new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, "1111111111", File.createTempFile(
-				this.getName(), ".tmp"), null);
+		return new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, ENCODER, MASK,
+			File.createTempFile(this.getName(), ".tmp"), null);
 	}
 
-	@Test
 	public void testBeginEnd() throws IllegalSymbolException, IOException, IndexConstructionException,
 			SecurityException, NoSuchMethodException {
 		IndexedSequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
@@ -46,7 +43,6 @@ public class InvertedIndexBuilderTest extends TestCase {
 		index.finishConstruction();
 	}
 
-	@Test
 	public void testBeginInsertOneSmallSequenceEnd() throws IllegalSymbolException, IOException,
 			IndexConstructionException, SecurityException, NoSuchMethodException {
 		IndexedSequenceDataBank sequenceDataBank = createSequenceDatabankMock(ENCODER);
@@ -96,7 +92,7 @@ public class InvertedIndexBuilderTest extends TestCase {
 
 		// index.getMatchingSubSequence("ACTGCCAGTA");
 
-		index.setTotalSortMemory(240);
+		index.setTotalSortMemory(320);
 		index.finishConstruction();
 	}
 
