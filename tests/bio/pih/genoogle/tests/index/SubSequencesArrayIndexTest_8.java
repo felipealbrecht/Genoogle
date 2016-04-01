@@ -34,8 +34,8 @@ import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
  */
 public class SubSequencesArrayIndexTest_8 extends TestCase {
 
-	private static final int SUB_SEQUENCE_LENGTH = 8;
 	private static final String MASK = "11111111";
+	private static final int SUB_SEQUENCE_LENGTH = MASK.length();
 	private static final SequenceEncoder ENCODER = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, MASK.length());
 	IndexedSequenceDataBank dataBank;
 	SequenceEncoder encoder;
