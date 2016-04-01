@@ -85,7 +85,7 @@ public class RichSequenceBuilder {
 			throw new ParseException("Sequence header has not been supplied");
 		}
 		if (this.description == null) {
-			throw new ParseException("Description does not have been supplied: " + this.header);
+			this.description = "";
 		}
 	}
 
