@@ -77,8 +77,15 @@
 		</javac>
 	</target>
 
+	<!-- Generate the Genoogle jar file -->
+	<target name="jar" depends="compile">
+		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
+			<fileset dir="${build.classes.dir}" />
+		</jar>
+	</target>
+
 	<!-- Compile the Genoogle Sources -->
-	<target name="tests-compile" depends="prepare">
+	<target name="tests-compile" depends="jar">
 		<javac includeantruntime="false" encoding="ISO-8859-15" srcdir="${tests.src.dir}" destdir="${tests.src.dir}" depend="${javac.depend}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}"  debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="./lib">
@@ -90,14 +97,6 @@
 			</classpath>
 		</javac>
 	</target>
-
-	<!-- Generate the Genoogle jar file -->
-	<target name="jar" depends="compile">
-		<jar jarfile="${jar.genoogle}" manifest="${manifest.dir}/genoogle.txt">
-			<fileset dir="${build.classes.dir}" />
-		</jar>
-	</target>
-
 
 	<!-- Generate the Genoogle source jar file -->
 	<target name="src_jar" depends="init">
