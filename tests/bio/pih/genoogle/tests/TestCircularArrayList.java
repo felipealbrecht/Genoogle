@@ -67,7 +67,7 @@ public class TestCircularArrayList extends TestCase {
 
 		int i = 0;
 		while (i < 10 && i < cl.size()) {
-			assertEquals(cl.get(i).getQueryAreaBegin(), i+10);
+			assertEquals(cl.get(i).getQueryAreaBegin(), i+9);
 			i++;
 		}
 	}
@@ -109,7 +109,7 @@ public class TestCircularArrayList extends TestCase {
 
 		int i = 3;
 		while (i < 7 && i < cl.size()) {
-			assertEquals(cl.get(i).getQueryAreaBegin(), i);
+			assertEquals(cl.get(i).getQueryAreaBegin(), i+3);
 			i++;
 		}
 	}

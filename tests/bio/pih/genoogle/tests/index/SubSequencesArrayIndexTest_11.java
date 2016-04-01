@@ -29,19 +29,22 @@ import bio.pih.genoogle.util.SymbolListWindowIteratorFactory;
 
 /**
  * Tests for the {@link MemorySubSequencesInvertedIndex}
- * 
+ *
  * @author albrecht
  */
 public class SubSequencesArrayIndexTest_11 extends TestCase {
 
-	private static final int SUB_SEQUENCE_LENGTH = 11;
+
+	private static final String MASK = "11111111111";
+	private static final int SUB_SEQUENCE_LENGTH = MASK.length();
+	private static final SequenceEncoder ENCODER = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, MASK.length());
 	IndexedSequenceDataBank dataBank;
 	SequenceEncoder encoder;
 
 	@Override
 	protected void setUp() throws Exception {
-		this.dataBank = new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, "11111111111", File.createTempFile(
-				this.getName(), ".tmp"), null);
+		this.dataBank = new IndexedSequenceDataBank("TestDB", DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH, ENCODER, MASK,
+			File.createTempFile(this.getName(), ".tmp"), null);
 		encoder = SequenceEncoderFactory.getEncoder(DNAAlphabet.SINGLETON, SUB_SEQUENCE_LENGTH);
 	}
 

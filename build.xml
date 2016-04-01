@@ -210,8 +210,8 @@
 			<!-- The junit task doesn't support 'if' so we test for JUnit here -->
 			<batchtest fork="yes" todir="${reports.tests}">
 				<fileset dir="${tests.src.dir}">
-					<include name="${test.subtree}/*Test.class" />
-					<include name="${test.subtree}/*TestSuite.class" />
+					<include name="${test.subtree}/*Test*.class" />
+					<include name="${test.subtree}/*TestSuite*.class" />
 					<exclude name="**/Abstract*Test.class" />
 				</fileset>
 			</batchtest>

@@ -22,13 +22,13 @@ public class IndexAllTests extends TestSuite {
 	@Test
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite("IndexAllTests");
-		
+
+		suite.addTestSuite(InvertedIndexBuilderTest.class);
 		suite.addTestSuite(SubSequencesArrayIndexTest_8.class);
 		suite.addTestSuite(SubSequencesArrayIndexTest_11.class);
 		suite.addTestSuite(SubSequencesArrayIndexTest_11Masked.class);
-		suite.addTestSuite(InvertedIndexBuilderTest.class);
 
 		return suite;
 	}
-	
+
 }
