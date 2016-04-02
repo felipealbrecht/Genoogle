@@ -23,31 +23,30 @@ message StoredDatabank {
   	PROTEIN = 2;
   	TRANSLATED_PROTEIN = 3;
   }
-  
+
   required SequenceType type = 1;
   required int32 subSequenceLength = 2;
-  optional string mask = 3;  
+  optional string mask = 3;
   optional int32 lowComplexityFilter = 4;
   required int32 qtdSequences = 5;
   required int64 qtdBases = 6;
-  repeated StoredSequenceInfo sequencesInfo = 7;  
+  repeated StoredSequenceInfo sequencesInfo = 7;
 }
 
 message StoredSequenceInfo {
 	required int32 id = 1;
 	required int64 offset = 2;
 	required int32 length = 3;
-}		
-					
-message StoredSequence {  
+}
+
+message StoredSequence {
   required int32 id = 1;
-  required string type = 2; 
+  required string type = 2;
   required string gi = 3;
   required string name = 4;
   required string accession = 5;
   required string description = 6;
-  required int32 read = 7;
-  required bytes encodedSequence = 8;
+  required bytes encodedSequence = 7;
 }
 
 
@@ -57,7 +56,7 @@ message StoredSequence {
 message StoredSimilarSubSequencesIndex {
 	// TODO: put params here
 	repeated StoredComparationResultInfo storedComparationResultInfos = 1;
-} 
+}
 
 message StoredComparationResultInfo {
 	required int32 encodedSubSequence = 1;

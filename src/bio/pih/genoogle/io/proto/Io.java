@@ -8,68 +8,173 @@ public final class Io {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public interface InvertedIndexBuckOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // repeated int64 buck = 1;
+  public interface InvertedIndexBuckOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.InvertedIndexBuck)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     java.util.List<java.lang.Long> getBuckList();
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     int getBuckCount();
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     long getBuck(int index);
   }
+  /**
+   * Protobuf type {@code proto.InvertedIndexBuck}
+   */
   public static final class InvertedIndexBuck extends
-      com.google.protobuf.GeneratedMessage
-      implements InvertedIndexBuckOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.InvertedIndexBuck)
+      InvertedIndexBuckOrBuilder {
     // Use InvertedIndexBuck.newBuilder() to construct.
-    private InvertedIndexBuck(Builder builder) {
+    private InvertedIndexBuck(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private InvertedIndexBuck(boolean noInit) {}
-    
+    private InvertedIndexBuck(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final InvertedIndexBuck defaultInstance;
     public static InvertedIndexBuck getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public InvertedIndexBuck getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private InvertedIndexBuck(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                buck_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              buck_.add(input.readInt64());
+              break;
+            }
+            case 10: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001) && input.getBytesUntilLimit() > 0) {
+                buck_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                buck_.add(input.readInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          buck_ = java.util.Collections.unmodifiableList(buck_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_fieldAccessorTable;
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.class, bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.Builder.class);
     }
-    
-    // repeated int64 buck = 1;
+
+    public static com.google.protobuf.Parser<InvertedIndexBuck> PARSER =
+        new com.google.protobuf.AbstractParser<InvertedIndexBuck>() {
+      public InvertedIndexBuck parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new InvertedIndexBuck(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<InvertedIndexBuck> getParserForType() {
+      return PARSER;
+    }
+
     public static final int BUCK_FIELD_NUMBER = 1;
     private java.util.List<java.lang.Long> buck_;
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     public java.util.List<java.lang.Long>
         getBuckList() {
       return buck_;
     }
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     public int getBuckCount() {
       return buck_.size();
     }
+    /**
+     * <code>repeated int64 buck = 1;</code>
+     */
     public long getBuck(int index) {
       return buck_.get(index);
     }
-    
+
     private void initFields() {
-      buck_ = java.util.Collections.emptyList();;
+      buck_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -78,12 +183,12 @@ public final class Io {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       {
         int dataSize = 0;
@@ -98,113 +203,106 @@ public final class Io {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.InvertedIndexBuck prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code proto.InvertedIndexBuck}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.InvertedIndexBuckOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.InvertedIndexBuck)
+        bio.pih.genoogle.io.proto.Io.InvertedIndexBuckOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_fieldAccessorTable;
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.class, bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.Builder.class);
       }
-      
+
       // Construct using bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -215,27 +313,27 @@ public final class Io {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
-        buck_ = java.util.Collections.emptyList();;
+        buck_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.getDescriptor();
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_InvertedIndexBuck_descriptor;
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.InvertedIndexBuck getDefaultInstanceForType() {
         return bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.getDefaultInstance();
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.InvertedIndexBuck build() {
         bio.pih.genoogle.io.proto.Io.InvertedIndexBuck result = buildPartial();
         if (!result.isInitialized()) {
@@ -243,17 +341,7 @@ public final class Io {
         }
         return result;
       }
-      
-      private bio.pih.genoogle.io.proto.Io.InvertedIndexBuck buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.InvertedIndexBuck result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public bio.pih.genoogle.io.proto.Io.InvertedIndexBuck buildPartial() {
         bio.pih.genoogle.io.proto.Io.InvertedIndexBuck result = new bio.pih.genoogle.io.proto.Io.InvertedIndexBuck(this);
         int from_bitField0_ = bitField0_;
@@ -265,7 +353,7 @@ public final class Io {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.genoogle.io.proto.Io.InvertedIndexBuck) {
           return mergeFrom((bio.pih.genoogle.io.proto.Io.InvertedIndexBuck)other);
@@ -274,7 +362,7 @@ public final class Io {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.InvertedIndexBuck other) {
         if (other == bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.getDefaultInstance()) return this;
         if (!other.buck_.isEmpty()) {
@@ -290,72 +378,59 @@ public final class Io {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              ensureBuckIsMutable();
-              buck_.add(input.readInt64());
-              break;
-            }
-            case 10: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              while (input.getBytesUntilLimit() > 0) {
-                addBuck(input.readInt64());
-              }
-              input.popLimit(limit);
-              break;
-            }
+        bio.pih.genoogle.io.proto.Io.InvertedIndexBuck parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.InvertedIndexBuck) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // repeated int64 buck = 1;
-      private java.util.List<java.lang.Long> buck_ = java.util.Collections.emptyList();;
+
+      private java.util.List<java.lang.Long> buck_ = java.util.Collections.emptyList();
       private void ensureBuckIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
           buck_ = new java.util.ArrayList<java.lang.Long>(buck_);
           bitField0_ |= 0x00000001;
          }
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public java.util.List<java.lang.Long>
           getBuckList() {
         return java.util.Collections.unmodifiableList(buck_);
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public int getBuckCount() {
         return buck_.size();
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public long getBuck(int index) {
         return buck_.get(index);
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public Builder setBuck(
           int index, long value) {
         ensureBuckIsMutable();
@@ -363,118 +438,316 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public Builder addBuck(long value) {
         ensureBuckIsMutable();
         buck_.add(value);
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public Builder addAllBuck(
           java.lang.Iterable<? extends java.lang.Long> values) {
         ensureBuckIsMutable();
-        super.addAll(values, buck_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, buck_);
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int64 buck = 1;</code>
+       */
       public Builder clearBuck() {
-        buck_ = java.util.Collections.emptyList();;
+        buck_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.InvertedIndexBuck)
     }
-    
+
     static {
       defaultInstance = new InvertedIndexBuck(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.InvertedIndexBuck)
   }
-  
-  public interface StoredDatabankOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required .proto.StoredDatabank.SequenceType type = 1;
+
+  public interface StoredDatabankOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredDatabank)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+     */
     boolean hasType();
+    /**
+     * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+     */
     bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType getType();
-    
-    // required int32 subSequenceLength = 2;
+
+    /**
+     * <code>required int32 subSequenceLength = 2;</code>
+     */
     boolean hasSubSequenceLength();
+    /**
+     * <code>required int32 subSequenceLength = 2;</code>
+     */
     int getSubSequenceLength();
-    
-    // optional string mask = 3;
+
+    /**
+     * <code>optional string mask = 3;</code>
+     */
     boolean hasMask();
-    String getMask();
-    
-    // optional int32 lowComplexityFilter = 4;
+    /**
+     * <code>optional string mask = 3;</code>
+     */
+    java.lang.String getMask();
+    /**
+     * <code>optional string mask = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMaskBytes();
+
+    /**
+     * <code>optional int32 lowComplexityFilter = 4;</code>
+     */
     boolean hasLowComplexityFilter();
+    /**
+     * <code>optional int32 lowComplexityFilter = 4;</code>
+     */
     int getLowComplexityFilter();
-    
-    // required int32 qtdSequences = 5;
+
+    /**
+     * <code>required int32 qtdSequences = 5;</code>
+     */
     boolean hasQtdSequences();
+    /**
+     * <code>required int32 qtdSequences = 5;</code>
+     */
     int getQtdSequences();
-    
-    // required int64 qtdBases = 6;
+
+    /**
+     * <code>required int64 qtdBases = 6;</code>
+     */
     boolean hasQtdBases();
+    /**
+     * <code>required int64 qtdBases = 6;</code>
+     */
     long getQtdBases();
-    
-    // repeated .proto.StoredSequenceInfo sequencesInfo = 7;
+
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> 
         getSequencesInfoList();
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     bio.pih.genoogle.io.proto.Io.StoredSequenceInfo getSequencesInfo(int index);
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     int getSequencesInfoCount();
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder> 
         getSequencesInfoOrBuilderList();
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder getSequencesInfoOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code proto.StoredDatabank}
+   */
   public static final class StoredDatabank extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredDatabankOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredDatabank)
+      StoredDatabankOrBuilder {
     // Use StoredDatabank.newBuilder() to construct.
-    private StoredDatabank(Builder builder) {
+    private StoredDatabank(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredDatabank(boolean noInit) {}
-    
+    private StoredDatabank(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredDatabank defaultInstance;
     public static StoredDatabank getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredDatabank getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StoredDatabank(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+              bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType value = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                type_ = value;
+              }
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              subSequenceLength_ = input.readInt32();
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              mask_ = bs;
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              lowComplexityFilter_ = input.readInt32();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              qtdSequences_ = input.readInt32();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              qtdBases_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                sequencesInfo_ = new java.util.ArrayList<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              sequencesInfo_.add(input.readMessage(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+          sequencesInfo_ = java.util.Collections.unmodifiableList(sequencesInfo_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_fieldAccessorTable;
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredDatabank.class, bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<StoredDatabank> PARSER =
+        new com.google.protobuf.AbstractParser<StoredDatabank>() {
+      public StoredDatabank parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredDatabank(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredDatabank> getParserForType() {
+      return PARSER;
+    }
+
+    /**
+     * Protobuf enum {@code proto.StoredDatabank.SequenceType}
+     */
     public enum SequenceType
         implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>DNA = 0;</code>
+       */
       DNA(0, 0),
+      /**
+       * <code>RNA = 1;</code>
+       */
       RNA(1, 1),
+      /**
+       * <code>PROTEIN = 2;</code>
+       */
       PROTEIN(2, 2),
+      /**
+       * <code>TRANSLATED_PROTEIN = 3;</code>
+       */
       TRANSLATED_PROTEIN(3, 3),
       ;
-      
+
+      /**
+       * <code>DNA = 0;</code>
+       */
       public static final int DNA_VALUE = 0;
+      /**
+       * <code>RNA = 1;</code>
+       */
       public static final int RNA_VALUE = 1;
+      /**
+       * <code>PROTEIN = 2;</code>
+       */
       public static final int PROTEIN_VALUE = 2;
+      /**
+       * <code>TRANSLATED_PROTEIN = 3;</code>
+       */
       public static final int TRANSLATED_PROTEIN_VALUE = 3;
-      
-      
+
+
       public final int getNumber() { return value; }
-      
+
       public static SequenceType valueOf(int value) {
         switch (value) {
           case 0: return DNA;
@@ -484,7 +757,7 @@ public final class Io {
           default: return null;
         }
       }
-      
+
       public static com.google.protobuf.Internal.EnumLiteMap<SequenceType>
           internalGetValueMap() {
         return internalValueMap;
@@ -496,7 +769,7 @@ public final class Io {
                 return SequenceType.valueOf(number);
               }
             };
-      
+
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
         return getDescriptor().getValues().get(index);
@@ -509,11 +782,9 @@ public final class Io {
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.StoredDatabank.getDescriptor().getEnumTypes().get(0);
       }
-      
-      private static final SequenceType[] VALUES = {
-        DNA, RNA, PROTEIN, TRANSLATED_PROTEIN, 
-      };
-      
+
+      private static final SequenceType[] VALUES = values();
+
       public static SequenceType valueOf(
           com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
@@ -522,122 +793,171 @@ public final class Io {
         }
         return VALUES[desc.getIndex()];
       }
-      
+
       private final int index;
       private final int value;
-      
+
       private SequenceType(int index, int value) {
         this.index = index;
         this.value = value;
       }
-      
+
       // @@protoc_insertion_point(enum_scope:proto.StoredDatabank.SequenceType)
     }
-    
+
     private int bitField0_;
-    // required .proto.StoredDatabank.SequenceType type = 1;
     public static final int TYPE_FIELD_NUMBER = 1;
     private bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType type_;
+    /**
+     * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+     */
     public boolean hasType() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+     */
     public bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType getType() {
       return type_;
     }
-    
-    // required int32 subSequenceLength = 2;
+
     public static final int SUBSEQUENCELENGTH_FIELD_NUMBER = 2;
     private int subSequenceLength_;
+    /**
+     * <code>required int32 subSequenceLength = 2;</code>
+     */
     public boolean hasSubSequenceLength() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
+    /**
+     * <code>required int32 subSequenceLength = 2;</code>
+     */
     public int getSubSequenceLength() {
       return subSequenceLength_;
     }
-    
-    // optional string mask = 3;
+
     public static final int MASK_FIELD_NUMBER = 3;
     private java.lang.Object mask_;
+    /**
+     * <code>optional string mask = 3;</code>
+     */
     public boolean hasMask() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public String getMask() {
+    /**
+     * <code>optional string mask = 3;</code>
+     */
+    public java.lang.String getMask() {
       java.lang.Object ref = mask_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           mask_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getMaskBytes() {
+    /**
+     * <code>optional string mask = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMaskBytes() {
       java.lang.Object ref = mask_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         mask_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // optional int32 lowComplexityFilter = 4;
+
     public static final int LOWCOMPLEXITYFILTER_FIELD_NUMBER = 4;
     private int lowComplexityFilter_;
+    /**
+     * <code>optional int32 lowComplexityFilter = 4;</code>
+     */
     public boolean hasLowComplexityFilter() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
+    /**
+     * <code>optional int32 lowComplexityFilter = 4;</code>
+     */
     public int getLowComplexityFilter() {
       return lowComplexityFilter_;
     }
-    
-    // required int32 qtdSequences = 5;
+
     public static final int QTDSEQUENCES_FIELD_NUMBER = 5;
     private int qtdSequences_;
+    /**
+     * <code>required int32 qtdSequences = 5;</code>
+     */
     public boolean hasQtdSequences() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
+    /**
+     * <code>required int32 qtdSequences = 5;</code>
+     */
     public int getQtdSequences() {
       return qtdSequences_;
     }
-    
-    // required int64 qtdBases = 6;
+
     public static final int QTDBASES_FIELD_NUMBER = 6;
     private long qtdBases_;
+    /**
+     * <code>required int64 qtdBases = 6;</code>
+     */
     public boolean hasQtdBases() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
+    /**
+     * <code>required int64 qtdBases = 6;</code>
+     */
     public long getQtdBases() {
       return qtdBases_;
     }
-    
-    // repeated .proto.StoredSequenceInfo sequencesInfo = 7;
+
     public static final int SEQUENCESINFO_FIELD_NUMBER = 7;
     private java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> sequencesInfo_;
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     public java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> getSequencesInfoList() {
       return sequencesInfo_;
     }
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     public java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder> 
         getSequencesInfoOrBuilderList() {
       return sequencesInfo_;
     }
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     public int getSequencesInfoCount() {
       return sequencesInfo_.size();
     }
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo getSequencesInfo(int index) {
       return sequencesInfo_.get(index);
     }
+    /**
+     * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+     */
     public bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder getSequencesInfoOrBuilder(
         int index) {
       return sequencesInfo_.get(index);
     }
-    
+
     private void initFields() {
       type_ = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.DNA;
       subSequenceLength_ = 0;
@@ -650,8 +970,9 @@ public final class Io {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       if (!hasType()) {
         memoizedIsInitialized = 0;
         return false;
@@ -677,7 +998,7 @@ public final class Io {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -704,12 +1025,12 @@ public final class Io {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -743,113 +1064,106 @@ public final class Io {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredDatabank parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredDatabank prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code proto.StoredDatabank}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredDatabankOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredDatabank)
+        bio.pih.genoogle.io.proto.Io.StoredDatabankOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_fieldAccessorTable;
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredDatabank.class, bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder.class);
       }
-      
+
       // Construct using bio.pih.genoogle.io.proto.Io.StoredDatabank.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -861,7 +1175,7 @@ public final class Io {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         type_ = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.DNA;
@@ -884,20 +1198,20 @@ public final class Io {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredDatabank.getDescriptor();
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredDatabank_descriptor;
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredDatabank getDefaultInstanceForType() {
         return bio.pih.genoogle.io.proto.Io.StoredDatabank.getDefaultInstance();
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredDatabank build() {
         bio.pih.genoogle.io.proto.Io.StoredDatabank result = buildPartial();
         if (!result.isInitialized()) {
@@ -905,17 +1219,7 @@ public final class Io {
         }
         return result;
       }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredDatabank buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredDatabank result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredDatabank buildPartial() {
         bio.pih.genoogle.io.proto.Io.StoredDatabank result = new bio.pih.genoogle.io.proto.Io.StoredDatabank(this);
         int from_bitField0_ = bitField0_;
@@ -957,7 +1261,7 @@ public final class Io {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.genoogle.io.proto.Io.StoredDatabank) {
           return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredDatabank)other);
@@ -966,7 +1270,7 @@ public final class Io {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredDatabank other) {
         if (other == bio.pih.genoogle.io.proto.Io.StoredDatabank.getDefaultInstance()) return this;
         if (other.hasType()) {
@@ -976,7 +1280,9 @@ public final class Io {
           setSubSequenceLength(other.getSubSequenceLength());
         }
         if (other.hasMask()) {
-          setMask(other.getMask());
+          bitField0_ |= 0x00000004;
+          mask_ = other.mask_;
+          onChanged();
         }
         if (other.hasLowComplexityFilter()) {
           setLowComplexityFilter(other.getLowComplexityFilter());
@@ -1016,7 +1322,7 @@ public final class Io {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasType()) {
           
@@ -1042,86 +1348,42 @@ public final class Io {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              int rawValue = input.readEnum();
-              bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType value = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(1, rawValue);
-              } else {
-                bitField0_ |= 0x00000001;
-                type_ = value;
-              }
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              subSequenceLength_ = input.readInt32();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              mask_ = input.readBytes();
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000008;
-              lowComplexityFilter_ = input.readInt32();
-              break;
-            }
-            case 40: {
-              bitField0_ |= 0x00000010;
-              qtdSequences_ = input.readInt32();
-              break;
-            }
-            case 48: {
-              bitField0_ |= 0x00000020;
-              qtdBases_ = input.readInt64();
-              break;
-            }
-            case 58: {
-              bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder subBuilder = bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addSequencesInfo(subBuilder.buildPartial());
-              break;
-            }
+        bio.pih.genoogle.io.proto.Io.StoredDatabank parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredDatabank) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // required .proto.StoredDatabank.SequenceType type = 1;
+
       private bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType type_ = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.DNA;
+      /**
+       * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+       */
       public boolean hasType() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType getType() {
         return type_;
       }
+      /**
+       * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+       */
       public Builder setType(bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType value) {
         if (value == null) {
           throw new NullPointerException();
@@ -1131,50 +1393,93 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required .proto.StoredDatabank.SequenceType type = 1;</code>
+       */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000001);
         type_ = bio.pih.genoogle.io.proto.Io.StoredDatabank.SequenceType.DNA;
         onChanged();
         return this;
       }
-      
-      // required int32 subSequenceLength = 2;
+
       private int subSequenceLength_ ;
+      /**
+       * <code>required int32 subSequenceLength = 2;</code>
+       */
       public boolean hasSubSequenceLength() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required int32 subSequenceLength = 2;</code>
+       */
       public int getSubSequenceLength() {
         return subSequenceLength_;
       }
+      /**
+       * <code>required int32 subSequenceLength = 2;</code>
+       */
       public Builder setSubSequenceLength(int value) {
         bitField0_ |= 0x00000002;
         subSequenceLength_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 subSequenceLength = 2;</code>
+       */
       public Builder clearSubSequenceLength() {
         bitField0_ = (bitField0_ & ~0x00000002);
         subSequenceLength_ = 0;
         onChanged();
         return this;
       }
-      
-      // optional string mask = 3;
+
       private java.lang.Object mask_ = "";
+      /**
+       * <code>optional string mask = 3;</code>
+       */
       public boolean hasMask() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public String getMask() {
+      /**
+       * <code>optional string mask = 3;</code>
+       */
+      public java.lang.String getMask() {
         java.lang.Object ref = mask_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          mask_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            mask_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setMask(String value) {
+      /**
+       * <code>optional string mask = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMaskBytes() {
+        java.lang.Object ref = mask_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          mask_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string mask = 3;</code>
+       */
+      public Builder setMask(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1183,82 +1488,125 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>optional string mask = 3;</code>
+       */
       public Builder clearMask() {
         bitField0_ = (bitField0_ & ~0x00000004);
         mask_ = getDefaultInstance().getMask();
         onChanged();
         return this;
       }
-      void setMask(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
+      /**
+       * <code>optional string mask = 3;</code>
+       */
+      public Builder setMaskBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         mask_ = value;
         onChanged();
+        return this;
       }
-      
-      // optional int32 lowComplexityFilter = 4;
+
       private int lowComplexityFilter_ ;
+      /**
+       * <code>optional int32 lowComplexityFilter = 4;</code>
+       */
       public boolean hasLowComplexityFilter() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
+      /**
+       * <code>optional int32 lowComplexityFilter = 4;</code>
+       */
       public int getLowComplexityFilter() {
         return lowComplexityFilter_;
       }
+      /**
+       * <code>optional int32 lowComplexityFilter = 4;</code>
+       */
       public Builder setLowComplexityFilter(int value) {
         bitField0_ |= 0x00000008;
         lowComplexityFilter_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>optional int32 lowComplexityFilter = 4;</code>
+       */
       public Builder clearLowComplexityFilter() {
         bitField0_ = (bitField0_ & ~0x00000008);
         lowComplexityFilter_ = 0;
         onChanged();
         return this;
       }
-      
-      // required int32 qtdSequences = 5;
+
       private int qtdSequences_ ;
+      /**
+       * <code>required int32 qtdSequences = 5;</code>
+       */
       public boolean hasQtdSequences() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
+      /**
+       * <code>required int32 qtdSequences = 5;</code>
+       */
       public int getQtdSequences() {
         return qtdSequences_;
       }
+      /**
+       * <code>required int32 qtdSequences = 5;</code>
+       */
       public Builder setQtdSequences(int value) {
         bitField0_ |= 0x00000010;
         qtdSequences_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 qtdSequences = 5;</code>
+       */
       public Builder clearQtdSequences() {
         bitField0_ = (bitField0_ & ~0x00000010);
         qtdSequences_ = 0;
         onChanged();
         return this;
       }
-      
-      // required int64 qtdBases = 6;
+
       private long qtdBases_ ;
+      /**
+       * <code>required int64 qtdBases = 6;</code>
+       */
       public boolean hasQtdBases() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
+      /**
+       * <code>required int64 qtdBases = 6;</code>
+       */
       public long getQtdBases() {
         return qtdBases_;
       }
+      /**
+       * <code>required int64 qtdBases = 6;</code>
+       */
       public Builder setQtdBases(long value) {
         bitField0_ |= 0x00000020;
         qtdBases_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int64 qtdBases = 6;</code>
+       */
       public Builder clearQtdBases() {
         bitField0_ = (bitField0_ & ~0x00000020);
         qtdBases_ = 0L;
         onChanged();
         return this;
       }
-      
-      // repeated .proto.StoredSequenceInfo sequencesInfo = 7;
+
       private java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> sequencesInfo_ =
         java.util.Collections.emptyList();
       private void ensureSequencesInfoIsMutable() {
@@ -1267,10 +1615,13 @@ public final class Io {
           bitField0_ |= 0x00000040;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           bio.pih.genoogle.io.proto.Io.StoredSequenceInfo, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder, bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder> sequencesInfoBuilder_;
-      
+
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> getSequencesInfoList() {
         if (sequencesInfoBuilder_ == null) {
           return java.util.Collections.unmodifiableList(sequencesInfo_);
@@ -1278,6 +1629,9 @@ public final class Io {
           return sequencesInfoBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public int getSequencesInfoCount() {
         if (sequencesInfoBuilder_ == null) {
           return sequencesInfo_.size();
@@ -1285,6 +1639,9 @@ public final class Io {
           return sequencesInfoBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo getSequencesInfo(int index) {
         if (sequencesInfoBuilder_ == null) {
           return sequencesInfo_.get(index);
@@ -1292,6 +1649,9 @@ public final class Io {
           return sequencesInfoBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder setSequencesInfo(
           int index, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo value) {
         if (sequencesInfoBuilder_ == null) {
@@ -1306,6 +1666,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder setSequencesInfo(
           int index, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder builderForValue) {
         if (sequencesInfoBuilder_ == null) {
@@ -1317,6 +1680,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder addSequencesInfo(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo value) {
         if (sequencesInfoBuilder_ == null) {
           if (value == null) {
@@ -1330,6 +1696,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder addSequencesInfo(
           int index, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo value) {
         if (sequencesInfoBuilder_ == null) {
@@ -1344,6 +1713,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder addSequencesInfo(
           bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder builderForValue) {
         if (sequencesInfoBuilder_ == null) {
@@ -1355,6 +1727,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder addSequencesInfo(
           int index, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder builderForValue) {
         if (sequencesInfoBuilder_ == null) {
@@ -1366,17 +1741,24 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder addAllSequencesInfo(
           java.lang.Iterable<? extends bio.pih.genoogle.io.proto.Io.StoredSequenceInfo> values) {
         if (sequencesInfoBuilder_ == null) {
           ensureSequencesInfoIsMutable();
-          super.addAll(values, sequencesInfo_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, sequencesInfo_);
           onChanged();
         } else {
           sequencesInfoBuilder_.addAllMessages(values);
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder clearSequencesInfo() {
         if (sequencesInfoBuilder_ == null) {
           sequencesInfo_ = java.util.Collections.emptyList();
@@ -1387,6 +1769,9 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public Builder removeSequencesInfo(int index) {
         if (sequencesInfoBuilder_ == null) {
           ensureSequencesInfoIsMutable();
@@ -1397,10 +1782,16 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder getSequencesInfoBuilder(
           int index) {
         return getSequencesInfoFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder getSequencesInfoOrBuilder(
           int index) {
         if (sequencesInfoBuilder_ == null) {
@@ -1408,6 +1799,9 @@ public final class Io {
           return sequencesInfoBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder> 
            getSequencesInfoOrBuilderList() {
         if (sequencesInfoBuilder_ != null) {
@@ -1416,15 +1810,24 @@ public final class Io {
           return java.util.Collections.unmodifiableList(sequencesInfo_);
         }
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder addSequencesInfoBuilder() {
         return getSequencesInfoFieldBuilder().addBuilder(
             bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance());
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder addSequencesInfoBuilder(
           int index) {
         return getSequencesInfoFieldBuilder().addBuilder(
             index, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance());
       }
+      /**
+       * <code>repeated .proto.StoredSequenceInfo sequencesInfo = 7;</code>
+       */
       public java.util.List<bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder> 
            getSequencesInfoBuilderList() {
         return getSequencesInfoFieldBuilder().getBuilderList();
@@ -1443,396 +1846,98 @@ public final class Io {
         }
         return sequencesInfoBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredDatabank)
     }
-    
+
     static {
       defaultInstance = new StoredDatabank(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredDatabank)
   }
-  
-  public interface StoredSequenceInfoOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 id = 1;
+
+  public interface StoredSequenceInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredSequenceInfo)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     boolean hasId();
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     int getId();
-    
-    // required int64 offset = 2;
+
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
     boolean hasOffset();
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
     long getOffset();
-    
-    // required int32 length = 3;
+
+    /**
+     * <code>required int32 length = 3;</code>
+     */
     boolean hasLength();
+    /**
+     * <code>required int32 length = 3;</code>
+     */
     int getLength();
   }
+  /**
+   * Protobuf type {@code proto.StoredSequenceInfo}
+   */
   public static final class StoredSequenceInfo extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredSequenceInfoOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredSequenceInfo)
+      StoredSequenceInfoOrBuilder {
     // Use StoredSequenceInfo.newBuilder() to construct.
-    private StoredSequenceInfo(Builder builder) {
+    private StoredSequenceInfo(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredSequenceInfo(boolean noInit) {}
-    
+    private StoredSequenceInfo(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredSequenceInfo defaultInstance;
     public static StoredSequenceInfo getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredSequenceInfo getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required int32 id = 1;
-    public static final int ID_FIELD_NUMBER = 1;
-    private int id_;
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public int getId() {
-      return id_;
-    }
-    
-    // required int64 offset = 2;
-    public static final int OFFSET_FIELD_NUMBER = 2;
-    private long offset_;
-    public boolean hasOffset() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public long getOffset() {
-      return offset_;
-    }
-    
-    // required int32 length = 3;
-    public static final int LENGTH_FIELD_NUMBER = 3;
-    private int length_;
-    public boolean hasLength() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public int getLength() {
-      return length_;
-    }
-    
-    private void initFields() {
-      id_ = 0;
-      offset_ = 0L;
-      length_ = 0;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasOffset()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLength()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, id_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt64(2, offset_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, length_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, id_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, offset_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, length_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
     }
-    
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+    private StoredSequenceInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
-      }
-      
-      // Construct using bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        id_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        offset_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        length_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDescriptor();
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo getDefaultInstanceForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance();
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo build() {
-        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredSequenceInfo buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo buildPartial() {
-        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo result = new bio.pih.genoogle.io.proto.Io.StoredSequenceInfo(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.offset_ = offset_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.length_ = length_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof bio.pih.genoogle.io.proto.Io.StoredSequenceInfo) {
-          return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredSequenceInfo)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo other) {
-        if (other == bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance()) return this;
-        if (other.hasId()) {
-          setId(other.getId());
-        }
-        if (other.hasOffset()) {
-          setOffset(other.getOffset());
-        }
-        if (other.hasLength()) {
-          setLength(other.getLength());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasId()) {
-          
-          return false;
-        }
-        if (!hasOffset()) {
-          
-          return false;
-        }
-        if (!hasLength()) {
-          
-          return false;
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
+              done = true;
+              break;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
+                done = true;
               }
               break;
             }
@@ -1853,338 +1958,947 @@ public final class Io {
             }
           }
         }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
       }
-      
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.class, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<StoredSequenceInfo> PARSER =
+        new com.google.protobuf.AbstractParser<StoredSequenceInfo>() {
+      public StoredSequenceInfo parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredSequenceInfo(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredSequenceInfo> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int id_;
+    /**
+     * <code>required int32 id = 1;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 id = 1;</code>
+     */
+    public int getId() {
+      return id_;
+    }
+
+    public static final int OFFSET_FIELD_NUMBER = 2;
+    private long offset_;
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
+    public long getOffset() {
+      return offset_;
+    }
+
+    public static final int LENGTH_FIELD_NUMBER = 3;
+    private int length_;
+    /**
+     * <code>required int32 length = 3;</code>
+     */
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required int32 length = 3;</code>
+     */
+    public int getLength() {
+      return length_;
+    }
+
+    private void initFields() {
+      id_ = 0;
+      offset_ = 0L;
+      length_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasOffset()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLength()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(2, offset_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, length_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, offset_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, length_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.StoredSequenceInfo}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredSequenceInfo)
+        bio.pih.genoogle.io.proto.Io.StoredSequenceInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.class, bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder.class);
+      }
+
+      // Construct using bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        id_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        offset_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        length_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequenceInfo_descriptor;
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo getDefaultInstanceForType() {
+        return bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance();
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo build() {
+        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredSequenceInfo buildPartial() {
+        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo result = new bio.pih.genoogle.io.proto.Io.StoredSequenceInfo(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.offset_ = offset_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.length_ = length_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.genoogle.io.proto.Io.StoredSequenceInfo) {
+          return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredSequenceInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredSequenceInfo other) {
+        if (other == bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasOffset()) {
+          
+          return false;
+        }
+        if (!hasLength()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        bio.pih.genoogle.io.proto.Io.StoredSequenceInfo parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredSequenceInfo) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
       private int bitField0_;
-      
-      // required int32 id = 1;
+
       private int id_ ;
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public int getId() {
         return id_;
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public Builder setId(int value) {
         bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0;
         onChanged();
         return this;
       }
-      
-      // required int64 offset = 2;
+
       private long offset_ ;
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public boolean hasOffset() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public long getOffset() {
         return offset_;
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public Builder setOffset(long value) {
         bitField0_ |= 0x00000002;
         offset_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public Builder clearOffset() {
         bitField0_ = (bitField0_ & ~0x00000002);
         offset_ = 0L;
         onChanged();
         return this;
       }
-      
-      // required int32 length = 3;
+
       private int length_ ;
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public boolean hasLength() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public int getLength() {
         return length_;
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public Builder setLength(int value) {
         bitField0_ |= 0x00000004;
         length_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public Builder clearLength() {
         bitField0_ = (bitField0_ & ~0x00000004);
         length_ = 0;
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredSequenceInfo)
     }
-    
+
     static {
       defaultInstance = new StoredSequenceInfo(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredSequenceInfo)
   }
-  
-  public interface StoredSequenceOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 id = 1;
+
+  public interface StoredSequenceOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredSequence)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     boolean hasId();
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     int getId();
-    
-    // required string type = 2;
+
+    /**
+     * <code>required string type = 2;</code>
+     */
     boolean hasType();
-    String getType();
-    
-    // required string gi = 3;
+    /**
+     * <code>required string type = 2;</code>
+     */
+    java.lang.String getType();
+    /**
+     * <code>required string type = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getTypeBytes();
+
+    /**
+     * <code>required string gi = 3;</code>
+     */
     boolean hasGi();
-    String getGi();
-    
-    // required string name = 4;
+    /**
+     * <code>required string gi = 3;</code>
+     */
+    java.lang.String getGi();
+    /**
+     * <code>required string gi = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getGiBytes();
+
+    /**
+     * <code>required string name = 4;</code>
+     */
     boolean hasName();
-    String getName();
-    
-    // required string accession = 5;
+    /**
+     * <code>required string name = 4;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>required string accession = 5;</code>
+     */
     boolean hasAccession();
-    String getAccession();
-    
-    // required string description = 6;
+    /**
+     * <code>required string accession = 5;</code>
+     */
+    java.lang.String getAccession();
+    /**
+     * <code>required string accession = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getAccessionBytes();
+
+    /**
+     * <code>required string description = 6;</code>
+     */
     boolean hasDescription();
-    String getDescription();
-    
-    // required int32 read = 7;
-    boolean hasRead();
-    int getRead();
-    
-    // required bytes encodedSequence = 8;
+    /**
+     * <code>required string description = 6;</code>
+     */
+    java.lang.String getDescription();
+    /**
+     * <code>required string description = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getDescriptionBytes();
+
+    /**
+     * <code>required bytes encodedSequence = 7;</code>
+     */
     boolean hasEncodedSequence();
+    /**
+     * <code>required bytes encodedSequence = 7;</code>
+     */
     com.google.protobuf.ByteString getEncodedSequence();
   }
+  /**
+   * Protobuf type {@code proto.StoredSequence}
+   */
   public static final class StoredSequence extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredSequenceOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredSequence)
+      StoredSequenceOrBuilder {
     // Use StoredSequence.newBuilder() to construct.
-    private StoredSequence(Builder builder) {
+    private StoredSequence(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredSequence(boolean noInit) {}
-    
+    private StoredSequence(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredSequence defaultInstance;
     public static StoredSequence getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredSequence getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StoredSequence(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              type_ = bs;
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              gi_ = bs;
+              break;
+            }
+            case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000008;
+              name_ = bs;
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000010;
+              accession_ = bs;
+              break;
+            }
+            case 50: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000020;
+              description_ = bs;
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              encodedSequence_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable;
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredSequence.class, bio.pih.genoogle.io.proto.Io.StoredSequence.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<StoredSequence> PARSER =
+        new com.google.protobuf.AbstractParser<StoredSequence>() {
+      public StoredSequence parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredSequence(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredSequence> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
-    // required int32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
     private int id_;
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required int32 id = 1;</code>
+     */
     public int getId() {
       return id_;
     }
-    
-    // required string type = 2;
+
     public static final int TYPE_FIELD_NUMBER = 2;
     private java.lang.Object type_;
+    /**
+     * <code>required string type = 2;</code>
+     */
     public boolean hasType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getType() {
+    /**
+     * <code>required string type = 2;</code>
+     */
+    public java.lang.String getType() {
       java.lang.Object ref = type_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           type_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getTypeBytes() {
+    /**
+     * <code>required string type = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTypeBytes() {
       java.lang.Object ref = type_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         type_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required string gi = 3;
+
     public static final int GI_FIELD_NUMBER = 3;
     private java.lang.Object gi_;
+    /**
+     * <code>required string gi = 3;</code>
+     */
     public boolean hasGi() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public String getGi() {
+    /**
+     * <code>required string gi = 3;</code>
+     */
+    public java.lang.String getGi() {
       java.lang.Object ref = gi_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           gi_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getGiBytes() {
+    /**
+     * <code>required string gi = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getGiBytes() {
       java.lang.Object ref = gi_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         gi_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required string name = 4;
+
     public static final int NAME_FIELD_NUMBER = 4;
     private java.lang.Object name_;
+    /**
+     * <code>required string name = 4;</code>
+     */
     public boolean hasName() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getName() {
+    /**
+     * <code>required string name = 4;</code>
+     */
+    public java.lang.String getName() {
       java.lang.Object ref = name_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           name_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getNameBytes() {
+    /**
+     * <code>required string name = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
       java.lang.Object ref = name_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         name_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required string accession = 5;
+
     public static final int ACCESSION_FIELD_NUMBER = 5;
     private java.lang.Object accession_;
+    /**
+     * <code>required string accession = 5;</code>
+     */
     public boolean hasAccession() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    public String getAccession() {
+    /**
+     * <code>required string accession = 5;</code>
+     */
+    public java.lang.String getAccession() {
       java.lang.Object ref = accession_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           accession_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getAccessionBytes() {
+    /**
+     * <code>required string accession = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAccessionBytes() {
       java.lang.Object ref = accession_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         accession_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required string description = 6;
+
     public static final int DESCRIPTION_FIELD_NUMBER = 6;
     private java.lang.Object description_;
+    /**
+     * <code>required string description = 6;</code>
+     */
     public boolean hasDescription() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    public String getDescription() {
+    /**
+     * <code>required string description = 6;</code>
+     */
+    public java.lang.String getDescription() {
       java.lang.Object ref = description_;
-      if (ref instanceof String) {
-        return (String) ref;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
           description_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getDescriptionBytes() {
+    /**
+     * <code>required string description = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDescriptionBytes() {
       java.lang.Object ref = description_;
-      if (ref instanceof String) {
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         description_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
-    // required int32 read = 7;
-    public static final int READ_FIELD_NUMBER = 7;
-    private int read_;
-    public boolean hasRead() {
+
+    public static final int ENCODEDSEQUENCE_FIELD_NUMBER = 7;
+    private com.google.protobuf.ByteString encodedSequence_;
+    /**
+     * <code>required bytes encodedSequence = 7;</code>
+     */
+    public boolean hasEncodedSequence() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public int getRead() {
-      return read_;
-    }
-    
-    // required bytes encodedSequence = 8;
-    public static final int ENCODEDSEQUENCE_FIELD_NUMBER = 8;
-    private com.google.protobuf.ByteString encodedSequence_;
-    public boolean hasEncodedSequence() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
-    }
+    /**
+     * <code>required bytes encodedSequence = 7;</code>
+     */
     public com.google.protobuf.ByteString getEncodedSequence() {
       return encodedSequence_;
     }
-    
+
     private void initFields() {
       id_ = 0;
       type_ = "";
@@ -2192,14 +2906,14 @@ public final class Io {
       name_ = "";
       accession_ = "";
       description_ = "";
-      read_ = 0;
       encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       if (!hasId()) {
         memoizedIsInitialized = 0;
         return false;
@@ -2224,10 +2938,6 @@ public final class Io {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasRead()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasEncodedSequence()) {
         memoizedIsInitialized = 0;
         return false;
@@ -2235,7 +2945,7 @@ public final class Io {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -2258,19 +2968,16 @@ public final class Io {
         output.writeBytes(6, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, read_);
-      }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, encodedSequence_);
+        output.writeBytes(7, encodedSequence_);
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2298,123 +3005,112 @@ public final class Io {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, read_);
-      }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, encodedSequence_);
+          .computeBytesSize(7, encodedSequence_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSequence parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredSequence prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code proto.StoredSequence}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredSequenceOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredSequence)
+        bio.pih.genoogle.io.proto.Io.StoredSequenceOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable;
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredSequence.class, bio.pih.genoogle.io.proto.Io.StoredSequence.Builder.class);
       }
-      
+
       // Construct using bio.pih.genoogle.io.proto.Io.StoredSequence.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -2425,7 +3121,7 @@ public final class Io {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         id_ = 0;
@@ -2440,26 +3136,24 @@ public final class Io {
         bitField0_ = (bitField0_ & ~0x00000010);
         description_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        read_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
         encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredSequence.getDescriptor();
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSequence_descriptor;
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSequence getDefaultInstanceForType() {
         return bio.pih.genoogle.io.proto.Io.StoredSequence.getDefaultInstance();
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSequence build() {
         bio.pih.genoogle.io.proto.Io.StoredSequence result = buildPartial();
         if (!result.isInitialized()) {
@@ -2467,17 +3161,7 @@ public final class Io {
         }
         return result;
       }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredSequence buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredSequence result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSequence buildPartial() {
         bio.pih.genoogle.io.proto.Io.StoredSequence result = new bio.pih.genoogle.io.proto.Io.StoredSequence(this);
         int from_bitField0_ = bitField0_;
@@ -2509,16 +3193,12 @@ public final class Io {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.read_ = read_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
-        }
         result.encodedSequence_ = encodedSequence_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.genoogle.io.proto.Io.StoredSequence) {
           return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredSequence)other);
@@ -2527,29 +3207,36 @@ public final class Io {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredSequence other) {
         if (other == bio.pih.genoogle.io.proto.Io.StoredSequence.getDefaultInstance()) return this;
         if (other.hasId()) {
           setId(other.getId());
         }
         if (other.hasType()) {
-          setType(other.getType());
+          bitField0_ |= 0x00000002;
+          type_ = other.type_;
+          onChanged();
         }
         if (other.hasGi()) {
-          setGi(other.getGi());
+          bitField0_ |= 0x00000004;
+          gi_ = other.gi_;
+          onChanged();
         }
         if (other.hasName()) {
-          setName(other.getName());
+          bitField0_ |= 0x00000008;
+          name_ = other.name_;
+          onChanged();
         }
         if (other.hasAccession()) {
-          setAccession(other.getAccession());
+          bitField0_ |= 0x00000010;
+          accession_ = other.accession_;
+          onChanged();
         }
         if (other.hasDescription()) {
-          setDescription(other.getDescription());
-        }
-        if (other.hasRead()) {
-          setRead(other.getRead());
+          bitField0_ |= 0x00000020;
+          description_ = other.description_;
+          onChanged();
         }
         if (other.hasEncodedSequence()) {
           setEncodedSequence(other.getEncodedSequence());
@@ -2557,7 +3244,7 @@ public final class Io {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasId()) {
           
@@ -2583,123 +3270,109 @@ public final class Io {
           
           return false;
         }
-        if (!hasRead()) {
-          
-          return false;
-        }
         if (!hasEncodedSequence()) {
           
           return false;
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              id_ = input.readInt32();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              type_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              gi_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              bitField0_ |= 0x00000008;
-              name_ = input.readBytes();
-              break;
-            }
-            case 42: {
-              bitField0_ |= 0x00000010;
-              accession_ = input.readBytes();
-              break;
-            }
-            case 50: {
-              bitField0_ |= 0x00000020;
-              description_ = input.readBytes();
-              break;
-            }
-            case 56: {
-              bitField0_ |= 0x00000040;
-              read_ = input.readInt32();
-              break;
-            }
-            case 66: {
-              bitField0_ |= 0x00000080;
-              encodedSequence_ = input.readBytes();
-              break;
-            }
+        bio.pih.genoogle.io.proto.Io.StoredSequence parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredSequence) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // required int32 id = 1;
+
       private int id_ ;
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public int getId() {
         return id_;
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public Builder setId(int value) {
         bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 id = 1;</code>
+       */
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0;
         onChanged();
         return this;
       }
-      
-      // required string type = 2;
+
       private java.lang.Object type_ = "";
+      /**
+       * <code>required string type = 2;</code>
+       */
       public boolean hasType() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getType() {
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public java.lang.String getType() {
         java.lang.Object ref = type_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          type_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            type_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setType(String value) {
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public Builder setType(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2708,34 +3381,74 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string type = 2;</code>
+       */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000002);
         type_ = getDefaultInstance().getType();
         onChanged();
         return this;
       }
-      void setType(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public Builder setTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         type_ = value;
         onChanged();
+        return this;
       }
-      
-      // required string gi = 3;
+
       private java.lang.Object gi_ = "";
+      /**
+       * <code>required string gi = 3;</code>
+       */
       public boolean hasGi() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public String getGi() {
+      /**
+       * <code>required string gi = 3;</code>
+       */
+      public java.lang.String getGi() {
         java.lang.Object ref = gi_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          gi_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            gi_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setGi(String value) {
+      /**
+       * <code>required string gi = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getGiBytes() {
+        java.lang.Object ref = gi_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          gi_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string gi = 3;</code>
+       */
+      public Builder setGi(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2744,34 +3457,74 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string gi = 3;</code>
+       */
       public Builder clearGi() {
         bitField0_ = (bitField0_ & ~0x00000004);
         gi_ = getDefaultInstance().getGi();
         onChanged();
         return this;
       }
-      void setGi(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
+      /**
+       * <code>required string gi = 3;</code>
+       */
+      public Builder setGiBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         gi_ = value;
         onChanged();
+        return this;
       }
-      
-      // required string name = 4;
+
       private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 4;</code>
+       */
       public boolean hasName() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getName() {
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public java.lang.String getName() {
         java.lang.Object ref = name_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          name_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            name_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setName(String value) {
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2780,34 +3533,74 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string name = 4;</code>
+       */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000008);
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-      void setName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         name_ = value;
         onChanged();
+        return this;
       }
-      
-      // required string accession = 5;
+
       private java.lang.Object accession_ = "";
+      /**
+       * <code>required string accession = 5;</code>
+       */
       public boolean hasAccession() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public String getAccession() {
+      /**
+       * <code>required string accession = 5;</code>
+       */
+      public java.lang.String getAccession() {
         java.lang.Object ref = accession_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          accession_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            accession_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setAccession(String value) {
+      /**
+       * <code>required string accession = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAccessionBytes() {
+        java.lang.Object ref = accession_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          accession_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string accession = 5;</code>
+       */
+      public Builder setAccession(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2816,34 +3609,74 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string accession = 5;</code>
+       */
       public Builder clearAccession() {
         bitField0_ = (bitField0_ & ~0x00000010);
         accession_ = getDefaultInstance().getAccession();
         onChanged();
         return this;
       }
-      void setAccession(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000010;
+      /**
+       * <code>required string accession = 5;</code>
+       */
+      public Builder setAccessionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         accession_ = value;
         onChanged();
+        return this;
       }
-      
-      // required string description = 6;
+
       private java.lang.Object description_ = "";
+      /**
+       * <code>required string description = 6;</code>
+       */
       public boolean hasDescription() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public String getDescription() {
+      /**
+       * <code>required string description = 6;</code>
+       */
+      public java.lang.String getDescription() {
         java.lang.Object ref = description_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          description_ = s;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            description_ = s;
+          }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-      public Builder setDescription(String value) {
+      /**
+       * <code>required string description = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDescriptionBytes() {
+        java.lang.Object ref = description_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          description_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string description = 6;</code>
+       */
+      public Builder setDescription(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2852,144 +3685,295 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>required string description = 6;</code>
+       */
       public Builder clearDescription() {
         bitField0_ = (bitField0_ & ~0x00000020);
         description_ = getDefaultInstance().getDescription();
         onChanged();
         return this;
       }
-      void setDescription(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000020;
+      /**
+       * <code>required string description = 6;</code>
+       */
+      public Builder setDescriptionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         description_ = value;
         onChanged();
+        return this;
       }
-      
-      // required int32 read = 7;
-      private int read_ ;
-      public boolean hasRead() {
+
+      private com.google.protobuf.ByteString encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes encodedSequence = 7;</code>
+       */
+      public boolean hasEncodedSequence() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public int getRead() {
-        return read_;
-      }
-      public Builder setRead(int value) {
-        bitField0_ |= 0x00000040;
-        read_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearRead() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        read_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required bytes encodedSequence = 8;
-      private com.google.protobuf.ByteString encodedSequence_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasEncodedSequence() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
+      /**
+       * <code>required bytes encodedSequence = 7;</code>
+       */
       public com.google.protobuf.ByteString getEncodedSequence() {
         return encodedSequence_;
       }
+      /**
+       * <code>required bytes encodedSequence = 7;</code>
+       */
       public Builder setEncodedSequence(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
+  bitField0_ |= 0x00000040;
         encodedSequence_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required bytes encodedSequence = 7;</code>
+       */
       public Builder clearEncodedSequence() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         encodedSequence_ = getDefaultInstance().getEncodedSequence();
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredSequence)
     }
-    
+
     static {
       defaultInstance = new StoredSequence(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredSequence)
   }
-  
-  public interface StoredSimilarSubSequencesIndexOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
+
+  public interface StoredSimilarSubSequencesIndexOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredSimilarSubSequencesIndex)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> 
         getStoredComparationResultInfosList();
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index);
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     int getStoredComparationResultInfosCount();
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder> 
         getStoredComparationResultInfosOrBuilderList();
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder getStoredComparationResultInfosOrBuilder(
         int index);
   }
+  /**
+   * Protobuf type {@code proto.StoredSimilarSubSequencesIndex}
+   *
+   * <pre>
+   *&#47;//////////////////////////////////////////////////////////////////
+   * Similar SubSequences stuffs
+   * ///////////////////////////////////////////////////////////////////
+   * </pre>
+   */
   public static final class StoredSimilarSubSequencesIndex extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredSimilarSubSequencesIndexOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredSimilarSubSequencesIndex)
+      StoredSimilarSubSequencesIndexOrBuilder {
     // Use StoredSimilarSubSequencesIndex.newBuilder() to construct.
-    private StoredSimilarSubSequencesIndex(Builder builder) {
+    private StoredSimilarSubSequencesIndex(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredSimilarSubSequencesIndex(boolean noInit) {}
-    
+    private StoredSimilarSubSequencesIndex(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredSimilarSubSequencesIndex defaultInstance;
     public static StoredSimilarSubSequencesIndex getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredSimilarSubSequencesIndex getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StoredSimilarSubSequencesIndex(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                storedComparationResultInfos_ = new java.util.ArrayList<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              storedComparationResultInfos_.add(input.readMessage(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          storedComparationResultInfos_ = java.util.Collections.unmodifiableList(storedComparationResultInfos_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.class, bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
     }
-    
-    // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
+
+    public static com.google.protobuf.Parser<StoredSimilarSubSequencesIndex> PARSER =
+        new com.google.protobuf.AbstractParser<StoredSimilarSubSequencesIndex>() {
+      public StoredSimilarSubSequencesIndex parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredSimilarSubSequencesIndex(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredSimilarSubSequencesIndex> getParserForType() {
+      return PARSER;
+    }
+
     public static final int STOREDCOMPARATIONRESULTINFOS_FIELD_NUMBER = 1;
     private java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> storedComparationResultInfos_;
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     public java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> getStoredComparationResultInfosList() {
       return storedComparationResultInfos_;
     }
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     public java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder> 
         getStoredComparationResultInfosOrBuilderList() {
       return storedComparationResultInfos_;
     }
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     public int getStoredComparationResultInfosCount() {
       return storedComparationResultInfos_.size();
     }
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index) {
       return storedComparationResultInfos_.get(index);
     }
+    /**
+     * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+     *
+     * <pre>
+     * TODO: put params here
+     * </pre>
+     */
     public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder getStoredComparationResultInfosOrBuilder(
         int index) {
       return storedComparationResultInfos_.get(index);
     }
-    
+
     private void initFields() {
       storedComparationResultInfos_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       for (int i = 0; i < getStoredComparationResultInfosCount(); i++) {
         if (!getStoredComparationResultInfos(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -2999,7 +3983,7 @@ public final class Io {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -3008,12 +3992,12 @@ public final class Io {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       for (int i = 0; i < storedComparationResultInfos_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -3023,113 +4007,112 @@ public final class Io {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code proto.StoredSimilarSubSequencesIndex}
+     *
+     * <pre>
+     *&#47;//////////////////////////////////////////////////////////////////
+     * Similar SubSequences stuffs
+     * ///////////////////////////////////////////////////////////////////
+     * </pre>
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndexOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredSimilarSubSequencesIndex)
+        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndexOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.class, bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
       }
-      
+
       // Construct using bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -3141,7 +4124,7 @@ public final class Io {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3152,20 +4135,20 @@ public final class Io {
         }
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.getDescriptor();
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex getDefaultInstanceForType() {
         return bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.getDefaultInstance();
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex build() {
         bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex result = buildPartial();
         if (!result.isInitialized()) {
@@ -3173,17 +4156,7 @@ public final class Io {
         }
         return result;
       }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex buildPartial() {
         bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex result = new bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex(this);
         int from_bitField0_ = bitField0_;
@@ -3199,7 +4172,7 @@ public final class Io {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex) {
           return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex)other);
@@ -3208,7 +4181,7 @@ public final class Io {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex other) {
         if (other == bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.getDefaultInstance()) return this;
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3240,7 +4213,7 @@ public final class Io {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         for (int i = 0; i < getStoredComparationResultInfosCount(); i++) {
           if (!getStoredComparationResultInfos(i).isInitialized()) {
@@ -3250,43 +4223,26 @@ public final class Io {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder subBuilder = bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addStoredComparationResultInfos(subBuilder.buildPartial());
-              break;
-            }
+        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;
+
       private java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> storedComparationResultInfos_ =
         java.util.Collections.emptyList();
       private void ensureStoredComparationResultInfosIsMutable() {
@@ -3295,10 +4251,17 @@ public final class Io {
           bitField0_ |= 0x00000001;
          }
       }
-      
+
       private com.google.protobuf.RepeatedFieldBuilder<
           bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder> storedComparationResultInfosBuilder_;
-      
+
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> getStoredComparationResultInfosList() {
         if (storedComparationResultInfosBuilder_ == null) {
           return java.util.Collections.unmodifiableList(storedComparationResultInfos_);
@@ -3306,6 +4269,13 @@ public final class Io {
           return storedComparationResultInfosBuilder_.getMessageList();
         }
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public int getStoredComparationResultInfosCount() {
         if (storedComparationResultInfosBuilder_ == null) {
           return storedComparationResultInfos_.size();
@@ -3313,6 +4283,13 @@ public final class Io {
           return storedComparationResultInfosBuilder_.getCount();
         }
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo getStoredComparationResultInfos(int index) {
         if (storedComparationResultInfosBuilder_ == null) {
           return storedComparationResultInfos_.get(index);
@@ -3320,6 +4297,13 @@ public final class Io {
           return storedComparationResultInfosBuilder_.getMessage(index);
         }
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder setStoredComparationResultInfos(
           int index, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo value) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3334,6 +4318,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder setStoredComparationResultInfos(
           int index, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder builderForValue) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3345,6 +4336,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder addStoredComparationResultInfos(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo value) {
         if (storedComparationResultInfosBuilder_ == null) {
           if (value == null) {
@@ -3358,6 +4356,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder addStoredComparationResultInfos(
           int index, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo value) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3372,6 +4377,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder addStoredComparationResultInfos(
           bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder builderForValue) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3383,6 +4395,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder addStoredComparationResultInfos(
           int index, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder builderForValue) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3394,17 +4413,32 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder addAllStoredComparationResultInfos(
           java.lang.Iterable<? extends bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo> values) {
         if (storedComparationResultInfosBuilder_ == null) {
           ensureStoredComparationResultInfosIsMutable();
-          super.addAll(values, storedComparationResultInfos_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, storedComparationResultInfos_);
           onChanged();
         } else {
           storedComparationResultInfosBuilder_.addAllMessages(values);
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder clearStoredComparationResultInfos() {
         if (storedComparationResultInfosBuilder_ == null) {
           storedComparationResultInfos_ = java.util.Collections.emptyList();
@@ -3415,6 +4449,13 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public Builder removeStoredComparationResultInfos(int index) {
         if (storedComparationResultInfosBuilder_ == null) {
           ensureStoredComparationResultInfosIsMutable();
@@ -3425,10 +4466,24 @@ public final class Io {
         }
         return this;
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder getStoredComparationResultInfosBuilder(
           int index) {
         return getStoredComparationResultInfosFieldBuilder().getBuilder(index);
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder getStoredComparationResultInfosOrBuilder(
           int index) {
         if (storedComparationResultInfosBuilder_ == null) {
@@ -3436,6 +4491,13 @@ public final class Io {
           return storedComparationResultInfosBuilder_.getMessageOrBuilder(index);
         }
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public java.util.List<? extends bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder> 
            getStoredComparationResultInfosOrBuilderList() {
         if (storedComparationResultInfosBuilder_ != null) {
@@ -3444,15 +4506,36 @@ public final class Io {
           return java.util.Collections.unmodifiableList(storedComparationResultInfos_);
         }
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder addStoredComparationResultInfosBuilder() {
         return getStoredComparationResultInfosFieldBuilder().addBuilder(
             bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance());
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder addStoredComparationResultInfosBuilder(
           int index) {
         return getStoredComparationResultInfosFieldBuilder().addBuilder(
             index, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance());
       }
+      /**
+       * <code>repeated .proto.StoredComparationResultInfo storedComparationResultInfos = 1;</code>
+       *
+       * <pre>
+       * TODO: put params here
+       * </pre>
+       */
       public java.util.List<bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder> 
            getStoredComparationResultInfosBuilderList() {
         return getStoredComparationResultInfosFieldBuilder().getBuilderList();
@@ -3471,396 +4554,98 @@ public final class Io {
         }
         return storedComparationResultInfosBuilder_;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredSimilarSubSequencesIndex)
     }
-    
+
     static {
       defaultInstance = new StoredSimilarSubSequencesIndex(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredSimilarSubSequencesIndex)
   }
-  
-  public interface StoredComparationResultInfoOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 encodedSubSequence = 1;
+
+  public interface StoredComparationResultInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredComparationResultInfo)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int32 encodedSubSequence = 1;</code>
+     */
     boolean hasEncodedSubSequence();
+    /**
+     * <code>required int32 encodedSubSequence = 1;</code>
+     */
     int getEncodedSubSequence();
-    
-    // required int32 length = 3;
+
+    /**
+     * <code>required int32 length = 3;</code>
+     */
     boolean hasLength();
+    /**
+     * <code>required int32 length = 3;</code>
+     */
     int getLength();
-    
-    // required int64 offset = 2;
+
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
     boolean hasOffset();
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
     long getOffset();
   }
+  /**
+   * Protobuf type {@code proto.StoredComparationResultInfo}
+   */
   public static final class StoredComparationResultInfo extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredComparationResultInfoOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredComparationResultInfo)
+      StoredComparationResultInfoOrBuilder {
     // Use StoredComparationResultInfo.newBuilder() to construct.
-    private StoredComparationResultInfo(Builder builder) {
+    private StoredComparationResultInfo(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredComparationResultInfo(boolean noInit) {}
-    
+    private StoredComparationResultInfo(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredComparationResultInfo defaultInstance;
     public static StoredComparationResultInfo getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredComparationResultInfo getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required int32 encodedSubSequence = 1;
-    public static final int ENCODEDSUBSEQUENCE_FIELD_NUMBER = 1;
-    private int encodedSubSequence_;
-    public boolean hasEncodedSubSequence() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public int getEncodedSubSequence() {
-      return encodedSubSequence_;
-    }
-    
-    // required int32 length = 3;
-    public static final int LENGTH_FIELD_NUMBER = 3;
-    private int length_;
-    public boolean hasLength() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public int getLength() {
-      return length_;
-    }
-    
-    // required int64 offset = 2;
-    public static final int OFFSET_FIELD_NUMBER = 2;
-    private long offset_;
-    public boolean hasOffset() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public long getOffset() {
-      return offset_;
-    }
-    
-    private void initFields() {
-      encodedSubSequence_ = 0;
-      length_ = 0;
-      offset_ = 0L;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasEncodedSubSequence()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLength()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasOffset()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, encodedSubSequence_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt64(2, offset_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(3, length_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, encodedSubSequence_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, offset_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, length_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
     }
-    
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+    private StoredComparationResultInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
-      }
-      
-      // Construct using bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        encodedSubSequence_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        length_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        offset_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDescriptor();
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo getDefaultInstanceForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance();
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo build() {
-        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo buildPartial() {
-        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo result = new bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.encodedSubSequence_ = encodedSubSequence_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.length_ = length_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.offset_ = offset_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo) {
-          return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo other) {
-        if (other == bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance()) return this;
-        if (other.hasEncodedSubSequence()) {
-          setEncodedSubSequence(other.getEncodedSubSequence());
-        }
-        if (other.hasLength()) {
-          setLength(other.getLength());
-        }
-        if (other.hasOffset()) {
-          setOffset(other.getOffset());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasEncodedSubSequence()) {
-          
-          return false;
-        }
-        if (!hasLength()) {
-          
-          return false;
-        }
-        if (!hasOffset()) {
-          
-          return false;
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
           int tag = input.readTag();
           switch (tag) {
             case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
+              done = true;
+              break;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
+                done = true;
               }
               break;
             }
@@ -3881,158 +4666,677 @@ public final class Io {
             }
           }
         }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
       }
-      
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.class, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<StoredComparationResultInfo> PARSER =
+        new com.google.protobuf.AbstractParser<StoredComparationResultInfo>() {
+      public StoredComparationResultInfo parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredComparationResultInfo(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredComparationResultInfo> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int ENCODEDSUBSEQUENCE_FIELD_NUMBER = 1;
+    private int encodedSubSequence_;
+    /**
+     * <code>required int32 encodedSubSequence = 1;</code>
+     */
+    public boolean hasEncodedSubSequence() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 encodedSubSequence = 1;</code>
+     */
+    public int getEncodedSubSequence() {
+      return encodedSubSequence_;
+    }
+
+    public static final int LENGTH_FIELD_NUMBER = 3;
+    private int length_;
+    /**
+     * <code>required int32 length = 3;</code>
+     */
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 length = 3;</code>
+     */
+    public int getLength() {
+      return length_;
+    }
+
+    public static final int OFFSET_FIELD_NUMBER = 2;
+    private long offset_;
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required int64 offset = 2;</code>
+     */
+    public long getOffset() {
+      return offset_;
+    }
+
+    private void initFields() {
+      encodedSubSequence_ = 0;
+      length_ = 0;
+      offset_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasEncodedSubSequence()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLength()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasOffset()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, encodedSubSequence_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt64(2, offset_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(3, length_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, encodedSubSequence_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, offset_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, length_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.StoredComparationResultInfo}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredComparationResultInfo)
+        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.class, bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder.class);
+      }
+
+      // Construct using bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        encodedSubSequence_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        length_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        offset_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredComparationResultInfo_descriptor;
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo getDefaultInstanceForType() {
+        return bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance();
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo build() {
+        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo buildPartial() {
+        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo result = new bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.encodedSubSequence_ = encodedSubSequence_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.length_ = length_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.offset_ = offset_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo) {
+          return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo other) {
+        if (other == bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.getDefaultInstance()) return this;
+        if (other.hasEncodedSubSequence()) {
+          setEncodedSubSequence(other.getEncodedSubSequence());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasEncodedSubSequence()) {
+          
+          return false;
+        }
+        if (!hasLength()) {
+          
+          return false;
+        }
+        if (!hasOffset()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
       private int bitField0_;
-      
-      // required int32 encodedSubSequence = 1;
+
       private int encodedSubSequence_ ;
+      /**
+       * <code>required int32 encodedSubSequence = 1;</code>
+       */
       public boolean hasEncodedSubSequence() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required int32 encodedSubSequence = 1;</code>
+       */
       public int getEncodedSubSequence() {
         return encodedSubSequence_;
       }
+      /**
+       * <code>required int32 encodedSubSequence = 1;</code>
+       */
       public Builder setEncodedSubSequence(int value) {
         bitField0_ |= 0x00000001;
         encodedSubSequence_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 encodedSubSequence = 1;</code>
+       */
       public Builder clearEncodedSubSequence() {
         bitField0_ = (bitField0_ & ~0x00000001);
         encodedSubSequence_ = 0;
         onChanged();
         return this;
       }
-      
-      // required int32 length = 3;
+
       private int length_ ;
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public boolean hasLength() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public int getLength() {
         return length_;
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public Builder setLength(int value) {
         bitField0_ |= 0x00000002;
         length_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 length = 3;</code>
+       */
       public Builder clearLength() {
         bitField0_ = (bitField0_ & ~0x00000002);
         length_ = 0;
         onChanged();
         return this;
       }
-      
-      // required int64 offset = 2;
+
       private long offset_ ;
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public boolean hasOffset() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public long getOffset() {
         return offset_;
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public Builder setOffset(long value) {
         bitField0_ |= 0x00000004;
         offset_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int64 offset = 2;</code>
+       */
       public Builder clearOffset() {
         bitField0_ = (bitField0_ & ~0x00000004);
         offset_ = 0L;
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredComparationResultInfo)
     }
-    
+
     static {
       defaultInstance = new StoredComparationResultInfo(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredComparationResultInfo)
   }
-  
-  public interface StoredSimilarSubSequencesOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 encodedSequence = 1;
+
+  public interface StoredSimilarSubSequencesOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.StoredSimilarSubSequences)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int32 encodedSequence = 1;</code>
+     */
     boolean hasEncodedSequence();
+    /**
+     * <code>required int32 encodedSequence = 1;</code>
+     */
     int getEncodedSequence();
-    
-    // repeated int32 similarSequence = 2;
+
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     java.util.List<java.lang.Integer> getSimilarSequenceList();
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     int getSimilarSequenceCount();
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     int getSimilarSequence(int index);
   }
+  /**
+   * Protobuf type {@code proto.StoredSimilarSubSequences}
+   */
   public static final class StoredSimilarSubSequences extends
-      com.google.protobuf.GeneratedMessage
-      implements StoredSimilarSubSequencesOrBuilder {
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.StoredSimilarSubSequences)
+      StoredSimilarSubSequencesOrBuilder {
     // Use StoredSimilarSubSequences.newBuilder() to construct.
-    private StoredSimilarSubSequences(Builder builder) {
+    private StoredSimilarSubSequences(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private StoredSimilarSubSequences(boolean noInit) {}
-    
+    private StoredSimilarSubSequences(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
     private static final StoredSimilarSubSequences defaultInstance;
     public static StoredSimilarSubSequences getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public StoredSimilarSubSequences getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StoredSimilarSubSequences(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              encodedSequence_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                similarSequence_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              similarSequence_.add(input.readInt32());
+              break;
+            }
+            case 18: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002) && input.getBytesUntilLimit() > 0) {
+                similarSequence_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                similarSequence_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          similarSequence_ = java.util.Collections.unmodifiableList(similarSequence_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
+      return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.class, bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.Builder.class);
     }
-    
+
+    public static com.google.protobuf.Parser<StoredSimilarSubSequences> PARSER =
+        new com.google.protobuf.AbstractParser<StoredSimilarSubSequences>() {
+      public StoredSimilarSubSequences parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StoredSimilarSubSequences(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StoredSimilarSubSequences> getParserForType() {
+      return PARSER;
+    }
+
     private int bitField0_;
-    // required int32 encodedSequence = 1;
     public static final int ENCODEDSEQUENCE_FIELD_NUMBER = 1;
     private int encodedSequence_;
+    /**
+     * <code>required int32 encodedSequence = 1;</code>
+     */
     public boolean hasEncodedSequence() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
+    /**
+     * <code>required int32 encodedSequence = 1;</code>
+     */
     public int getEncodedSequence() {
       return encodedSequence_;
     }
-    
-    // repeated int32 similarSequence = 2;
+
     public static final int SIMILARSEQUENCE_FIELD_NUMBER = 2;
     private java.util.List<java.lang.Integer> similarSequence_;
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     public java.util.List<java.lang.Integer>
         getSimilarSequenceList() {
       return similarSequence_;
     }
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     public int getSimilarSequenceCount() {
       return similarSequence_.size();
     }
+    /**
+     * <code>repeated int32 similarSequence = 2;</code>
+     */
     public int getSimilarSequence(int index) {
       return similarSequence_.get(index);
     }
-    
+
     private void initFields() {
       encodedSequence_ = 0;
-      similarSequence_ = java.util.Collections.emptyList();;
+      similarSequence_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
       if (!hasEncodedSequence()) {
         memoizedIsInitialized = 0;
         return false;
@@ -4040,7 +5344,7 @@ public final class Io {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -4052,12 +5356,12 @@ public final class Io {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4076,113 +5380,106 @@ public final class Io {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
     @java.lang.Override
     protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
+
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
+      return PARSER.parseFrom(data);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
+      return PARSER.parseFrom(input);
     }
     public static bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
+      return PARSER.parseFrom(input, extensionRegistry);
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
+
     @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
+    /**
+     * Protobuf type {@code proto.StoredSimilarSubSequences}
+     */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.StoredSimilarSubSequences)
+        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.class, bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.Builder.class);
       }
-      
+
       // Construct using bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
-      private Builder(BuilderParent parent) {
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
@@ -4193,29 +5490,29 @@ public final class Io {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         encodedSequence_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        similarSequence_ = java.util.Collections.emptyList();;
+        similarSequence_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.getDescriptor();
+        return bio.pih.genoogle.io.proto.Io.internal_static_proto_StoredSimilarSubSequences_descriptor;
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences getDefaultInstanceForType() {
         return bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.getDefaultInstance();
       }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences build() {
         bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences result = buildPartial();
         if (!result.isInitialized()) {
@@ -4223,17 +5520,7 @@ public final class Io {
         }
         return result;
       }
-      
-      private bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
+
       public bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences buildPartial() {
         bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences result = new bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences(this);
         int from_bitField0_ = bitField0_;
@@ -4251,7 +5538,7 @@ public final class Io {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences) {
           return mergeFrom((bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences)other);
@@ -4260,7 +5547,7 @@ public final class Io {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences other) {
         if (other == bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.getDefaultInstance()) return this;
         if (other.hasEncodedSequence()) {
@@ -4279,7 +5566,7 @@ public final class Io {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasEncodedSequence()) {
           
@@ -4287,94 +5574,87 @@ public final class Io {
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              encodedSequence_ = input.readInt32();
-              break;
-            }
-            case 16: {
-              ensureSimilarSequenceIsMutable();
-              similarSequence_.add(input.readInt32());
-              break;
-            }
-            case 18: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              while (input.getBytesUntilLimit() > 0) {
-                addSimilarSequence(input.readInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
+        bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
           }
         }
+        return this;
       }
-      
       private int bitField0_;
-      
-      // required int32 encodedSequence = 1;
+
       private int encodedSequence_ ;
+      /**
+       * <code>required int32 encodedSequence = 1;</code>
+       */
       public boolean hasEncodedSequence() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
+      /**
+       * <code>required int32 encodedSequence = 1;</code>
+       */
       public int getEncodedSequence() {
         return encodedSequence_;
       }
+      /**
+       * <code>required int32 encodedSequence = 1;</code>
+       */
       public Builder setEncodedSequence(int value) {
         bitField0_ |= 0x00000001;
         encodedSequence_ = value;
         onChanged();
         return this;
       }
+      /**
+       * <code>required int32 encodedSequence = 1;</code>
+       */
       public Builder clearEncodedSequence() {
         bitField0_ = (bitField0_ & ~0x00000001);
         encodedSequence_ = 0;
         onChanged();
         return this;
       }
-      
-      // repeated int32 similarSequence = 2;
-      private java.util.List<java.lang.Integer> similarSequence_ = java.util.Collections.emptyList();;
+
+      private java.util.List<java.lang.Integer> similarSequence_ = java.util.Collections.emptyList();
       private void ensureSimilarSequenceIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           similarSequence_ = new java.util.ArrayList<java.lang.Integer>(similarSequence_);
           bitField0_ |= 0x00000002;
          }
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public java.util.List<java.lang.Integer>
           getSimilarSequenceList() {
         return java.util.Collections.unmodifiableList(similarSequence_);
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public int getSimilarSequenceCount() {
         return similarSequence_.size();
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public int getSimilarSequence(int index) {
         return similarSequence_.get(index);
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public Builder setSimilarSequence(
           int index, int value) {
         ensureSimilarSequenceIsMutable();
@@ -4382,73 +5662,83 @@ public final class Io {
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public Builder addSimilarSequence(int value) {
         ensureSimilarSequenceIsMutable();
         similarSequence_.add(value);
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public Builder addAllSimilarSequence(
           java.lang.Iterable<? extends java.lang.Integer> values) {
         ensureSimilarSequenceIsMutable();
-        super.addAll(values, similarSequence_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, similarSequence_);
         onChanged();
         return this;
       }
+      /**
+       * <code>repeated int32 similarSequence = 2;</code>
+       */
       public Builder clearSimilarSequence() {
-        similarSequence_ = java.util.Collections.emptyList();;
+        similarSequence_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
-      
+
       // @@protoc_insertion_point(builder_scope:proto.StoredSimilarSubSequences)
     }
-    
+
     static {
       defaultInstance = new StoredSimilarSubSequences(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:proto.StoredSimilarSubSequences)
   }
-  
-  private static com.google.protobuf.Descriptors.Descriptor
+
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_InvertedIndexBuck_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_InvertedIndexBuck_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredDatabank_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredDatabank_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredSequenceInfo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredSequenceInfo_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredSequence_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredSequence_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredSimilarSubSequencesIndex_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredComparationResultInfo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredComparationResultInfo_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_StoredSimilarSubSequences_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable;
-  
+
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -4467,89 +5757,74 @@ public final class Io {
       "nceInfo\"E\n\014SequenceType\022\007\n\003DNA\020\000\022\007\n\003RNA\020" +
       "\001\022\013\n\007PROTEIN\020\002\022\026\n\022TRANSLATED_PROTEIN\020\003\"@" +
       "\n\022StoredSequenceInfo\022\n\n\002id\030\001 \002(\005\022\016\n\006offs",
-      "et\030\002 \002(\003\022\016\n\006length\030\003 \002(\005\"\223\001\n\016StoredSeque" +
+      "et\030\002 \002(\003\022\016\n\006length\030\003 \002(\005\"\205\001\n\016StoredSeque" +
       "nce\022\n\n\002id\030\001 \002(\005\022\014\n\004type\030\002 \002(\t\022\n\n\002gi\030\003 \002(" +
       "\t\022\014\n\004name\030\004 \002(\t\022\021\n\taccession\030\005 \002(\t\022\023\n\013de" +
-      "scription\030\006 \002(\t\022\014\n\004read\030\007 \002(\005\022\027\n\017encoded" +
-      "Sequence\030\010 \002(\014\"j\n\036StoredSimilarSubSequen" +
-      "cesIndex\022H\n\034storedComparationResultInfos" +
-      "\030\001 \003(\0132\".proto.StoredComparationResultIn" +
-      "fo\"Y\n\033StoredComparationResultInfo\022\032\n\022enc" +
-      "odedSubSequence\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n" +
-      "\006offset\030\002 \002(\003\"M\n\031StoredSimilarSubSequenc",
-      "es\022\027\n\017encodedSequence\030\001 \002(\005\022\027\n\017similarSe" +
-      "quence\030\002 \003(\005B!\n\031bio.pih.genoogle.io.prot" +
-      "oB\002IoH\001"
+      "scription\030\006 \002(\t\022\027\n\017encodedSequence\030\007 \002(\014" +
+      "\"j\n\036StoredSimilarSubSequencesIndex\022H\n\034st" +
+      "oredComparationResultInfos\030\001 \003(\0132\".proto" +
+      ".StoredComparationResultInfo\"Y\n\033StoredCo" +
+      "mparationResultInfo\022\032\n\022encodedSubSequenc" +
+      "e\030\001 \002(\005\022\016\n\006length\030\003 \002(\005\022\016\n\006offset\030\002 \002(\003\"" +
+      "M\n\031StoredSimilarSubSequences\022\027\n\017encodedS",
+      "equence\030\001 \002(\005\022\027\n\017similarSequence\030\002 \003(\005B!" +
+      "\n\031bio.pih.genoogle.io.protoB\002IoH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_proto_InvertedIndexBuck_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_proto_InvertedIndexBuck_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_InvertedIndexBuck_descriptor,
-              new java.lang.String[] { "Buck", },
-              bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.class,
-              bio.pih.genoogle.io.proto.Io.InvertedIndexBuck.Builder.class);
-          internal_static_proto_StoredDatabank_descriptor =
-            getDescriptor().getMessageTypes().get(1);
-          internal_static_proto_StoredDatabank_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredDatabank_descriptor,
-              new java.lang.String[] { "Type", "SubSequenceLength", "Mask", "LowComplexityFilter", "QtdSequences", "QtdBases", "SequencesInfo", },
-              bio.pih.genoogle.io.proto.Io.StoredDatabank.class,
-              bio.pih.genoogle.io.proto.Io.StoredDatabank.Builder.class);
-          internal_static_proto_StoredSequenceInfo_descriptor =
-            getDescriptor().getMessageTypes().get(2);
-          internal_static_proto_StoredSequenceInfo_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredSequenceInfo_descriptor,
-              new java.lang.String[] { "Id", "Offset", "Length", },
-              bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.class,
-              bio.pih.genoogle.io.proto.Io.StoredSequenceInfo.Builder.class);
-          internal_static_proto_StoredSequence_descriptor =
-            getDescriptor().getMessageTypes().get(3);
-          internal_static_proto_StoredSequence_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredSequence_descriptor,
-              new java.lang.String[] { "Id", "Type", "Gi", "Name", "Accession", "Description", "Read", "EncodedSequence", },
-              bio.pih.genoogle.io.proto.Io.StoredSequence.class,
-              bio.pih.genoogle.io.proto.Io.StoredSequence.Builder.class);
-          internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
-            getDescriptor().getMessageTypes().get(4);
-          internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
-              new java.lang.String[] { "StoredComparationResultInfos", },
-              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.class,
-              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequencesIndex.Builder.class);
-          internal_static_proto_StoredComparationResultInfo_descriptor =
-            getDescriptor().getMessageTypes().get(5);
-          internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredComparationResultInfo_descriptor,
-              new java.lang.String[] { "EncodedSubSequence", "Length", "Offset", },
-              bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.class,
-              bio.pih.genoogle.io.proto.Io.StoredComparationResultInfo.Builder.class);
-          internal_static_proto_StoredSimilarSubSequences_descriptor =
-            getDescriptor().getMessageTypes().get(6);
-          internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_proto_StoredSimilarSubSequences_descriptor,
-              new java.lang.String[] { "EncodedSequence", "SimilarSequence", },
-              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.class,
-              bio.pih.genoogle.io.proto.Io.StoredSimilarSubSequences.Builder.class);
-          return null;
-        }
-      };
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
+        };
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
+    internal_static_proto_InvertedIndexBuck_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_proto_InvertedIndexBuck_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_InvertedIndexBuck_descriptor,
+        new java.lang.String[] { "Buck", });
+    internal_static_proto_StoredDatabank_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_proto_StoredDatabank_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredDatabank_descriptor,
+        new java.lang.String[] { "Type", "SubSequenceLength", "Mask", "LowComplexityFilter", "QtdSequences", "QtdBases", "SequencesInfo", });
+    internal_static_proto_StoredSequenceInfo_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_proto_StoredSequenceInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredSequenceInfo_descriptor,
+        new java.lang.String[] { "Id", "Offset", "Length", });
+    internal_static_proto_StoredSequence_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_proto_StoredSequence_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredSequence_descriptor,
+        new java.lang.String[] { "Id", "Type", "Gi", "Name", "Accession", "Description", "EncodedSequence", });
+    internal_static_proto_StoredSimilarSubSequencesIndex_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_proto_StoredSimilarSubSequencesIndex_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredSimilarSubSequencesIndex_descriptor,
+        new java.lang.String[] { "StoredComparationResultInfos", });
+    internal_static_proto_StoredComparationResultInfo_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_proto_StoredComparationResultInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredComparationResultInfo_descriptor,
+        new java.lang.String[] { "EncodedSubSequence", "Length", "Offset", });
+    internal_static_proto_StoredSimilarSubSequences_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_proto_StoredSimilarSubSequences_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_StoredSimilarSubSequences_descriptor,
+        new java.lang.String[] { "EncodedSequence", "SimilarSequence", });
   }
-  
+
   // @@protoc_insertion_point(outer_class_scope)
 }
