@@ -71,10 +71,10 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 
 	private StoredSequenceInfo processRead1(RichSequence s, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		SymbolList protein = Converter.dnaToProtein1(s);
-		return storeInDatabase(s, protein, 1, dataBankFileChannel);
+		return storeInDatabase(s, protein, dataBankFileChannel);
 	}
 
-	private StoredSequenceInfo storeInDatabase(RichSequence s, SymbolList converted, int read, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
+	private StoredSequenceInfo storeInDatabase(RichSequence s, SymbolList converted, FileChannel dataBankFileChannel) throws IOException, IndexConstructionException, IllegalSymbolException {
 		long offset = dataBankFileChannel.position();
 
 		final byte[] ret = intArrayToByteArray(converted);
@@ -88,7 +88,6 @@ public class RemoteSimilaritySequenceDataBank extends IndexedSequenceDataBank {
 			.setType(s.getType())
 			.setAccession(s.getAccession())
 			.setDescription(s.getDescription())
-			.setRead(read)
 			.setEncodedSequence(ByteString.copyFrom(ret));
 
 		StoredSequence storedSequence = builder.build();
