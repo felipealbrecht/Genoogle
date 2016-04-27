@@ -1,5 +1,9 @@
-== Fundamental Informations ==
-Genoogle is a software for similar DNA sequences searching developed by Felipe Albrecht (felipe.albrecht@gmail.com / http://www.pih.bio.br)
+Genoogle
+========
+
+Fundamental Information
+-----------------------
+Genoogle is software for similar DNA sequences searching developed by Felipe Albrecht: [home page](http://www.pih.bio.br), [ email contact](felipe.albrecht@gmail.com).
 
 Genoogle uses indexing and parallel processing techniques and it is developed in Java.
 Genoogle is free and open source.
@@ -10,9 +14,10 @@ So, I hope that the users (YOU!) will inform me about bugs and features which yo
 
 If you really want to develop something in to Genoogle, contact me.
 
-== Features ==
+Features
+--------
 
-=== Actual Features: ===
+### Actual Features:
  * Fast similar sequences searching.
  * Really good sensibility.
  * Text mode interfaces.
@@ -23,49 +28,51 @@ If you really want to develop something in to Genoogle, contact me.
  * Data banks with more than 8 gigabytes. 
  * Console and batch interfaces.
 
-=== Missing and planed features: ===
+### Missing and planned features:
  * Better web interface.
  * RNA indexing and searching sequences.
 
-=== Missing and not (for so soon) planed features: ===
+### Missing and not (for so soon) planned features:
  * Proteins indexing and searching. (It will be a big work to implement it, but it is possible)
  * Clusters implementation. (May be my Ph.D. project)
 
-== Intalation == 
+Intallation
+-----------
 
-=== Requirements === 
+### Requirements
 To run Genoogle it is necessary:
- * JRE >= 1.6 and the environment variable JAVA_HOME should inform where the JRE is, by example:  JAVA_HOME="/usr/lib/jvm/java-6-sun"
+ * JRE >= 1.6 and the environment variable JAVA_HOME should inform where the JRE is, by example:  ```JAVA_HOME="/usr/lib/jvm/java-6-sun"```
  * Ram Memory: The Genoogle memory requirement is approximately 80% of the data bank size more approximately 40Mbs for Java run time.
 
-=== Installation process ===
+### Installation process
  * Download the package here (TBA)
  * Unpack
  * Copy the fasta files data banks into the fasta/files folder.
- * Configure the conf/genoogle.xml file and insert the copied files at the  <genoogle:split-databanks> section as new <genoogle:databank>:
-   {{{
-     <genoogle:split-databanks name="RefSeq" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
+ * Configure the conf/genoogle.xml file and insert the copied files at the `<genoogle:split-databanks>` section as new `<genoogle:databank>`:
+ * ```xml
+<genoogle:split-databanks name="RefSeq" path="files/fasta" mask="111010010100110111" number-of-sub-databanks="1" sub-sequence-length="11">
        <genoogle:databank name="Cow"       path="cow.rna.fna"       />
        <genoogle:databank name="Frog"      path="frog.rna.fna"      />
        <!-- ... more files -->
      </genoogle:split-databanks>
-   }}}
+     ```
  * Run the format_db.sh script.
  * Wait while the data bank is formatted and the inverted index processed.
  * Execute :
-   * run_web.sh, for webservices, web page and col), 
-   * or run_standalone_web.sh, for web page that will access Genoogle by webservice,
-   * or run_console.sh, for console only interface.
+    * run_web.sh, for webservices, web page and col), 
+    * or run_standalone_web.sh, for web page that will access Genoogle by webservice,
+    * or run_console.sh, for console only interface.
  * Have fun!
 
-== Searching ==
-Genoogle has two interfaces: a '''very''' simple web page, text mode console, and WebServices interface.
+Searching
+---------
+Genoogle has two interfaces: a **very** simple web page, text mode console, and WebServices interface.
 
-To do the search using the web page is very simples. Open the address ''localhost:8080'' at your browser and put the query sequence in the input box and click ''Search sequence'' button. Wait and the results will be shown. The console interface is much better!
+To do the search using the web page is very simples. Open the address *localhost:8080* at your browser and put the query sequence in the input box and click *Search sequence* button. Wait and the results will be shown. The console interface is much better!
 
 To use the WebServices, please check their wiki.
 
-=== Console interface ===
+### Console interface
 
 The console interface has the following commands:
  * search <data bank> <input file> <output file> <parameters>: does the search.
@@ -90,7 +97,7 @@ The search parameters are:
  
 An example of search is shown bellow: 
 
-'''search Genomes_RefSeq BA000002 result_file QuerySplitQuantity=2 MaxThreadsIndexSearch=2 MaxHitsResults=20'''
+```search Genomes_RefSeq BA000002 result_file QuerySplitQuantity=2 MaxThreadsIndexSearch=2 MaxHitsResults=20```
 
 This search, make a search at the Genomes_RefSeq databank, using as input the file BA000002 and the results will be saved at "result_file.xml" file.
 The input query will be split in to 2 parts and will be used 2 threads to do the search of the input query sub-sequences at the inverted index.
@@ -100,18 +107,19 @@ At the end will be returned to the user, the 20 better scores.
 -----
 
 
-== Dependencies ==
+Dependencies
+------------
 
 Genoogle uses:
- * Dom4j http://www.dom4j.org/ for XML parsing.
- * JUnit4 http://www.junit.org/ for unit testing.
- * Easy Mock http://easymock.org/ and CgLib http://cglib.sourceforge.net/ for Mock creation at the JUnits.
- * Google Collections http://code.google.com/p/google-collections/.
- * Protocol Buffers http://code.google.com/intl/pt-BR/apis/protocolbuffers/ for Data bank and index serialization.
- * Log4J http://logging.apache.org/log4j/ for loggin.
- * Jetty http://www.mortbay.org/ for embedded web server.
- * Jax-WS https://jax-ws.dev.java.net/ for WebServices implementation.
+ * [Dom4j](http://www.dom4j.org/) for XML parsing.
+ * [JUnit4](http://www.junit.org/) for unit testing.
+ * [Easy Mock](http://easymock.org/) and [CgLib](http://cglib.sourceforge.net/) for Mock creation at the JUnits.
+ * [Google Collections](http://code.google.com/p/google-collections/)
+ * [Protocol Buffers](http://code.google.com/intl/pt-BR/apis/protocolbuffers/) for Data bank and index serialization.
+ * [Log4J](http://logging.apache.org/log4j/) for loggin.
+ * [Jetty](http://www.mortbay.org/) for embedded web server.
+ * [Jax-WS](https://jax-ws.dev.java.net/) for WebServices implementation.
 
-All these libraries are in the https://github.com/felipealbrecht/Genoogle/tree/master/lib directory.
+All these libraries are in the directory [https://github.com/felipealbrecht/Genoogle/tree/master/lib](https://github.com/felipealbrecht/Genoogle/tree/master/lib)
 
 
